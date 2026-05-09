@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CBaseEntity_ObjectCaps-AND-CBaseEntity_Save skill."""
+"""Preprocess script for find-CEntityInstance_ObjectCaps-AND-CEntityInstance_Save skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CBaseEntity_ObjectCaps",
-    "CBaseEntity_Save",
+    "CEntityInstance_ObjectCaps",
+    "CEntityInstance_Save",
 ]
 
 LLM_DECOMPILE = [
     # (symbol_name, path_to_prompt, path_to_reference)
     (
-        "CBaseEntity_ObjectCaps",
+        "CEntityInstance_ObjectCaps",
         "prompt/call_llm_decompile.md",
         "references/server/CEntitySaveRestoreBlockHandler_SaveInternal.{platform}.yaml",
     ),
     (
-        "CBaseEntity_Save",
+        "CEntityInstance_Save",
         "prompt/call_llm_decompile.md",
         "references/server/CEntitySaveRestoreBlockHandler_SaveInternal.{platform}.yaml",
     ),
@@ -24,19 +24,16 @@ LLM_DECOMPILE = [
 
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
-    ("CBaseEntity_ObjectCaps", "CBaseEntity"),
-    ("CBaseEntity_Save", "CBaseEntity"),
+    ("CEntityInstance_ObjectCaps", "CEntityInstance"),
+    ("CEntityInstance_Save", "CEntityInstance"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CBaseEntity_ObjectCaps",
+        "CEntityInstance_ObjectCaps",
         [
             "func_name",
-            "func_va",
-            "func_rva",
-            "func_size",
             "vfunc_sig",
             "vfunc_offset",
             "vfunc_index",
@@ -44,12 +41,9 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
     (
-        "CBaseEntity_Save",
+        "CEntityInstance_Save",
         [
             "func_name",
-            "func_va",
-            "func_rva",
-            "func_size",
             "vfunc_sig",
             "vfunc_offset",
             "vfunc_index",

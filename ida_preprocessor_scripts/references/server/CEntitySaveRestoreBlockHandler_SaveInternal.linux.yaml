@@ -38,7 +38,7 @@ disasm_code: |-
   .text:0000000001567E8A                 jz      loc_15680A8
   .text:0000000001567E90                 mov     rax, [r12]
   .text:0000000001567E94                 mov     rdi, r12
-  .text:0000000001567E97                 call    qword ptr [rax+0D8h]  ; 0xD8 = CBaseEntity_ObjectCaps
+  .text:0000000001567E97                 call    qword ptr [rax+0D8h]  ; 0xD8 = CEntityInstance_ObjectCaps
   .text:0000000001567E9D                 test    eax, eax
   .text:0000000001567E9F                 js      loc_1568100
   .text:0000000001567EA5                 mov     rax, [r12+10h]
@@ -86,7 +86,7 @@ disasm_code: |-
   .text:0000000001567F6E                 mov     rax, [r12]
   .text:0000000001567F72                 mov     rdi, r12
   .text:0000000001567F75                 mov     rsi, r13
-  .text:0000000001567F78                 call    qword ptr [rax+0B0h]  ; 0xB0 = CBaseEntity_Save
+  .text:0000000001567F78                 call    qword ptr [rax+0B0h]  ; 0xB0 = CEntityInstance_Save
   .text:0000000001567F7E                 mov     rdi, [rbp+var_50]
   .text:0000000001567F82                 test    rdi, rdi
   .text:0000000001567F85                 jz      short loc_1567FF3
@@ -252,7 +252,7 @@ disasm_code: |-
   .text:00000000015681E0                 call    rax
   .text:00000000015681E2                 jmp     loc_1567FEB
 procedure: |-
-  __int64 __fastcall CEntitySaveRestoreBlockHandler_Save(__int64 a1, _QWORD *a2, __int64 a3)
+  __int64 __fastcall CEntitySaveRestoreBlockHandler_SaveInternal(__int64 a1, _QWORD *a2, __int64 a3)
   {
     int v4; // ecx
     unsigned int v5; // r14d
@@ -305,7 +305,7 @@ procedure: |-
         LoggingSystem_Log((unsigned int)dword_265D880, 1, "%s:  skip %d\n", "SV", v5);
       return 0;
     }
-    if ( (*(int (__fastcall **)(_QWORD *))(*v9 + 216LL))(v9) < 0 )// 0xD8 = 216LL = CBaseEntity_ObjectCaps
+    if ( (*(int (__fastcall **)(_QWORD *))(*v9 + 216LL))(v9) < 0 )// 0xD8 = 216LL = CEntityInstance_ObjectCaps
     {
       v28 = *(_QWORD *)(a3 + 72);
       if ( v28 )
@@ -355,7 +355,7 @@ procedure: |-
       v15 = ((__int64 (__fastcall *)(_QWORD *))v14)(a2);
     v16 = sub_FA2C70(v15);
     sub_1567280((unsigned int)&v32, (_DWORD)a2, v16, 1, (unsigned int)"%d | ", v5, v32);
-    (*(void (__fastcall **)(_QWORD *, _QWORD *))(*v9 + 176LL))(v9, a2);// 0xB0 = 176LL = CBaseEntity_Save
+    (*(void (__fastcall **)(_QWORD *, _QWORD *))(*v9 + 176LL))(v9, a2);// 0xB0 = 176LL = CEntityInstance_Save
     if ( v32 )
     {
       v17 = *(__int64 (**)(void))(*(_QWORD *)v32 + 552LL);
