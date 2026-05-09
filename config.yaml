@@ -4115,13 +4115,20 @@ modules:
         expected_output:
           - CEntitySaveRestoreBlockHandler_DoRestoreEntity.{platform}.yaml
 
-      - name: find-CBaseEntity_ObjectCaps-AND-CBaseEntity_Save
+      - name: find-CEntityInstance_Restore
         expected_output:
-          - CBaseEntity_ObjectCaps.{platform}.yaml
-          - CBaseEntity_Save.{platform}.yaml
+          - CEntityInstance_Restore.{platform}.yaml
+        expected_input:
+          - CEntitySaveRestoreBlockHandler_DoRestoreEntity.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
+
+      - name: find-CEntityInstance_ObjectCaps-AND-CEntityInstance_Save
+        expected_output:
+          - CEntityInstance_ObjectCaps.{platform}.yaml
+          - CEntityInstance_Save.{platform}.yaml
         expected_input:
           - CEntitySaveRestoreBlockHandler_SaveInternal.{platform}.yaml
-          - CBaseEntity_vtable.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
 
     symbols:
       - name: CSource2Server_vtable
@@ -4315,15 +4322,20 @@ modules:
         alias:
           - CEntitySaveRestoreBlockHandler::DoRestoreEntity
 
-      - name: CBaseEntity_ObjectCaps
+      - name: CEntityInstance_ObjectCaps
         category: vfunc
         alias:
-          - CBaseEntity::ObjectCaps
+          - CEntityInstance::ObjectCaps
 
-      - name: CBaseEntity_Save
+      - name: CEntityInstance_Save
         category: vfunc
         alias:
-          - CBaseEntity::Save
+          - CEntityInstance::Save
+
+      - name: CEntityInstance_Restore
+        category: vfunc
+        alias:
+          - CEntityInstance::Restore
 
       - name: CGameSceneNode_vtable
         category: vtable
