@@ -4105,6 +4105,12 @@ modules:
           - CEntitySaveRestoreBlockHandler_SaveInternal.{platform}.yaml
           - CEntitySaveRestoreBlockHandler_vtable.{platform}.yaml
 
+      - name: find-CEntitySaveRestoreBlockHandler_Restore
+        expected_output:
+          - CEntitySaveRestoreBlockHandler_Restore.{platform}.yaml
+        expected_input:
+          - CEntitySaveRestoreBlockHandler_vtable.{platform}.yaml
+
       - name: find-CBaseEntity_ObjectCaps-AND-CBaseEntity_Save
         expected_output:
           - CBaseEntity_ObjectCaps.{platform}.yaml
@@ -4294,6 +4300,11 @@ modules:
         category: vfunc
         alias:
           - CEntitySaveRestoreBlockHandler::Save
+
+      - name: CEntitySaveRestoreBlockHandler_Restore
+        category: vfunc
+        alias:
+          - CEntitySaveRestoreBlockHandler::Restore
 
       - name: CBaseEntity_ObjectCaps
         category: vfunc
