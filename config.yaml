@@ -2911,6 +2911,13 @@ modules:
         expected_input:
           - CBaseEntity_vtable.{platform}.yaml
 
+      - name: find-CBaseEntity_NetworkStateChanged
+        expected_output:
+          - CBaseEntity_NetworkStateChanged.{platform}.yaml
+        expected_input:
+          - CBaseEntity_vtable.{platform}.yaml
+          - CNetworkTransmitComponent_StateChanged.{platform}.yaml
+
       - name: find-CBaseCombatCharacter_OnKilled
         expected_output:
           - CBaseCombatCharacter_OnKilled.{platform}.yaml
@@ -3794,6 +3801,12 @@ modules:
           - CEntityInstance_ReloadPrivateScripts.{platform}.yaml
         expected_input:
           - CBaseEntity_ReloadPrivateScripts.{platform}.yaml
+
+      - name: find-CEntityInstance_NetworkStateChanged
+        expected_output:
+          - CEntityInstance_NetworkStateChanged.{platform}.yaml
+        expected_input:
+          - CBaseEntity_NetworkStateChanged.{platform}.yaml
 
       - name: find-CEntityInstance_DrawDebugTextOverlays
         expected_output:
@@ -4916,6 +4929,11 @@ modules:
         alias:
           - CBaseEntity::NetworkStateChangedLog
 
+      - name: CBaseEntity_NetworkStateChanged
+        category: vfunc
+        alias:
+          - CBaseEntity::NetworkStateChanged
+
       - name: CNetworkTransmitComponent_StateChanged
         category: func
         alias:
@@ -5773,6 +5791,11 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::ReloadPrivateScripts
+
+      - name: CEntityInstance_NetworkStateChanged
+        category: vfunc
+        alias:
+          - CEntityInstance::NetworkStateChanged
 
       - name: CEntityInstance_DrawDebugTextOverlays
         category: vfunc
