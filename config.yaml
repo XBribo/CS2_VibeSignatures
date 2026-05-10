@@ -4145,6 +4145,13 @@ modules:
         expected_input:
           - CEntitySaveRestoreBlockHandler_RestoreEntity.{platform}.yaml
 
+      - name: find-CEntitySystem_OnSetDormant
+        expected_output:
+          - CEntitySystem_OnSetDormant.{platform}.yaml
+        expected_input:
+          - CEntitySystem_SetInPVS.{platform}.yaml
+          - CEntitySystem_vtable.{platform}.yaml
+
       - name: find-CEntityInstance_Restore
         expected_output:
           - CEntityInstance_Restore.{platform}.yaml
@@ -4374,6 +4381,11 @@ modules:
         category: func
         alias:
           - CEntitySystem::SetInPVS
+
+      - name: CEntitySystem_OnSetDormant
+        category: vfunc
+        alias:
+          - CEntitySystem::OnSetDormant
 
       - name: CEntityInstance_ObjectCaps
         category: vfunc
