@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CBaseEntity_PostDataUpdate skill."""
+"""Preprocess script for find-CEntityInstance_PostDataUpdatePreserve-AND-CEntityInstance_PostDataUpdateDelta skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CBaseEntity_PostDataUpdate",
+    "CEntityInstance_PostDataUpdatePreserve",
+    "CEntityInstance_PostDataUpdateDelta",
 ]
 
 LLM_DECOMPILE = [
     # (symbol_name, path_to_prompt, path_to_reference)
     (
-        "CBaseEntity_PostDataUpdate",
+        "CEntityInstance_PostDataUpdatePreserve",
+        "prompt/call_llm_decompile.md",
+        "references/server/CEntitySystem_PostDataUpdate.{platform}.yaml",
+    ),
+    (
+        "CEntityInstance_PostDataUpdateDelta",
         "prompt/call_llm_decompile.md",
         "references/server/CEntitySystem_PostDataUpdate.{platform}.yaml",
     ),
@@ -18,22 +24,29 @@ LLM_DECOMPILE = [
 
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
-    ("CBaseEntity_PostDataUpdate", "CBaseEntity"),
+    ("CEntityInstance_PostDataUpdatePreserve", "CEntityInstance"),
+    ("CEntityInstance_PostDataUpdateDelta", "CEntityInstance"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
+    # IMPORTANT: must be exactly these four fields to trigger slot-only mode
     (
-        "CBaseEntity_PostDataUpdate",
+        "CEntityInstance_PostDataUpdatePreserve",
         [
             "func_name",
-            "func_va",
-            "func_rva",
-            "func_size",
-            "vfunc_sig",
+            "vtable_name",
             "vfunc_offset",
             "vfunc_index",
+        ],
+    ),
+    (
+        "CEntityInstance_PostDataUpdateDelta",
+        [
+            "func_name",
             "vtable_name",
+            "vfunc_offset",
+            "vfunc_index",
         ],
     ),
 ]
@@ -42,7 +55,7 @@ async def preprocess_skill(
     session, skill_name, expected_outputs, old_yaml_map,
     new_binary_dir, platform, image_base, llm_config=None, debug=False,
 ):
-    """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
+    """Reuse previous gamever vfunc slots; fallback to LLM_DECOMPILE on CEntitySystem_PostDataUpdate."""
     return await preprocess_common_skill(
         session=session,
         expected_outputs=expected_outputs,

@@ -3,14 +3,27 @@
 
 from ida_analyze_util import preprocess_common_skill
 
-INHERIT_VFUNCS = [
-    # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
-    ("CEntityInstance_PostDataUpdate", "CEntityInstance", "CBaseEntity_PostDataUpdate", False),
+TARGET_FUNCTION_NAMES = [
+    "CEntityInstance_PostDataUpdate",
+]
+
+LLM_DECOMPILE = [
+    # (symbol_name, path_to_prompt, path_to_reference)
+    (
+        "CEntityInstance_PostDataUpdate",
+        "prompt/call_llm_decompile.md",
+        "references/server/CEntityInstance_PostDataUpdateDelta.{platform}.yaml",
+    ),
+]
+
+FUNC_VTABLE_RELATIONS = [
+    # (func_name, vtable_class)
+    ("CEntityInstance_PostDataUpdate", "CEntityInstance"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
-    # Slot-only mode: empty vfunc, only vtable slot position is needed.
+    # IMPORTANT: must be exactly these four fields to trigger slot-only mode
     (
         "CEntityInstance_PostDataUpdate",
         [
@@ -23,18 +36,10 @@ GENERATE_YAML_DESIRED_FIELDS = [
 ]
 
 async def preprocess_skill(
-    session,
-    skill_name,
-    expected_outputs,
-    old_yaml_map,
-    new_binary_dir,
-    platform,
-    image_base,
-    debug=False,
+    session, skill_name, expected_outputs, old_yaml_map,
+    new_binary_dir, platform, image_base, llm_config=None, debug=False,
 ):
-    """Reuse old func_sig first; fallback to vtable index + generated signature when needed."""
-    _ = skill_name
-
+    """Reuse previous gamever vfunc slot; fallback to LLM_DECOMPILE on CEntityInstance_PostDataUpdateDelta wrapper."""
     return await preprocess_common_skill(
         session=session,
         expected_outputs=expected_outputs,
@@ -42,7 +47,10 @@ async def preprocess_skill(
         new_binary_dir=new_binary_dir,
         platform=platform,
         image_base=image_base,
-        inherit_vfuncs=INHERIT_VFUNCS,
+        func_names=TARGET_FUNCTION_NAMES,
+        func_vtable_relations=FUNC_VTABLE_RELATIONS,
+        llm_decompile_specs=LLM_DECOMPILE,
+        llm_config=llm_config,
         generate_yaml_desired_fields=GENERATE_YAML_DESIRED_FIELDS,
         debug=debug,
     )
