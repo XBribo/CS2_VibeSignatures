@@ -2330,6 +2330,18 @@ modules:
         expected_output:
           - CBaseModelEntity_SetRenderAttribute.{platform}.yaml
 
+      - name: find-CEntityInstance_NetworkUpdateState_thunk
+        expected_output:
+          - CEntityInstance_NetworkUpdateState_thunk.{platform}.yaml
+        expected_input:
+          - CBaseModelEntity_SetRenderAttribute.{platform}.yaml
+
+      - name: find-CEntityInstance_NetworkUpdateState
+        expected_output:
+          - CEntityInstance_NetworkUpdateState.{platform}.yaml
+        expected_input:
+          - CEntityInstance_NetworkUpdateState_thunk.{platform}.yaml
+
       - name: find-CTriggerGravity_GetTouchFunction
         expected_output:
           - CTriggerGravity_GetTouchFunction.{platform}.yaml
@@ -4488,6 +4500,11 @@ modules:
         alias:
           - CBaseModelEntity::SetRenderAttribute
 
+      - name: CEntityInstance_NetworkUpdateState_thunk
+        category: func
+        alias:
+          - CEntityInstance::NetworkUpdateState_thunk
+
       - name: CBaseEntity_SetGravityScale
         category: func
         alias:
@@ -5935,6 +5952,11 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::NetworkStateChanged
+
+      - name: CEntityInstance_NetworkUpdateState
+        category: vfunc
+        alias:
+          - CEntityInstance::NetworkUpdateState
 
       - name: CEntityInstance_NetworkStateChangedLog
         category: vfunc
