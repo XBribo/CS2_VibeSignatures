@@ -3578,6 +3578,12 @@ modules:
           - CPointTeleport_Activate.{platform}.yaml
           - CBaseEntity_vtable.{platform}.yaml
 
+      - name: find-CEntityInstance_m_pEntity
+        expected_output:
+          - CEntityInstance_m_pEntity.{platform}.yaml
+        expected_input:
+          - CBaseEntity_Activate.{platform}.yaml
+
       - name: find-CBaseEntity_CollisionRulesChanged
         expected_output:
           - CBaseEntity_CollisionRulesChanged.{platform}.yaml
@@ -4470,6 +4476,16 @@ modules:
 
       - name: CEntityInstance_vtable
         category: vtable
+
+      - name: CEntityInstance
+        category: struct
+
+      - name: CEntityInstance_m_pEntity
+        category: structmember
+        struct: CEntityInstance
+        member: m_pEntity
+        alias:
+          - CEntityInstance::m_pEntity
 
       - name: CBaseEntity_vtable
         category: vtable
