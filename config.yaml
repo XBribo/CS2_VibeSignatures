@@ -987,6 +987,16 @@ modules:
         expected_input:
           - CLoopTypeSimple_FrameUpdate.{platform}.yaml
 
+      - name: find-SetInfo_CommandHandler
+        expected_output:
+          - SetInfo_CommandHandler.{platform}.yaml
+
+      - name: find-INetworkClientService_IsConnected
+        expected_output:
+          - INetworkClientService_IsConnected.{platform}.yaml
+        expected_input:
+          - SetInfo_CommandHandler.{platform}.yaml
+
     symbols:
       - name: CNetworkGameServer_vtable
         category: vtable
@@ -1170,6 +1180,15 @@ modules:
         alias:
           - INetworkClientService::IsActive
         shared: true
+
+      - name: INetworkClientService_IsConnected
+        category: vfunc
+        alias:
+          - INetworkClientService::IsConnected
+        shared: true
+
+      - name: SetInfo_CommandHandler
+        category: func
 
       - name: CNetworkClientService_vtable
         category: vtable
