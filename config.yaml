@@ -3923,6 +3923,10 @@ modules:
         expected_input:
           - CBaseEntity_ReloadPrivateScripts.{platform}.yaml
 
+      - name: find-CEntityInstance_ValidatePrivateScriptScope
+        expected_output:
+          - CEntityInstance_ValidatePrivateScriptScope.{platform}.yaml
+
       - name: find-CEntityInstance_NetworkStateChanged
         expected_output:
           - CEntityInstance_NetworkStateChanged.{platform}.yaml
@@ -6122,6 +6126,11 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::ReloadPrivateScripts
+
+      - name: CEntityInstance_ValidatePrivateScriptScope
+        category: func
+        alias:
+          - CEntityInstance::ValidatePrivateScriptScope
 
       - name: CEntityInstance_NetworkStateChanged
         category: vfunc
