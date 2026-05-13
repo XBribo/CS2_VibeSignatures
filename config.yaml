@@ -3585,6 +3585,13 @@ modules:
         expected_input:
           - CEntityInstance_ValidatePrivateScriptScope.{platform}.yaml
 
+      - name: find-CEntityInstance_m_CScriptComponent-AND-CEntityInstance_m_pKeyValues
+        expected_output:
+          - CEntityInstance_m_CScriptComponent.{platform}.yaml
+          - CEntityInstance_m_pKeyValues.{platform}.yaml
+        expected_input:
+          - CEntityInstance_UpdateOnRemove.{platform}.yaml
+
       - name: find-CBaseEntity_CollisionRulesChanged
         expected_output:
           - CBaseEntity_CollisionRulesChanged.{platform}.yaml
@@ -4494,6 +4501,20 @@ modules:
         member: m_hPrivateScope
         alias:
           - CEntityInstance::m_hPrivateScope
+
+      - name: CEntityInstance_m_CScriptComponent
+        category: structmember
+        struct: CEntityInstance
+        member: m_CScriptComponent
+        alias:
+          - CEntityInstance::m_CScriptComponent
+
+      - name: CEntityInstance_m_pKeyValues
+        category: structmember
+        struct: CEntityInstance
+        member: m_pKeyValues
+        alias:
+          - CEntityInstance::m_pKeyValues
 
       - name: CBaseEntity_vtable
         category: vtable
