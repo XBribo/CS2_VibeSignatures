@@ -2588,6 +2588,14 @@ modules:
         expected_input:
           - CEntityInstance_AcceptInput.{platform}.yaml
 
+      - name: find-CEntityInstance_ScriptAcceptInput-windows
+        platform: windows
+        expected_output:
+          - CEntityInstance_ScriptAcceptInput.{platform}.yaml
+        expected_input:
+          - CEntityIdentity_AcceptInput.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
+
       - name: find-CEntityIdentity_SetEntityName
         expected_output:
           - CEntityIdentity_SetEntityName.{platform}.yaml
@@ -4860,6 +4868,11 @@ modules:
         category: func
         alias:
           - CEntityIdentity::AcceptInput
+
+      - name: CEntityInstance_ScriptAcceptInput
+        category: vfunc
+        alias:
+          - CEntityInstance::ScriptAcceptInput
 
       - name: CEntityIdentity_SetEntityName
         category: func
