@@ -1,0 +1,199 @@
+func_name: CBaseEntity_ReloadPrivateScripts
+func_va: '0x18120dbd0'
+disasm_code: |-
+  .text:000000018120DBD0                 push    rbp
+  .text:000000018120DBD2                 push    rdi
+  .text:000000018120DBD3                 mov     rbp, rsp
+  .text:000000018120DBD6                 sub     rsp, 68h
+  .text:000000018120DBDA                 mov     rdx, [rcx+8] ; 0x8 = 8 = CEntityInstance::m_iszPrivateVScripts (structmember, struct=CEntityInstance, member=m_iszPrivateVScripts)
+  .text:000000018120DBDE                 mov     rdi, rcx
+  .text:000000018120DBE1                 test    rdx, rdx
+  .text:000000018120DBE4                 jz      loc_18120DD8C
+  .text:000000018120DBEA                 lea     rax, asc_18159BEAC; " "
+  .text:000000018120DBF1                 mov     [rsp+68h+arg_18], r14
+  .text:000000018120DBF9                 mov     [rsp+68h+var_8], r15
+  .text:000000018120DBFE                 lea     r9, [rbp+arg_0]
+  .text:000000018120DC02                 xor     r15d, r15d
+  .text:000000018120DC05                 mov     [rbp+arg_0], rax
+  .text:000000018120DC09                 mov     [rsp+68h+var_40], r15b
+  .text:000000018120DC0E                 lea     rcx, [rbp+var_38]
+  .text:000000018120DC12                 mov     r8d, 0FFFFFFFFh
+  .text:000000018120DC18                 mov     dword ptr [rsp+68h+var_48], 1
+  .text:000000018120DC20                 mov     [rbp+var_30], r15
+  .text:000000018120DC24                 mov     [rbp+var_28], r15
+  .text:000000018120DC28                 mov     [rbp+var_38], r15d
+  .text:000000018120DC2C                 mov     [rbp+var_20], r15
+  .text:000000018120DC30                 mov     [rbp+var_18], r15d
+  .text:000000018120DC34                 call    cs:?Split@CSplitString@@AEAAXPEBDHPEAPEBDH_N@Z; CSplitString::Split(char const *,int,char const * *,int,bool)
+  .text:000000018120DC3A                 mov     r14d, r15d
+  .text:000000018120DC3D                 cmp     [rbp+var_38], r15d
+  .text:000000018120DC41                 jle     loc_18120DCEF
+  .text:000000018120DC47                 mov     [rsp+68h+arg_8], rbx
+  .text:000000018120DC4F                 mov     [rsp+68h+arg_10], rsi
+  .text:000000018120DC57                 mov     esi, r15d
+  .text:000000018120DC5A                 nop     word ptr [rax+rax+00h]
+  .text:000000018120DC60                 mov     ecx, cs:dword_1821189CC
+  .text:000000018120DC66                 mov     edx, 1
+  .text:000000018120DC6B                 call    cs:LoggingSystem_IsChannelEnabled
+  .text:000000018120DC71                 test    al, al
+  .text:000000018120DC73                 jz      short loc_18120DCA6
+  .text:000000018120DC75                 mov     rax, [rbp+var_30]
+  .text:000000018120DC79                 mov     rcx, [rdi+10h]
+  .text:000000018120DC7D                 mov     rbx, [rsi+rax]
+  .text:000000018120DC81                 call    sub_18120FDE0
+  .text:000000018120DC86                 mov     ecx, cs:dword_1821189CC
+  .text:000000018120DC8C                 lea     r8, aSExecutingScri; "%s executing script: %s\n"
+  .text:000000018120DC93                 mov     r9, rax
+  .text:000000018120DC96                 mov     [rsp+68h+var_48], rbx
+  .text:000000018120DC9B                 mov     edx, 1
+  .text:000000018120DCA0                 call    cs:LoggingSystem_Log
+  .text:000000018120DCA6                 mov     rax, [rbp+var_30]
+  .text:000000018120DCAA                 mov     rbx, [rsi+rax]
+  .text:000000018120DCAE                 cmp     [rdi+18h], r15
+  .text:000000018120DCB2                 jnz     short loc_18120DCBC
+  .text:000000018120DCB4                 mov     rcx, rdi
+  .text:000000018120DCB7                 call    CEntityInstance_ValidatePrivateScriptScope
+  .text:000000018120DCBC                 mov     r8, [rdi+18h]
+  .text:000000018120DCC0                 lea     rcx, qword_1820B1900
+  .text:000000018120DCC7                 mov     r9b, 1
+  .text:000000018120DCCA                 mov     rdx, rbx
+  .text:000000018120DCCD                 call    sub_18121B640
+  .text:000000018120DCD2                 inc     r14d
+  .text:000000018120DCD5                 add     rsi, 8
+  .text:000000018120DCD9                 cmp     r14d, [rbp+var_38]
+  .text:000000018120DCDD                 jl      short loc_18120DC60
+  .text:000000018120DCDF                 mov     rsi, [rsp+68h+arg_10]
+  .text:000000018120DCE7                 mov     rbx, [rsp+68h+arg_8]
+  .text:000000018120DCEF                 mov     rcx, [rbp+var_20]
+  .text:000000018120DCF3                 call    sub_180E772F0
+  .text:000000018120DCF8                 mov     eax, dword ptr [rbp+var_28+4]
+  .text:000000018120DCFB                 mov     r14, [rsp+68h+arg_18]
+  .text:000000018120DD03                 mov     rdx, [rbp+var_30]
+  .text:000000018120DD07                 mov     [rbp+var_20], r15
+  .text:000000018120DD0B                 mov     [rbp+var_18], r15d
+  .text:000000018120DD0F                 mov     [rbp+var_38], r15d
+  .text:000000018120DD13                 test    eax, 0C0000000h
+  .text:000000018120DD18                 jnz     short loc_18120DD3D
+  .text:000000018120DD1A                 test    rdx, rdx
+  .text:000000018120DD1D                 jz      short loc_18120DD39
+  .text:000000018120DD1F                 mov     rax, cs:g_pMemAlloc
+  .text:000000018120DD26                 mov     rcx, [rax]
+  .text:000000018120DD29                 mov     rax, [rcx]
+  .text:000000018120DD2C                 call    qword ptr [rax+18h]
+  .text:000000018120DD2F                 mov     eax, dword ptr [rbp+var_28+4]
+  .text:000000018120DD32                 mov     rdx, r15
+  .text:000000018120DD35                 mov     [rbp+var_30], rdx
+  .text:000000018120DD39                 mov     dword ptr [rbp+var_28], r15d
+  .text:000000018120DD3D                 mov     [rbp+var_38], r15d
+  .text:000000018120DD41                 test    eax, 0C0000000h
+  .text:000000018120DD46                 jnz     short loc_18120DD6B
+  .text:000000018120DD48                 test    rdx, rdx
+  .text:000000018120DD4B                 jz      short loc_18120DD67
+  .text:000000018120DD4D                 mov     rax, cs:g_pMemAlloc
+  .text:000000018120DD54                 mov     rcx, [rax]
+  .text:000000018120DD57                 mov     rax, [rcx]
+  .text:000000018120DD5A                 call    qword ptr [rax+18h]
+  .text:000000018120DD5D                 mov     eax, dword ptr [rbp+var_28+4]
+  .text:000000018120DD60                 mov     rdx, r15
+  .text:000000018120DD63                 mov     [rbp+var_30], rdx
+  .text:000000018120DD67                 mov     dword ptr [rbp+var_28], r15d
+  .text:000000018120DD6B                 mov     r15, [rsp+68h+var_8]
+  .text:000000018120DD70                 test    eax, 0C0000000h
+  .text:000000018120DD75                 jnz     short loc_18120DD8C
+  .text:000000018120DD77                 test    rdx, rdx
+  .text:000000018120DD7A                 jz      short loc_18120DD8C
+  .text:000000018120DD7C                 mov     rax, cs:g_pMemAlloc
+  .text:000000018120DD83                 mov     rcx, [rax]
+  .text:000000018120DD86                 mov     rax, [rcx]
+  .text:000000018120DD89                 call    qword ptr [rax+18h]
+  .text:000000018120DD8C                 add     rsp, 68h
+  .text:000000018120DD90                 pop     rdi
+  .text:000000018120DD91                 pop     rbp
+  .text:000000018120DD92                 retn
+procedure: |-
+  void __fastcall CBaseEntity_ReloadPrivateScripts(_QWORD *a1)
+  {
+    const char *v1; // rdx
+    int v3; // r14d
+    __int64 v4; // rsi
+    __int64 v5; // r9
+    const char *v6; // rbx
+    const char *v7; // rax
+    __int64 v8; // rbx
+    int v9; // eax
+    __int64 v10; // rdx
+    int v11; // [rsp+30h] [rbp-38h] BYREF
+    __int64 v12; // [rsp+38h] [rbp-30h]
+    __int64 v13; // [rsp+40h] [rbp-28h]
+    __int64 v14; // [rsp+48h] [rbp-20h]
+    int v15; // [rsp+50h] [rbp-18h]
+    const char *v16; // [rsp+80h] [rbp+18h] BYREF
+
+    v1 = (const char *)a1[1];                     // 0x8 = 8 = CEntityInstance::m_iszPrivateVScripts (structmember, struct=CEntityInstance, member=m_iszPrivateVScripts)
+    if ( v1 )
+    {
+      v16 = " ";
+      v12 = 0;
+      v13 = 0;
+      v11 = 0;
+      v14 = 0;
+      v15 = 0;
+      CSplitString::Split((CSplitString *)&v11, v1, -1, &v16, 1, 0);
+      v3 = 0;
+      if ( v11 > 0 )
+      {
+        v4 = 0;
+        do
+        {
+          if ( (unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1821189CC, 1) )
+          {
+            v6 = *(const char **)(v4 + v12);
+            v7 = (const char *)sub_18120FDE0(a1[2]);
+            LoggingSystem_Log((unsigned int)dword_1821189CC, 1, "%s executing script: %s\n", v7, v6);
+          }
+          v8 = *(_QWORD *)(v4 + v12);
+          if ( !a1[3] )
+            CEntityInstance_ValidatePrivateScriptScope((__int64)a1);
+          LOBYTE(v5) = 1;
+          sub_18121B640(&qword_1820B1900, v8, a1[3], v5);
+          ++v3;
+          v4 += 8;
+        }
+        while ( v3 < v11 );
+      }
+      sub_180E772F0(v14);
+      v9 = HIDWORD(v13);
+      v10 = v12;
+      v14 = 0;
+      v15 = 0;
+      v11 = 0;
+      if ( (v13 & 0xC000000000000000uLL) == 0 )
+      {
+        if ( v12 )
+        {
+          (*(void (__fastcall **)(_QWORD, __int64))(*g_pMemAlloc + 24LL))(g_pMemAlloc, v12);
+          v9 = HIDWORD(v13);
+          v10 = 0;
+          v12 = 0;
+        }
+        LODWORD(v13) = 0;
+      }
+      v11 = 0;
+      if ( (v9 & 0xC0000000) == 0 )
+      {
+        if ( v10 )
+        {
+          (*(void (__fastcall **)(_QWORD))(*g_pMemAlloc + 24LL))(g_pMemAlloc);
+          v9 = HIDWORD(v13);
+          v10 = 0;
+          v12 = 0;
+        }
+        LODWORD(v13) = 0;
+      }
+      if ( (v9 & 0xC0000000) == 0 )
+      {
+        if ( v10 )
+          (*(void (__fastcall **)(_QWORD))(*g_pMemAlloc + 24LL))(g_pMemAlloc);
+      }
+    }
+  }

@@ -3960,6 +3960,12 @@ modules:
         expected_input:
           - CBaseEntity_ReloadPrivateScripts.{platform}.yaml
 
+      - name: find-CEntityInstance_m_iszPrivateVScripts
+        expected_output:
+          - CEntityInstance_m_iszPrivateVScripts.{platform}.yaml
+        expected_input:
+          - CBaseEntity_ReloadPrivateScripts.{platform}.yaml
+
       - name: find-CEntityInstance_ValidatePrivateScriptScope
         expected_output:
           - CEntityInstance_ValidatePrivateScriptScope.{platform}.yaml
@@ -4538,6 +4544,13 @@ modules:
         member: m_pKeyValues
         alias:
           - CEntityInstance::m_pKeyValues
+
+      - name: CEntityInstance_m_iszPrivateVScripts
+        category: structmember
+        struct: CEntityInstance
+        member: m_iszPrivateVScripts
+        alias:
+          - CEntityInstance::m_iszPrivateVScripts
 
       - name: CBaseEntity_vtable
         category: vtable
