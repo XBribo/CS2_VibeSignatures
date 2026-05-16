@@ -3341,6 +3341,39 @@ modules:
         expected_output:
           - CCSBot_Upkeep.{platform}.yaml
 
+      - name: find-CCSBot_SetState
+        expected_output:
+          - CCSBot_SetState.{platform}.yaml
+
+      - name: find-CCSBot_UpdatePathMovement
+        expected_output:
+          - CCSBot_UpdatePathMovement.{platform}.yaml
+
+      - name: find-CCSBot_PrintIfWatched
+        expected_output:
+          - CCSBot_PrintIfWatched.{platform}.yaml
+
+      - name: find-HideState_vtable
+        expected_output:
+          - HideState_vtable.{platform}.yaml
+
+      - name: find-HideState_OnUpdate
+        expected_output:
+          - HideState_OnUpdate.{platform}.yaml
+        expected_input:
+          - HideState_vtable.{platform}.yaml
+
+      - name: find-CCSBot_Attack-AND-CCSBot_MoveTo-AND-CCSBot_InhibitLookAround-AND-CCSBot_SetDisposition-AND-CCSBot_Idle-AND-CCSBot_ComputePath
+        expected_output:
+          - CCSBot_Attack.{platform}.yaml
+          - CCSBot_MoveTo.{platform}.yaml
+          - CCSBot_InhibitLookAround.{platform}.yaml
+          - CCSBot_SetDisposition.{platform}.yaml
+          - CCSBot_Idle.{platform}.yaml
+          - CCSBot_ComputePath.{platform}.yaml
+        expected_input:
+          - HideState_OnUpdate.{platform}.yaml
+
       - name: find-CBaseEntity_IsAlive-AND-CBaseEntity_GetEyePosition
         expected_output:
           - CBaseEntity_IsAlive.{platform}.yaml
@@ -5589,6 +5622,59 @@ modules:
         category: func
         alias:
           - CCSBot::Upkeep
+
+      - name: CCSBot_SetState
+        category: func
+        alias:
+          - CCSBot::SetState
+
+      - name: CCSBot_UpdatePathMovement
+        category: func
+        alias:
+          - CCSBot::UpdatePathMovement
+
+      - name: CCSBot_PrintIfWatched
+        category: func
+        alias:
+          - CCSBot::PrintIfWatched
+
+      - name: HideState_vtable
+        category: vtable
+
+      - name: HideState_OnUpdate
+        category: vfunc
+        alias:
+          - HideState::OnUpdate
+
+      - name: CCSBot_Attack
+        category: func
+        alias:
+          - CCSBot::Attack
+
+      - name: CCSBot_MoveTo
+        category: func
+        alias:
+          - CCSBot::MoveTo
+
+      - name: CCSBot_InhibitLookAround
+        category: func
+        alias:
+          - CCSBot::InhibitLookAround
+
+      - name: CCSBot_SetDisposition
+        category: func
+        alias:
+          - CCSBot::SetDisposition
+
+      - name: CCSBot_Idle
+        category: func
+        alias:
+          - CCSBot::Idle
+
+      - name: CCSBot_ComputePath
+        category: func
+        alias:
+          - CCSBot::ComputePath
 
       - name: CBaseEntity_IsAlive
         category: vfunc
