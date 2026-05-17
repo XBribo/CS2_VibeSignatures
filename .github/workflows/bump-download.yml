@@ -1,0 +1,47 @@
+name: Bump Download
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-download-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    if: github.repository == 'HLND2T/CS2_VibeSignatures' || github.repository == 'hzqst/CS2_VibeSignatures'
+    environment: win64
+    runs-on: [self-hosted, windows, x64]
+    env:
+      STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+      STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          submodules: true
+
+      - name: Configure git
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump download config
+        id: bump
+        shell: pwsh
+        run: uv run bump_download.py -config download.yaml -depotdir cs2_depot -username "$env:STEAM_USERNAME" -password "$env:STEAM_PASSWORD" -remember-password -github-output "$env:GITHUB_OUTPUT"
+
+      - name: Push bump commit and tag
+        if: steps.bump.outputs.updated == 'true'
+        shell: pwsh
+        run: |
+          git push origin HEAD:main
+          git push origin "${{ steps.bump.outputs.tag }}"
