@@ -3348,6 +3348,17 @@ modules:
         expected_output:
           - CCSPlayer_WeaponServices_HandleDropWeapon.{platform}.yaml
 
+      - name: find-CCSPlayer_UseServices_BumpWeapon
+        expected_output:
+          - CCSPlayer_UseServices_BumpWeapon.{platform}.yaml
+
+      - name: find-CCSPlayerPawn_HandleDropWeapon
+        expected_output:
+          - CCSPlayerPawn_HandleDropWeapon.{platform}.yaml
+        expected_input:
+          - CCSPlayer_WeaponServices_HandleDropWeapon.{platform}.yaml
+          - CCSPlayer_UseServices_BumpWeapon.{platform}.yaml
+
       - name: find-IGameSystem_InitAllSystems
         expected_output:
           - IGameSystem_InitAllSystems.{platform}.yaml
@@ -5635,6 +5646,16 @@ modules:
         category: func
         alias:
           - CCSPlayer_WeaponServices::HandleDropWeapon
+
+      - name: CCSPlayer_UseServices_BumpWeapon
+        category: func
+        alias:
+          - CCSPlayer_UseServices::BumpWeapon
+
+      - name: CCSPlayerPawn_HandleDropWeapon
+        category: func
+        alias:
+          - CCSPlayerPawn::HandleDropWeapon
 
       - name: IGameSystem_InitAllSystems
         category: func
