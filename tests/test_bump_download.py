@@ -389,6 +389,98 @@ class TestBumpDownload(unittest.TestCase):
         self.assertTrue(plan.updated)
         self.assertEqual("14161b", plan.tag)
 
+    def test_append_download_entry_preserves_existing_inline_comment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config = Path(tmp) / "download.yaml"
+            config.write_text(
+                "\n".join(
+                    [
+                        "downloads:",
+                        '  - tag: "14160" # keep me',
+                        "    name: 1.41.6.0",
+                        "    manifests:",
+                        '      "2347771": "1"',
+                        '      "2347773": "2"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            data, downloads = bump_download.load_config(config)
+            bump_download.append_download_entry(
+                downloads,
+                bump_download.BumpPlan(
+                    updated=True,
+                    tag="14161",
+                    patch_version="1.41.6.1",
+                    manifests={"2347771": "11", "2347773": "22"},
+                ),
+            )
+            bump_download.save_config(config, data)
+
+            text = config.read_text(encoding="utf-8")
+
+        self.assertIn("# keep me", text)
+        self.assertIn('tag: "14161"', text)
+        self.assertIn("name: 1.41.6.1", text)
+        self.assertIn('"2347771": "11"', text)
+        self.assertIn('"2347773": "22"', text)
+
+    def test_write_github_output_for_update_and_no_update(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "out.txt"
+            bump_download.write_github_output(output, updated=True, tag="14161")
+            self.assertEqual(
+                "updated=true\ntag=14161\n",
+                output.read_text(encoding="utf-8"),
+            )
+
+            bump_download.write_github_output(output, updated=False, tag=None)
+            self.assertEqual("updated=false\n", output.read_text(encoding="utf-8"))
+
+    def test_load_config_wraps_invalid_yaml(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config = Path(tmp) / "download.yaml"
+            config.write_text("downloads:\n  - tag: [broken\n", encoding="utf-8")
+
+            with self.assertRaises(bump_download.BumpError):
+                bump_download.load_config(config)
+
+    def test_load_config_rejects_duplicate_tag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config = Path(tmp) / "download.yaml"
+            config.write_text(
+                "\n".join(
+                    [
+                        "downloads:",
+                        '  - tag: "14161"',
+                        "    name: 1.41.6.1",
+                        "    manifests:",
+                        '      "2347771": "11"',
+                        '      "2347773": "22"',
+                        '  - tag: "14161"',
+                        "    name: 1.41.6.1",
+                        "    manifests:",
+                        '      "2347771": "33"',
+                        '      "2347773": "44"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaises(bump_download.BumpError):
+                bump_download.load_config(config)
+
+    def test_load_config_rejects_missing_downloads_list(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config = Path(tmp) / "download.yaml"
+            config.write_text("not_downloads: []\n", encoding="utf-8")
+
+            with self.assertRaises(bump_download.BumpError):
+                bump_download.load_config(config)
+
 
 if __name__ == "__main__":
     unittest.main()

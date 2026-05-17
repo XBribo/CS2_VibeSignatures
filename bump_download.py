@@ -228,6 +228,80 @@ class BumpPlan:
         object.__setattr__(self, "manifests", dict(self.manifests))
 
 
+def _yaml() -> YAML:
+    yaml = YAML()
+    yaml.preserve_quotes = True
+    yaml.indent(mapping=2, sequence=4, offset=2)
+    return yaml
+
+
+def load_config(config_path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Load download.yaml while preserving comments for later writeback."""
+    if not config_path.is_file():
+        raise BumpError(f"Config file not found: {config_path}")
+    try:
+        with config_path.open("r", encoding="utf-8") as handle:
+            data = _yaml().load(handle) or {}
+    except YAMLError as exc:
+        raise BumpError(f"Invalid YAML in config file: {config_path}") from exc
+    except OSError as exc:
+        raise BumpError(f"Failed to read config file: {config_path}") from exc
+
+    if not isinstance(data, dict):
+        raise BumpError("Config root must be a mapping/object")
+    downloads = data.get("downloads")
+    if not isinstance(downloads, list):
+        raise BumpError("Config field 'downloads' must be a list")
+
+    seen_tags: set[str] = set()
+    for index, entry in enumerate(downloads):
+        if not isinstance(entry, dict):
+            raise BumpError(f"downloads[{index}] must be a mapping/object")
+        tag = entry.get("tag")
+        if not tag:
+            raise BumpError(f"downloads[{index}] missing tag")
+        if str(tag) in seen_tags:
+            raise BumpError(f"Duplicate tag in downloads config: {tag}")
+        seen_tags.add(str(tag))
+        if "name" not in entry:
+            raise BumpError(f"downloads[{index}] missing name")
+        if not isinstance(entry.get("manifests"), dict):
+            raise BumpError(f"downloads[{index}] missing manifests mapping")
+    return data, downloads
+
+
+def append_download_entry(downloads: list[dict[str, Any]], plan: BumpPlan) -> None:
+    """Append a default-branch download entry."""
+    entry = CommentedMap()
+    entry["tag"] = DoubleQuotedScalarString(plan.tag)
+    entry["name"] = plan.patch_version
+    manifests = CommentedMap()
+    manifests[DoubleQuotedScalarString("2347771")] = DoubleQuotedScalarString(
+        str(plan.manifests["2347771"])
+    )
+    manifests[DoubleQuotedScalarString("2347773")] = DoubleQuotedScalarString(
+        str(plan.manifests["2347773"])
+    )
+    entry["manifests"] = manifests
+    downloads.append(entry)
+
+
+def save_config(config_path: Path, data: dict[str, Any]) -> None:
+    """Save download.yaml with ruamel comment preservation."""
+    with config_path.open("w", encoding="utf-8") as handle:
+        _yaml().dump(data, handle)
+
+
+def write_github_output(output_path: Path | None, updated: bool, tag: str | None) -> None:
+    """Write GitHub Actions step outputs when requested."""
+    if output_path is None:
+        return
+    lines = [f"updated={'true' if updated else 'false'}"]
+    if updated and tag:
+        lines.append(f"tag={tag}")
+    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _default_branch_entries(
     downloads: list[dict[str, Any]], patch_version: str
 ) -> list[dict[str, Any]]:
