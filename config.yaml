@@ -2609,6 +2609,10 @@ modules:
         expected_output:
           - CBaseModelEntity_SetRenderAttribute.{platform}.yaml
 
+      - name: find-CBaseEntity_GetScriptDescInternal
+        expected_output:
+          - CBaseEntity_GetScriptDescInternal.{platform}.yaml
+
       - name: find-CBaseModelEntity_GetScriptDescInternal
         expected_output:
           - CBaseModelEntity_GetScriptDescInternal.{platform}.yaml
@@ -5036,6 +5040,11 @@ modules:
         category: func
         alias:
           - CBaseModelEntity::SetRenderAttribute
+
+      - name: CBaseEntity_GetScriptDescInternal
+        category: func
+        alias:
+          - CBaseEntity::GetScriptDescInternal
 
       - name: CBaseModelEntity_GetScriptDescInternal
         category: func
