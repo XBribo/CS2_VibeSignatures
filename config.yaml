@@ -2027,6 +2027,27 @@ modules:
         expected_input:
           - ClientModeCSNormal_Update.{platform}.yaml
 
+      - name: find-CEntitySystem_ctor
+        expected_output:
+          - CEntitySystem_ctor.{platform}.yaml
+
+      - name: find-CEntitySystem_CreateEntitySystem
+        expected_output:
+          - CEntitySystem_CreateEntitySystem.{platform}.yaml
+        expected_input:
+          - CEntitySystem_ctor.{platform}.yaml
+          - CEntitySystem_Init.{platform}.yaml
+
+      - name: find-g_pEntitySystem
+        expected_output:
+          - g_pEntitySystem.{platform}.yaml
+        expected_input:
+          - CEntitySystem_CreateEntitySystem.{platform}.yaml
+
+      - name: find-CEntitySystem_Init
+        expected_output:
+          - CEntitySystem_Init.{platform}.yaml
+
     symbols:
       - name: CLoopModeGame_RegisterEventMapInternal
         category: func
@@ -2364,6 +2385,22 @@ modules:
 
       - name: g_CSGOInput
         category: gv
+
+      - name: CEntitySystem_ctor
+        category: func
+        alias:
+          - CEntitySystem::CEntitySystem
+
+      - name: CEntitySystem_CreateEntitySystem
+        category: func
+
+      - name: g_pEntitySystem
+        category: gv
+
+      - name: CEntitySystem_Init
+        category: func
+        alias:
+          - CEntitySystem::Init
 
   - name: server
     path_windows: game/csgo/bin/win64/server.dll
@@ -4305,6 +4342,23 @@ modules:
       - name: find-ShowHudHint
         expected_output:
           - ShowHudHint.{platform}.yaml
+
+      - name: find-CEntitySystem_ctor
+        expected_output:
+          - CEntitySystem_ctor.{platform}.yaml
+
+      - name: find-CEntitySystem_CreateEntitySystem
+        expected_output:
+          - CEntitySystem_CreateEntitySystem.{platform}.yaml
+        expected_input:
+          - CEntitySystem_ctor.{platform}.yaml
+          - CEntitySystem_Init.{platform}.yaml
+
+      - name: find-g_pEntitySystem
+        expected_output:
+          - g_pEntitySystem.{platform}.yaml
+        expected_input:
+          - CEntitySystem_CreateEntitySystem.{platform}.yaml
 
       - name: find-CEntitySystem_Init
         expected_output:
@@ -7088,6 +7142,17 @@ modules:
         category: func
         alias:
           - UTIL_GetPlayerControllerForEntity
+
+      - name: CEntitySystem_ctor
+        category: func
+        alias:
+          - CEntitySystem::CEntitySystem
+
+      - name: CEntitySystem_CreateEntitySystem
+        category: func
+
+      - name: g_pEntitySystem
+        category: gv
 
       - name: CEntitySystem_Init
         category: func
