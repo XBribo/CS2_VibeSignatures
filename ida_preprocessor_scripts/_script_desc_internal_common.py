@@ -27,14 +27,34 @@ _SUPPORTED_FIELDS = {
 }
 
 
-_SCRIPT_DESC_INTERNAL_PY_EVAL = r'''import idaapi, ida_hexrays, ida_lines, idc, json, re
+_SCRIPT_DESC_INTERNAL_PY_EVAL = r'''import idaapi, idautils, idc, json, re
+try:
+    import ida_hexrays
+    import ida_lines
+except Exception:
+    ida_hexrays = None
+    ida_lines = None
+
 func_addr = __FUNC_ADDR__
-result_obj = None
+script_names = set(__SCRIPT_NAMES__)
+result_obj = {"entries": []}
+
+def _script_allowed(script_name):
+    return not script_names or script_name in script_names
+
+def _func_start(ea):
+    if not ea:
+        return None
+    func = idaapi.get_func(ea)
+    if not func:
+        idaapi.add_func(ea)
+        func = idaapi.get_func(ea)
+    return int(func.start_ea) if func else None
 
 def _plain_line(line):
     text = getattr(line, "line", str(line))
     try:
-        return ida_lines.tag_remove(text)
+        return ida_lines.tag_remove(text) if ida_lines else str(text)
     except Exception:
         return str(text)
 
@@ -54,7 +74,7 @@ def _strip_casts(expr):
         if "*" not in cast_text and "__int" not in cast_text and "void" not in cast_text:
             break
         text = text[close + 1:].strip()
-    return text.strip()
+    return text.strip().lstrip("&").strip()
 
 def _resolve_func_ea(expr):
     name = _strip_casts(expr)
@@ -64,32 +84,15 @@ def _resolve_func_ea(expr):
         ea = idc.get_name_ea_simple(name)
     if ea == idaapi.BADADDR:
         return None
-    func = idaapi.get_func(ea)
-    if not func:
-        idaapi.add_func(ea)
-        func = idaapi.get_func(ea)
-    return func.start_ea if func else ea
+    start = _func_start(ea)
+    return start if start is not None else ea
 
-direct_name_re = re.compile(
-    r'\*\(_QWORD\s*\*\)\((?P<desc>[^;]+?)\s*\+\s*(?:8|8LL|0x8)\)'
-    r'\s*=\s*"(?P<script>(?:\\.|[^"\\])*)"\s*;'
-)
-m128_name_re = re.compile(
-    r'\*\(__m128i\s*\*\)\s*(?P<desc>[A-Za-z_]\w*)\s*=\s*'
-    r'_mm_insert_epi64\([^;]*"(?P<script>(?:\\.|[^"\\])*)"\s*,\s*1\)\s*;'
-)
-func_re = re.compile(
-    r'\*\(_QWORD\s*\*\)\((?P<desc>[^;]+?)\s*\+\s*(?:64|64LL|0x40|40h)\)'
-    r'\s*=\s*(?P<rhs>[^;]+);'
-)
-
-def _set_field(states, desc, key, value, line_no):
+def _set_decompiled_field(states, desc, key, value):
     state = states.setdefault(desc, {"desc_expr": desc})
     state[key] = value
-    state[key + "_line"] = line_no
     return state
 
-def _append_if_complete(state, entries, emitted):
+def _append_decompiled_if_complete(state, entries, emitted):
     desc = state.get("desc_expr")
     if desc in emitted:
         return
@@ -101,10 +104,223 @@ def _append_if_complete(state, entries, emitted):
         "func_va": state["func_va"],
         "func_expr": state.get("func_expr", ""),
         "desc_expr": desc,
-        "script_line": state.get("script_name_line", -1),
-        "func_line": state.get("func_va_line", -1),
         "order": len(entries),
     })
+
+def _collect_decompiled_entries(func):
+    if ida_hexrays is None:
+        return [], "unavailable", []
+    try:
+        cfunc = ida_hexrays.decompile(func.start_ea)
+    except Exception as exc:
+        return [], "error: " + str(exc), []
+    if not cfunc:
+        return [], "empty", []
+    text = "\n".join(_plain_line(item) for item in cfunc.get_pseudocode())
+    script_lines = [
+        line.strip()
+        for line in text.splitlines()
+        if "Script" in line or "+ 64" in line or "+ 8" in line or "m128i_i64[0]" in line
+    ][:120]
+    direct_name_re = re.compile(
+        r'\*\(_QWORD\s*\*\)\((?P<desc>[^;]+?)\s*\+\s*(?:8|8LL|0x8)\)'
+        r'\s*=\s*"(?P<script>(?:\\.|[^"\\])*)"\s*;',
+        re.S,
+    )
+    m128_name_re = re.compile(
+        r'\*\(__m128i\s*\*\)\s*(?P<desc>[A-Za-z_]\w*)\s*=\s*'
+        r'[^;]*?"(?P<script>(?:\\.|[^"\\])*)"[^;]*?;',
+        re.S,
+    )
+    m128_bare_name_re = re.compile(
+        r'\*(?P<desc>[A-Za-z_]\w*)\s*=\s*'
+        r'[^;]*?"(?P<script>(?:\\.|[^"\\])*)"[^;]*?;',
+        re.S,
+    )
+    m128_temp_re = re.compile(
+        r'(?P<temp>[A-Za-z_]\w*)\s*=\s*[^;]*?"(?P<script>(?:\\.|[^"\\])*)"[^;]*?;',
+        re.S,
+    )
+    m128_temp_store_re = re.compile(
+        r'\*\((?:__m128i|_OWORD)\s*\*\)\s*(?P<desc>[^;]+?)\s*='
+        r'\s*(?P<temp>[A-Za-z_]\w*)\s*;',
+        re.S,
+    )
+    func_re = re.compile(
+        r'\*\(_QWORD\s*\*\)\((?P<desc>[^;]+?)\s*\+\s*(?:64|64LL|0x40|40h)\)'
+        r'\s*=\s*(?P<rhs>[^;]+);',
+        re.S,
+    )
+    typed_func_re = re.compile(
+        r'(?P<desc>[A-Za-z_]\w*)\s*\[\s*4\s*\]\.m128i_\w+\s*\[\s*0\s*\]'
+        r'\s*=\s*(?P<rhs>[^;]+);',
+        re.S,
+    )
+    states = {}
+    entries = []
+    emitted = set()
+    temp_scripts = {}
+    for match in direct_name_re.finditer(text):
+        script_name = match.group("script")
+        if not _script_allowed(script_name):
+            continue
+        desc = _normalize_desc(match.group("desc"))
+        state = _set_decompiled_field(states, desc, "script_name", script_name)
+        _append_decompiled_if_complete(state, entries, emitted)
+    for name_re in (m128_name_re, m128_bare_name_re):
+        for match in name_re.finditer(text):
+            script_name = match.group("script")
+            if not _script_allowed(script_name):
+                continue
+            desc = _normalize_desc(match.group("desc"))
+            state = _set_decompiled_field(states, desc, "script_name", script_name)
+            _append_decompiled_if_complete(state, entries, emitted)
+    for match in m128_temp_re.finditer(text):
+        script_name = match.group("script")
+        if _script_allowed(script_name):
+            temp_scripts[match.group("temp")] = script_name
+    for match in m128_temp_store_re.finditer(text):
+        script_name = temp_scripts.get(match.group("temp"))
+        if not script_name:
+            continue
+        desc = _normalize_desc(match.group("desc"))
+        state = _set_decompiled_field(states, desc, "script_name", script_name)
+        _append_decompiled_if_complete(state, entries, emitted)
+    for current_func_re in (func_re, typed_func_re):
+        for match in current_func_re.finditer(text):
+            target_ea = _resolve_func_ea(match.group("rhs"))
+            if target_ea is None:
+                continue
+            desc = _normalize_desc(match.group("desc"))
+            state = _set_decompiled_field(states, desc, "func_va", hex(target_ea))
+            state["func_expr"] = match.group("rhs").strip()
+            _append_decompiled_if_complete(state, entries, emitted)
+    return entries, "ok", script_lines
+
+def _operand_text(ea, index):
+    try:
+        return idc.print_operand(ea, index).lower()
+    except Exception:
+        return ""
+
+def _is_xmm_operand(ea, index):
+    return _operand_text(ea, index).startswith("xmm")
+
+def _read_string(ea):
+    if not ea:
+        return None
+    try:
+        raw = idc.get_strlit_contents(ea)
+    except Exception:
+        raw = None
+    if raw is None:
+        return None
+    if isinstance(raw, bytes):
+        return raw.decode("utf-8", errors="ignore")
+    return str(raw)
+
+def _value_from_operand(ea, op_index, op, reg_values):
+    if op.type == idaapi.o_reg:
+        return reg_values.get(op.reg)
+    value = idc.get_operand_value(ea, op_index)
+    text = _read_string(value)
+    if text is not None:
+        return ("string", text)
+    start = _func_start(value)
+    if start is not None:
+        return ("func", start)
+    return None
+
+def _target_func_from_operand(ea, op_index, op, reg_values):
+    value = _value_from_operand(ea, op_index, op, reg_values)
+    if value and value[0] == "func":
+        return value[1]
+    return None
+
+def _set_disasm_script(desc_scripts, base_reg, value):
+    if not value or value[0] != "string":
+        return
+    script_name = value[1]
+    if _script_allowed(script_name):
+        desc_scripts[base_reg] = script_name
+
+def _append_disasm_entry(entries, seen_scripts, script_name, func_start, ea):
+    if not script_name or not func_start or script_name in seen_scripts:
+        return
+    seen_scripts.add(script_name)
+    entries.append({
+        "script_name": script_name,
+        "func_va": hex(func_start),
+        "func_expr": hex(func_start),
+        "source_ea": hex(ea),
+        "order": len(entries),
+    })
+
+def _collect_disasm_entries(func):
+    reg_values = {}
+    xmm_values = {}
+    desc_scripts = {}
+    seen_scripts = set()
+    entries = []
+    for ea in idautils.Heads(func.start_ea, func.end_ea):
+        mnem = idc.print_insn_mnem(ea).lower()
+        insn = idaapi.insn_t()
+        if not idaapi.decode_insn(insn, ea):
+            continue
+        ops = insn.ops
+        if mnem in ("xor", "pxor") and ops[0].type == idaapi.o_reg:
+            reg_values.pop(ops[0].reg, None)
+            xmm_values.pop(ops[0].reg, None)
+            continue
+        if mnem in ("lea", "mov") and ops[0].type == idaapi.o_reg and not _is_xmm_operand(ea, 0):
+            value = _value_from_operand(ea, 1, ops[1], reg_values)
+            if value is not None:
+                reg_values[ops[0].reg] = value
+            else:
+                reg_values.pop(ops[0].reg, None)
+        if mnem == "movq" and ops[0].type == idaapi.o_reg and _is_xmm_operand(ea, 0):
+            value = _value_from_operand(ea, 1, ops[1], reg_values)
+            xmm_values[ops[0].reg] = [value, None]
+        elif mnem == "pinsrq" and ops[0].type == idaapi.o_reg and _is_xmm_operand(ea, 0):
+            value = _value_from_operand(ea, 1, ops[1], reg_values)
+            slot = idc.get_operand_value(ea, 2)
+            pair = xmm_values.setdefault(ops[0].reg, [None, None])
+            if slot in (0, 1):
+                pair[int(slot)] = value
+        elif mnem == "punpcklqdq" and ops[0].type == idaapi.o_reg:
+            pair = xmm_values.get(ops[0].reg)
+            if pair:
+                pair[1] = pair[0]
+        if mnem in ("mov", "movups", "movdqu") and ops[0].type in (idaapi.o_displ, idaapi.o_phrase):
+            base_reg = getattr(ops[0], "reg", None)
+            offset = int(getattr(ops[0], "addr", 0) or 0)
+            if offset == 0 and len(ops) > 1 and ops[1].type == idaapi.o_reg and _is_xmm_operand(ea, 1):
+                pair = xmm_values.get(ops[1].reg)
+                if pair:
+                    _set_disasm_script(desc_scripts, base_reg, pair[1] or pair[0])
+            elif offset == 8 and len(ops) > 1:
+                _set_disasm_script(desc_scripts, base_reg, _value_from_operand(ea, 1, ops[1], reg_values))
+            elif offset == 0x40 and len(ops) > 1:
+                func_start = _target_func_from_operand(ea, 1, ops[1], reg_values)
+                _append_disasm_entry(entries, seen_scripts, desc_scripts.get(base_reg), func_start, ea)
+    return entries
+
+def _merge_entries(primary, secondary):
+    merged = []
+    seen_scripts = set()
+    for source in (primary, secondary):
+        for entry in source:
+            script_name = entry.get("script_name") if isinstance(entry, dict) else None
+            if not script_name or script_name in seen_scripts:
+                continue
+            seen_scripts.add(script_name)
+            copied = dict(entry)
+            copied["order"] = len(merged)
+            merged.append(copied)
+    return merged
+
+# ida_pro_mcp uses separate globals/locals for py_eval; sync helper symbols.
+globals().update(locals())
 
 func = idaapi.get_func(func_addr)
 if not func:
@@ -113,36 +329,19 @@ if not func:
 if not func:
     result_obj = {"entries": [], "error": "missing_source_func"}
 else:
-    cfunc = ida_hexrays.decompile(func.start_ea)
-    if not cfunc:
-        result_obj = {"entries": [], "error": "decompile_failed"}
-    else:
-        states = {}
-        entries = []
-        emitted = set()
-        for line_no, item in enumerate(cfunc.get_pseudocode()):
-            line = _plain_line(item)
-            for match in direct_name_re.finditer(line):
-                desc = _normalize_desc(match.group("desc"))
-                state = _set_field(
-                    states, desc, "script_name", match.group("script"), line_no
-                )
-                _append_if_complete(state, entries, emitted)
-            for match in m128_name_re.finditer(line):
-                desc = _normalize_desc(match.group("desc"))
-                state = _set_field(
-                    states, desc, "script_name", match.group("script"), line_no
-                )
-                _append_if_complete(state, entries, emitted)
-            for match in func_re.finditer(line):
-                target_ea = _resolve_func_ea(match.group("rhs"))
-                if target_ea is None:
-                    continue
-                desc = _normalize_desc(match.group("desc"))
-                state = _set_field(states, desc, "func_va", hex(target_ea), line_no)
-                state["func_expr"] = match.group("rhs").strip()
-                _append_if_complete(state, entries, emitted)
-        result_obj = {"entries": entries}
+    decompiled_entries, decompile_status, decompiled_script_lines = _collect_decompiled_entries(func)
+    disasm_entries = []
+    entries = decompiled_entries
+    if not script_names or len(entries) < len(script_names):
+        disasm_entries = _collect_disasm_entries(func)
+        entries = _merge_entries(entries, disasm_entries)
+    result_obj = {
+        "entries": entries,
+        "decompile_status": decompile_status,
+        "decompiled_count": len(decompiled_entries),
+        "decompiled_script_lines": decompiled_script_lines,
+        "disasm_count": len(disasm_entries),
+    }
 result = json.dumps(result_obj)
 '''
 
@@ -174,7 +373,16 @@ async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
     except Exception:
         _debug(debug, f"{error_label} error")
         return None
-    raw = result_data.get("result", "") if isinstance(result_data, dict) else None
+
+    raw = None
+    if isinstance(result_data, dict):
+        stderr_text = result_data.get("stderr", "")
+        if stderr_text and debug:
+            print("    Preprocess: py_eval stderr:")
+            print(str(stderr_text).strip())
+        raw = result_data.get("result", "")
+    else:
+        raw = None
     if raw is None and result_data is not None:
         raw = str(result_data)
     if not raw:
@@ -186,10 +394,14 @@ async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
         return None
 
 
-def _build_script_desc_internal_py_eval(source_func_va):
+def _build_script_desc_internal_py_eval(source_func_va, script_names=None):
+    normalized_script_names = [] if script_names is None else [str(item) for item in script_names]
     return _SCRIPT_DESC_INTERNAL_PY_EVAL.replace(
         "__FUNC_ADDR__",
         str(_parse_int(source_func_va)),
+    ).replace(
+        "__SCRIPT_NAMES__",
+        json.dumps(normalized_script_names),
     )
 
 
@@ -255,8 +467,13 @@ def _read_source_func_va(new_binary_dir, source_yaml_stem, platform, debug=False
     return str(source_yaml["func_va"])
 
 
-async def _collect_script_func_entries(session, source_func_va, debug=False):
-    code = _build_script_desc_internal_py_eval(source_func_va)
+async def _collect_script_func_entries(
+    session,
+    source_func_va,
+    script_names=None,
+    debug=False,
+):
+    code = _build_script_desc_internal_py_eval(source_func_va, script_names)
     parsed = await _call_py_eval_json(
         session=session,
         code=code,
@@ -266,6 +483,26 @@ async def _collect_script_func_entries(session, source_func_va, debug=False):
     if not isinstance(parsed, dict) or not isinstance(parsed.get("entries"), list):
         _debug(debug, "failed to collect script descriptor entries")
         return None
+    if debug:
+        _debug(
+            debug,
+            "script descriptor collection: "
+            f"decompile={parsed.get('decompile_status')} "
+            f"decompiled_count={parsed.get('decompiled_count')} "
+            f"disasm_count={parsed.get('disasm_count')} "
+            f"merged_count={len(parsed['entries'])}",
+        )
+        found_names = [
+            entry.get("script_name")
+            for entry in parsed["entries"]
+            if isinstance(entry, dict) and entry.get("script_name")
+        ]
+        _debug(debug, "script descriptor found names: " + ", ".join(found_names))
+        script_lines = parsed.get("decompiled_script_lines")
+        if script_lines and len(found_names) < len(script_names or []):
+            _debug(debug, "script descriptor decompiled sample:")
+            for line in script_lines:
+                _debug(debug, "  " + str(line))
     return parsed["entries"]
 
 
@@ -371,7 +608,12 @@ async def preprocess_script_desc_internal_skill(
     )
     if output_paths is None or source_func_va is None:
         return False
-    entries = await _collect_script_func_entries(session, source_func_va, debug=debug)
+    entries = await _collect_script_func_entries(
+        session,
+        source_func_va,
+        script_names=[spec["script_name"] for spec in specs],
+        debug=debug,
+    )
     if not isinstance(entries, list):
         return False
     entry_index = _index_entries_by_script_name(

@@ -2628,8 +2628,10 @@ modules:
           - CBaseModelEntity_ScriptSetRenderMode.{platform}.yaml
           - CBaseModelEntity_ScriptSetRenderColor.{platform}.yaml
           - CBaseModelEntity_ScriptGetRenderColor.{platform}.yaml
+          - CBaseModelEntity_ScriptSetMaterialGroup.{platform}.yaml
           - CBaseModelEntity_ScriptSetMaterialGroupHash.{platform}.yaml
           - CBaseModelEntity_ScriptGetMaterialGroupHash.{platform}.yaml
+          - CBaseModelEntity_ScriptSetSingleMeshGroup.{platform}.yaml
           - CBaseModelEntity_ScriptSetMeshGroupMask.{platform}.yaml
           - CBaseModelEntity_ScriptGetMeshGroupMask.{platform}.yaml
           - CBaseModelEntity_ScriptSetBodygroupByName.{platform}.yaml
@@ -5105,6 +5107,11 @@ modules:
         alias:
           - CBaseModelEntity::ScriptGetRenderColor
 
+      - name: CBaseModelEntity_ScriptSetMaterialGroup
+        category: func
+        alias:
+          - CBaseModelEntity::ScriptSetMaterialGroup
+
       - name: CBaseModelEntity_ScriptSetMaterialGroupHash
         category: func
         alias:
@@ -5114,6 +5121,11 @@ modules:
         category: func
         alias:
           - CBaseModelEntity::ScriptGetMaterialGroupHash
+
+      - name: CBaseModelEntity_ScriptSetSingleMeshGroup
+        category: func
+        alias:
+          - CBaseModelEntity::ScriptSetSingleMeshGroup
 
       - name: CBaseModelEntity_ScriptSetMeshGroupMask
         category: func

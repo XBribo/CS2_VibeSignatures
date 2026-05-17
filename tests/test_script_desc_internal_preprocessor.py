@@ -1,4 +1,6 @@
 import importlib
+import json
+import types
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -29,6 +31,308 @@ def _write_source_yaml(tmpdir: str, platform: str) -> Path:
         encoding="utf-8",
     )
     return new_binary_dir
+
+
+def _op(kind: int, *, addr: int = 0, reg: int | None = None) -> dict[str, object]:
+    return {"type": kind, "addr": addr, "reg": reg}
+
+
+class _FakeFunc:
+    def __init__(self, start_ea: int, end_ea: int) -> None:
+        self.start_ea = start_ea
+        self.end_ea = end_ea
+
+
+class _FakeInsn:
+    def __init__(self) -> None:
+        self.ops = [types.SimpleNamespace(type=0, addr=0, reg=None) for _ in range(3)]
+
+
+class _FakePseudocodeLine:
+    def __init__(self, line: str) -> None:
+        self.line = line
+
+
+class _FakeCfunc:
+    def __init__(self, lines: list[str]) -> None:
+        self._lines = lines
+
+    def get_pseudocode(self):
+        return [_FakePseudocodeLine(line) for line in self._lines]
+
+
+def _run_script_desc_py_eval(
+    *,
+    source_func_va: int,
+    funcs: dict[int, tuple[int, int]],
+    strings: dict[int, str],
+    instructions: dict[int, dict[str, object]],
+    names: dict[str, int] | None = None,
+    decompiled_lines: list[str] | None = None,
+) -> dict[str, object]:
+    module = _import_common_module()
+    code = module._build_script_desc_internal_py_eval(
+        hex(source_func_va),
+        [
+            "GetModelScale",
+            "ScriptLookupAttachment",
+            "ScriptSetMaterialGroup",
+        ],
+    )
+    heads = sorted(instructions)
+
+    def fake_decode_insn(insn: _FakeInsn, ea: int) -> bool:
+        spec = instructions.get(ea)
+        if spec is None:
+            return False
+        insn.ops = [types.SimpleNamespace(**op) for op in spec.get("ops", [])]
+        return True
+
+    def fake_strlit(ea: int):
+        text = strings.get(ea)
+        return text.encode("utf-8") if text is not None else None
+
+    fake_idaapi = types.SimpleNamespace(
+        o_reg=1,
+        o_displ=2,
+        o_phrase=3,
+        o_imm=4,
+        o_mem=5,
+        o_near=6,
+        o_far=7,
+        BADADDR=-1,
+        get_func=lambda ea: _FakeFunc(*funcs[ea]) if ea in funcs else None,
+        add_func=lambda _ea: None,
+        insn_t=_FakeInsn,
+        decode_insn=fake_decode_insn,
+    )
+    fake_idautils = types.SimpleNamespace(
+        Heads=lambda start, end: [ea for ea in heads if start <= ea < end],
+    )
+    fake_ida_hexrays = types.SimpleNamespace(
+        decompile=lambda _ea: _FakeCfunc(decompiled_lines) if decompiled_lines else None,
+    )
+    fake_ida_lines = types.SimpleNamespace(tag_remove=lambda line: line)
+    fake_idc = types.SimpleNamespace(
+        print_insn_mnem=lambda ea: instructions.get(ea, {}).get("mnem", ""),
+        print_operand=lambda ea, index: instructions.get(ea, {}).get(
+            "operands",
+            ("", "", ""),
+        )[index],
+        get_operand_value=lambda ea, index: instructions.get(ea, {}).get(
+            "operand_values",
+            (0, 0, 0),
+        )[index],
+        get_strlit_contents=fake_strlit,
+        get_name_ea_simple=lambda name: (names or {}).get(name, fake_idaapi.BADADDR),
+    )
+    exec_globals: dict[str, object] = {}
+    exec_locals: dict[str, object] = {}
+    with patch.dict(
+        "sys.modules",
+        {
+            "idaapi": fake_idaapi,
+            "ida_hexrays": fake_ida_hexrays,
+            "ida_lines": fake_ida_lines,
+            "idautils": fake_idautils,
+            "idc": fake_idc,
+        },
+    ):
+        exec(code, exec_globals, exec_locals)
+    return json.loads(exec_locals["result"])
+
+
+class TestScriptDescInternalPyEvalBehavior(unittest.TestCase):
+    def test_py_eval_extracts_script_functions_from_decompiled_assignments(self) -> None:
+        payload = _run_script_desc_py_eval(
+            source_func_va=0x1000,
+            funcs={
+                0x1000: (0x1000, 0x1100),
+                0x5000: (0x5000, 0x5050),
+                0x6000: (0x6000, 0x6060),
+                0x7000: (0x7000, 0x7070),
+            },
+            strings={},
+            instructions={},
+            names={
+                "CBaseModelEntity_GetModelScale": 0x5000,
+                "CBaseModelEntity_ScriptLookupAttachment": 0x6000,
+                "sub_MaterialGroup": 0x7000,
+            },
+            decompiled_lines=[
+                "*v3 = _mm_unpacklo_epi64(",
+                '  (__m128i)(unsigned __int64)"GetModelScale",',
+                '  (__m128i)(unsigned __int64)"GetModelScale");',
+                "v3[4].m128i_i64[0] = CBaseModelEntity_GetModelScale;",
+                "v33 = _mm_insert_epi64(",
+                '  v32, (signed __int64)"ScriptLookupAttachment", 1);',
+                "*(__m128i *)v44 = v33;",
+                "*(_QWORD *)(v44 + 64) = CBaseModelEntity_ScriptLookupAttachment;",
+                "*(__m128i *)v62 = _mm_insert_epi64(",
+                '  v61, (signed __int64)"ScriptSetMaterialGroup", 1);',
+                "v62[4].m128i_i64[0] = (__int64)&sub_MaterialGroup;",
+            ],
+        )
+
+        entries_by_script = {
+            entry["script_name"]: {key: value for key, value in entry.items() if key != "order"}
+            for entry in payload["entries"]
+        }
+        self.assertEqual(
+            {
+                "GetModelScale": {
+                    "script_name": "GetModelScale",
+                    "func_va": "0x5000",
+                    "func_expr": "CBaseModelEntity_GetModelScale",
+                    "desc_expr": "v3",
+                },
+                "ScriptLookupAttachment": {
+                    "script_name": "ScriptLookupAttachment",
+                    "func_va": "0x6000",
+                    "func_expr": "CBaseModelEntity_ScriptLookupAttachment",
+                    "desc_expr": "v44",
+                },
+                "ScriptSetMaterialGroup": {
+                    "script_name": "ScriptSetMaterialGroup",
+                    "func_va": "0x7000",
+                    "func_expr": "(__int64)&sub_MaterialGroup",
+                    "desc_expr": "v62",
+                },
+            },
+            entries_by_script,
+        )
+
+    def test_py_eval_extracts_script_functions_without_hexrays(self) -> None:
+        payload = _run_script_desc_py_eval(
+            source_func_va=0x1000,
+            funcs={
+                0x1000: (0x1000, 0x1100),
+                0x5000: (0x5000, 0x5050),
+                0x6000: (0x6000, 0x6060),
+                0x7000: (0x7000, 0x7070),
+            },
+            strings={
+                0x3000: "GetModelScale",
+                0x3010: "ScriptLookupAttachment",
+                0x3020: "ScriptSetMaterialGroup",
+            },
+            instructions={
+                0x1000: {
+                    "mnem": "lea",
+                    "operands": ("r13", "aGetmodelscale", ""),
+                    "operand_values": (0, 0x3000, 0),
+                    "ops": [_op(1, reg=13), _op(5, addr=0x3000)],
+                },
+                0x1004: {
+                    "mnem": "movq",
+                    "operands": ("xmm0", "r13", ""),
+                    "ops": [_op(1, reg=100), _op(1, reg=13)],
+                },
+                0x1008: {
+                    "mnem": "punpcklqdq",
+                    "operands": ("xmm0", "xmm0", ""),
+                    "ops": [_op(1, reg=100), _op(1, reg=100)],
+                },
+                0x100C: {
+                    "mnem": "movups",
+                    "operands": ("[rax]", "xmm0", ""),
+                    "ops": [_op(3, addr=0, reg=1), _op(1, reg=100)],
+                },
+                0x1010: {
+                    "mnem": "lea",
+                    "operands": ("rdx", "CBaseModelEntity_GetModelScale", ""),
+                    "operand_values": (0, 0x5000, 0),
+                    "ops": [_op(1, reg=2), _op(5, addr=0x5000)],
+                },
+                0x1014: {
+                    "mnem": "mov",
+                    "operands": ("[rax+40h]", "rdx", ""),
+                    "ops": [_op(2, addr=0x40, reg=1), _op(1, reg=2)],
+                },
+                0x1020: {
+                    "mnem": "lea",
+                    "operands": ("rax", "aScriptlookupat", ""),
+                    "operand_values": (0, 0x3010, 0),
+                    "ops": [_op(1, reg=1), _op(5, addr=0x3010)],
+                },
+                0x1024: {
+                    "mnem": "mov",
+                    "operands": ("[rdx+8]", "rax", ""),
+                    "ops": [_op(2, addr=8, reg=2), _op(1, reg=1)],
+                },
+                0x1028: {
+                    "mnem": "lea",
+                    "operands": ("rcx", "CBaseModelEntity_ScriptLookupAttachment", ""),
+                    "operand_values": (0, 0x6000, 0),
+                    "ops": [_op(1, reg=3), _op(5, addr=0x6000)],
+                },
+                0x102C: {
+                    "mnem": "mov",
+                    "operands": ("[rdx+40h]", "rcx", ""),
+                    "ops": [_op(2, addr=0x40, reg=2), _op(1, reg=3)],
+                },
+                0x1030: {
+                    "mnem": "movq",
+                    "operands": ("xmm0", "cs:off_display", ""),
+                    "ops": [_op(1, reg=100), _op(5, addr=0x3000)],
+                },
+                0x1034: {
+                    "mnem": "lea",
+                    "operands": ("rax", "aScriptsetmater", ""),
+                    "operand_values": (0, 0x3020, 0),
+                    "ops": [_op(1, reg=1), _op(5, addr=0x3020)],
+                },
+                0x1038: {
+                    "mnem": "pinsrq",
+                    "operands": ("xmm0", "rax", "1"),
+                    "operand_values": (0, 0, 1),
+                    "ops": [_op(1, reg=100), _op(1, reg=1), _op(4)],
+                },
+                0x103C: {
+                    "mnem": "movups",
+                    "operands": ("[r8]", "xmm0", ""),
+                    "ops": [_op(3, addr=0, reg=8), _op(1, reg=100)],
+                },
+                0x1040: {
+                    "mnem": "lea",
+                    "operands": ("rax", "sub_MaterialGroup", ""),
+                    "operand_values": (0, 0x7000, 0),
+                    "ops": [_op(1, reg=1), _op(5, addr=0x7000)],
+                },
+                0x1044: {
+                    "mnem": "mov",
+                    "operands": ("[r8+40h]", "rax", ""),
+                    "ops": [_op(2, addr=0x40, reg=8), _op(1, reg=1)],
+                },
+            },
+        )
+
+        self.assertEqual(
+            [
+                {
+                    "script_name": "GetModelScale",
+                    "func_va": "0x5000",
+                    "func_expr": "0x5000",
+                    "source_ea": "0x1014",
+                    "order": 0,
+                },
+                {
+                    "script_name": "ScriptLookupAttachment",
+                    "func_va": "0x6000",
+                    "func_expr": "0x6000",
+                    "source_ea": "0x102c",
+                    "order": 1,
+                },
+                {
+                    "script_name": "ScriptSetMaterialGroup",
+                    "func_va": "0x7000",
+                    "func_expr": "0x7000",
+                    "source_ea": "0x1044",
+                    "order": 2,
+                },
+            ],
+            payload["entries"],
+        )
 
 
 class TestPreprocessScriptDescInternalSkill(unittest.IsolatedAsyncioTestCase):
