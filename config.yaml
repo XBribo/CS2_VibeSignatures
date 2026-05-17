@@ -3344,6 +3344,10 @@ modules:
         expected_output:
           - CCSWeaponBase_ItemPostFrame_ProcessReloadAction.{platform}.yaml
 
+      - name: find-CCSPlayer_WeaponServices_HandleDropWeapon
+        expected_output:
+          - CCSPlayer_WeaponServices_HandleDropWeapon.{platform}.yaml
+
       - name: find-IGameSystem_InitAllSystems
         expected_output:
           - IGameSystem_InitAllSystems.{platform}.yaml
@@ -5626,6 +5630,11 @@ modules:
         category: func
         alias:
           - CCSWeaponBase::ItemPostFrame::ProcessReloadAction
+
+      - name: CCSPlayer_WeaponServices_HandleDropWeapon
+        category: func
+        alias:
+          - CCSPlayer_WeaponServices::HandleDropWeapon
 
       - name: IGameSystem_InitAllSystems
         category: func
