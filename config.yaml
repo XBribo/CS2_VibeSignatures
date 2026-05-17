@@ -3365,6 +3365,14 @@ modules:
         expected_input:
           - CCSPlayerPawn_vtable.{platform}.yaml
 
+      - name: find-CCSPlayerController_HandleCommandDrop
+        expected_output:
+          - CCSPlayerController_HandleCommandDrop.{platform}.yaml
+        expected_input:
+          - CCSPlayerPawn_HandleDropWeapon.{platform}.yaml
+          - CBasePlayerController_GetPawn.{platform}.yaml
+          - CCSPlayer_WeaponServices_HandleDropWeapon.{platform}.yaml
+
       - name: find-IGameSystem_InitAllSystems
         expected_output:
           - IGameSystem_InitAllSystems.{platform}.yaml
@@ -5667,6 +5675,11 @@ modules:
         category: vfunc
         alias:
           - CCSPlayerPawn::ClientCommand
+
+      - name: CCSPlayerController_HandleCommandDrop
+        category: func
+        alias:
+          - CCSPlayerController::HandleCommandDrop
 
       - name: IGameSystem_InitAllSystems
         category: func
