@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CCSPlayerPawn_OnItemEquip skill."""
+"""Preprocess script for find-CCSPlayerPawn_OnSwitchWeapons skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CCSPlayerPawn_OnItemEquip",
+    "CCSPlayerPawn_OnSwitchWeapons",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CCSPlayerPawn_OnItemEquip",
+        "func_name": "CCSPlayerPawn_OnSwitchWeapons",
         "xref_strings": [
             "FULLMATCH:item_equip",
             "FULLMATCH:userid",
@@ -28,7 +28,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CCSPlayerPawn_OnItemEquip",
+        "CCSPlayerPawn_OnSwitchWeapons",
         [
             "func_name",
             "func_sig",

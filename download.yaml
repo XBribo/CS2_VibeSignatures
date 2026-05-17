@@ -1,9 +1,15 @@
 downloads:
+  - tag: "14088"
+    name: 1.40.8.8
+    manifests: 
+     "2347771" : "366892905078765270" # DepotDownloader -app 730 -depot 2347771 -manifest 366892905078765270 -os all-platform -dir cs2_depot
+     "2347773" : "6261982168194353241	" # DepotDownloader -app 730 -depot 2347773 -manifest 6261982168194353241 -os all-platform -dir cs2_depot
+
   - tag: "14141"
     name: 1.41.4.1
     manifests: 
-     "2347771" : "8158810264338894897" #DepotDownloader -app 730 -depot 2347771 -manifest 8158810264338894897 -os all-platform -dir cs2_depot
-     "2347773" : "4721707405076024766" #DepotDownloader -app 730 -depot 2347773 -manifest 4721707405076024766 -os all-platform -dir cs2_depot
+     "2347771" : "8158810264338894897" # DepotDownloader -app 730 -depot 2347771 -manifest 8158810264338894897 -os all-platform -dir cs2_depot
+     "2347773" : "4721707405076024766" # DepotDownloader -app 730 -depot 2347773 -manifest 4721707405076024766 -os all-platform -dir cs2_depot
 
   - tag: "14141b"
     name: 1.41.4.1
