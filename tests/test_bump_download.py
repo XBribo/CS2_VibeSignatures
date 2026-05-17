@@ -928,6 +928,29 @@ class TestBumpDownload(unittest.TestCase):
             with self.assertRaises(bump_download.BumpError):
                 bump_download.load_config(config)
 
+    def test_bump_workflow_prunes_local_only_tags_before_bump(self) -> None:
+        workflow = Path(".github/workflows/bump-download.yml").read_text(
+            encoding="utf-8"
+        )
+        sync_step = "\n".join(
+            [
+                "      - name: Synchronize git refs",
+                "        shell: pwsh",
+                "        run: |",
+                "          git fetch origin --prune --prune-tags --tags",
+            ]
+        )
+
+        self.assertIn(sync_step, workflow)
+        checkout_index = workflow.index("- name: Checkout main")
+        sync_index = workflow.index(sync_step)
+        configure_index = workflow.index("- name: Configure git")
+        bump_index = workflow.index("- name: Bump download config")
+
+        self.assertLess(checkout_index, sync_index)
+        self.assertLess(sync_index, configure_index)
+        self.assertLess(sync_index, bump_index)
+
 
 if __name__ == "__main__":
     unittest.main()

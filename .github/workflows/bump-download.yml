@@ -28,6 +28,11 @@ jobs:
           fetch-depth: 0
           submodules: true
 
+      - name: Synchronize git refs
+        shell: pwsh
+        run: |
+          git fetch origin --prune --prune-tags --tags
+
       - name: Configure git
         shell: pwsh
         run: |
