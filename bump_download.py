@@ -75,6 +75,9 @@ class BumpPlan:
     manifests: dict[str, str]
     repair_tag: bool = False
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "manifests", dict(self.manifests))
+
 
 def _default_branch_entries(
     downloads: list[dict[str, Any]], patch_version: str
@@ -86,11 +89,21 @@ def _default_branch_entries(
     ]
 
 
-def _manifest_pair(entry: dict[str, Any]) -> tuple[str | None, str | None]:
-    manifests = entry.get("manifests")
+def _extract_manifest_pair(manifests: Any, label: str) -> tuple[str, ...]:
     if not isinstance(manifests, dict):
-        raise BumpError(f"Download entry {entry.get('tag')} must contain manifests mapping")
-    return str(manifests.get("2347771")), str(manifests.get("2347773"))
+        raise BumpError(f"{label} must contain manifests mapping")
+
+    pair = []
+    for depot in DEFAULT_BRANCH_DEPOTS:
+        if depot not in manifests:
+            raise BumpError(f"{label} missing manifest for depot {depot}")
+        pair.append(str(manifests[depot]))
+    return tuple(pair)
+
+
+def _manifest_pair(entry: dict[str, Any]) -> tuple[str, ...]:
+    label = f"Download entry {entry.get('tag')}"
+    return _extract_manifest_pair(entry.get("manifests"), label)
 
 
 def _next_suffix_tag(base_tag: str, existing_tags: set[str]) -> str:
@@ -113,7 +126,7 @@ def plan_download_entry(
     """Decide whether to append a new default-branch download entry."""
     base_tag = patch_version_to_tag(patch_version)
     existing_tags = {str(entry.get("tag")) for entry in downloads}
-    target_pair = (str(manifests["2347771"]), str(manifests["2347773"]))
+    target_pair = _extract_manifest_pair(manifests, "Current manifests")
     matching_entries = _default_branch_entries(downloads, patch_version)
 
     for entry in matching_entries:
