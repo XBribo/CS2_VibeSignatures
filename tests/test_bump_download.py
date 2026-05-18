@@ -88,6 +88,44 @@ class TestBumpDownload(unittest.TestCase):
         mock_run.assert_called_once_with(command, check=True)
         self.assertEqual("secret", mock_run.call_args.args[0][4])
 
+    @patch("bump_download.time.sleep")
+    @patch("bump_download.subprocess.run")
+    def test_run_command_retries_after_subprocess_failure(
+        self, mock_run, mock_sleep
+    ) -> None:
+        command = ["DepotDownloader", "-app", "730"]
+        mock_run.side_effect = [
+            bump_download.subprocess.CalledProcessError(1, command),
+            None,
+        ]
+
+        bump_download.run_command(command, retry_delay_seconds=0)
+
+        self.assertEqual(2, mock_run.call_count)
+        mock_run.assert_has_calls(
+            [call(command, check=True), call(command, check=True)]
+        )
+        mock_sleep.assert_called_once_with(0)
+
+    @patch("bump_download.time.sleep")
+    @patch("bump_download.subprocess.run")
+    def test_run_command_raises_after_retry_attempts_exhausted(
+        self, mock_run, mock_sleep
+    ) -> None:
+        command = ["DepotDownloader", "-app", "730"]
+        first_error = bump_download.subprocess.CalledProcessError(1, command)
+        final_error = bump_download.subprocess.CalledProcessError(1, command)
+        mock_run.side_effect = [first_error, final_error]
+
+        with self.assertRaises(bump_download.subprocess.CalledProcessError) as ctx:
+            bump_download.run_command(
+                command, max_attempts=2, retry_delay_seconds=0
+            )
+
+        self.assertIs(final_error, ctx.exception)
+        self.assertEqual(2, mock_run.call_count)
+        mock_sleep.assert_called_once_with(0)
+
     @patch("bump_download.subprocess.run")
     def test_fetch_manifest_only_uses_isolated_directory(self, mock_run) -> None:
         with tempfile.TemporaryDirectory() as tmp:

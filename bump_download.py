@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,8 @@ DEFAULT_APP_ID = "730"
 DEFAULT_OS = "all-platform"
 STEAM_INF_PATH = r"game\csgo\steam.inf"
 DEFAULT_BRANCH_DEPOTS = ("2347771", "2347773")
+DEFAULT_DEPOTDOWNLOADER_ATTEMPTS = 3
+DEFAULT_DEPOTDOWNLOADER_RETRY_DELAY_SECONDS = 30.0
 
 
 class BumpError(Exception):
@@ -93,10 +96,36 @@ def _redact_command(command: list[str]) -> list[str]:
     return redacted
 
 
-def run_command(command: list[str]) -> None:
+def run_command(
+    command: list[str],
+    *,
+    max_attempts: int = DEFAULT_DEPOTDOWNLOADER_ATTEMPTS,
+    retry_delay_seconds: float = DEFAULT_DEPOTDOWNLOADER_RETRY_DELAY_SECONDS,
+) -> None:
     """Run a subprocess command and let callers normalize errors."""
-    print(f"Running: {' '.join(_redact_command(command))}")
-    subprocess.run(command, check=True)
+    redacted_command = _redact_command(command)
+    attempt_count = max(1, max_attempts)
+
+    for attempt in range(1, attempt_count + 1):
+        if attempt == 1:
+            print(f"Running: {' '.join(redacted_command)}")
+        else:
+            print(
+                f"Retrying ({attempt}/{attempt_count}): "
+                f"{' '.join(redacted_command)}"
+            )
+
+        try:
+            subprocess.run(command, check=True)
+            return
+        except subprocess.CalledProcessError:
+            if attempt == attempt_count:
+                raise
+            print(
+                "Command failed; retrying in "
+                f"{retry_delay_seconds:g}s ({attempt}/{attempt_count})"
+            )
+            time.sleep(retry_delay_seconds)
 
 
 def fetch_manifest_id(
