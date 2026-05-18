@@ -6,7 +6,6 @@ import re
 import subprocess
 import sys
 import tempfile
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -16,6 +15,13 @@ from ruamel.yaml.comments import CommentedMap
 from ruamel.yaml.error import YAMLError
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
+from depot_util import (
+    DEFAULT_DEPOTDOWNLOADER_ATTEMPTS,
+    DEFAULT_DEPOTDOWNLOADER_RETRY_DELAY_SECONDS,
+    append_auth_args,
+    run_command,
+)
+
 
 DEFAULT_CONFIG_FILE = "download.yaml"
 DEFAULT_DEPOT_DIR = "cs2_depot"
@@ -23,8 +29,6 @@ DEFAULT_APP_ID = "730"
 DEFAULT_OS = "all-platform"
 STEAM_INF_PATH = r"game\csgo\steam.inf"
 DEFAULT_BRANCH_DEPOTS = ("2347771", "2347773")
-DEFAULT_DEPOTDOWNLOADER_ATTEMPTS = 3
-DEFAULT_DEPOTDOWNLOADER_RETRY_DELAY_SECONDS = 30.0
 
 
 class BumpError(Exception):
@@ -68,66 +72,6 @@ def parse_patch_version(steam_inf_text: str) -> str:
     raise BumpError("PatchVersion not found in steam.inf")
 
 
-def _append_auth_args(
-    command: list[str],
-    username: str | None,
-    password: str | None,
-    remember_password: bool,
-) -> None:
-    if username:
-        command.extend(["-username", username])
-    if password:
-        command.extend(["-password", password])
-    if remember_password:
-        command.append("-remember-password")
-
-
-def _redact_command(command: list[str]) -> list[str]:
-    redacted: list[str] = []
-    skip_next = False
-    for part in command:
-        if skip_next:
-            redacted.append("<redacted>")
-            skip_next = False
-            continue
-        redacted.append(part)
-        if part == "-password":
-            skip_next = True
-    return redacted
-
-
-def run_command(
-    command: list[str],
-    *,
-    max_attempts: int = DEFAULT_DEPOTDOWNLOADER_ATTEMPTS,
-    retry_delay_seconds: float = DEFAULT_DEPOTDOWNLOADER_RETRY_DELAY_SECONDS,
-) -> None:
-    """Run a subprocess command and let callers normalize errors."""
-    redacted_command = _redact_command(command)
-    attempt_count = max(1, max_attempts)
-
-    for attempt in range(1, attempt_count + 1):
-        if attempt == 1:
-            print(f"Running: {' '.join(redacted_command)}")
-        else:
-            print(
-                f"Retrying ({attempt}/{attempt_count}): "
-                f"{' '.join(redacted_command)}"
-            )
-
-        try:
-            subprocess.run(command, check=True)
-            return
-        except subprocess.CalledProcessError:
-            if attempt == attempt_count:
-                raise
-            print(
-                "Command failed; retrying in "
-                f"{retry_delay_seconds:g}s ({attempt}/{attempt_count})"
-            )
-            time.sleep(retry_delay_seconds)
-
-
 def fetch_manifest_id(
     depot: str,
     app: str,
@@ -150,7 +94,7 @@ def fetch_manifest_id(
         "-dir",
         str(output_dir),
     ]
-    _append_auth_args(command, username, password, remember_password)
+    append_auth_args(command, username, password, remember_password)
     command.append("-manifest-only")
     run_command(command)
     return find_manifest_id(output_dir, depot)
@@ -188,7 +132,7 @@ def download_and_parse_steam_inf(
             "-filelist",
             str(filelist_path),
         ]
-        _append_auth_args(command, username, password, remember_password)
+        append_auth_args(command, username, password, remember_password)
         run_command(command)
     finally:
         filelist_path.unlink(missing_ok=True)

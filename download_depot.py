@@ -6,6 +6,7 @@ Download depot manifests by exact tag matching from download.yaml.
 import argparse
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 try:
@@ -15,8 +16,11 @@ except ImportError as exc:
     print("Please install required dependencies with: uv sync")
     sys.exit(1)
 
+from depot_util import append_auth_args, run_command
+
 
 DEFAULT_CONFIG_FILE = "download.yaml"
+DEFAULT_MODULES_CONFIG_FILE = "config.yaml"
 DEFAULT_DEPOT_DIR = "cs2_depot"
 DEFAULT_APP_ID = "730"
 DEFAULT_OS = "all-platform"
@@ -36,6 +40,14 @@ def parse_args() -> argparse.Namespace:
         "-config",
         default=DEFAULT_CONFIG_FILE,
         help=f"Path to download config file (default: {DEFAULT_CONFIG_FILE})",
+    )
+    parser.add_argument(
+        "-configyaml",
+        default=DEFAULT_MODULES_CONFIG_FILE,
+        help=(
+            f"Path to module config file used to build the DepotDownloader -filelist "
+            f"(default: {DEFAULT_MODULES_CONFIG_FILE})"
+        ),
     )
     parser.add_argument(
         "-depotdir",
@@ -103,43 +115,91 @@ def find_download_entry(downloads: list[dict], tag: str) -> dict:
     return entry
 
 
+def load_module_filelist(configyaml_path: str) -> list[str]:
+    """Collect sorted, de-duplicated path_windows/path_linux from config.yaml modules."""
+    path = Path(configyaml_path)
+    if not path.is_file():
+        raise ConfigError(f"Modules config file not found: {configyaml_path}")
+
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            config = yaml.safe_load(handle) or {}
+    except yaml.YAMLError as exc:
+        raise ConfigError(f"Invalid YAML in modules config file: {configyaml_path}") from exc
+    except OSError as exc:
+        raise ConfigError(f"Failed to read modules config file: {configyaml_path}") from exc
+
+    if not isinstance(config, dict):
+        raise ConfigError("Modules config root must be a mapping/object")
+
+    modules = config.get("modules")
+    if not isinstance(modules, list):
+        raise ConfigError("Modules config field 'modules' must be a list")
+
+    paths: set[str] = set()
+    for index, module in enumerate(modules):
+        if not isinstance(module, dict):
+            raise ConfigError(f"Modules config field 'modules[{index}]' must be a mapping/object")
+        for key in ("path_windows", "path_linux"):
+            value = module.get(key)
+            if value is None:
+                continue
+            if not isinstance(value, str) or not value.strip():
+                raise ConfigError(
+                    f"Modules config 'modules[{index}].{key}' must be a non-empty string"
+                )
+            paths.add(value.strip())
+
+    if not paths:
+        raise ConfigError(
+            f"Modules config did not yield any path_windows/path_linux entries: {configyaml_path}"
+        )
+    return sorted(paths)
+
+
 def download_manifests(
     manifests: dict,
     app: str,
     os_name: str,
     depot_dir: str,
+    filelist: list[str],
     branch: str | None = None,
     username: str | None = None,
     password: str | None = None,
     remember_password: bool = False,
 ) -> None:
-    """Invoke DepotDownloader once per declared depot manifest."""
+    """Invoke DepotDownloader once per declared depot manifest, restricted by filelist."""
     if not isinstance(manifests, dict):
         raise ConfigError("Field 'manifests' must be a mapping of depot to manifest")
+    if not filelist:
+        raise ConfigError("Filelist must contain at least one path")
 
-    for depot, manifest in manifests.items():
-        command = [
-            "DepotDownloader",
-            "-app",
-            str(app),
-            "-depot",
-            str(depot),
-            "-os",
-            str(os_name),
-            "-dir",
-            str(depot_dir),
-        ]
-        if branch:
-            command.extend(["-branch", branch])
-        if username:
-            command.extend(["-username", username])
-        if password:
-            command.extend(["-password", password])
-        if remember_password:
-            command.append("-remember-password")
-        command.extend(["-manifest", str(manifest)])
-        print(f"Running: {' '.join(command)}")
-        subprocess.run(command, check=True)
+    with tempfile.NamedTemporaryFile(
+        "w", encoding="utf-8", delete=False, suffix=".txt"
+    ) as handle:
+        handle.write("\n".join(filelist) + "\n")
+        filelist_path = Path(handle.name)
+    try:
+        for depot, manifest in manifests.items():
+            command = [
+                "DepotDownloader",
+                "-app",
+                str(app),
+                "-depot",
+                str(depot),
+                "-os",
+                str(os_name),
+                "-dir",
+                str(depot_dir),
+            ]
+            if branch:
+                command.extend(["-branch", branch])
+            append_auth_args(command, username, password, remember_password)
+            command.extend(["-manifest", str(manifest)])
+            command.extend(["-filelist", str(filelist_path)])
+            run_command(command)
+    finally:
+        filelist_path.unlink(missing_ok=True)
 
 
 def main() -> int:
@@ -154,18 +214,22 @@ def main() -> int:
         if branch is not None and not isinstance(branch, str):
             raise ConfigError(f"Download entry for tag '{args.tag}' field 'branch' must be a string")
 
+        filelist = load_module_filelist(args.configyaml)
+
         name = entry.get("name")
         if name:
             print(f"Matched tag '{args.tag}' ({name})")
         else:
             print(f"Matched tag '{args.tag}'")
         print(f"Manifest count: {len(manifests)}")
+        print(f"Filelist source: {args.configyaml} ({len(filelist)} paths)")
 
         download_manifests(
             manifests=manifests,
             app=args.app,
             os_name=args.os,
             depot_dir=args.depotdir,
+            filelist=filelist,
             branch=branch,
             username=args.username,
             password=args.password,

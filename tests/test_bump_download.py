@@ -76,7 +76,7 @@ class TestBumpDownload(unittest.TestCase):
             bump_download.parse_patch_version(text)
 
     @patch("builtins.print")
-    @patch("bump_download.subprocess.run")
+    @patch("depot_util.subprocess.run")
     def test_run_command_redacts_password_in_logs(self, mock_run, mock_print) -> None:
         command = ["DepotDownloader", "-app", "730", "-password", "secret"]
 
@@ -88,8 +88,8 @@ class TestBumpDownload(unittest.TestCase):
         mock_run.assert_called_once_with(command, check=True)
         self.assertEqual("secret", mock_run.call_args.args[0][4])
 
-    @patch("bump_download.time.sleep")
-    @patch("bump_download.subprocess.run")
+    @patch("depot_util.time.sleep")
+    @patch("depot_util.subprocess.run")
     def test_run_command_retries_after_subprocess_failure(
         self, mock_run, mock_sleep
     ) -> None:
@@ -107,8 +107,8 @@ class TestBumpDownload(unittest.TestCase):
         )
         mock_sleep.assert_called_once_with(0)
 
-    @patch("bump_download.time.sleep")
-    @patch("bump_download.subprocess.run")
+    @patch("depot_util.time.sleep")
+    @patch("depot_util.subprocess.run")
     def test_run_command_raises_after_retry_attempts_exhausted(
         self, mock_run, mock_sleep
     ) -> None:
@@ -126,7 +126,7 @@ class TestBumpDownload(unittest.TestCase):
         self.assertEqual(2, mock_run.call_count)
         mock_sleep.assert_called_once_with(0)
 
-    @patch("bump_download.subprocess.run")
+    @patch("depot_util.subprocess.run")
     def test_fetch_manifest_only_uses_isolated_directory(self, mock_run) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             isolated = Path(tmp) / "manifest"
@@ -163,7 +163,7 @@ class TestBumpDownload(unittest.TestCase):
         ]
         mock_run.assert_called_once_with(expected_command, check=True)
 
-    @patch("bump_download.subprocess.run")
+    @patch("depot_util.subprocess.run")
     def test_download_steam_inf_uses_manifest_and_filelist(self, mock_run) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             depot_dir = Path(tmp)
@@ -202,7 +202,7 @@ class TestBumpDownload(unittest.TestCase):
         mock_run.assert_called_once_with(expected_command, check=True)
         self.assertFalse(filelist_path.exists())
 
-    @patch("bump_download.subprocess.run")
+    @patch("depot_util.subprocess.run")
     def test_download_steam_inf_deletes_temporary_filelist(self, mock_run) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             depot_dir = Path(tmp)
