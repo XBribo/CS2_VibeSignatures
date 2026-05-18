@@ -2048,6 +2048,26 @@ modules:
         expected_output:
           - CEntitySystem_Init.{platform}.yaml
 
+      - name: find-CSkeletonInstance_vtable
+        expected_output:
+          - CSkeletonInstance_vtable.{platform}.yaml
+
+      - name: find-CSkeletonInstance_PostDataUpdate
+        expected_output:
+          - CSkeletonInstance_PostDataUpdate.{platform}.yaml
+        expected_input:
+          - CSkeletonInstance_vtable.{platform}.yaml
+
+      - name: find-m_simulationState_members-windows
+        platform: windows
+        expected_output:
+          - CSkeletonInstance_m_simulationState_m_nTotalTransformCount.{platform}.yaml
+          - CSkeletonInstance_m_simulationState_m_nBoneCount.{platform}.yaml
+          - CSkeletonInstance_m_simulationState_m_nAttachmentCount.{platform}.yaml
+          - CSkeletonInstance_m_modelState_m_hModel.{platform}.yaml
+        expected_input:
+          - CSkeletonInstance_PostDataUpdate.{platform}.yaml
+
     symbols:
       - name: CLoopModeGame_RegisterEventMapInternal
         category: func
@@ -2401,6 +2421,45 @@ modules:
         category: func
         alias:
           - CEntitySystem::Init
+
+      - name: CSkeletonInstance
+        category: struct
+
+      - name: CSkeletonInstance_vtable
+        category: vtable
+
+      - name: CSkeletonInstance_PostDataUpdate
+        category: vfunc
+        alias:
+          - CSkeletonInstance::PostDataUpdate
+
+      - name: CSkeletonInstance_m_simulationState_m_nTotalTransformCount
+        category: structmember
+        struct: CSkeletonInstance
+        member: m_simulationState.m_nTotalTransformCount
+        alias:
+          - CSkeletonInstance::m_simulationState.m_nTotalTransformCount
+
+      - name: CSkeletonInstance_m_simulationState_m_nBoneCount
+        category: structmember
+        struct: CSkeletonInstance
+        member: m_simulationState.m_nBoneCount
+        alias:
+          - CSkeletonInstance::m_simulationState.m_nBoneCount
+
+      - name: CSkeletonInstance_m_simulationState_m_nAttachmentCount
+        category: structmember
+        struct: CSkeletonInstance
+        member: m_simulationState.m_nAttachmentCount
+        alias:
+          - CSkeletonInstance::m_simulationState.m_nAttachmentCount
+
+      - name: CSkeletonInstance_m_modelState_m_hModel
+        category: structmember
+        struct: CSkeletonInstance
+        member: m_modelState.m_hModel
+        alias:
+          - CSkeletonInstance::m_modelState.m_hModel
 
   - name: server
     path_windows: game/csgo/bin/win64/server.dll
