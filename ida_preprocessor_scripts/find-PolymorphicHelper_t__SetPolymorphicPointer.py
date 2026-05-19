@@ -13,8 +13,13 @@ FUNC_XREFS_WINDOWS = [
         "xref_strings": [
             "PolymorphicHelper_t::SetPolymorphicPointer",
         ],
-        "xref_gvs": [], "xref_signatures": [], "xref_funcs": [],
-        "exclude_funcs": [], "exclude_strings": [], "exclude_gvs": [], "exclude_signatures": [],
+        "xref_gvs": [],
+        "xref_signatures": [],
+        "xref_funcs": [],
+        "exclude_funcs": [],
+        "exclude_strings": [],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
     },
 ]
 
@@ -24,8 +29,13 @@ FUNC_XREFS_LINUX = [
         "xref_strings": [
             "../../public/networksystem/polymorphicmetadatahelper.h",
         ],
-        "xref_gvs": [], "xref_signatures": [], "xref_funcs": [],
-        "exclude_funcs": [], "exclude_strings": [], "exclude_gvs": [], "exclude_signatures": [],
+        "xref_gvs": [],
+        "xref_signatures": [],
+        "xref_funcs": [],
+        "exclude_funcs": [],
+        "exclude_strings": [],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
     },
 ]
 
