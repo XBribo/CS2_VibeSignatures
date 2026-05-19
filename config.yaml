@@ -4869,6 +4869,14 @@ modules:
         expected_output:
           - PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml
 
+      - name: find-CEntityInstance_AddChangeAccessorPath-AND-CEntityInstance_AssignChangeAccessorPathIds
+        expected_output:
+          - CEntityInstance_AddChangeAccessorPath.{platform}.yaml
+          - CEntityInstance_AssignChangeAccessorPathIds.{platform}.yaml
+        expected_input:
+          - PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
+
       - name: find-CNavPhysicsInterface_vtable
         expected_output:
           - CNavPhysicsInterface_vtable.{platform}.yaml
@@ -5147,6 +5155,16 @@ modules:
         category: func
         alias:
           - PolymorphicHelper_t::SetPolymorphicPointer
+
+      - name: CEntityInstance_AddChangeAccessorPath
+        category: vfunc
+        alias:
+          - CEntityInstance::AddChangeAccessorPath
+
+      - name: CEntityInstance_AssignChangeAccessorPathIds
+        category: vfunc
+        alias:
+          - CEntityInstance::AssignChangeAccessorPathIds
 
       - name: CGameSceneNode_vtable
         category: vtable
