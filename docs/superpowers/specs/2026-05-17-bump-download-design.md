@@ -174,17 +174,20 @@ jobs:
         run: |
           uv run bump_download.py -config download.yaml -depotdir cs2_depot -username "$env:STEAM_USERNAME" -password "$env:STEAM_PASSWORD" -remember-password -github-output "$env:GITHUB_OUTPUT"
 
-      - name: Push bump commit and tag
+      - name: Push bump branch
         if: steps.bump.outputs.updated == 'true'
         shell: pwsh
         run: |
-          git push origin HEAD:main
-          git push origin "${{ steps.bump.outputs.tag }}"
+          git push origin "HEAD:refs/heads/bump-download/${{ steps.bump.outputs.tag }}"
+
+      - name: Create or update bump pull request
+        if: steps.bump.outputs.updated == 'true'
+        uses: actions/github-script@v7
 ```
 
-workflow 使用 `main` 作为固定目标分支。新 tag 推送后，现有 tag-triggered build workflow 会继续处理后续构建和 release。
+workflow 使用 `main` 作为固定目标分支，但不直接 push protected branch。新下载条目先进入 `bump-download/<tag>` 临时分支并创建 PR。PR 合并后，post-merge workflow 在合并后的 main commit 上创建 tag，并通过 `repository_dispatch` 触发 `build-on-self-runner`。
 
-push 顺序保持为先 `git push origin HEAD:main`，再 `git push origin <tag>`。如果 main push 失败，tag push 不执行；下一次 workflow 仍会基于旧 main 重新尝试。如果 main push 成功但 tag push 失败，下一次 workflow 会通过 tag 修复模式补推缺失 tag。
+如果配置已在 `main` 但远端 tag 缺失，脚本进入 tag 修复模式并写出 `repair_tag=true`。workflow 此时不创建 PR，而是补推缺失 tag，并通过 `repository_dispatch` 触发 `build-on-self-runner`。
 
 ## Output 与退出码
 
@@ -208,7 +211,7 @@ updated=true
 tag=14161
 ```
 
-tag 修复模式同样写入 `updated=true` 和 `tag=<missing_tag>`，让 workflow 执行 push step；此时 `git push origin HEAD:main` 应为 no-op，`git push origin <tag>` 会补齐缺失 tag。
+tag 修复模式同样写入 `updated=true` 和 `tag=<missing_tag>`，并额外写入 `repair_tag=true`，让 workflow 走补 tag 与 dispatch 构建路径。
 
 ## 错误处理
 
@@ -245,8 +248,8 @@ tag 修复模式同样写入 `updated=true` 和 `tag=<missing_tag>`，让 workfl
 - 下载 `steam.inf` 时使用 `2347770` 的 manifest id 和只包含 `game\csgo\steam.inf` 的 filelist。
 - `-dry-run` 不写文件、不执行 git。
 - 有更新时 Git 命令顺序为 `add -> commit -> tag`。
-- main push 已成功但 tag 缺失时，脚本进入 tag 修复模式并输出需要 push 的 tag。
-- `-github-output` 正确写入 `updated=false` 或 `updated=true/tag=...`。
+- 配置已在 main 但 tag 缺失时，脚本进入 tag 修复模式并输出需要补推的 tag。
+- `-github-output` 正确写入 `updated=false`、`updated=true/tag=...`，以及 tag 修复时的 `repair_tag=true`。
 - `ruamel.yaml` 写回后保留既有条目的行内注释。
 
 按仓库偏好，本任务属于有行为影响的新自动化功能，建议至少执行定向单测：

@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: bump-download-${{ github.repository }}
@@ -34,7 +35,7 @@ jobs:
         run: |
           $workspace = (Resolve-Path -LiteralPath $env:GITHUB_WORKSPACE).Path -replace '\\', '/'
           git config --global --add safe.directory "$workspace"
-          git fetch origin --prune --prune-tags --tags
+          git fetch origin --prune --prune-tags --tags "+refs/heads/*:refs/remotes/origin/*"
 
       - name: Configure git
         shell: pwsh
@@ -47,9 +48,119 @@ jobs:
         shell: pwsh
         run: uv run bump_download.py -config download.yaml -depotdir cs2_depot -username "$env:STEAM_USERNAME" -password "$env:STEAM_PASSWORD" -remember-password -github-output "$env:GITHUB_OUTPUT"
 
-      - name: Push bump commit and tag
-        if: steps.bump.outputs.updated == 'true'
+      - name: Push bump branch
+        if: steps.bump.outputs.updated == 'true' && steps.bump.outputs.repair_tag != 'true'
+        id: branch
         shell: pwsh
         run: |
-          git push origin HEAD:main
-          git push origin "${{ steps.bump.outputs.tag }}"
+          $tag = "${{ steps.bump.outputs.tag }}"
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            throw "steps.bump.outputs.tag is empty."
+          }
+
+          $branch = "bump-download/$tag"
+          git push --force-with-lease origin "HEAD:refs/heads/$branch"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to push bump branch $branch."
+          }
+
+          "branch=$branch" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Create or update bump pull request
+        if: steps.bump.outputs.updated == 'true' && steps.bump.outputs.repair_tag != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = '${{ steps.bump.outputs.tag }}';
+            const branch = '${{ steps.branch.outputs.branch }}';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:${branch}`,
+              base: 'main',
+            });
+
+            if (pulls.length > 0) {
+              core.notice(`Bump pull request already exists: ${pulls[0].html_url}`);
+              return;
+            }
+
+            const { data: pull } = await github.rest.pulls.create({
+              owner,
+              repo,
+              base: 'main',
+              head: branch,
+              title: `chore(download): 更新 ${tag} 下载清单`,
+              body: [
+                `Automated download bump for tag \`${tag}\`.`,
+                '',
+                'After this PR is merged, the post-merge workflow will create the tag and dispatch `build-on-self-runner`.',
+                '',
+                `<!-- bump-download-tag: ${tag} -->`,
+              ].join('\n'),
+            });
+
+            core.notice(`Created bump pull request: ${pull.html_url}`);
+
+      - name: Push repaired tag and dispatch build
+        if: steps.bump.outputs.updated == 'true' && steps.bump.outputs.repair_tag == 'true'
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = "${{ steps.bump.outputs.tag }}"
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            throw "steps.bump.outputs.tag is empty."
+          }
+
+          $headSha = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to resolve HEAD."
+          }
+
+          $existingTag = git ls-remote --tags origin "refs/tags/$tag"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to query remote tag $tag."
+          }
+
+          if ([string]::IsNullOrWhiteSpace($existingTag)) {
+            git push origin "refs/tags/$tag"
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to push repaired tag $tag."
+            }
+          } else {
+            $existingSha = ($existingTag -split "\s+")[0]
+            if ($existingSha -ne $headSha) {
+              throw "Remote tag $tag already exists at $existingSha, expected $headSha."
+            }
+
+            Write-Host "Remote tag $tag already points to $headSha."
+          }
+
+          $payload = @{
+            event_type = "build-on-self-runner"
+            client_payload = @{
+              tag = $tag
+              merge_sha = $headSha
+              repair_tag = $true
+            }
+          } | ConvertTo-Json -Depth 5
+
+          $headers = @{
+            Authorization = "Bearer $env:GITHUB_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+
+          Invoke-RestMethod `
+            -Method Post `
+            -Uri "https://api.github.com/repos/${{ github.repository }}/dispatches" `
+            -Headers $headers `
+            -ContentType "application/json" `
+            -Body $payload
+
+          Write-Host "Dispatched build-on-self-runner for repaired tag $tag."

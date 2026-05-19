@@ -265,13 +265,20 @@ def save_config(config_path: Path, data: dict[str, Any]) -> None:
         _yaml().dump(data, handle)
 
 
-def write_github_output(output_path: Path | None, updated: bool, tag: str | None) -> None:
+def write_github_output(
+    output_path: Path | None,
+    updated: bool,
+    tag: str | None,
+    repair_tag: bool = False,
+) -> None:
     """Write GitHub Actions step outputs when requested."""
     if output_path is None:
         return
     lines = [f"updated={'true' if updated else 'false'}"]
     if updated and tag:
         lines.append(f"tag={tag}")
+    if repair_tag:
+        lines.append("repair_tag=true")
     with output_path.open("a", encoding="utf-8") as handle:
         handle.write("\n".join(lines) + "\n")
 
@@ -494,7 +501,12 @@ def run(args: argparse.Namespace) -> int:
         append_download_entry(downloads, plan)
         save_config(config_path, data)
         create_commit_and_tag(config_path, plan.tag, plan.patch_version)
-    write_github_output(output_path, updated=True, tag=plan.tag)
+    write_github_output(
+        output_path,
+        updated=True,
+        tag=plan.tag,
+        repair_tag=plan.repair_tag,
+    )
     print(f"Prepared bump tag {plan.tag} for {patch_version}")
     return 0
 

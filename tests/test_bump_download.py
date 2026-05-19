@@ -481,6 +481,18 @@ class TestBumpDownload(unittest.TestCase):
                 output.read_text(encoding="utf-8"),
             )
 
+            repair_output = Path(tmp) / "repair_out.txt"
+            bump_download.write_github_output(
+                repair_output,
+                updated=True,
+                tag="14161",
+                repair_tag=True,
+            )
+            self.assertEqual(
+                "updated=true\ntag=14161\nrepair_tag=true\n",
+                repair_output.read_text(encoding="utf-8"),
+            )
+
     @patch("bump_download.subprocess.run")
     def test_create_commit_and_tag_runs_expected_git_commands(self, mock_run) -> None:
         bump_download.create_commit_and_tag(
@@ -908,7 +920,7 @@ class TestBumpDownload(unittest.TestCase):
         ensure_local_tag_matches_head.assert_called_once_with("14161")
         create_repair_tag.assert_called_once_with("14161")
         create_commit_and_tag.assert_not_called()
-        self.assertEqual("updated=true\ntag=14161\n", output_text)
+        self.assertEqual("updated=true\ntag=14161\nrepair_tag=true\n", output_text)
 
     @patch("bump_download.parse_args", return_value=argparse.Namespace())
     def test_main_maps_known_errors_to_exit_codes(self, _parse_args) -> None:
