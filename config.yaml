@@ -734,6 +734,12 @@ modules:
           - CNetworkClientService_vtable.{platform}.yaml
           - ../client/INetworkClientService_SendNetMessage.{platform}.yaml
 
+      - name: find-CNetworkClientService_GetDisconnectReason
+        expected_output:
+          - CNetworkClientService_GetDisconnectReason.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
       - name: find-CNetworkClientService_PrintSpawnGroupStatus
         expected_output:
           - CNetworkClientService_PrintSpawnGroupStatus.{platform}.yaml
@@ -1355,6 +1361,11 @@ modules:
         category: vfunc
         alias:
           - CNetworkClientService::SendNetMessage
+
+      - name: CNetworkClientService_GetDisconnectReason
+        category: vfunc
+        alias:
+          - CNetworkClientService::GetDisconnectReason
 
       - name: CNetworkClientService_PrintSpawnGroupStatus
         category: vfunc
