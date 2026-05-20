@@ -714,6 +714,12 @@ modules:
         expected_output:
           - CNetworkClientService_vtable.{platform}.yaml
 
+      - name: find-CNetworkClientService_ProcessGameSessionManifest
+        expected_output:
+          - CNetworkClientService_ProcessGameSessionManifest.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
       - name: find-CNetworkServerService_vtable
         expected_output:
           - CNetworkServerService_vtable.{platform}.yaml
@@ -1300,6 +1306,11 @@ modules:
 
       - name: CNetworkClientService_vtable
         category: vtable
+
+      - name: CNetworkClientService_ProcessGameSessionManifest
+        category: vfunc
+        alias:
+          - CNetworkClientService::ProcessGameSessionManifest
 
       - name: CNetworkServerService_vtable
         category: vtable
