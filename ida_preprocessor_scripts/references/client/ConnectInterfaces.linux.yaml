@@ -1,0 +1,236 @@
+func_name: ConnectInterfaces
+func_va: '0x1fa96a0'
+disasm_code: |-
+  .text:0000000001FA96A0                 push    rbp
+  .text:0000000001FA96A1                 movsxd  rax, esi
+  .text:0000000001FA96A4                 mov     rbp, rsp
+  .text:0000000001FA96A7                 push    r15
+  .text:0000000001FA96A9                 push    r14
+  .text:0000000001FA96AB                 push    r13
+  .text:0000000001FA96AD                 push    r12
+  .text:0000000001FA96AF                 push    rbx
+  .text:0000000001FA96B0                 sub     rsp, 18h
+  .text:0000000001FA96B4                 mov     esi, cs:dword_475B6E0
+  .text:0000000001FA96BA                 test    esi, esi
+  .text:0000000001FA96BC                 js      loc_1FA9867
+  .text:0000000001FA96C2                 mov     r12, rdi
+  .text:0000000001FA96C5                 jz      loc_1FA976C
+  .text:0000000001FA96CB                 test    eax, eax
+  .text:0000000001FA96CD                 jle     loc_1FA97FC
+  .text:0000000001FA96D3                 lea     rax, [rdi+rax*8]
+  .text:0000000001FA96D7                 mov     [rbp+var_38], rax
+  .text:0000000001FA96DB                 lea     rbx, off_4304490
+  .text:0000000001FA96E2                 lea     r13, unk_475AFE0
+  .text:0000000001FA96E9                 lea     r15, g_pInterfaceGlobals; "VApplication001"
+  .text:0000000001FA96F0                 lea     r14, qword_475BA78
+  .text:0000000001FA96F7                 nop     word ptr [rax+rax+00000000h]
+  .text:0000000001FA9700                 mov     rdi, [r15]
+  .text:0000000001FA9703                 xor     esi, esi
+  .text:0000000001FA9705                 call    qword ptr [r12]
+  .text:0000000001FA9709                 movsxd  rdi, cs:dword_475B6E0
+  .text:0000000001FA9710                 mov     r10, rax
+  .text:0000000001FA9713                 mov     [r14], rax
+  .text:0000000001FA9716                 test    edi, edi
+  .text:0000000001FA9718                 jle     loc_1FA9820
+  .text:0000000001FA971E                 lea     rax, unk_475AFE0
+  .text:0000000001FA9725                 movsxd  rsi, edi
+  .text:0000000001FA9728                 xor     edx, edx
+  .text:0000000001FA972A                 shl     rsi, 4
+  .text:0000000001FA972E                 add     rsi, rax
+  .text:0000000001FA9731                 nop     word ptr [rax+rax+00000000h]
+  .text:0000000001FA973C                 nop     dword ptr [rax+00h]
+  .text:0000000001FA9740                 cmp     [rax], r14
+  .text:0000000001FA9743                 setz    cl
+  .text:0000000001FA9746                 add     rax, 10h
+  .text:0000000001FA974A                 or      edx, ecx
+  .text:0000000001FA974C                 cmp     rax, rsi
+  .text:0000000001FA974F                 jnz     short loc_1FA9740
+  .text:0000000001FA9751                 test    dl, dl
+  .text:0000000001FA9753                 jz      loc_1FA9820
+  .text:0000000001FA9759                 add     r15, 10h
+  .text:0000000001FA975D                 cmp     r15, rbx
+  .text:0000000001FA9760                 jz      loc_1FA9854
+  .text:0000000001FA9766                 mov     r14, [r15+8]
+  .text:0000000001FA976A                 jmp     short loc_1FA9700
+  .text:0000000001FA976C                 test    eax, eax
+  .text:0000000001FA976E                 jle     loc_1FA97FC
+  .text:0000000001FA9774                 lea     rax, [rdi+rax*8]
+  .text:0000000001FA9778                 mov     r13, rdi
+  .text:0000000001FA977B                 mov     [rbp+var_38], rax
+  .text:0000000001FA977F                 lea     rbx, off_4304490
+  .text:0000000001FA9786                 lea     r14, unk_475AFE0
+  .text:0000000001FA978D                 lea     r12, g_pInterfaceGlobals; "VApplication001"
+  .text:0000000001FA9794                 jmp     short loc_1FA97A9
+  .text:0000000001FA97A0                 add     r12, 10h
+  .text:0000000001FA97A4                 cmp     rbx, r12
+  .text:0000000001FA97A7                 jz      short loc_1FA97F2
+  .text:0000000001FA97A9                 mov     r15, [r12+8]
+  .text:0000000001FA97AE                 cmp     qword ptr [r15], 0
+  .text:0000000001FA97B2                 jnz     short loc_1FA97A0
+  .text:0000000001FA97B4                 mov     rdi, [r12]
+  .text:0000000001FA97B8                 xor     esi, esi
+  .text:0000000001FA97BA                 call    qword ptr [r13+0]
+  .text:0000000001FA97BE                 mov     [r15], rax
+  .text:0000000001FA97C1                 test    rax, rax
+  .text:0000000001FA97C4                 jz      short loc_1FA97A0
+  .text:0000000001FA97C6                 movsxd  rax, cs:dword_475B6E0
+  .text:0000000001FA97CD                 add     r12, 10h
+  .text:0000000001FA97D1                 mov     edx, cs:dword_475B6E4
+  .text:0000000001FA97D7                 lea     ecx, [rax+1]
+  .text:0000000001FA97DA                 shl     rax, 4
+  .text:0000000001FA97DE                 add     rax, r14
+  .text:0000000001FA97E1                 mov     cs:dword_475B6E0, ecx
+  .text:0000000001FA97E7                 mov     [rax], r15
+  .text:0000000001FA97EA                 mov     [rax+8], edx
+  .text:0000000001FA97ED                 cmp     rbx, r12
+  .text:0000000001FA97F0                 jnz     short loc_1FA97A9
+  .text:0000000001FA97F2                 add     r13, 8
+  .text:0000000001FA97F6                 cmp     [rbp+var_38], r13
+  .text:0000000001FA97FA                 jnz     short loc_1FA978D
+  .text:0000000001FA97FC                 add     cs:dword_475B6E4, 1
+  .text:0000000001FA9803                 add     rsp, 18h
+  .text:0000000001FA9807                 pop     rbx
+  .text:0000000001FA9808                 pop     r12
+  .text:0000000001FA980A                 pop     r13
+  .text:0000000001FA980C                 pop     r14
+  .text:0000000001FA980E                 pop     r15
+  .text:0000000001FA9810                 pop     rbp
+  .text:0000000001FA9811                 jmp     sub_1FA9560
+  .text:0000000001FA9820                 test    r10, r10
+  .text:0000000001FA9823                 jz      loc_1FA9759
+  .text:0000000001FA9829                 mov     edx, cs:dword_475B6E4
+  .text:0000000001FA982F                 lea     eax, [rdi+1]
+  .text:0000000001FA9832                 shl     rdi, 4
+  .text:0000000001FA9836                 add     r15, 10h
+  .text:0000000001FA983A                 mov     cs:dword_475B6E0, eax
+  .text:0000000001FA9840                 lea     rax, [r13+rdi+0]
+  .text:0000000001FA9845                 mov     [rax], r14
+  .text:0000000001FA9848                 mov     [rax+8], edx
+  .text:0000000001FA984B                 cmp     r15, rbx
+  .text:0000000001FA984E                 jnz     loc_1FA9766
+  .text:0000000001FA9854                 mov     rax, [rbp+var_38]
+  .text:0000000001FA9858                 add     r12, 8
+  .text:0000000001FA985C                 cmp     r12, rax
+  .text:0000000001FA985F                 jnz     loc_1FA96E9
+  .text:0000000001FA9865                 jmp     short loc_1FA97FC
+  .text:0000000001FA9867                 lea     rdi, aAppsystemInCon; "APPSYSTEM: In ConnectInterfaces(), s_nR"...
+  .text:0000000001FA986E                 xor     eax, eax
+  .text:0000000001FA9870                 call    _Plat_FatalError
+procedure: |-
+  __int64 __fastcall ConnectInterfaces(
+          __int64 (__fastcall **a1)(void (__fastcall **)(__cxxabiv1::__class_type_info *__hidden this), _QWORD),
+          int a2)
+  {
+    __int64 (__fastcall **v2)(void (__fastcall **)(__cxxabiv1::__class_type_info *__hidden), _QWORD); // r12
+    void (__fastcall ***v3)(__cxxabiv1::__class_type_info *__hidden); // r15
+    __int64 *i; // r14
+    __int64 v5; // rax
+    __int64 v6; // rdi
+    __int64 v7; // r10
+    char *v8; // rax
+    char v9; // dl
+    bool v10; // cl
+    __int64 (__fastcall **v11)(void (__fastcall **)(__cxxabiv1::__class_type_info *__hidden), _QWORD); // r13
+    void (__fastcall ***v12)(__cxxabiv1::__class_type_info *__hidden); // r12
+    __int64 *v13; // r15
+    __int64 v14; // rax
+    int v15; // edx
+    char *v16; // rax
+    int v18; // edx
+    char *v19; // rax
+    __int64 (__fastcall **v20)(void (__fastcall **)(__cxxabiv1::__class_type_info *__hidden), _QWORD); // [rsp+8h] [rbp-38h]
+
+    if ( dword_475B6E0 < 0 )
+    {
+      Plat_FatalError("APPSYSTEM: In ConnectInterfaces(), s_nRegistrationCount is %d!\n", dword_475B6E0);
+      JUMPOUT(0x1FA9875);
+    }
+    v2 = a1;
+    if ( dword_475B6E0 )
+    {
+      if ( a2 > 0 )
+      {
+        v20 = &a1[a2];
+        do
+        {
+          v3 = (void (__fastcall ***)(__cxxabiv1::__class_type_info *__hidden))&g_pInterfaceGlobals;
+          for ( i = (__int64 *)&qword_475BA78; ; i = (__int64 *)v3[1] )
+          {
+            v5 = (*v2)(*v3, 0);
+            v6 = dword_475B6E0;
+            v7 = v5;
+            *i = v5;
+            if ( (int)v6 <= 0 )
+              goto LABEL_21;
+            v8 = (char *)&unk_475AFE0;
+            v9 = 0;
+            do
+            {
+              v10 = *(_QWORD *)v8 == (_QWORD)i;
+              v8 += 16;
+              v9 |= v10;
+            }
+            while ( v8 != (char *)&unk_475AFE0 + 16 * (int)v6 );
+            if ( !v9 )
+            {
+  LABEL_21:
+              if ( v7 )
+                break;
+            }
+            v3 += 2;
+            if ( v3 == &off_4304490 )
+              goto LABEL_23;
+  LABEL_11:
+            ;
+          }
+          v18 = dword_475B6E4;
+          v3 += 2;
+          dword_475B6E0 = v6 + 1;
+          v19 = (char *)&unk_475AFE0 + 16 * v6;
+          *(_QWORD *)v19 = i;
+          *((_DWORD *)v19 + 2) = v18;
+          if ( v3 != &off_4304490 )
+            goto LABEL_11;
+  LABEL_23:
+          ++v2;
+        }
+        while ( v2 != v20 );
+      }
+    }
+    else if ( a2 > 0 )
+    {
+      v11 = a1;
+      do
+      {
+        v12 = (void (__fastcall ***)(__cxxabiv1::__class_type_info *__hidden))&g_pInterfaceGlobals;
+        do
+        {
+          while ( 1 )
+          {
+            v13 = (__int64 *)v12[1];
+            if ( !*v13 )
+            {
+              v14 = (*v11)(*v12, 0);
+              *v13 = v14;
+              if ( v14 )
+                break;
+            }
+            v12 += 2;
+            if ( &off_4304490 == v12 )
+              goto LABEL_19;
+          }
+          v12 += 2;
+          v15 = dword_475B6E4;
+          v16 = (char *)&unk_475AFE0 + 16 * dword_475B6E0++;
+          *(_QWORD *)v16 = v13;
+          *((_DWORD *)v16 + 2) = v15;
+        }
+        while ( &off_4304490 != v12 );
+  LABEL_19:
+        ++v11;
+      }
+      while ( &a1[a2] != v11 );
+    }
+    ++dword_475B6E4;
+    return sub_1FA9560();
+  }

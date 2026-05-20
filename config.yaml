@@ -1289,6 +1289,10 @@ modules:
         expected_input:
           - CNetworkGameClientBase_vtable.{platform}.yaml
 
+      - name: find-CNetSupportImpl_vtable
+        expected_output:
+          - CNetSupportImpl_vtable.{platform}.yaml
+
     symbols:
       - name: CNetworkGameServer_vtable
         category: vtable
@@ -1972,6 +1976,20 @@ modules:
         alias:
           - CNetworkGameClientBase::DisconnectGame
 
+      - name: CNetSupportImpl_vtable
+        category: vtable
+
+      - name: CNetSupportImpl_Connect
+        category: vfunc
+        alias:
+          - CNetSupportImpl::Connect
+
+      - name: ConnectInterfaces
+        category: func
+
+      - name: g_pInterfaceGlobals
+        category: gv
+
   - name: client
     path_windows: game/csgo/bin/win64/client.dll
     path_linux: game/csgo/bin/linuxsteamrt64/libclient.so
@@ -2419,6 +2437,16 @@ modules:
         expected_input:
           - SendViolationReport.{platform}.yaml
 
+      - name: find-ConnectInterfaces
+        expected_output:
+          - ConnectInterfaces.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals
+        expected_output:
+          - g_pInterfaceGlobals.{platform}.yaml
+        expected_input:
+          - ConnectInterfaces.{platform}.yaml
+
     symbols:
       - name: CLoopModeGame_RegisterEventMapInternal
         category: func
@@ -2837,6 +2865,12 @@ modules:
         category: vfunc
         alias:
           - INetworkClientService::SendNetMessage
+
+      - name: ConnectInterfaces
+        category: func
+
+      - name: g_pInterfaceGlobals
+        category: gv
 
   - name: server
     path_windows: game/csgo/bin/win64/server.dll
@@ -3618,6 +3652,12 @@ modules:
           - CSource2Server_Connect.{platform}.yaml
         expected_input:
           - CSource2Server_vtable.{platform}.yaml
+
+      - name: find-IAppSystem_Connect
+        expected_output:
+          - IAppSystem_Connect.{platform}.yaml
+        expected_input:
+          - CSource2Server_Connect.{platform}.yaml
 
       - name: find-CSource2Server_Init
         expected_output:
@@ -5276,6 +5316,16 @@ modules:
         expected_output:
           - CNavPhysicsInterface_vtable.{platform}.yaml
 
+      - name: find-ConnectInterfaces
+        expected_output:
+          - ConnectInterfaces.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals
+        expected_output:
+          - g_pInterfaceGlobals.{platform}.yaml
+        expected_input:
+          - ConnectInterfaces.{platform}.yaml
+
     symbols:
       - name: CSource2Server_vtable
         category: vtable
@@ -6240,6 +6290,11 @@ modules:
         category: vfunc
         alias:
           - CSource2Server::Connect
+
+      - name: IAppSystem_Connect
+        category: vfunc
+        alias:
+          - IAppSystem::Connect
 
       - name: CSource2Server_GameFrame
         category: vfunc
@@ -7983,6 +8038,12 @@ modules:
       - name: CNavPhysicsInterface_vtable
         category: vtable
 
+      - name: ConnectInterfaces
+        category: func
+
+      - name: g_pInterfaceGlobals
+        category: gv
+
   - name: engine # Execute skills for engine2.dll again after client.dll
     path_windows: game/bin/win64/engine2.dll
     path_linux: game/bin/linuxsteamrt64/libengine2.so
@@ -8006,6 +8067,25 @@ modules:
           - CLoopTypeBase_GetClientServerMode.{platform}.yaml
         expected_input:
           - CEngineServiceMgr_GetActiveLoopClientServerMode.{platform}.yaml
+
+      - name: find-CNetSupportImpl_Connect
+        expected_output:
+          - CNetSupportImpl_Connect.{platform}.yaml
+        expected_input:
+          - ../server/IAppSystem_Connect.{platform}.yaml
+          - CNetSupportImpl_vtable.{platform}.yaml
+
+      - name: find-ConnectInterfaces
+        expected_output:
+          - ConnectInterfaces.{platform}.yaml
+        expected_input:
+          - CNetSupportImpl_Connect.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals
+        expected_output:
+          - g_pInterfaceGlobals.{platform}.yaml
+        expected_input:
+          - ConnectInterfaces.{platform}.yaml
 
   - name: networksystem # Execute skills for networksystem.dll again after server.dll
     path_windows: game/bin/win64/networksystem.dll
