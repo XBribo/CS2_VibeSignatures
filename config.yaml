@@ -714,6 +714,142 @@ modules:
         expected_output:
           - CNetworkClientService_vtable.{platform}.yaml
 
+      - name: find-CNetworkClientService_ReceivedServerInfo
+        expected_output:
+          - CNetworkClientService_ReceivedServerInfo.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_SplitScreenConnect
+        expected_output:
+          - CNetworkClientService_SplitScreenConnect.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_SendNetMessage
+        platform: windows
+        expected_output:
+          - CNetworkClientService_SendNetMessage.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+          - ../client/INetworkClientService_SendNetMessage.{platform}.yaml
+
+      - name: find-CNetworkClientService_SendStringCmd
+        expected_output:
+          - CNetworkClientService_SendStringCmd.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_SendStringCmd.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_StartChangeLevel
+        expected_output:
+          - CNetworkClientService_StartChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_StartChangeLevel.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_FinishChangeLevel
+        expected_output:
+          - CNetworkClientService_FinishChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_FinishChangeLevel.{platform}.yaml
+          - CNetworkGameClientBase_DeferActivate.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_PrintConnectionStatus
+        expected_output:
+          - CNetworkClientService_PrintConnectionStatus.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_OnStatus
+        expected_output:
+          - CNetworkClientService_OnStatus.{platform}.yaml
+
+      - name: find-CNetworkClientService_ServerCmd
+        platform: windows
+        expected_output:
+          - CNetworkClientService_ServerCmd.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_GetDisconnectReason
+        expected_output:
+          - CNetworkClientService_GetDisconnectReason.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_PrintSpawnGroupStatus
+        expected_output:
+          - CNetworkClientService_PrintSpawnGroupStatus.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_IsActive
+        expected_output:
+          - CNetworkClientService_IsActive.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+          - INetworkClientService_IsActive.{platform}.yaml
+
+      - name: find-CNetworkClientService_IsConnected
+        expected_output:
+          - CNetworkClientService_IsConnected.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+          - INetworkClientService_IsConnected.{platform}.yaml
+
+      - name: find-CNetworkClientService_ClockDriftAdjustFrameTime
+        expected_output:
+          - CNetworkClientService_ClockDriftAdjustFrameTime.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_ClockDrift_AdjustFrameTime.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_Init
+        expected_output:
+          - CNetworkClientService_Init.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_Shutdown
+        expected_output:
+          - CNetworkClientService_Shutdown.{platform}.yaml
+        expected_input:
+          - IAppSystem_Shutdown.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_DisconnectGameNow
+        expected_output:
+          - CNetworkClientService_DisconnectGameNow.{platform}.yaml
+        expected_input:
+          - CNetworkGameClient_DisconnectGame.{platform}.yaml
+          - CNetworkClientService_Shutdown.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CGameClientConnectPrerequisite_vtable
+        expected_output:
+          - CGameClientConnectPrerequisite_vtable.{platform}.yaml
+
+      - name: find-CGameClientConnectPrerequisite_ctor
+        expected_output:
+          - CGameClientConnectPrerequisite_ctor.{platform}.yaml
+        expected_input:
+          - CGameClientConnectPrerequisite_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_AddClientPrerequisites
+        expected_output:
+          - CNetworkClientService_AddClientPrerequisites.{platform}.yaml
+        expected_input:
+          - CGameClientConnectPrerequisite_ctor.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_AllocateRemoteConnectionClient
+        expected_output:
+          - CNetworkClientService_AllocateRemoteConnectionClient.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
       - name: find-CNetworkServerService_vtable
         expected_output:
           - CNetworkServerService_vtable.{platform}.yaml
@@ -772,6 +908,16 @@ modules:
           - CNetworkGameClient_RecordEntityBandwidth.{platform}.yaml
         expected_input:
           - CNetworkServerService_Init.{platform}.yaml
+
+      - name: find-CNetworkGameClient_vtable
+        expected_output:
+          - CNetworkGameClient_vtable.{platform}.yaml
+
+      - name: find-CNetworkGameClient_DisconnectGame
+        expected_output:
+          - CNetworkGameClient_DisconnectGame.{platform}.yaml
+        expected_input:
+          - CNetworkGameClient_vtable.{platform}.yaml
 
       - name: find-INetworkMessages_FindNetworkGroup
         expected_output:
@@ -1105,6 +1251,48 @@ modules:
         expected_input:
           - CNetworkGameClientBase_vtable.{platform}.yaml
 
+      - name: find-CNetworkGameClientBase_SendStringCmd
+        expected_output:
+          - CNetworkGameClientBase_SendStringCmd.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_vtable.{platform}.yaml
+
+      - name: find-CNetworkGameClientBase_StartChangeLevel
+        expected_output:
+          - CNetworkGameClientBase_StartChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_vtable.{platform}.yaml
+
+      - name: find-CNetworkGameClientBase_FinishChangeLevel
+        expected_output:
+          - CNetworkGameClientBase_FinishChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_vtable.{platform}.yaml
+
+      - name: find-CNetworkGameClientBase_DeferActivate
+        expected_output:
+          - CNetworkGameClientBase_DeferActivate.{platform}.yaml
+
+      - name: find-CNetworkGameClientBase_ClockDrift_AdjustFrameTime
+        expected_output:
+          - CNetworkGameClientBase_ClockDrift_AdjustFrameTime.{platform}.yaml
+
+      - name: find-CNetworkGameClientBase_Connect
+        expected_output:
+          - CNetworkGameClientBase_Connect.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_vtable.{platform}.yaml
+
+      - name: find-CNetworkGameClientBase_DisconnectGame
+        expected_output:
+          - CNetworkGameClientBase_DisconnectGame.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_vtable.{platform}.yaml
+
+      - name: find-CNetSupportImpl_vtable
+        expected_output:
+          - CNetSupportImpl_vtable.{platform}.yaml
+
     symbols:
       - name: CNetworkGameServer_vtable
         category: vtable
@@ -1277,6 +1465,14 @@ modules:
           - CNetworkGameClient::RecordEntityBandwidth
           - RecordEntityBandwidth
 
+      - name: CNetworkGameClient_vtable
+        category: vtable
+
+      - name: CNetworkGameClient_DisconnectGame
+        category: vfunc
+        alias:
+          - CNetworkGameClient::DisconnectGame
+
       - name: INetworkMessages_FindNetworkGroup
         category: vfunc
         alias:
@@ -1300,6 +1496,109 @@ modules:
 
       - name: CNetworkClientService_vtable
         category: vtable
+
+      - name: CNetworkClientService_ReceivedServerInfo
+        category: vfunc
+        alias:
+          - CNetworkClientService::ReceivedServerInfo
+
+      - name: CNetworkClientService_SplitScreenConnect
+        category: vfunc
+        alias:
+          - CNetworkClientService::SplitScreenConnect
+
+      - name: CNetworkClientService_SendNetMessage
+        category: vfunc
+        alias:
+          - CNetworkClientService::SendNetMessage
+
+      - name: CNetworkClientService_SendStringCmd
+        category: vfunc
+        alias:
+          - CNetworkClientService::SendStringCmd
+
+      - name: CNetworkClientService_StartChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkClientService::StartChangeLevel
+
+      - name: CNetworkClientService_FinishChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkClientService::FinishChangeLevel
+
+      - name: CNetworkClientService_PrintConnectionStatus
+        category: vfunc
+        alias:
+          - CNetworkClientService::PrintConnectionStatus
+
+      - name: CNetworkClientService_OnStatus
+        category: func
+        alias:
+          - CNetworkClientService::OnStatus
+
+      - name: CNetworkClientService_ServerCmd
+        category: vfunc
+        alias:
+          - CNetworkClientService::ServerCmd
+
+      - name: CNetworkClientService_GetDisconnectReason
+        category: vfunc
+        alias:
+          - CNetworkClientService::GetDisconnectReason
+
+      - name: CNetworkClientService_PrintSpawnGroupStatus
+        category: vfunc
+        alias:
+          - CNetworkClientService::PrintSpawnGroupStatus
+
+      - name: CNetworkClientService_IsActive
+        category: vfunc
+        alias:
+          - CNetworkClientService::IsActive
+
+      - name: CNetworkClientService_IsConnected
+        category: vfunc
+        alias:
+          - CNetworkClientService::IsConnected
+
+      - name: CNetworkClientService_ClockDriftAdjustFrameTime
+        category: vfunc
+        alias:
+          - CNetworkClientService::ClockDriftAdjustFrameTime
+
+      - name: CNetworkClientService_Init
+        category: vfunc
+        alias:
+          - CNetworkClientService::Init
+
+      - name: CNetworkClientService_Shutdown
+        category: vfunc
+        alias:
+          - CNetworkClientService::Shutdown
+
+      - name: CNetworkClientService_DisconnectGameNow
+        category: vfunc
+        alias:
+          - CNetworkClientService::DisconnectGameNow
+
+      - name: CGameClientConnectPrerequisite_vtable
+        category: vtable
+
+      - name: CGameClientConnectPrerequisite_ctor
+        category: func
+        alias:
+          - CGameClientConnectPrerequisite::CGameClientConnectPrerequisite
+
+      - name: CNetworkClientService_AddClientPrerequisites
+        category: vfunc
+        alias:
+          - CNetworkClientService::AddClientPrerequisites
+
+      - name: CNetworkClientService_AllocateRemoteConnectionClient
+        category: vfunc
+        alias:
+          - CNetworkClientService::AllocateRemoteConnectionClient
 
       - name: CNetworkServerService_vtable
         category: vtable
@@ -1641,6 +1940,393 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameClientBase::ProcessSetConVar
+
+      - name: CNetworkGameClientBase_SendStringCmd
+        category: vfunc
+        alias:
+          - CNetworkGameClientBase::SendStringCmd
+
+      - name: CNetworkGameClientBase_StartChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkGameClientBase::StartChangeLevel
+
+      - name: CNetworkGameClientBase_FinishChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkGameClientBase::FinishChangeLevel
+
+      - name: CNetworkGameClientBase_DeferActivate
+        category: func
+        alias:
+          - CNetworkGameClientBase::DeferActivate
+
+      - name: CNetworkGameClientBase_ClockDrift_AdjustFrameTime
+        category: func
+        alias:
+          - CNetworkGameClientBase::ClockDrift_AdjustFrameTime
+
+      - name: CNetworkGameClientBase_Connect
+        category: vfunc
+        alias:
+          - CNetworkGameClientBase::Connect
+
+      - name: CNetworkGameClientBase_DisconnectGame
+        category: vfunc
+        alias:
+          - CNetworkGameClientBase::DisconnectGame
+
+      - name: CNetSupportImpl_vtable
+        category: vtable
+
+      - name: CNetSupportImpl_Connect
+        category: vfunc
+        alias:
+          - CNetSupportImpl::Connect
+
+      - name: ConnectInterfaces
+        category: func
+
+      - name: g_pVApplication
+        category: gv
+
+      - name: g_pVEngineCvar
+        category: gv
+
+      - name: g_pVStringTokenSystem
+        category: gv
+
+      - name: g_pTestScriptMgr
+        category: gv
+
+      - name: g_pProcessUtils
+        category: gv
+
+      - name: g_pFileSystem
+        category: gv
+
+      - name: g_pAsyncFileSystem
+        category: gv
+
+      - name: g_pResourceSystem
+        category: gv
+
+      - name: g_pResourceManifestRegistry
+        category: gv
+
+      - name: g_pResourceHandleUtils
+        category: gv
+
+      - name: g_pSchemaSystem
+        category: gv
+
+      - name: g_pResourceCompilerSystem
+        category: gv
+
+      - name: g_pMaterialSystem2
+        category: gv
+
+      - name: g_pPostProcessingSystem
+        category: gv
+
+      - name: g_pInputSystem
+        category: gv
+
+      - name: g_pInputStackSystem
+        category: gv
+
+      - name: g_pRenderDeviceMgr
+        category: gv
+
+      - name: g_pRenderUtils
+        category: gv
+
+      - name: g_pSoundSystem
+        category: gv
+
+      - name: g_pSoundOpSystemEdit
+        category: gv
+
+      - name: g_pSoundOpSystem
+        category: gv
+
+      - name: g_pSteamAudio
+        category: gv
+
+      - name: g_pVP4
+        category: gv
+
+      - name: g_pLocalize
+        category: gv
+
+      - name: g_pMediaFoundation
+        category: gv
+
+      - name: g_pAVI
+        category: gv
+
+      - name: g_pWEBM
+        category: gv
+
+      - name: g_pBIK
+        category: gv
+
+      - name: g_pMeshSystem
+        category: gv
+
+      - name: g_pMeshUtils
+        category: gv
+
+      - name: g_pRenderDevice
+        category: gv
+
+      - name: g_pRenderDeviceSetup
+        category: gv
+
+      - name: g_pRenderHardwareConfig
+        category: gv
+
+      - name: g_pSceneSystem
+        category: gv
+
+      - name: g_pIPulseSystem
+        category: gv
+
+      - name: g_pSceneUtils
+        category: gv
+
+      - name: g_pWorldRendererMgr
+        category: gv
+
+      - name: g_pAssetSystem
+        category: gv
+
+      - name: g_pAssetSystemTest
+        category: gv
+
+      - name: g_pParticleSystemMgr
+        category: gv
+
+      - name: g_pScriptManager
+        category: gv
+
+      - name: g_pPropertyEditorSystem
+        category: gv
+
+      - name: g_pMatchFramework
+        category: gv
+
+      - name: g_pSource2V8System
+        category: gv
+
+      - name: g_pPanoramaUIEngine
+        category: gv
+
+      - name: g_pPanoramaUIClient
+        category: gv
+
+      - name: g_pPanoramaTextServices
+        category: gv
+
+      - name: g_pToolFramework2
+        category: gv
+
+      - name: g_pPhysicsBuilderMgr
+        category: gv
+
+      - name: g_pVisBuilder
+        category: gv
+
+      - name: g_pBakedLODBuilderMgr
+        category: gv
+
+      - name: g_pHelpSystem
+        category: gv
+
+      - name: g_pToolSceneNodeFactory
+        category: gv
+
+      - name: g_pEconItemToolModel
+        category: gv
+
+      - name: g_pSchemaTestExternalTwo
+        category: gv
+
+      - name: g_pSchemaTestExternalOne
+        category: gv
+
+      - name: g_pAnimationSystem
+        category: gv
+
+      - name: g_pAnimationSystemUtils
+        category: gv
+
+      - name: g_pHammerMapLoader
+        category: gv
+
+      - name: g_pMaterialUtils
+        category: gv
+
+      - name: g_pFontManager
+        category: gv
+
+      - name: g_pTextLayout
+        category: gv
+
+      - name: g_pAssetPreviewSystem
+        category: gv
+
+      - name: g_pAssetBrowserSystem
+        category: gv
+
+      - name: g_pAssetRenameSystem
+        category: gv
+
+      - name: g_pVConComm
+        category: gv
+
+      - name: g_pModelProcessingServices
+        category: gv
+
+      - name: g_pNetworkSystem
+        category: gv
+
+      - name: g_pNetworkMessages
+        category: gv
+
+      - name: g_pFlattenedSerializers
+        category: gv
+
+      - name: g_pSerializedEntities
+        category: gv
+
+      - name: g_pDemoUpconverter
+        category: gv
+
+      - name: g_pSource2Client
+        category: gv
+
+      - name: g_pSource2ClientUI
+        category: gv
+
+      - name: g_pSource2ClientPrediction
+        category: gv
+
+      - name: g_pSource2Server
+        category: gv
+
+      - name: g_pSource2Host
+        category: gv
+
+      - name: g_pSource2ModTools
+        category: gv
+
+      - name: g_pSource2GameClients
+        category: gv
+
+      - name: g_pSource2GameEntities
+        category: gv
+
+      - name: g_pEngineServiceMgr
+        category: gv
+
+      - name: g_pHostStateMgr
+        category: gv
+
+      - name: g_pNetworkService
+        category: gv
+
+      - name: g_pNetworkClientService
+        category: gv
+
+      - name: g_pNetworkP2PService
+        category: gv
+
+      - name: g_pNetworkServerService
+        category: gv
+
+      - name: g_pToolService
+        category: gv
+
+      - name: g_pRenderService
+        category: gv
+
+      - name: g_pStatsService
+        category: gv
+
+      - name: g_pVProfService
+        category: gv
+
+      - name: g_pInputService
+        category: gv
+
+      - name: g_pMapListService
+        category: gv
+
+      - name: g_pGameUIService
+        category: gv
+
+      - name: g_pSoundService
+        category: gv
+
+      - name: g_pBenchmarkService
+        category: gv
+
+      - name: g_pKeyValueCache
+        category: gv
+
+      - name: g_pClientServerSharedHandleSystem
+        category: gv
+
+      - name: g_pGameResourceServiceClient
+        category: gv
+
+      - name: g_pGameResourceServiceServer
+        category: gv
+
+      - name: g_pSource2EngineToClient
+        category: gv
+
+      - name: g_pSource2EngineToServer
+        category: gv
+
+      - name: g_pSource2EngineToServerStringTable
+        category: gv
+
+      - name: g_pSource2EngineToClientStringTable
+        category: gv
+
+      - name: g_pVPhysics2
+        category: gv
+
+      - name: g_pModelDocUtils
+        category: gv
+
+      - name: g_pAnimGraphEditorUtils
+        category: gv
+
+      - name: g_pExportSystem
+        category: gv
+
+      - name: g_pServerToolsInfo
+        category: gv
+
+      - name: g_pClientToolsInfo
+        category: gv
+
+      - name: g_pRAD3
+        category: gv
+
+      - name: g_pNavSystem
+        category: gv
+        platform: windows
+
+      - name: g_pNavGameTest
+        category: gv
+        platform: windows
+
+      - name: g_pInterfaceGlobals
+        category: gv
 
   - name: client
     path_windows: game/csgo/bin/win64/client.dll
@@ -2068,6 +2754,155 @@ modules:
         expected_input:
           - CSkeletonInstance_PostDataUpdate.{platform}.yaml
 
+      - name: find-CUserMessage_ExtraUserData_vtable
+        expected_output:
+          - CUserMessage_ExtraUserData_vtable.{platform}.yaml
+
+      - name: find-SendViolationReport-windows
+        platform: windows
+        expected_output:
+          - SendViolationReport.{platform}.yaml
+        expected_input:
+          - CUserMessage_ExtraUserData_vtable.{platform}.yaml
+
+      - name: find-IVEngineClient2_GetNetworkClient-AND-INetworkClient_GetLocalAddress-AND-INetworkClientService_IsConnected-AND-INetworkClientService_SendNetMessage
+        platform: windows
+        expected_output:
+          - IVEngineClient2_GetNetworkClient.{platform}.yaml
+          - INetworkClient_GetLocalAddress.{platform}.yaml
+          - INetworkClientService_IsConnected.{platform}.yaml
+          - INetworkClientService_SendNetMessage.{platform}.yaml
+        expected_input:
+          - SendViolationReport.{platform}.yaml
+
+      - name: find-ConnectInterfaces
+        expected_output:
+          - ConnectInterfaces.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals
+        expected_output:
+          - g_pInterfaceGlobals.{platform}.yaml
+        expected_input:
+          - ConnectInterfaces.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals_ppGlobal
+        expected_output:
+          - g_pVApplication.{platform}.yaml
+          - g_pVEngineCvar.{platform}.yaml
+          - g_pVStringTokenSystem.{platform}.yaml
+          - g_pTestScriptMgr.{platform}.yaml
+          - g_pProcessUtils.{platform}.yaml
+          - g_pFileSystem.{platform}.yaml
+          - g_pAsyncFileSystem.{platform}.yaml
+          - g_pResourceSystem.{platform}.yaml
+          - g_pResourceManifestRegistry.{platform}.yaml
+          - g_pResourceHandleUtils.{platform}.yaml
+          - g_pSchemaSystem.{platform}.yaml
+          - g_pResourceCompilerSystem.{platform}.yaml
+          - g_pMaterialSystem2.{platform}.yaml
+          - g_pPostProcessingSystem.{platform}.yaml
+          - g_pInputSystem.{platform}.yaml
+          - g_pInputStackSystem.{platform}.yaml
+          - g_pRenderDeviceMgr.{platform}.yaml
+          - g_pRenderUtils.{platform}.yaml
+          - g_pSoundSystem.{platform}.yaml
+          - g_pSoundOpSystemEdit.{platform}.yaml
+          - g_pSoundOpSystem.{platform}.yaml
+          - g_pSteamAudio.{platform}.yaml
+          - g_pVP4.{platform}.yaml
+          - g_pLocalize.{platform}.yaml
+          - g_pMediaFoundation.{platform}.yaml
+          - g_pAVI.{platform}.yaml
+          - g_pWEBM.{platform}.yaml
+          - g_pBIK.{platform}.yaml
+          - g_pMeshSystem.{platform}.yaml
+          - g_pMeshUtils.{platform}.yaml
+          - g_pRenderDevice.{platform}.yaml
+          - g_pRenderDeviceSetup.{platform}.yaml
+          - g_pRenderHardwareConfig.{platform}.yaml
+          - g_pSceneSystem.{platform}.yaml
+          - g_pIPulseSystem.{platform}.yaml
+          - g_pSceneUtils.{platform}.yaml
+          - g_pWorldRendererMgr.{platform}.yaml
+          - g_pAssetSystem.{platform}.yaml
+          - g_pAssetSystemTest.{platform}.yaml
+          - g_pParticleSystemMgr.{platform}.yaml
+          - g_pScriptManager.{platform}.yaml
+          - g_pPropertyEditorSystem.{platform}.yaml
+          - g_pMatchFramework.{platform}.yaml
+          - g_pSource2V8System.{platform}.yaml
+          - g_pPanoramaUIEngine.{platform}.yaml
+          - g_pPanoramaUIClient.{platform}.yaml
+          - g_pPanoramaTextServices.{platform}.yaml
+          - g_pToolFramework2.{platform}.yaml
+          - g_pPhysicsBuilderMgr.{platform}.yaml
+          - g_pVisBuilder.{platform}.yaml
+          - g_pBakedLODBuilderMgr.{platform}.yaml
+          - g_pHelpSystem.{platform}.yaml
+          - g_pToolSceneNodeFactory.{platform}.yaml
+          - g_pEconItemToolModel.{platform}.yaml
+          - g_pSchemaTestExternalTwo.{platform}.yaml
+          - g_pSchemaTestExternalOne.{platform}.yaml
+          - g_pAnimationSystem.{platform}.yaml
+          - g_pAnimationSystemUtils.{platform}.yaml
+          - g_pHammerMapLoader.{platform}.yaml
+          - g_pMaterialUtils.{platform}.yaml
+          - g_pFontManager.{platform}.yaml
+          - g_pTextLayout.{platform}.yaml
+          - g_pAssetPreviewSystem.{platform}.yaml
+          - g_pAssetBrowserSystem.{platform}.yaml
+          - g_pAssetRenameSystem.{platform}.yaml
+          - g_pVConComm.{platform}.yaml
+          - g_pModelProcessingServices.{platform}.yaml
+          - g_pNetworkSystem.{platform}.yaml
+          - g_pNetworkMessages.{platform}.yaml
+          - g_pFlattenedSerializers.{platform}.yaml
+          - g_pSerializedEntities.{platform}.yaml
+          - g_pDemoUpconverter.{platform}.yaml
+          - g_pSource2Client.{platform}.yaml
+          - g_pSource2ClientUI.{platform}.yaml
+          - g_pSource2ClientPrediction.{platform}.yaml
+          - g_pSource2Server.{platform}.yaml
+          - g_pSource2Host.{platform}.yaml
+          - g_pSource2ModTools.{platform}.yaml
+          - g_pSource2GameClients.{platform}.yaml
+          - g_pSource2GameEntities.{platform}.yaml
+          - g_pEngineServiceMgr.{platform}.yaml
+          - g_pHostStateMgr.{platform}.yaml
+          - g_pNetworkService.{platform}.yaml
+          - g_pNetworkClientService.{platform}.yaml
+          - g_pNetworkP2PService.{platform}.yaml
+          - g_pNetworkServerService.{platform}.yaml
+          - g_pToolService.{platform}.yaml
+          - g_pRenderService.{platform}.yaml
+          - g_pStatsService.{platform}.yaml
+          - g_pVProfService.{platform}.yaml
+          - g_pInputService.{platform}.yaml
+          - g_pMapListService.{platform}.yaml
+          - g_pGameUIService.{platform}.yaml
+          - g_pSoundService.{platform}.yaml
+          - g_pBenchmarkService.{platform}.yaml
+          - g_pKeyValueCache.{platform}.yaml
+          - g_pClientServerSharedHandleSystem.{platform}.yaml
+          - g_pGameResourceServiceClient.{platform}.yaml
+          - g_pGameResourceServiceServer.{platform}.yaml
+          - g_pSource2EngineToClient.{platform}.yaml
+          - g_pSource2EngineToServer.{platform}.yaml
+          - g_pSource2EngineToServerStringTable.{platform}.yaml
+          - g_pSource2EngineToClientStringTable.{platform}.yaml
+          - g_pVPhysics2.{platform}.yaml
+          - g_pModelDocUtils.{platform}.yaml
+          - g_pAnimGraphEditorUtils.{platform}.yaml
+          - g_pExportSystem.{platform}.yaml
+          - g_pServerToolsInfo.{platform}.yaml
+          - g_pClientToolsInfo.{platform}.yaml
+          - g_pRAD3.{platform}.yaml
+        expected_output_windows:
+          - g_pNavSystem.{platform}.yaml
+          - g_pNavGameTest.{platform}.yaml
+        expected_input:
+          - g_pInterfaceGlobals.{platform}.yaml
+
     symbols:
       - name: CLoopModeGame_RegisterEventMapInternal
         category: func
@@ -2460,6 +3295,376 @@ modules:
         member: m_modelState.m_hModel
         alias:
           - CSkeletonInstance::m_modelState.m_hModel
+
+      - name: CUserMessage_ExtraUserData_vtable
+        category: vtable
+
+      - name: SendViolationReport
+        category: func
+
+      - name: IVEngineClient2_GetNetworkClient
+        category: vfunc
+        alias:
+          - IVEngineClient2::GetNetworkClient
+
+      - name: INetworkClient_GetLocalAddress
+        category: vfunc
+        alias:
+          - INetworkClient::GetLocalAddress
+
+      - name: INetworkClientService_IsConnected
+        category: vfunc
+        alias:
+          - INetworkClientService::IsConnected
+
+      - name: INetworkClientService_SendNetMessage
+        category: vfunc
+        alias:
+          - INetworkClientService::SendNetMessage
+
+      - name: ConnectInterfaces
+        category: func
+
+      - name: g_pVApplication
+        category: gv
+
+      - name: g_pVEngineCvar
+        category: gv
+
+      - name: g_pVStringTokenSystem
+        category: gv
+
+      - name: g_pTestScriptMgr
+        category: gv
+
+      - name: g_pProcessUtils
+        category: gv
+
+      - name: g_pFileSystem
+        category: gv
+
+      - name: g_pAsyncFileSystem
+        category: gv
+
+      - name: g_pResourceSystem
+        category: gv
+
+      - name: g_pResourceManifestRegistry
+        category: gv
+
+      - name: g_pResourceHandleUtils
+        category: gv
+
+      - name: g_pSchemaSystem
+        category: gv
+
+      - name: g_pResourceCompilerSystem
+        category: gv
+
+      - name: g_pMaterialSystem2
+        category: gv
+
+      - name: g_pPostProcessingSystem
+        category: gv
+
+      - name: g_pInputSystem
+        category: gv
+
+      - name: g_pInputStackSystem
+        category: gv
+
+      - name: g_pRenderDeviceMgr
+        category: gv
+
+      - name: g_pRenderUtils
+        category: gv
+
+      - name: g_pSoundSystem
+        category: gv
+
+      - name: g_pSoundOpSystemEdit
+        category: gv
+
+      - name: g_pSoundOpSystem
+        category: gv
+
+      - name: g_pSteamAudio
+        category: gv
+
+      - name: g_pVP4
+        category: gv
+
+      - name: g_pLocalize
+        category: gv
+
+      - name: g_pMediaFoundation
+        category: gv
+
+      - name: g_pAVI
+        category: gv
+
+      - name: g_pWEBM
+        category: gv
+
+      - name: g_pBIK
+        category: gv
+
+      - name: g_pMeshSystem
+        category: gv
+
+      - name: g_pMeshUtils
+        category: gv
+
+      - name: g_pRenderDevice
+        category: gv
+
+      - name: g_pRenderDeviceSetup
+        category: gv
+
+      - name: g_pRenderHardwareConfig
+        category: gv
+
+      - name: g_pSceneSystem
+        category: gv
+
+      - name: g_pIPulseSystem
+        category: gv
+
+      - name: g_pSceneUtils
+        category: gv
+
+      - name: g_pWorldRendererMgr
+        category: gv
+
+      - name: g_pAssetSystem
+        category: gv
+
+      - name: g_pAssetSystemTest
+        category: gv
+
+      - name: g_pParticleSystemMgr
+        category: gv
+
+      - name: g_pScriptManager
+        category: gv
+
+      - name: g_pPropertyEditorSystem
+        category: gv
+
+      - name: g_pMatchFramework
+        category: gv
+
+      - name: g_pSource2V8System
+        category: gv
+
+      - name: g_pPanoramaUIEngine
+        category: gv
+
+      - name: g_pPanoramaUIClient
+        category: gv
+
+      - name: g_pPanoramaTextServices
+        category: gv
+
+      - name: g_pToolFramework2
+        category: gv
+
+      - name: g_pPhysicsBuilderMgr
+        category: gv
+
+      - name: g_pVisBuilder
+        category: gv
+
+      - name: g_pBakedLODBuilderMgr
+        category: gv
+
+      - name: g_pHelpSystem
+        category: gv
+
+      - name: g_pToolSceneNodeFactory
+        category: gv
+
+      - name: g_pEconItemToolModel
+        category: gv
+
+      - name: g_pSchemaTestExternalTwo
+        category: gv
+
+      - name: g_pSchemaTestExternalOne
+        category: gv
+
+      - name: g_pAnimationSystem
+        category: gv
+
+      - name: g_pAnimationSystemUtils
+        category: gv
+
+      - name: g_pHammerMapLoader
+        category: gv
+
+      - name: g_pMaterialUtils
+        category: gv
+
+      - name: g_pFontManager
+        category: gv
+
+      - name: g_pTextLayout
+        category: gv
+
+      - name: g_pAssetPreviewSystem
+        category: gv
+
+      - name: g_pAssetBrowserSystem
+        category: gv
+
+      - name: g_pAssetRenameSystem
+        category: gv
+
+      - name: g_pVConComm
+        category: gv
+
+      - name: g_pModelProcessingServices
+        category: gv
+
+      - name: g_pNetworkSystem
+        category: gv
+
+      - name: g_pNetworkMessages
+        category: gv
+
+      - name: g_pFlattenedSerializers
+        category: gv
+
+      - name: g_pSerializedEntities
+        category: gv
+
+      - name: g_pDemoUpconverter
+        category: gv
+
+      - name: g_pSource2Client
+        category: gv
+
+      - name: g_pSource2ClientUI
+        category: gv
+
+      - name: g_pSource2ClientPrediction
+        category: gv
+
+      - name: g_pSource2Server
+        category: gv
+
+      - name: g_pSource2Host
+        category: gv
+
+      - name: g_pSource2ModTools
+        category: gv
+
+      - name: g_pSource2GameClients
+        category: gv
+
+      - name: g_pSource2GameEntities
+        category: gv
+
+      - name: g_pEngineServiceMgr
+        category: gv
+
+      - name: g_pHostStateMgr
+        category: gv
+
+      - name: g_pNetworkService
+        category: gv
+
+      - name: g_pNetworkClientService
+        category: gv
+
+      - name: g_pNetworkP2PService
+        category: gv
+
+      - name: g_pNetworkServerService
+        category: gv
+
+      - name: g_pToolService
+        category: gv
+
+      - name: g_pRenderService
+        category: gv
+
+      - name: g_pStatsService
+        category: gv
+
+      - name: g_pVProfService
+        category: gv
+
+      - name: g_pInputService
+        category: gv
+
+      - name: g_pMapListService
+        category: gv
+
+      - name: g_pGameUIService
+        category: gv
+
+      - name: g_pSoundService
+        category: gv
+
+      - name: g_pBenchmarkService
+        category: gv
+
+      - name: g_pKeyValueCache
+        category: gv
+
+      - name: g_pClientServerSharedHandleSystem
+        category: gv
+
+      - name: g_pGameResourceServiceClient
+        category: gv
+
+      - name: g_pGameResourceServiceServer
+        category: gv
+
+      - name: g_pSource2EngineToClient
+        category: gv
+
+      - name: g_pSource2EngineToServer
+        category: gv
+
+      - name: g_pSource2EngineToServerStringTable
+        category: gv
+
+      - name: g_pSource2EngineToClientStringTable
+        category: gv
+
+      - name: g_pVPhysics2
+        category: gv
+
+      - name: g_pModelDocUtils
+        category: gv
+
+      - name: g_pAnimGraphEditorUtils
+        category: gv
+
+      - name: g_pExportSystem
+        category: gv
+
+      - name: g_pServerToolsInfo
+        category: gv
+
+      - name: g_pClientToolsInfo
+        category: gv
+
+      - name: g_pRAD3
+        category: gv
+
+      - name: g_pNavSystem
+        category: gv
+        platform: windows
+
+      - name: g_pNavGameTest
+        category: gv
+        platform: windows
+
+      - name: g_pInterfaceGlobals
+        category: gv
 
   - name: server
     path_windows: game/csgo/bin/win64/server.dll
@@ -3241,6 +4446,12 @@ modules:
           - CSource2Server_Connect.{platform}.yaml
         expected_input:
           - CSource2Server_vtable.{platform}.yaml
+
+      - name: find-IAppSystem_Connect
+        expected_output:
+          - IAppSystem_Connect.{platform}.yaml
+        expected_input:
+          - CSource2Server_Connect.{platform}.yaml
 
       - name: find-CSource2Server_Init
         expected_output:
@@ -4899,6 +6110,134 @@ modules:
         expected_output:
           - CNavPhysicsInterface_vtable.{platform}.yaml
 
+      - name: find-ConnectInterfaces
+        expected_output:
+          - ConnectInterfaces.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals
+        expected_output:
+          - g_pInterfaceGlobals.{platform}.yaml
+        expected_input:
+          - ConnectInterfaces.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals_ppGlobal
+        expected_output:
+          - g_pVApplication.{platform}.yaml
+          - g_pVEngineCvar.{platform}.yaml
+          - g_pVStringTokenSystem.{platform}.yaml
+          - g_pTestScriptMgr.{platform}.yaml
+          - g_pProcessUtils.{platform}.yaml
+          - g_pFileSystem.{platform}.yaml
+          - g_pAsyncFileSystem.{platform}.yaml
+          - g_pResourceSystem.{platform}.yaml
+          - g_pResourceManifestRegistry.{platform}.yaml
+          - g_pResourceHandleUtils.{platform}.yaml
+          - g_pSchemaSystem.{platform}.yaml
+          - g_pResourceCompilerSystem.{platform}.yaml
+          - g_pMaterialSystem2.{platform}.yaml
+          - g_pPostProcessingSystem.{platform}.yaml
+          - g_pInputSystem.{platform}.yaml
+          - g_pInputStackSystem.{platform}.yaml
+          - g_pRenderDeviceMgr.{platform}.yaml
+          - g_pRenderUtils.{platform}.yaml
+          - g_pSoundSystem.{platform}.yaml
+          - g_pSoundOpSystemEdit.{platform}.yaml
+          - g_pSoundOpSystem.{platform}.yaml
+          - g_pSteamAudio.{platform}.yaml
+          - g_pVP4.{platform}.yaml
+          - g_pLocalize.{platform}.yaml
+          - g_pMediaFoundation.{platform}.yaml
+          - g_pAVI.{platform}.yaml
+          - g_pWEBM.{platform}.yaml
+          - g_pBIK.{platform}.yaml
+          - g_pMeshSystem.{platform}.yaml
+          - g_pMeshUtils.{platform}.yaml
+          - g_pRenderDevice.{platform}.yaml
+          - g_pRenderDeviceSetup.{platform}.yaml
+          - g_pRenderHardwareConfig.{platform}.yaml
+          - g_pSceneSystem.{platform}.yaml
+          - g_pIPulseSystem.{platform}.yaml
+          - g_pSceneUtils.{platform}.yaml
+          - g_pWorldRendererMgr.{platform}.yaml
+          - g_pAssetSystem.{platform}.yaml
+          - g_pAssetSystemTest.{platform}.yaml
+          - g_pParticleSystemMgr.{platform}.yaml
+          - g_pScriptManager.{platform}.yaml
+          - g_pPropertyEditorSystem.{platform}.yaml
+          - g_pMatchFramework.{platform}.yaml
+          - g_pSource2V8System.{platform}.yaml
+          - g_pPanoramaUIEngine.{platform}.yaml
+          - g_pPanoramaUIClient.{platform}.yaml
+          - g_pPanoramaTextServices.{platform}.yaml
+          - g_pToolFramework2.{platform}.yaml
+          - g_pPhysicsBuilderMgr.{platform}.yaml
+          - g_pVisBuilder.{platform}.yaml
+          - g_pBakedLODBuilderMgr.{platform}.yaml
+          - g_pHelpSystem.{platform}.yaml
+          - g_pToolSceneNodeFactory.{platform}.yaml
+          - g_pEconItemToolModel.{platform}.yaml
+          - g_pSchemaTestExternalTwo.{platform}.yaml
+          - g_pSchemaTestExternalOne.{platform}.yaml
+          - g_pAnimationSystem.{platform}.yaml
+          - g_pAnimationSystemUtils.{platform}.yaml
+          - g_pHammerMapLoader.{platform}.yaml
+          - g_pMaterialUtils.{platform}.yaml
+          - g_pFontManager.{platform}.yaml
+          - g_pTextLayout.{platform}.yaml
+          - g_pAssetPreviewSystem.{platform}.yaml
+          - g_pAssetBrowserSystem.{platform}.yaml
+          - g_pAssetRenameSystem.{platform}.yaml
+          - g_pVConComm.{platform}.yaml
+          - g_pModelProcessingServices.{platform}.yaml
+          - g_pNetworkSystem.{platform}.yaml
+          - g_pNetworkMessages.{platform}.yaml
+          - g_pFlattenedSerializers.{platform}.yaml
+          - g_pSerializedEntities.{platform}.yaml
+          - g_pDemoUpconverter.{platform}.yaml
+          - g_pSource2Client.{platform}.yaml
+          - g_pSource2ClientUI.{platform}.yaml
+          - g_pSource2ClientPrediction.{platform}.yaml
+          - g_pSource2Server.{platform}.yaml
+          - g_pSource2Host.{platform}.yaml
+          - g_pSource2ModTools.{platform}.yaml
+          - g_pSource2GameClients.{platform}.yaml
+          - g_pSource2GameEntities.{platform}.yaml
+          - g_pEngineServiceMgr.{platform}.yaml
+          - g_pHostStateMgr.{platform}.yaml
+          - g_pNetworkService.{platform}.yaml
+          - g_pNetworkClientService.{platform}.yaml
+          - g_pNetworkP2PService.{platform}.yaml
+          - g_pNetworkServerService.{platform}.yaml
+          - g_pToolService.{platform}.yaml
+          - g_pRenderService.{platform}.yaml
+          - g_pStatsService.{platform}.yaml
+          - g_pVProfService.{platform}.yaml
+          - g_pInputService.{platform}.yaml
+          - g_pMapListService.{platform}.yaml
+          - g_pGameUIService.{platform}.yaml
+          - g_pSoundService.{platform}.yaml
+          - g_pBenchmarkService.{platform}.yaml
+          - g_pKeyValueCache.{platform}.yaml
+          - g_pClientServerSharedHandleSystem.{platform}.yaml
+          - g_pGameResourceServiceClient.{platform}.yaml
+          - g_pGameResourceServiceServer.{platform}.yaml
+          - g_pSource2EngineToClient.{platform}.yaml
+          - g_pSource2EngineToServer.{platform}.yaml
+          - g_pSource2EngineToServerStringTable.{platform}.yaml
+          - g_pSource2EngineToClientStringTable.{platform}.yaml
+          - g_pVPhysics2.{platform}.yaml
+          - g_pModelDocUtils.{platform}.yaml
+          - g_pAnimGraphEditorUtils.{platform}.yaml
+          - g_pExportSystem.{platform}.yaml
+          - g_pServerToolsInfo.{platform}.yaml
+          - g_pClientToolsInfo.{platform}.yaml
+          - g_pRAD3.{platform}.yaml
+        expected_output_windows:
+          - g_pNavSystem.{platform}.yaml
+          - g_pNavGameTest.{platform}.yaml
+        expected_input:
+          - g_pInterfaceGlobals.{platform}.yaml
+
     symbols:
       - name: CSource2Server_vtable
         category: vtable
@@ -5863,6 +7202,11 @@ modules:
         category: vfunc
         alias:
           - CSource2Server::Connect
+
+      - name: IAppSystem_Connect
+        category: vfunc
+        alias:
+          - IAppSystem::Connect
 
       - name: CSource2Server_GameFrame
         category: vfunc
@@ -7606,6 +8950,350 @@ modules:
       - name: CNavPhysicsInterface_vtable
         category: vtable
 
+      - name: ConnectInterfaces
+        category: func
+
+      - name: g_pVApplication
+        category: gv
+
+      - name: g_pVEngineCvar
+        category: gv
+
+      - name: g_pVStringTokenSystem
+        category: gv
+
+      - name: g_pTestScriptMgr
+        category: gv
+
+      - name: g_pProcessUtils
+        category: gv
+
+      - name: g_pFileSystem
+        category: gv
+
+      - name: g_pAsyncFileSystem
+        category: gv
+
+      - name: g_pResourceSystem
+        category: gv
+
+      - name: g_pResourceManifestRegistry
+        category: gv
+
+      - name: g_pResourceHandleUtils
+        category: gv
+
+      - name: g_pSchemaSystem
+        category: gv
+
+      - name: g_pResourceCompilerSystem
+        category: gv
+
+      - name: g_pMaterialSystem2
+        category: gv
+
+      - name: g_pPostProcessingSystem
+        category: gv
+
+      - name: g_pInputSystem
+        category: gv
+
+      - name: g_pInputStackSystem
+        category: gv
+
+      - name: g_pRenderDeviceMgr
+        category: gv
+
+      - name: g_pRenderUtils
+        category: gv
+
+      - name: g_pSoundSystem
+        category: gv
+
+      - name: g_pSoundOpSystemEdit
+        category: gv
+
+      - name: g_pSoundOpSystem
+        category: gv
+
+      - name: g_pSteamAudio
+        category: gv
+
+      - name: g_pVP4
+        category: gv
+
+      - name: g_pLocalize
+        category: gv
+
+      - name: g_pMediaFoundation
+        category: gv
+
+      - name: g_pAVI
+        category: gv
+
+      - name: g_pWEBM
+        category: gv
+
+      - name: g_pBIK
+        category: gv
+
+      - name: g_pMeshSystem
+        category: gv
+
+      - name: g_pMeshUtils
+        category: gv
+
+      - name: g_pRenderDevice
+        category: gv
+
+      - name: g_pRenderDeviceSetup
+        category: gv
+
+      - name: g_pRenderHardwareConfig
+        category: gv
+
+      - name: g_pSceneSystem
+        category: gv
+
+      - name: g_pIPulseSystem
+        category: gv
+
+      - name: g_pSceneUtils
+        category: gv
+
+      - name: g_pWorldRendererMgr
+        category: gv
+
+      - name: g_pAssetSystem
+        category: gv
+
+      - name: g_pAssetSystemTest
+        category: gv
+
+      - name: g_pParticleSystemMgr
+        category: gv
+
+      - name: g_pScriptManager
+        category: gv
+
+      - name: g_pPropertyEditorSystem
+        category: gv
+
+      - name: g_pMatchFramework
+        category: gv
+
+      - name: g_pSource2V8System
+        category: gv
+
+      - name: g_pPanoramaUIEngine
+        category: gv
+
+      - name: g_pPanoramaUIClient
+        category: gv
+
+      - name: g_pPanoramaTextServices
+        category: gv
+
+      - name: g_pToolFramework2
+        category: gv
+
+      - name: g_pPhysicsBuilderMgr
+        category: gv
+
+      - name: g_pVisBuilder
+        category: gv
+
+      - name: g_pBakedLODBuilderMgr
+        category: gv
+
+      - name: g_pHelpSystem
+        category: gv
+
+      - name: g_pToolSceneNodeFactory
+        category: gv
+
+      - name: g_pEconItemToolModel
+        category: gv
+
+      - name: g_pSchemaTestExternalTwo
+        category: gv
+
+      - name: g_pSchemaTestExternalOne
+        category: gv
+
+      - name: g_pAnimationSystem
+        category: gv
+
+      - name: g_pAnimationSystemUtils
+        category: gv
+
+      - name: g_pHammerMapLoader
+        category: gv
+
+      - name: g_pMaterialUtils
+        category: gv
+
+      - name: g_pFontManager
+        category: gv
+
+      - name: g_pTextLayout
+        category: gv
+
+      - name: g_pAssetPreviewSystem
+        category: gv
+
+      - name: g_pAssetBrowserSystem
+        category: gv
+
+      - name: g_pAssetRenameSystem
+        category: gv
+
+      - name: g_pVConComm
+        category: gv
+
+      - name: g_pModelProcessingServices
+        category: gv
+
+      - name: g_pNetworkSystem
+        category: gv
+
+      - name: g_pNetworkMessages
+        category: gv
+
+      - name: g_pFlattenedSerializers
+        category: gv
+
+      - name: g_pSerializedEntities
+        category: gv
+
+      - name: g_pDemoUpconverter
+        category: gv
+
+      - name: g_pSource2Client
+        category: gv
+
+      - name: g_pSource2ClientUI
+        category: gv
+
+      - name: g_pSource2ClientPrediction
+        category: gv
+
+      - name: g_pSource2Server
+        category: gv
+
+      - name: g_pSource2Host
+        category: gv
+
+      - name: g_pSource2ModTools
+        category: gv
+
+      - name: g_pSource2GameClients
+        category: gv
+
+      - name: g_pSource2GameEntities
+        category: gv
+
+      - name: g_pEngineServiceMgr
+        category: gv
+
+      - name: g_pHostStateMgr
+        category: gv
+
+      - name: g_pNetworkService
+        category: gv
+
+      - name: g_pNetworkClientService
+        category: gv
+
+      - name: g_pNetworkP2PService
+        category: gv
+
+      - name: g_pNetworkServerService
+        category: gv
+
+      - name: g_pToolService
+        category: gv
+
+      - name: g_pRenderService
+        category: gv
+
+      - name: g_pStatsService
+        category: gv
+
+      - name: g_pVProfService
+        category: gv
+
+      - name: g_pInputService
+        category: gv
+
+      - name: g_pMapListService
+        category: gv
+
+      - name: g_pGameUIService
+        category: gv
+
+      - name: g_pSoundService
+        category: gv
+
+      - name: g_pBenchmarkService
+        category: gv
+
+      - name: g_pKeyValueCache
+        category: gv
+
+      - name: g_pClientServerSharedHandleSystem
+        category: gv
+
+      - name: g_pGameResourceServiceClient
+        category: gv
+
+      - name: g_pGameResourceServiceServer
+        category: gv
+
+      - name: g_pSource2EngineToClient
+        category: gv
+
+      - name: g_pSource2EngineToServer
+        category: gv
+
+      - name: g_pSource2EngineToServerStringTable
+        category: gv
+
+      - name: g_pSource2EngineToClientStringTable
+        category: gv
+
+      - name: g_pVPhysics2
+        category: gv
+
+      - name: g_pModelDocUtils
+        category: gv
+
+      - name: g_pAnimGraphEditorUtils
+        category: gv
+
+      - name: g_pExportSystem
+        category: gv
+
+      - name: g_pServerToolsInfo
+        category: gv
+
+      - name: g_pClientToolsInfo
+        category: gv
+
+      - name: g_pRAD3
+        category: gv
+
+      - name: g_pNavSystem
+        category: gv
+        platform: windows
+
+      - name: g_pNavGameTest
+        category: gv
+        platform: windows
+
+      - name: g_pInterfaceGlobals
+        category: gv
+
   - name: engine # Execute skills for engine2.dll again after client.dll
     path_windows: game/bin/win64/engine2.dll
     path_linux: game/bin/linuxsteamrt64/libengine2.so
@@ -7629,6 +9317,143 @@ modules:
           - CLoopTypeBase_GetClientServerMode.{platform}.yaml
         expected_input:
           - CEngineServiceMgr_GetActiveLoopClientServerMode.{platform}.yaml
+
+      - name: find-CNetSupportImpl_Connect
+        expected_output:
+          - CNetSupportImpl_Connect.{platform}.yaml
+        expected_input:
+          - ../server/IAppSystem_Connect.{platform}.yaml
+          - CNetSupportImpl_vtable.{platform}.yaml
+
+      - name: find-ConnectInterfaces
+        expected_output:
+          - ConnectInterfaces.{platform}.yaml
+        expected_input:
+          - CNetSupportImpl_Connect.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals
+        expected_output:
+          - g_pInterfaceGlobals.{platform}.yaml
+        expected_input:
+          - ConnectInterfaces.{platform}.yaml
+
+      - name: find-g_pInterfaceGlobals_ppGlobal
+        expected_output:
+          - g_pVApplication.{platform}.yaml
+          - g_pVEngineCvar.{platform}.yaml
+          - g_pVStringTokenSystem.{platform}.yaml
+          - g_pTestScriptMgr.{platform}.yaml
+          - g_pProcessUtils.{platform}.yaml
+          - g_pFileSystem.{platform}.yaml
+          - g_pAsyncFileSystem.{platform}.yaml
+          - g_pResourceSystem.{platform}.yaml
+          - g_pResourceManifestRegistry.{platform}.yaml
+          - g_pResourceHandleUtils.{platform}.yaml
+          - g_pSchemaSystem.{platform}.yaml
+          - g_pResourceCompilerSystem.{platform}.yaml
+          - g_pMaterialSystem2.{platform}.yaml
+          - g_pPostProcessingSystem.{platform}.yaml
+          - g_pInputSystem.{platform}.yaml
+          - g_pInputStackSystem.{platform}.yaml
+          - g_pRenderDeviceMgr.{platform}.yaml
+          - g_pRenderUtils.{platform}.yaml
+          - g_pSoundSystem.{platform}.yaml
+          - g_pSoundOpSystemEdit.{platform}.yaml
+          - g_pSoundOpSystem.{platform}.yaml
+          - g_pSteamAudio.{platform}.yaml
+          - g_pVP4.{platform}.yaml
+          - g_pLocalize.{platform}.yaml
+          - g_pMediaFoundation.{platform}.yaml
+          - g_pAVI.{platform}.yaml
+          - g_pWEBM.{platform}.yaml
+          - g_pBIK.{platform}.yaml
+          - g_pMeshSystem.{platform}.yaml
+          - g_pMeshUtils.{platform}.yaml
+          - g_pRenderDevice.{platform}.yaml
+          - g_pRenderDeviceSetup.{platform}.yaml
+          - g_pRenderHardwareConfig.{platform}.yaml
+          - g_pSceneSystem.{platform}.yaml
+          - g_pIPulseSystem.{platform}.yaml
+          - g_pSceneUtils.{platform}.yaml
+          - g_pWorldRendererMgr.{platform}.yaml
+          - g_pAssetSystem.{platform}.yaml
+          - g_pAssetSystemTest.{platform}.yaml
+          - g_pParticleSystemMgr.{platform}.yaml
+          - g_pScriptManager.{platform}.yaml
+          - g_pPropertyEditorSystem.{platform}.yaml
+          - g_pMatchFramework.{platform}.yaml
+          - g_pSource2V8System.{platform}.yaml
+          - g_pPanoramaUIEngine.{platform}.yaml
+          - g_pPanoramaUIClient.{platform}.yaml
+          - g_pPanoramaTextServices.{platform}.yaml
+          - g_pToolFramework2.{platform}.yaml
+          - g_pPhysicsBuilderMgr.{platform}.yaml
+          - g_pVisBuilder.{platform}.yaml
+          - g_pBakedLODBuilderMgr.{platform}.yaml
+          - g_pHelpSystem.{platform}.yaml
+          - g_pToolSceneNodeFactory.{platform}.yaml
+          - g_pEconItemToolModel.{platform}.yaml
+          - g_pSchemaTestExternalTwo.{platform}.yaml
+          - g_pSchemaTestExternalOne.{platform}.yaml
+          - g_pAnimationSystem.{platform}.yaml
+          - g_pAnimationSystemUtils.{platform}.yaml
+          - g_pHammerMapLoader.{platform}.yaml
+          - g_pMaterialUtils.{platform}.yaml
+          - g_pFontManager.{platform}.yaml
+          - g_pTextLayout.{platform}.yaml
+          - g_pAssetPreviewSystem.{platform}.yaml
+          - g_pAssetBrowserSystem.{platform}.yaml
+          - g_pAssetRenameSystem.{platform}.yaml
+          - g_pVConComm.{platform}.yaml
+          - g_pModelProcessingServices.{platform}.yaml
+          - g_pNetworkSystem.{platform}.yaml
+          - g_pNetworkMessages.{platform}.yaml
+          - g_pFlattenedSerializers.{platform}.yaml
+          - g_pSerializedEntities.{platform}.yaml
+          - g_pDemoUpconverter.{platform}.yaml
+          - g_pSource2Client.{platform}.yaml
+          - g_pSource2ClientUI.{platform}.yaml
+          - g_pSource2ClientPrediction.{platform}.yaml
+          - g_pSource2Server.{platform}.yaml
+          - g_pSource2Host.{platform}.yaml
+          - g_pSource2ModTools.{platform}.yaml
+          - g_pSource2GameClients.{platform}.yaml
+          - g_pSource2GameEntities.{platform}.yaml
+          - g_pEngineServiceMgr.{platform}.yaml
+          - g_pHostStateMgr.{platform}.yaml
+          - g_pNetworkService.{platform}.yaml
+          - g_pNetworkClientService.{platform}.yaml
+          - g_pNetworkP2PService.{platform}.yaml
+          - g_pNetworkServerService.{platform}.yaml
+          - g_pToolService.{platform}.yaml
+          - g_pRenderService.{platform}.yaml
+          - g_pStatsService.{platform}.yaml
+          - g_pVProfService.{platform}.yaml
+          - g_pInputService.{platform}.yaml
+          - g_pMapListService.{platform}.yaml
+          - g_pGameUIService.{platform}.yaml
+          - g_pSoundService.{platform}.yaml
+          - g_pBenchmarkService.{platform}.yaml
+          - g_pKeyValueCache.{platform}.yaml
+          - g_pClientServerSharedHandleSystem.{platform}.yaml
+          - g_pGameResourceServiceClient.{platform}.yaml
+          - g_pGameResourceServiceServer.{platform}.yaml
+          - g_pSource2EngineToClient.{platform}.yaml
+          - g_pSource2EngineToServer.{platform}.yaml
+          - g_pSource2EngineToServerStringTable.{platform}.yaml
+          - g_pSource2EngineToClientStringTable.{platform}.yaml
+          - g_pVPhysics2.{platform}.yaml
+          - g_pModelDocUtils.{platform}.yaml
+          - g_pAnimGraphEditorUtils.{platform}.yaml
+          - g_pExportSystem.{platform}.yaml
+          - g_pServerToolsInfo.{platform}.yaml
+          - g_pClientToolsInfo.{platform}.yaml
+          - g_pRAD3.{platform}.yaml
+        expected_output_windows:
+          - g_pNavSystem.{platform}.yaml
+          - g_pNavGameTest.{platform}.yaml
+        expected_input:
+          - g_pInterfaceGlobals.{platform}.yaml
 
   - name: networksystem # Execute skills for networksystem.dll again after server.dll
     path_windows: game/bin/win64/networksystem.dll

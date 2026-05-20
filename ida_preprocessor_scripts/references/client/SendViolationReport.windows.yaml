@@ -1,0 +1,249 @@
+func_name: SendViolationReport
+func_va: '0x1800056f0'
+disasm_code: |-
+  .text:00000001800056F0                 mov     [rsp-8+arg_0], rbx
+  .text:00000001800056F5                 mov     [rsp-8+arg_8], rsi
+  .text:00000001800056FA                 mov     [rsp-8+arg_10], rdi
+  .text:00000001800056FF                 mov     [rsp-8+arg_18], r12
+  .text:0000000180005704                 push    rbp
+  .text:0000000180005705                 push    r14
+  .text:0000000180005707                 push    r15
+  .text:0000000180005709                 lea     rbp, [rsp-47h]
+  .text:000000018000570E                 sub     rsp, 100h
+  .text:0000000180005715                 mov     r15d, ecx
+  .text:0000000180005718                 movsxd  rbx, r9d
+  .text:000000018000571B                 mov     rcx, cs:g_pEngineClient
+  .text:0000000180005722                 mov     rsi, rdx
+  .text:0000000180005725                 xor     edx, edx
+  .text:0000000180005727                 mov     rdi, r8
+  .text:000000018000572A                 mov     rax, [rcx]
+  .text:000000018000572D                 call    qword ptr [rax+148h]  ; 148h = IVEngineClient2_GetNetworkClient
+  .text:0000000180005733                 mov     r14, rax
+  .text:0000000180005736                 test    rax, rax
+  .text:0000000180005739                 jz      loc_1800058FC
+  .text:000000018000573F                 xor     edx, edx
+  .text:0000000180005741                 lea     rcx, [rsp+110h+var_F0]
+  .text:0000000180005746                 call    cs:?SetIP@netadr_t@@QEAAXI@Z; netadr_t::SetIP(uint)
+  .text:000000018000574C                 xor     edx, edx
+  .text:000000018000574E                 lea     rcx, [rsp+110h+var_F0]
+  .text:0000000180005753                 call    cs:?SetPort@netadr_t@@QEAAXG@Z; netadr_t::SetPort(ushort)
+  .text:0000000180005759                 mov     edx, 3
+  .text:000000018000575E                 lea     rcx, [rsp+110h+var_F0]
+  .text:0000000180005763                 call    cs:?SetType@netadr_t@@QEAAXW4netadrtype_t@@@Z; netadr_t::SetType(netadrtype_t)
+  .text:0000000180005769                 and     [rsp+110h+var_E0], 0FF0FFFFFh
+  .text:0000000180005771                 xor     r12d, r12d
+  .text:0000000180005774                 mov     rax, [r14]
+  .text:0000000180005777                 mov     rcx, r14
+  .text:000000018000577A                 mov     byte ptr [rsp+110h+var_E0+3], r12b
+  .text:000000018000577F                 and     [rsp+110h+var_E0], 0FFF00000h
+  .text:0000000180005787                 mov     [rsp+110h+var_E4], r12d
+  .text:000000018000578C                 mov     [rsp+110h+var_DC], r12
+  .text:0000000180005791                 mov     [rbp+57h+var_D4], r12d
+  .text:0000000180005795                 call    qword ptr [rax+8]  ; 8h = INetworkClient_GetLocalAddress
+  .text:0000000180005798                 xor     r8d, r8d
+  .text:000000018000579B                 lea     rcx, [rsp+110h+var_F0]
+  .text:00000001800057A0                 mov     rdx, rax
+  .text:00000001800057A3                 call    sub_180154C00
+  .text:00000001800057A8                 cmp     [rbp+57h+var_D4], 2
+  .text:00000001800057AC                 lea     rcx, [rsp+110h+var_F0]
+  .text:00000001800057B1                 mov     [rbp+57h+var_D4], r12d
+  .text:00000001800057B5                 jnz     loc_1800058F6
+  .text:00000001800057BB                 call    cs:?Clear@netadr_t@@QEAAXXZ; netadr_t::Clear(void)
+  .text:00000001800057C1                 xor     r8d, r8d
+  .text:00000001800057C4                 lea     rcx, [rbp+57h+var_70]
+  .text:00000001800057C8                 xor     edx, edx
+  .text:00000001800057CA                 call    sub_1806B88B0
+  .text:00000001800057CF                 or      [rbp+57h+var_60], 7
+  .text:00000001800057D3                 lea     rax, ??_7CUserMessage_ExtraUserData@@6B@; const CUserMessage_ExtraUserData::`vftable'
+  .text:00000001800057DA                 mov     [rbp+57h+var_70], rax
+  .text:00000001800057DE                 mov     [rbp+57h+var_18], r15d
+  .text:00000001800057E2                 mov     [rbp+57h+var_28], rsi
+  .text:00000001800057E6                 mov     [rbp+57h+var_20], rdi
+  .text:00000001800057EA                 test    ebx, ebx
+  .text:00000001800057EC                 jz      short loc_180005826
+  .text:00000001800057EE                 test    rsi, rsi
+  .text:00000001800057F1                 jz      short loc_18000580A
+  .text:00000001800057F3                 lea     rcx, [rbp+57h+var_58]
+  .text:00000001800057F7                 call    sub_181189700
+  .text:00000001800057FC                 mov     r8, rbx
+  .text:00000001800057FF                 mov     rdx, rsi
+  .text:0000000180005802                 mov     rcx, rax
+  .text:0000000180005805                 call    sub_180155060
+  .text:000000018000580A                 test    rdi, rdi
+  .text:000000018000580D                 jz      short loc_180005826
+  .text:000000018000580F                 lea     rcx, [rbp+57h+var_40]
+  .text:0000000180005813                 call    sub_181189700
+  .text:0000000180005818                 mov     r8, rbx
+  .text:000000018000581B                 mov     rdx, rdi
+  .text:000000018000581E                 mov     rcx, rax
+  .text:0000000180005821                 call    sub_180155060
+  .text:0000000180005826                 xorps   xmm0, xmm0
+  .text:0000000180005829                 mov     [rbp+57h+var_C0], r12d
+  .text:000000018000582D                 lea     rdi, ??_7CNetMessage@@6B@; const CNetMessage::`vftable'
+  .text:0000000180005834                 movsd   [rbp+57h+var_C8], xmm0
+  .text:0000000180005839                 xor     r8d, r8d
+  .text:000000018000583C                 mov     [rbp+57h+var_D0], rdi
+  .text:0000000180005840                 xor     edx, edx
+  .text:0000000180005842                 mov     [rbp+57h+var_BC], 0FFh
+  .text:0000000180005846                 lea     rcx, [rbp+57h+var_A0]
+  .text:000000018000584A                 mov     [rbp+57h+var_B8], 0FFFFFFFFFFFFFFFFh
+  .text:0000000180005852                 mov     [rbp+57h+var_B0], 0BF800000h
+  .text:0000000180005859                 mov     [rbp+57h+var_A8], 0FFFFFFFFFFFFFFFFh
+  .text:0000000180005861                 call    sub_1806008E0
+  .text:0000000180005866                 lea     rax, ??_7CSVCMsg_UserMessage_t@@6B@; const CSVCMsg_UserMessage_t::`vftable'
+  .text:000000018000586D                 mov     edx, 0A4h
+  .text:0000000180005872                 mov     [rbp+57h+var_D0], rax
+  .text:0000000180005876                 lea     r8, [rbp+57h+var_70]
+  .text:000000018000587A                 lea     rax, ??_7CSVCMsg_UserMessage_t@@6B@_0; const CSVCMsg_UserMessage_t::`vftable'
+  .text:0000000180005881                 lea     rcx, [rbp+57h+var_A0]
+  .text:0000000180005885                 mov     [rbp+57h+var_A0], rax
+  .text:0000000180005889                 call    sub_180AF0040
+  .text:000000018000588E                 test    al, al
+  .text:0000000180005890                 jz      short loc_1800058C3
+  .text:0000000180005892                 mov     rcx, cs:g_pNetworkClientService
+  .text:0000000180005899                 mov     rax, [rcx]
+  .text:000000018000589C                 call    qword ptr [rax+100h]  ; 100h = INetworkClientService_IsConnected
+  .text:00000001800058A2                 test    al, al
+  .text:00000001800058A4                 jz      short loc_1800058BF
+  .text:00000001800058A6                 mov     rcx, cs:g_pNetworkClientService
+  .text:00000001800058AD                 lea     r8, [rbp+57h+var_D0]
+  .text:00000001800058B1                 xor     edx, edx
+  .text:00000001800058B3                 mov     r9b, 1
+  .text:00000001800058B6                 mov     rax, [rcx]
+  .text:00000001800058B9                 call    qword ptr [rax+190h]  ; 190h = INetworkClientService_SendNetMessage
+  .text:00000001800058BF                 mov     bl, 1
+  .text:00000001800058C1                 jmp     short loc_1800058C5
+  .text:00000001800058C3                 xor     bl, bl
+  .text:00000001800058C5                 lea     rax, ??_7?$CNetMessagePB@$0EI@VCSVCMsg_UserMessage@@$0N@$00$0A@@@6B@; const CNetMessagePB<72,CSVCMsg_UserMessage,13,1,0>::`vftable'
+  .text:00000001800058CC                 mov     [rbp+57h+var_D0], rax
+  .text:00000001800058D0                 lea     rcx, [rbp+57h+var_A0]
+  .text:00000001800058D4                 lea     rax, ??_7?$CNetMessagePB@$0EI@VCSVCMsg_UserMessage@@$0N@$00$0A@@@6B@_0; const CNetMessagePB<72,CSVCMsg_UserMessage,13,1,0>::`vftable'
+  .text:00000001800058DB                 mov     [rbp+57h+var_A0], rax
+  .text:00000001800058DF                 call    sub_180605CC0
+  .text:00000001800058E4                 lea     rcx, [rbp+57h+var_70]
+  .text:00000001800058E8                 mov     [rbp+57h+var_D0], rdi
+  .text:00000001800058EC                 call    sub_1806BE1B0
+  .text:00000001800058F1                 movzx   eax, bl
+  .text:00000001800058F4                 jmp     short loc_1800058FE
+  .text:00000001800058F6                 call    cs:?Clear@netadr_t@@QEAAXXZ; netadr_t::Clear(void)
+  .text:00000001800058FC                 xor     al, al
+  .text:00000001800058FE                 lea     r11, [rsp+110h+var_10]
+  .text:0000000180005906                 mov     rbx, [r11+20h]
+  .text:000000018000590A                 mov     rsi, [r11+28h]
+  .text:000000018000590E                 mov     rdi, [r11+30h]
+  .text:0000000180005912                 mov     r12, [r11+38h]
+  .text:0000000180005916                 mov     rsp, r11
+  .text:0000000180005919                 pop     r15
+  .text:000000018000591B                 pop     r14
+  .text:000000018000591D                 pop     rbp
+  .text:000000018000591E                 retn
+procedure: |-
+  char __fastcall SendViolationReport(int a1, __int64 a2, __int64 a3, int a4)
+  {
+    __int64 v5; // rbx
+    __int64 *v8; // r14
+    __int64 v9; // rax
+    const char *v10; // rax
+    bool v11; // zf
+    __int64 v12; // rax
+    __int64 v13; // rax
+    __int64 v14; // r9
+    char v15; // bl
+    _BYTE v17[12]; // [rsp+20h] [rbp-99h] BYREF
+    int v18; // [rsp+2Ch] [rbp-8Dh]
+    int v19; // [rsp+30h] [rbp-89h]
+    __int64 v20; // [rsp+34h] [rbp-85h]
+    int v21; // [rsp+3Ch] [rbp-7Dh]
+    _QWORD v22[2]; // [rsp+40h] [rbp-79h] BYREF
+    int v23; // [rsp+50h] [rbp-69h]
+    char v24; // [rsp+54h] [rbp-65h]
+    __int64 v25; // [rsp+58h] [rbp-61h]
+    unsigned int v26; // [rsp+60h] [rbp-59h]
+    __int64 v27; // [rsp+68h] [rbp-51h]
+    _QWORD v28[6]; // [rsp+70h] [rbp-49h] BYREF
+    _QWORD v29[2]; // [rsp+A0h] [rbp-19h] BYREF
+    int v30; // [rsp+B0h] [rbp-9h]
+    _BYTE v31[24]; // [rsp+B8h] [rbp-1h] BYREF
+    _BYTE v32[24]; // [rsp+D0h] [rbp+17h] BYREF
+    __int64 v33; // [rsp+E8h] [rbp+2Fh]
+    __int64 v34; // [rsp+F0h] [rbp+37h]
+    int v35; // [rsp+F8h] [rbp+3Fh]
+
+    v5 = a4;
+    v8 = (__int64 *)(*(__int64 (__fastcall **)(__int64, _QWORD))(*(_QWORD *)g_pEngineClient + 328LL))(g_pEngineClient, 0);// 328LL = 0x148 = IVEngineClient2_GetNetworkClient
+    if ( !v8 )
+      return 0;
+    netadr_t::SetIP((netadr_t *)v17, 0);
+    netadr_t::SetPort((netadr_t *)v17, 0);
+    netadr_t::SetType(v17, 3);
+    v19 &= 0xFF0FFFFF;
+    v9 = *v8;
+    HIBYTE(v19) = 0;
+    v19 &= 0xFFF00000;
+    v18 = 0;
+    v20 = 0;
+    v21 = 0;
+    v10 = (const char *)(*(__int64 (__fastcall **)(__int64 *))(v9 + 8))(v8);// 8LL = 0x8 = INetworkClient_GetLocalAddress
+    sub_180154C00((__int64)v17, v10, 0);
+    v11 = v21 == 2;
+    v21 = 0;
+    if ( !v11 )
+    {
+      netadr_t::Clear((netadr_t *)v17);
+      return 0;
+    }
+    netadr_t::Clear((netadr_t *)v17);
+    sub_1806B88B0(v29, 0, 0);
+    v30 |= 7u;
+    v29[0] = &CUserMessage_ExtraUserData::`vftable';
+    v35 = a1;
+    v33 = a2;
+    v34 = a3;
+    if ( (_DWORD)v5 )
+    {
+      if ( a2 )
+      {
+        v12 = sub_181189700(v31);
+        sub_180155060(v12, a2, v5);
+      }
+      if ( a3 )
+      {
+        v13 = sub_181189700(v32);
+        sub_180155060(v13, a3, v5);
+      }
+    }
+    v23 = 0;
+    v22[1] = 0;
+    v22[0] = &CNetMessage::`vftable';
+    v24 = -1;
+    v25 = -1;
+    v26 = 0xBF800000;
+    v27 = -1;
+    sub_1806008E0(v28, 0, 0);
+    v22[0] = &CSVCMsg_UserMessage_t::`vftable';
+    v28[0] = &CSVCMsg_UserMessage_t::`vftable';
+    if ( (unsigned __int8)sub_180AF0040(v28, 164, v29) )
+    {
+      if ( (*(unsigned __int8 (__fastcall **)(__int64))(*(_QWORD *)g_pNetworkClientService + 256LL))(g_pNetworkClientService) )// 256LL = 0x100 = INetworkClientService_IsConnected
+      {
+        LOBYTE(v14) = 1;
+        (*(void (__fastcall **)(__int64, _QWORD, _QWORD *, __int64))(*(_QWORD *)g_pNetworkClientService
+                                                                   + 400LL))(// 400LL = 0x190 = INetworkClientService_SendNetMessage
+          g_pNetworkClientService,
+          0,
+          v22,
+          v14);
+      }
+      v15 = 1;
+    }
+    else
+    {
+      v15 = 0;
+    }
+    v22[0] = &CNetMessagePB<72,CSVCMsg_UserMessage,13,1,0>::`vftable';
+    v28[0] = &CNetMessagePB<72,CSVCMsg_UserMessage,13,1,0>::`vftable';
+    sub_180605CC0(v28);
+    v22[0] = &CNetMessage::`vftable';
+    sub_1806BE1B0(v29);
+    return v15;
+  }
