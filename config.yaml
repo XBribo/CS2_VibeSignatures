@@ -2079,6 +2079,10 @@ modules:
         expected_input:
           - CSkeletonInstance_PostDataUpdate.{platform}.yaml
 
+      - name: find-CUserMessage_ExtraUserData_vtable
+        expected_output:
+          - CUserMessage_ExtraUserData_vtable.{platform}.yaml
+
     symbols:
       - name: CLoopModeGame_RegisterEventMapInternal
         category: func
@@ -2471,6 +2475,9 @@ modules:
         member: m_modelState.m_hModel
         alias:
           - CSkeletonInstance::m_modelState.m_hModel
+
+      - name: CUserMessage_ExtraUserData_vtable
+        category: vtable
 
   - name: server
     path_windows: game/csgo/bin/win64/server.dll
