@@ -744,12 +744,14 @@ modules:
         expected_output:
           - CNetworkClientService_IsActive.{platform}.yaml
         expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
           - INetworkClientService_IsActive.{platform}.yaml
 
       - name: find-CNetworkClientService_IsConnected
         expected_output:
           - CNetworkClientService_IsConnected.{platform}.yaml
         expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
           - INetworkClientService_IsConnected.{platform}.yaml
 
       - name: find-CNetworkServerService_vtable

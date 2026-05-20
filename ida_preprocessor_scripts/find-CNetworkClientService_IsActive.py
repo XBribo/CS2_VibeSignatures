@@ -10,11 +10,13 @@ INHERIT_VFUNCS = [
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
-    # Slot-only: inherit vtable slot index from INetworkClientService_IsActive.
     (
         "CNetworkClientService_IsActive",
         [
             "func_name",
+            "func_va",
+            "func_rva",
+            "func_size",
             "vtable_name",
             "vfunc_offset",
             "vfunc_index",
