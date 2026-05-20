@@ -2090,6 +2090,16 @@ modules:
         expected_input:
           - CUserMessage_ExtraUserData_vtable.{platform}.yaml
 
+      - name: find-IVEngineClient2_GetNetworkClient-AND-INetworkClient_GetLocalAddress-AND-INetworkClientService_IsConnected-AND-INetworkClientService_SendNetMessage
+        platform: windows
+        expected_output:
+          - IVEngineClient2_GetNetworkClient.{platform}.yaml
+          - INetworkClient_GetLocalAddress.{platform}.yaml
+          - INetworkClientService_IsConnected.{platform}.yaml
+          - INetworkClientService_SendNetMessage.{platform}.yaml
+        expected_input:
+          - SendViolationReport.{platform}.yaml
+
     symbols:
       - name: CLoopModeGame_RegisterEventMapInternal
         category: func
@@ -2488,6 +2498,26 @@ modules:
 
       - name: SendViolationReport
         category: func
+
+      - name: IVEngineClient2_GetNetworkClient
+        category: vfunc
+        alias:
+          - IVEngineClient2::GetNetworkClient
+
+      - name: INetworkClient_GetLocalAddress
+        category: vfunc
+        alias:
+          - INetworkClient::GetLocalAddress
+
+      - name: INetworkClientService_IsConnected
+        category: vfunc
+        alias:
+          - INetworkClientService::IsConnected
+
+      - name: INetworkClientService_SendNetMessage
+        category: vfunc
+        alias:
+          - INetworkClientService::SendNetMessage
 
   - name: server
     path_windows: game/csgo/bin/win64/server.dll
