@@ -799,6 +799,29 @@ modules:
           - CNetworkClientService_vtable.{platform}.yaml
           - INetworkClientService_IsConnected.{platform}.yaml
 
+      - name: find-CGameClientConnectPrerequisite_vtable
+        expected_output:
+          - CGameClientConnectPrerequisite_vtable.{platform}.yaml
+
+      - name: find-CGameClientConnectPrerequisite_ctor
+        expected_output:
+          - CGameClientConnectPrerequisite_ctor.{platform}.yaml
+        expected_input:
+          - CGameClientConnectPrerequisite_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_AddClientPrerequisites
+        expected_output:
+          - CNetworkClientService_AddClientPrerequisites.{platform}.yaml
+        expected_input:
+          - CGameClientConnectPrerequisite_ctor.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
+      - name: find-CNetworkClientService_AllocateRemoteConnectionClient
+        expected_output:
+          - CNetworkClientService_AllocateRemoteConnectionClient.{platform}.yaml
+        expected_input:
+          - CNetworkClientService_vtable.{platform}.yaml
+
       - name: find-CNetworkServerService_vtable
         expected_output:
           - CNetworkServerService_vtable.{platform}.yaml
@@ -1472,6 +1495,24 @@ modules:
         category: vfunc
         alias:
           - CNetworkClientService::IsConnected
+
+      - name: CGameClientConnectPrerequisite_vtable
+        category: vtable
+
+      - name: CGameClientConnectPrerequisite_ctor
+        category: func
+        alias:
+          - CGameClientConnectPrerequisite::CGameClientConnectPrerequisite
+
+      - name: CNetworkClientService_AddClientPrerequisites
+        category: vfunc
+        alias:
+          - CNetworkClientService::AddClientPrerequisites
+
+      - name: CNetworkClientService_AllocateRemoteConnectionClient
+        category: vfunc
+        alias:
+          - CNetworkClientService::AllocateRemoteConnectionClient
 
       - name: CNetworkServerService_vtable
         category: vtable
