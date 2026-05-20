@@ -748,6 +748,14 @@ modules:
           - CNetworkGameClientBase_StartChangeLevel.{platform}.yaml
           - CNetworkClientService_vtable.{platform}.yaml
 
+      - name: find-CNetworkClientService_FinishChangeLevel
+        expected_output:
+          - CNetworkClientService_FinishChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_FinishChangeLevel.{platform}.yaml
+          - CNetworkGameClientBase_DeferActivate.{platform}.yaml
+          - CNetworkClientService_vtable.{platform}.yaml
+
       - name: find-CNetworkClientService_ServerCmd
         platform: windows
         expected_output:
@@ -1184,6 +1192,16 @@ modules:
         expected_input:
           - CNetworkGameClientBase_vtable.{platform}.yaml
 
+      - name: find-CNetworkGameClientBase_FinishChangeLevel
+        expected_output:
+          - CNetworkGameClientBase_FinishChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameClientBase_vtable.{platform}.yaml
+
+      - name: find-CNetworkGameClientBase_DeferActivate
+        expected_output:
+          - CNetworkGameClientBase_DeferActivate.{platform}.yaml
+
     symbols:
       - name: CNetworkGameServer_vtable
         category: vtable
@@ -1404,6 +1422,11 @@ modules:
         category: vfunc
         alias:
           - CNetworkClientService::StartChangeLevel
+
+      - name: CNetworkClientService_FinishChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkClientService::FinishChangeLevel
 
       - name: CNetworkClientService_ServerCmd
         category: vfunc
@@ -1780,6 +1803,16 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameClientBase::StartChangeLevel
+
+      - name: CNetworkGameClientBase_FinishChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkGameClientBase::FinishChangeLevel
+
+      - name: CNetworkGameClientBase_DeferActivate
+        category: func
+        alias:
+          - CNetworkGameClientBase::DeferActivate
 
   - name: client
     path_windows: game/csgo/bin/win64/client.dll
