@@ -1,189 +1,192 @@
 func_name: CEntitySystem_PrecacheEntity
-func_va: '0x1811e61f0'
+func_va: '0x1812143f0'
 disasm_code: |-
-  .text:00000001811E61F0                 push    rsi
-  .text:00000001811E61F2                 push    rdi
-  .text:00000001811E61F3                 push    r14
-  .text:00000001811E61F5                 push    r15
-  .text:00000001811E61F7                 sub     rsp, 98h
-  .text:00000001811E61FE                 mov     r15, rdx
-  .text:00000001811E6201                 mov     [rsp+0B8h+var_80], 0FFFFFFFFC61B1C62h
-  .text:00000001811E620A                 mov     esi, r8d
-  .text:00000001811E620D                 lea     rax, aClassname; "classname"
-  .text:00000001811E6214                 mov     rdi, rcx
-  .text:00000001811E6217                 mov     [rsp+0B8h+var_78], rax
-  .text:00000001811E621C                 mov     rcx, r15
-  .text:00000001811E621F                 lea     rdx, [rsp+0B8h+var_80]
-  .text:00000001811E6224                 xor     r8d, r8d
-  .text:00000001811E6227                 call    sub_1811FE7D0
-  .text:00000001811E622C                 test    rax, rax
-  .text:00000001811E622F                 jz      loc_1811E6470
-  .text:00000001811E6235                 movzx   ecx, byte ptr [rax]
-  .text:00000001811E6238                 shr     cl, 2
-  .text:00000001811E623B                 and     cl, 0Fh
-  .text:00000001811E623E                 cmp     cl, 6
-  .text:00000001811E6241                 jnz     loc_1811E6470
-  .text:00000001811E6247                 lea     r14, unk_18159A988
-  .text:00000001811E624E                 mov     rcx, rax
-  .text:00000001811E6251                 mov     rdx, r14
-  .text:00000001811E6254                 call    sub_1814D4DD0
-  .text:00000001811E6259                 test    rax, rax
-  .text:00000001811E625C                 jz      loc_1811E6470
-  .text:00000001811E6262                 mov     [rsp+0B8h+arg_8], rbp
-  .text:00000001811E626A                 lea     r8, [rsp+0B8h+var_88]
-  .text:00000001811E626F                 mov     [rsp+0B8h+arg_0], rbx
-  .text:00000001811E6277                 mov     rdx, rax
-  .text:00000001811E627A                 mov     rcx, rdi
-  .text:00000001811E627D                 mov     [rsp+0B8h+var_28], r12
-  .text:00000001811E6285                 mov     [rsp+0B8h+var_88], 0
-  .text:00000001811E628E                 call    sub_1811ED0E0
-  .text:00000001811E6293                 mov     rbp, rax
-  .text:00000001811E6296                 test    rax, rax
-  .text:00000001811E6299                 jz      loc_1811E6432
-  .text:00000001811E629F                 mov     [rsp+0B8h+var_90], 0
-  .text:00000001811E62A4                 lea     rcx, [rdi+10h]
-  .text:00000001811E62A8                 xor     edx, edx
-  .text:00000001811E62AA                 mov     byte ptr [rsp+0B8h+var_98], 1
-  .text:00000001811E62AF                 mov     r9d, 0FFFFFFFFh
-  .text:00000001811E62B5                 mov     r8d, 0FFFFFFFFh
-  .text:00000001811E62BB                 call    CEntitySystem_DoAllocateEntity
-  .text:00000001811E62C0                 mov     rbx, rax
-  .text:00000001811E62C3                 test    rax, rax
-  .text:00000001811E62C6                 jnz     short loc_1811E62FC
-  .text:00000001811E62C8                 mov     ecx, cs:dword_1820B0808
-  .text:00000001811E62CE                 mov     edx, 3
-  .text:00000001811E62D3                 call    cs:LoggingSystem_IsChannelEnabled
-  .text:00000001811E62D9                 test    al, al
-  .text:00000001811E62DB                 jz      short loc_1811E62F5
-  .text:00000001811E62DD                 mov     ecx, cs:dword_1820B0808
-  .text:00000001811E62E3                 lea     r8, aDoallocateenti; "DoAllocateEntity failed\n"
-  .text:00000001811E62EA                 mov     edx, 3
-  .text:00000001811E62EF                 call    cs:LoggingSystem_Log
-  .text:00000001811E62F5                 xor     ebx, ebx
-  .text:00000001811E62F7                 jmp     loc_1811E638C
-  .text:00000001811E62FC                 cmp     qword ptr [rax], 0
-  .text:00000001811E6300                 jz      short loc_1811E637D
-  .text:00000001811E6302                 mov     ecx, cs:dword_1820B0808
-  .text:00000001811E6308                 mov     edx, 5
-  .text:00000001811E630D                 call    cs:LoggingSystem_IsChannelEnabled
-  .text:00000001811E6313                 test    al, al
-  .text:00000001811E6315                 jz      short loc_1811E62F5
-  .text:00000001811E6317                 mov     ecx, cs:dword_1820B0808
-  .text:00000001811E631D                 lea     rax, aCBuildworkerCs_62; "C:\\buildworker\\csgo_rel_win64\\build"...
-  .text:00000001811E6324                 mov     [rsp+0B8h+var_70], rax
-  .text:00000001811E6329                 lea     r9, aDoallocateenti_0; "DoAllocateEntity pEntity->m_pInstance !"...
-  .text:00000001811E6330                 lea     rax, aCentitysystemA_0; "CEntitySystem::AllocateEntityIdentity"
-  .text:00000001811E6337                 mov     [rsp+0B8h+var_68], 704h
-  .text:00000001811E633F                 xorps   xmm0, xmm0
-  .text:00000001811E6342                 mov     [rsp+0B8h+var_60], rax
-  .text:00000001811E6347                 xorps   xmm1, xmm1
-  .text:00000001811E634A                 mov     [rsp+0B8h+var_38], 0
-  .text:00000001811E6355                 lea     r8, [rsp+0B8h+var_70]
-  .text:00000001811E635A                 mov     [rsp+0B8h+var_98], 0FFFFFFFFh
-  .text:00000001811E6362                 mov     edx, 5
-  .text:00000001811E6367                 movdqu  [rsp+0B8h+var_58], xmm0
-  .text:00000001811E636D                 movdqu  [rsp+0B8h+var_48], xmm1
-  .text:00000001811E6373                 call    cs:?LoggingSystem_Log@@YA?AW4LoggingResponse_t@@HW4LoggingSeverity_t@@AEBULoggingRareOptions_t@@PEBDZZ; LoggingSystem_Log(int,LoggingSeverity_t,LoggingRareOptions_t const &,char const *,...)
-  .text:00000001811E6379                 xor     ebx, ebx
-  .text:00000001811E637B                 jmp     short loc_1811E638C
-  .text:00000001811E637D                 or      dword ptr [rax+30h], 100h
-  .text:00000001811E6384                 mov     qword ptr [rax+48h], 0
-  .text:00000001811E638C                 mov     [rbx+8], rbp
-  .text:00000001811E6390                 mov     ecx, [rbp+68h]
-  .text:00000001811E6393                 mov     eax, ecx
-  .text:00000001811E6395                 shr     eax, 2
-  .text:00000001811E6398                 test    al, 1
-  .text:00000001811E639A                 jz      short loc_1811E63A0
-  .text:00000001811E639C                 xor     esi, esi
-  .text:00000001811E639E                 jmp     short loc_1811E63AB
-  .text:00000001811E63A0                 cmp     esi, 0FFFFFFFFh
-  .text:00000001811E63A3                 jnz     short loc_1811E63AB
-  .text:00000001811E63A5                 mov     esi, [rdi+1F38h]
-  .text:00000001811E63AB                 shr     ecx, 0Ah
-  .text:00000001811E63AE                 test    cl, 1
-  .text:00000001811E63B1                 jnz     short loc_1811E63CE
-  .text:00000001811E63B3                 mov     rax, [rdi]
-  .text:00000001811E63B6                 lea     rdx, [rsp+0B8h+arg_18]
-  .text:00000001811E63BE                 mov     r8d, esi
-  .text:00000001811E63C1                 mov     rcx, rdi
-  .text:00000001811E63C4                 call    qword ptr [rax+88h]    ; 0x88 = CEntitySystem_GetSpawnGroupWorldId
-  .text:00000001811E63CA                 mov     ecx, [rax]
-  .text:00000001811E63CC                 jmp     short loc_1811E63D3
-  .text:00000001811E63CE                 mov     ecx, 1
-  .text:00000001811E63D3                 mov     [rbx+38h], ecx
-  .text:00000001811E63D6                 mov     rdx, rbx
-  .text:00000001811E63D9                 mov     [rbx+34h], esi
-  .text:00000001811E63DC                 mov     rcx, rdi
-  .text:00000001811E63DF                 mov     rax, [rsp+0B8h+var_88]
-  .text:00000001811E63E4                 test    rax, rax
-  .text:00000001811E63E7                 cmovnz  r14, rax
-  .text:00000001811E63EB                 mov     r8, r14
-  .text:00000001811E63EE                 call    CEntitySystem_ConstructEntity
-  .text:00000001811E63F3                 test    al, al
-  .text:00000001811E63F5                 jnz     short loc_1811E6412
-  .text:00000001811E63F7                 xor     edx, edx
-  .text:00000001811E63F9                 mov     rcx, rbx
-  .text:00000001811E63FC                 call    sub_18120E670
-  .text:00000001811E6401                 mov     r8b, 1
-  .text:00000001811E6404                 lea     rcx, [rdi+10h]
-  .text:00000001811E6408                 mov     rdx, rbx
-  .text:00000001811E640B                 call    sub_1811EE5A0
-  .text:00000001811E6410                 jmp     short loc_1811E6432
-  .text:00000001811E6412                 mov     rsi, [rbx]
-  .text:00000001811E6415                 mov     r8, r15
-  .text:00000001811E6418                 mov     rdx, rbx
-  .text:00000001811E641B                 mov     rcx, rdi
-  .text:00000001811E641E                 call    sub_1811FB030
-  .text:00000001811E6423                 test    al, al
-  .text:00000001811E6425                 jnz     short loc_1811E6434
-  .text:00000001811E6427                 mov     rdx, rsi
-  .text:00000001811E642A                 mov     rcx, rdi
-  .text:00000001811E642D                 call    CEntitySystem_DestroyEntity
-  .text:00000001811E6432                 xor     esi, esi
-  .text:00000001811E6434                 cmp     [rsp+0B8h+var_88], 0
-  .text:00000001811E643A                 mov     r12, [rsp+0B8h+var_28]
-  .text:00000001811E6442                 mov     rbp, [rsp+0B8h+arg_8]
-  .text:00000001811E644A                 mov     rbx, [rsp+0B8h+arg_0]
-  .text:00000001811E6452                 jz      short loc_1811E645F
-  .text:00000001811E6454                 lea     rcx, [rsp+0B8h+var_88]
-  .text:00000001811E6459                 call    cs:?FreeMemoryBlock@CUtlString@@AEAAXXZ; CUtlString::FreeMemoryBlock(void)
-  .text:00000001811E645F                 mov     rax, rsi
-  .text:00000001811E6462                 add     rsp, 98h
-  .text:00000001811E6469                 pop     r15
-  .text:00000001811E646B                 pop     r14
-  .text:00000001811E646D                 pop     rdi
-  .text:00000001811E646E                 pop     rsi
-  .text:00000001811E646F                 retn
-  .text:00000001811E6470                 mov     ecx, cs:dword_1820B0808
-  .text:00000001811E6476                 mov     edx, 3
-  .text:00000001811E647B                 call    cs:LoggingSystem_IsChannelEnabled
-  .text:00000001811E6481                 test    al, al
-  .text:00000001811E6483                 jz      short loc_1811E649D
-  .text:00000001811E6485                 mov     ecx, cs:dword_1820B0808
-  .text:00000001811E648B                 lea     r8, aCentitysystemP; "CEntitySystem::PrecacheEntity: Classnam"...
-  .text:00000001811E6492                 mov     edx, 3
-  .text:00000001811E6497                 call    cs:LoggingSystem_Log
-  .text:00000001811E649D                 xor     eax, eax
-  .text:00000001811E649F                 add     rsp, 98h
-  .text:00000001811E64A6                 pop     r15
-  .text:00000001811E64A8                 pop     r14
-  .text:00000001811E64AA                 pop     rdi
-  .text:00000001811E64AB                 pop     rsi
-  .text:00000001811E64AC                 retn
+  .text:00000001812143F0                 push    rsi
+  .text:00000001812143F2                 push    rdi
+  .text:00000001812143F3                 push    r14
+  .text:00000001812143F5                 push    r15
+  .text:00000001812143F7                 sub     rsp, 98h
+  .text:00000001812143FE                 mov     r15, rdx
+  .text:0000000181214401                 mov     [rsp+0B8h+var_80], 0FFFFFFFFC61B1C62h
+  .text:000000018121440A                 mov     esi, r8d
+  .text:000000018121440D                 lea     rax, aClassname; "classname"
+  .text:0000000181214414                 mov     rdi, rcx
+  .text:0000000181214417                 mov     [rsp+0B8h+var_78], rax
+  .text:000000018121441C                 mov     rcx, r15
+  .text:000000018121441F                 lea     rdx, [rsp+0B8h+var_80]
+  .text:0000000181214424                 xor     r8d, r8d
+  .text:0000000181214427                 call    sub_18122C9D0
+  .text:000000018121442C                 test    rax, rax
+  .text:000000018121442F                 jz      loc_181214670
+  .text:0000000181214435                 movzx   ecx, byte ptr [rax]
+  .text:0000000181214438                 shr     cl, 2
+  .text:000000018121443B                 and     cl, 0Fh
+  .text:000000018121443E                 cmp     cl, 6
+  .text:0000000181214441                 jnz     loc_181214670
+  .text:0000000181214447                 lea     r14, byte_1815C9988
+  .text:000000018121444E                 mov     rcx, rax
+  .text:0000000181214451                 mov     rdx, r14
+  .text:0000000181214454                 call    sub_181502AC0
+  .text:0000000181214459                 test    rax, rax
+  .text:000000018121445C                 jz      loc_181214670
+  .text:0000000181214462                 mov     [rsp+0B8h+arg_8], rbp
+  .text:000000018121446A                 lea     r8, [rsp+0B8h+var_88]
+  .text:000000018121446F                 mov     [rsp+0B8h+arg_0], rbx
+  .text:0000000181214477                 mov     rdx, rax
+  .text:000000018121447A                 mov     rcx, rdi
+  .text:000000018121447D                 mov     [rsp+0B8h+var_28], r12
+  .text:0000000181214485                 mov     [rsp+0B8h+var_88], 0
+  .text:000000018121448E                 call    CEntitySystem_FindClassByDesignName
+  .text:0000000181214493                 mov     rbp, rax
+  .text:0000000181214496                 test    rax, rax
+  .text:0000000181214499                 jz      loc_181214632
+  .text:000000018121449F                 mov     [rsp+0B8h+var_90], 0
+  .text:00000001812144A4                 ; 0x10 = 16 = CEntitySystem::m_EntityList (structmember, struct=CEntitySystem, member=m_EntityList)
+  .text:00000001812144A4                 lea     rcx, [rdi+10h]; 0x10 = 16 = CEntitySystem::m_EntityList (structmember, struct=CEntitySystem, member=m_EntityList)
+  .text:00000001812144A8                 xor     edx, edx
+  .text:00000001812144AA                 mov     byte ptr [rsp+0B8h+var_98], 1
+  .text:00000001812144AF                 mov     r9d, 0FFFFFFFFh
+  .text:00000001812144B5                 mov     r8d, 0FFFFFFFFh
+  .text:00000001812144BB                 call    CConcreteEntityList_AllocEntity
+  .text:00000001812144C0                 mov     rbx, rax
+  .text:00000001812144C3                 test    rax, rax
+  .text:00000001812144C6                 jnz     short loc_1812144FC
+  .text:00000001812144C8                 mov     ecx, cs:dword_1820EFF88
+  .text:00000001812144CE                 mov     edx, 3
+  .text:00000001812144D3                 call    cs:LoggingSystem_IsChannelEnabled
+  .text:00000001812144D9                 test    al, al
+  .text:00000001812144DB                 jz      short loc_1812144F5
+  .text:00000001812144DD                 mov     ecx, cs:dword_1820EFF88
+  .text:00000001812144E3                 lea     r8, aDoallocateenti; "DoAllocateEntity failed\n"
+  .text:00000001812144EA                 mov     edx, 3
+  .text:00000001812144EF                 call    cs:LoggingSystem_Log
+  .text:00000001812144F5                 xor     ebx, ebx
+  .text:00000001812144F7                 jmp     loc_18121458C
+  .text:00000001812144FC                 cmp     qword ptr [rax], 0
+  .text:0000000181214500                 jz      short loc_18121457D
+  .text:0000000181214502                 mov     ecx, cs:dword_1820EFF88
+  .text:0000000181214508                 mov     edx, 5
+  .text:000000018121450D                 call    cs:LoggingSystem_IsChannelEnabled
+  .text:0000000181214513                 test    al, al
+  .text:0000000181214515                 jz      short loc_1812144F5
+  .text:0000000181214517                 mov     ecx, cs:dword_1820EFF88
+  .text:000000018121451D                 lea     rax, aCBuildworkerCs_62; "C:\\buildworker\\csgo_rel_win64\\build"...
+  .text:0000000181214524                 mov     [rsp+0B8h+var_70], rax
+  .text:0000000181214529                 lea     r9, aDoallocateenti_0; "DoAllocateEntity pEntity->m_pInstance !"...
+  .text:0000000181214530                 lea     rax, aCentitysystemA_0; "CEntitySystem::AllocateEntityIdentity"
+  .text:0000000181214537                 mov     [rsp+0B8h+var_68], 704h
+  .text:000000018121453F                 xorps   xmm0, xmm0
+  .text:0000000181214542                 mov     [rsp+0B8h+var_60], rax
+  .text:0000000181214547                 xorps   xmm1, xmm1
+  .text:000000018121454A                 mov     [rsp+0B8h+var_38], 0
+  .text:0000000181214555                 lea     r8, [rsp+0B8h+var_70]
+  .text:000000018121455A                 mov     [rsp+0B8h+var_98], 0FFFFFFFFh
+  .text:0000000181214562                 mov     edx, 5
+  .text:0000000181214567                 movdqu  [rsp+0B8h+var_58], xmm0
+  .text:000000018121456D                 movdqu  [rsp+0B8h+var_48], xmm1
+  .text:0000000181214573                 call    cs:?LoggingSystem_Log@@YA?AW4LoggingResponse_t@@HW4LoggingSeverity_t@@AEBULoggingRareOptions_t@@PEBDZZ; LoggingSystem_Log(int,LoggingSeverity_t,LoggingRareOptions_t const &,char const *,...)
+  .text:0000000181214579                 xor     ebx, ebx
+  .text:000000018121457B                 jmp     short loc_18121458C
+  .text:000000018121457D                 or      dword ptr [rax+30h], 100h
+  .text:0000000181214584                 mov     qword ptr [rax+48h], 0
+  .text:000000018121458C                 mov     [rbx+8], rbp
+  .text:0000000181214590                 mov     ecx, [rbp+68h]
+  .text:0000000181214593                 mov     eax, ecx
+  .text:0000000181214595                 shr     eax, 2
+  .text:0000000181214598                 test    al, 1
+  .text:000000018121459A                 jz      short loc_1812145A0
+  .text:000000018121459C                 xor     esi, esi
+  .text:000000018121459E                 jmp     short loc_1812145AB
+  .text:00000001812145A0                 cmp     esi, 0FFFFFFFFh
+  .text:00000001812145A3                 jnz     short loc_1812145AB
+  .text:00000001812145A5                 mov     esi, [rdi+1F38h]
+  .text:00000001812145AB                 shr     ecx, 0Ah
+  .text:00000001812145AE                 test    cl, 1
+  .text:00000001812145B1                 jnz     short loc_1812145CE
+  .text:00000001812145B3                 mov     rax, [rdi]
+  .text:00000001812145B6                 lea     rdx, [rsp+0B8h+arg_18]
+  .text:00000001812145BE                 mov     r8d, esi
+  .text:00000001812145C1                 mov     rcx, rdi
+  .text:00000001812145C4                 ; 0x88 = 136LL = CEntitySystem_GetSpawnGroupWorldId
+  .text:00000001812145C4                 call    qword ptr [rax+88h]; 0x88 = 136LL = CEntitySystem_GetSpawnGroupWorldId
+  .text:00000001812145CA                 mov     ecx, [rax]
+  .text:00000001812145CC                 jmp     short loc_1812145D3
+  .text:00000001812145CE                 mov     ecx, 1
+  .text:00000001812145D3                 mov     [rbx+38h], ecx
+  .text:00000001812145D6                 mov     rdx, rbx
+  .text:00000001812145D9                 mov     [rbx+34h], esi
+  .text:00000001812145DC                 mov     rcx, rdi
+  .text:00000001812145DF                 mov     rax, [rsp+0B8h+var_88]
+  .text:00000001812145E4                 test    rax, rax
+  .text:00000001812145E7                 cmovnz  r14, rax
+  .text:00000001812145EB                 mov     r8, r14
+  .text:00000001812145EE                 call    CEntitySystem_ConstructEntity
+  .text:00000001812145F3                 test    al, al
+  .text:00000001812145F5                 jnz     short loc_181214612
+  .text:00000001812145F7                 xor     edx, edx
+  .text:00000001812145F9                 mov     rcx, rbx
+  .text:00000001812145FC                 call    CEntityIdentity_FreeAttributes
+  .text:0000000181214601                 mov     r8b, 1
+  .text:0000000181214604                 ; 0x10 = 16 = CEntitySystem::m_EntityList (structmember, struct=CEntitySystem, member=m_EntityList)
+  .text:0000000181214604                 lea     rcx, [rdi+10h]; 0x10 = 16 = CEntitySystem::m_EntityList (structmember, struct=CEntitySystem, member=m_EntityList)
+  .text:0000000181214608                 mov     rdx, rbx
+  .text:000000018121460B                 call    CConcreteEntityList_FreeEntity
+  .text:0000000181214610                 jmp     short loc_181214632
+  .text:0000000181214612                 mov     rsi, [rbx]
+  .text:0000000181214615                 mov     r8, r15
+  .text:0000000181214618                 mov     rdx, rbx
+  .text:000000018121461B                 mov     rcx, rdi
+  .text:000000018121461E                 call    sub_181229230
+  .text:0000000181214623                 test    al, al
+  .text:0000000181214625                 jnz     short loc_181214634
+  .text:0000000181214627                 mov     rdx, rsi
+  .text:000000018121462A                 mov     rcx, rdi
+  .text:000000018121462D                 call    CEntitySystem_DestroyEntity
+  .text:0000000181214632                 xor     esi, esi
+  .text:0000000181214634                 cmp     [rsp+0B8h+var_88], 0
+  .text:000000018121463A                 mov     r12, [rsp+0B8h+var_28]
+  .text:0000000181214642                 mov     rbp, [rsp+0B8h+arg_8]
+  .text:000000018121464A                 mov     rbx, [rsp+0B8h+arg_0]
+  .text:0000000181214652                 jz      short loc_18121465F
+  .text:0000000181214654                 lea     rcx, [rsp+0B8h+var_88]
+  .text:0000000181214659                 call    cs:?FreeMemoryBlock@CUtlString@@AEAAXXZ; CUtlString::FreeMemoryBlock(void)
+  .text:000000018121465F                 mov     rax, rsi
+  .text:0000000181214662                 add     rsp, 98h
+  .text:0000000181214669                 pop     r15
+  .text:000000018121466B                 pop     r14
+  .text:000000018121466D                 pop     rdi
+  .text:000000018121466E                 pop     rsi
+  .text:000000018121466F                 retn
+  .text:0000000181214670                 mov     ecx, cs:dword_1820EFF88
+  .text:0000000181214676                 mov     edx, 3
+  .text:000000018121467B                 call    cs:LoggingSystem_IsChannelEnabled
+  .text:0000000181214681                 test    al, al
+  .text:0000000181214683                 jz      short loc_18121469D
+  .text:0000000181214685                 mov     ecx, cs:dword_1820EFF88
+  .text:000000018121468B                 lea     r8, aCentitysystemP; "CEntitySystem::PrecacheEntity: Classnam"...
+  .text:0000000181214692                 mov     edx, 3
+  .text:0000000181214697                 call    cs:LoggingSystem_Log
+  .text:000000018121469D                 xor     eax, eax
+  .text:000000018121469F                 add     rsp, 98h
+  .text:00000001812146A6                 pop     r15
+  .text:00000001812146A8                 pop     r14
+  .text:00000001812146AA                 pop     rdi
+  .text:00000001812146AB                 pop     rsi
+  .text:00000001812146AC                 retn
 procedure: |-
-  __int64 __fastcall CEntitySystem_PrecacheEntity(_DWORD *a1, __int64 a2, unsigned int a3)
+  __int64 __fastcall CEntitySystem_PrecacheEntity(__int64 a1, _QWORD *a2, unsigned int a3)
   {
     _BYTE *v6; // rax
-    void *v7; // r14
+    char *v7; // r14
     __int64 v8; // rax
     __int64 v9; // rbp
-    __int64 v10; // rax
-    __int64 v11; // rbx
+    unsigned __int64 v10; // rax
+    unsigned __int64 v11; // rbx
     int v12; // ecx
     int v13; // ecx
     __int64 v14; // r8
     __int64 v15; // rsi
-    void *v17; // [rsp+30h] [rbp-88h] BYREF
+    char *v17; // [rsp+30h] [rbp-88h] BYREF
     _QWORD v18[2]; // [rsp+38h] [rbp-80h] BYREF
     const char *v19; // [rsp+48h] [rbp-70h] BYREF
     int v20; // [rsp+50h] [rbp-68h]
@@ -195,30 +198,30 @@ procedure: |-
 
     v18[0] = -971301790;
     v18[1] = "classname";
-    v6 = (_BYTE *)sub_1811FE7D0(a2, v18, 0);
+    v6 = (_BYTE *)sub_18122C9D0(a2, (int *)v18, nullptr);
     if ( v6 )
     {
       if ( ((*v6 >> 2) & 0xF) == 6 )
       {
-        v7 = &unk_18159A988;
-        v8 = sub_1814D4DD0(v6, &unk_18159A988);
+        v7 = byte_1815C9988;
+        v8 = sub_181502AC0(v6, byte_1815C9988);
         if ( v8 )
         {
           v17 = nullptr;
-          v9 = sub_1811ED0E0(a1, v8, &v17);
+          v9 = CEntitySystem_FindClassByDesignName(a1, v8, &v17);
           if ( !v9 )
             goto LABEL_26;
-          v10 = CEntitySystem_DoAllocateEntity((int)a1 + 16, 0, -1, -1, 1, 0);
+          v10 = CConcreteEntityList_AllocEntity(a1 + 16, 0, -1, -1, 1u, 0);// 0x10 = 16 = CEntitySystem::m_EntityList (structmember, struct=CEntitySystem, member=m_EntityList)
           v11 = v10;
           if ( !v10 )
           {
-            if ( (unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1820B0808, 3) )
-              LoggingSystem_Log((unsigned int)dword_1820B0808, 3, "DoAllocateEntity failed\n");
+            if ( (unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1820EFF88, 3) )
+              LoggingSystem_Log((unsigned int)dword_1820EFF88, 3, "DoAllocateEntity failed\n");
             goto LABEL_8;
           }
           if ( *(_QWORD *)v10 )
           {
-            if ( !(unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1820B0808, 5) )
+            if ( !(unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1820EFF88, 5) )
             {
   LABEL_8:
               v11 = 0;
@@ -231,7 +234,7 @@ procedure: |-
             v22 = 0;
             v23 = 0;
             LoggingSystem_Log(
-              (unsigned int)dword_1820B0808,
+              (unsigned int)dword_1820EFF88,
               5,
               &v19,
               "DoAllocateEntity pEntity->m_pInstance != NULL %d\n",
@@ -252,20 +255,20 @@ procedure: |-
           }
           else if ( a3 == -1 )
           {
-            a3 = a1[1998];
+            a3 = *(_DWORD *)(a1 + 7992);
           }
           if ( (v12 & 0x400) != 0 )
             v13 = 1;
           else
-            v13 = *(_DWORD *)(*(__int64 (__fastcall **)(_DWORD *, char *, _QWORD))(*(_QWORD *)a1 + 136LL))(a1, &v25, a3); // 136LL = 0x88 = CEntitySystem_GetSpawnGroupWorldId
+            v13 = *(_DWORD *)(*(__int64 (__fastcall **)(__int64, char *, _QWORD))(*(_QWORD *)a1 + 136LL))(a1, &v25, a3);// 0x88 = 136LL = CEntitySystem_GetSpawnGroupWorldId
           *(_DWORD *)(v11 + 56) = v13;
           *(_DWORD *)(v11 + 52) = a3;
           if ( v17 )
             v7 = v17;
-          if ( (unsigned __int8)CEntitySystem_ConstructEntity(a1, v11, v7) )
+          if ( (unsigned __int8)CEntitySystem_ConstructEntity(a1, (__int64 *)v11, v7) )
           {
             v15 = *(_QWORD *)v11;
-            if ( (unsigned __int8)sub_1811FB030(a1, v11, a2) )
+            if ( (unsigned __int8)sub_181229230(a1, v11, a2) )
             {
   LABEL_27:
               if ( v17 )
@@ -276,9 +279,9 @@ procedure: |-
           }
           else
           {
-            sub_18120E670(v11, 0);
+            CEntityIdentity_FreeAttributes(v11, 0);
             LOBYTE(v14) = 1;
-            sub_1811EE5A0(a1 + 4, v11, v14);
+            CConcreteEntityList_FreeEntity(a1 + 16, v11, v14);// 0x10 = 16 = CEntitySystem::m_EntityList (structmember, struct=CEntitySystem, member=m_EntityList)
           }
   LABEL_26:
           v15 = 0;
@@ -286,9 +289,9 @@ procedure: |-
         }
       }
     }
-    if ( (unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1820B0808, 3) )
+    if ( (unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1820EFF88, 3) )
       LoggingSystem_Log(
-        (unsigned int)dword_1820B0808,
+        (unsigned int)dword_1820EFF88,
         3,
         "CEntitySystem::PrecacheEntity: Classname missing from entity!\n");
     return 0;

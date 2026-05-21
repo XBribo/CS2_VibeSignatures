@@ -4621,12 +4621,16 @@ modules:
         expected_output:
           - CEntitySystem_PrecacheEntity.{platform}.yaml
 
-      - name: find-CEntitySystem_DestroyEntity-AND-CEntitySystem_DoAllocateEntity-AND-CEntitySystem_ConstructEntity-AND-CEntitySystem_GetSpawnGroupWorldId
+      - name: find-CEntitySystem_PrecacheEntity-decompiles
         expected_output:
           - CEntitySystem_DestroyEntity.{platform}.yaml
-          - CEntitySystem_DoAllocateEntity.{platform}.yaml
+          - CConcreteEntityList_AllocEntity.{platform}.yaml
           - CEntitySystem_ConstructEntity.{platform}.yaml
           - CEntitySystem_GetSpawnGroupWorldId.{platform}.yaml
+          - CEntitySystem_FindClassByDesignName.{platform}.yaml
+          - CEntitySystem_m_EntityList.{platform}.yaml
+          - CEntityIdentity_FreeAttributes.{platform}.yaml
+          - CConcreteEntityList_FreeEntity.{platform}.yaml
         expected_input:
           - CEntitySystem_PrecacheEntity.{platform}.yaml
           - CEntitySystem_vtable.{platform}.yaml
@@ -7295,10 +7299,10 @@ modules:
         alias:
           - CEntitySystem::DestroyEntity
 
-      - name: CEntitySystem_DoAllocateEntity
+      - name: CConcreteEntityList_AllocEntity
         category: func
         alias:
-          - CEntitySystem::DoAllocateEntity
+          - CConcreteEntityList::AllocEntity
 
       - name: CEntitySystem_ConstructEntity
         category: func
@@ -7314,6 +7318,31 @@ modules:
         category: vfunc
         alias:
           - CEntitySystem::GetSpawnGroupWorldId
+
+      - name: CEntitySystem_FindClassByDesignName
+        category: func
+        alias:
+          - CEntitySystem::FindClassByDesignName
+
+      - name: CEntitySystem
+        category: struct
+
+      - name: CEntitySystem_m_EntityList
+        category: structmember
+        struct: CEntitySystem
+        member: m_EntityList
+        alias:
+          - CEntitySystem::m_EntityList
+
+      - name: CEntityIdentity_FreeAttributes
+        category: func
+        alias:
+          - CEntityIdentity::FreeAttributes
+
+      - name: CConcreteEntityList_FreeEntity
+        category: func
+        alias:
+          - CConcreteEntityList::FreeEntity
 
       - name: UTIL_CreateEntityByName
         category: func

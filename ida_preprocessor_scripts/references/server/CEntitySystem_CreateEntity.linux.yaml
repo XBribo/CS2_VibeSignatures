@@ -54,7 +54,7 @@ disasm_code: |-
   .text:0000000001E688AE                 mov     edx, [rbp+var_34]
   .text:0000000001E688B1                 and     r9d, 1
   .text:0000000001E688B5                 mov     [rbp+var_44], r10d
-  .text:0000000001E688B9                 call    CEntitySystem_DoAllocateEntity
+  .text:0000000001E688B9                 call    CConcreteEntityList_AllocEntity
   .text:0000000001E688BE                 mov     r12, rax
   .text:0000000001E688C1                 test    rax, rax
   .text:0000000001E688C4                 jz      loc_1E6899B
@@ -312,7 +312,7 @@ procedure: |-
     if ( !*(_QWORD *)(a3 + 224) )
       return 0;
   LABEL_11:
-    EntityIdentity = CEntitySystem_DoAllocateEntity((__int64)a1, v14, v24, a7, a8, (*(_DWORD *)(a3 + 104) & 0x40) != 0);
+    EntityIdentity = CConcreteEntityList_AllocEntity((__int64)a1, v14, v24, a7, a8, (*(_DWORD *)(a3 + 104) & 0x40) != 0);
     v16 = (unsigned __int64)EntityIdentity;
     if ( !EntityIdentity )
       return 0;
