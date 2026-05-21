@@ -1289,10 +1289,6 @@ modules:
         expected_input:
           - CNetworkGameClientBase_vtable.{platform}.yaml
 
-      - name: find-CNetSupportImpl_vtable
-        expected_output:
-          - CNetSupportImpl_vtable.{platform}.yaml
-
     symbols:
       - name: CNetworkGameServer_vtable
         category: vtable
@@ -9337,6 +9333,10 @@ modules:
           - CLoopTypeBase_GetClientServerMode.{platform}.yaml
         expected_input:
           - CEngineServiceMgr_GetActiveLoopClientServerMode.{platform}.yaml
+
+      - name: find-CNetSupportImpl_vtable
+        expected_output:
+          - CNetSupportImpl_vtable.{platform}.yaml
 
       - name: find-CNetSupportImpl_Connect
         expected_output:
