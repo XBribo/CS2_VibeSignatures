@@ -3870,6 +3870,10 @@ modules:
         expected_output:
           - CEnvShake_vtable.{platform}.yaml
 
+      - name: find-CEnvEntityIgniter_vtable
+        expected_output:
+          - CEnvEntityIgniter_vtable.{platform}.yaml
+
       - name: find-CCSPlayerStateDeathAnim_vtable
         expected_output:
           - CCSPlayerStateDeathAnim_vtable.{platform}.yaml
@@ -4888,6 +4892,25 @@ modules:
         expected_input:
           - CBaseEntity_vtable.{platform}.yaml
           - CEntityInstance_Precache.{platform}.yaml
+
+      - name: find-CEnvEntityIgniter_Precache
+        expected_output:
+          - CEnvEntityIgniter_Precache.{platform}.yaml
+        expected_input:
+          - CEnvEntityIgniter_vtable.{platform}.yaml
+
+      - name: find-UTIL_PrecacheOther
+        expected_output:
+          - UTIL_PrecacheOther.{platform}.yaml
+        expected_input:
+          - CEnvEntityIgniter_Precache.{platform}.yaml
+
+      - name: find-CEntitySystem_BuildResourceManifestForEntity
+        expected_output:
+          - CEntitySystem_BuildResourceManifestForEntity.{platform}.yaml
+        expected_input:
+          - UTIL_PrecacheOther.{platform}.yaml
+          - CEntitySystem_vtable.{platform}.yaml
 
       - name: find-CEnvShake_Spawn
         expected_output:
@@ -6511,6 +6534,11 @@ modules:
         alias:
           - CEntitySystem::OnSetDormant
 
+      - name: CEntitySystem_BuildResourceManifestForEntity
+        category: vfunc
+        alias:
+          - CEntitySystem::BuildResourceManifestForEntity
+
       - name: CEntityInstance_ObjectCaps
         category: vfunc
         alias:
@@ -6603,6 +6631,9 @@ modules:
         category: vtable
 
       - name: CEnvShake_vtable
+        category: vtable
+
+      - name: CEnvEntityIgniter_vtable
         category: vtable
 
       - name: CCSPlayerStateDeathAnim_vtable
@@ -7897,6 +7928,14 @@ modules:
         alias:
           - CBaseEntity::Precache
           - Precache
+
+      - name: CEnvEntityIgniter_Precache
+        category: vfunc
+        alias:
+          - CEnvEntityIgniter::Precache
+
+      - name: UTIL_PrecacheOther
+        category: func
 
       - name: CEnvShake_Spawn
         category: vfunc

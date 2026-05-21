@@ -1,0 +1,45 @@
+func_name: UTIL_PrecacheOther
+func_va: '0x180b8b210'
+disasm_code: |-
+  .text:0000000180B8B210                 mov     [rsp+arg_0], rbx
+  .text:0000000180B8B215                 mov     [rsp+arg_8], rsi
+  .text:0000000180B8B21A                 push    rdi
+  .text:0000000180B8B21B                 sub     rsp, 30h
+  .text:0000000180B8B21F                 mov     rdi, rcx
+  .text:0000000180B8B222                 mov     rbx, rdx
+  .text:0000000180B8B225                 mov     rcx, cs:g_pEntitySystem
+  .text:0000000180B8B22C                 mov     rax, [rcx]
+  .text:0000000180B8B22F                 mov     rsi, [rax+28h]  ; 28h = CEntitySystem_BuildResourceManifestForEntity
+  .text:0000000180B8B233                 mov     rax, [rdx]
+  .text:0000000180B8B236                 test    rax, rax
+  .text:0000000180B8B239                 jz      short loc_180B8B24A
+  .text:0000000180B8B23B                 mov     rcx, rax
+  .text:0000000180B8B23E                 call    sub_181200300
+  .text:0000000180B8B243                 mov     rcx, cs:g_pEntitySystem
+  .text:0000000180B8B24A                 mov     r9, [rbx+10h]
+  .text:0000000180B8B24E                 mov     rdx, rdi
+  .text:0000000180B8B251                 mov     r8, [rbx+8]
+  .text:0000000180B8B255                 mov     [rsp+38h+var_18], rax
+  .text:0000000180B8B25A                 call    rsi
+  .text:0000000180B8B25C                 mov     rbx, [rsp+38h+arg_0]
+  .text:0000000180B8B261                 mov     rsi, [rsp+38h+arg_8]
+  .text:0000000180B8B266                 add     rsp, 30h
+  .text:0000000180B8B26A                 pop     rdi
+  .text:0000000180B8B26B                 retn
+procedure: |-
+  __int64 __fastcall UTIL_PrecacheOther(__int64 a1, __int64 *a2)
+  {
+    __int64 v4; // rcx
+    __int64 (__fastcall *v5)(__int64, __int64, __int64, __int64, __int64); // rsi
+    __int64 v6; // rax
+
+    v4 = g_pEntitySystem;
+    v5 = *(__int64 (__fastcall **)(__int64, __int64, __int64, __int64, __int64))(*(_QWORD *)g_pEntitySystem + 40LL);  // 40LL = 0x28 = CEntitySystem_BuildResourceManifestForEntity
+    v6 = *a2;
+    if ( *a2 )
+    {
+      v6 = sub_181200300(*a2);
+      v4 = g_pEntitySystem;
+    }
+    return v5(v4, a1, a2[1], a2[2], v6);
+  }
