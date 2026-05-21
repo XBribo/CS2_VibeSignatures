@@ -458,6 +458,7 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
 
         desired_output_fields = []
         generation_options = {}
+        optional_fields = set()
 
         def _handle_true_directive(field_name, directive_name):
             if field_name == directive_name:
@@ -497,6 +498,13 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
                 if debug:
                     print(f"    Preprocess: invalid desired field list for {symbol_name}")
                 return None
+
+            # Optional-field marker: trailing "?" means the field is allowed to be
+            # missing from the candidate data (e.g. structmember `size?` when the
+            # access site is a `lea` with no natural operand size).
+            if field_name.endswith("?") and len(field_name) > 1:
+                field_name = field_name[:-1]
+                optional_fields.add(field_name)
 
             if field_name == "vfunc_sig_max_match":
                 if debug:
@@ -561,6 +569,7 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
         normalized[symbol_name] = {
             "desired_output_fields": desired_output_fields,
             "generation_options": generation_options,
+            "optional_fields": optional_fields,
         }
 
     return normalized
@@ -796,10 +805,18 @@ def _assemble_symbol_payload(symbol_name, target_kind, candidate_data, desired_f
             print(f"    Preprocess: missing desired-fields entry for {symbol_name}")
         return None
     desired_fields = desired_field_spec["desired_output_fields"]
+    optional_fields = desired_field_spec.get("optional_fields") or set()
 
     payload = {}
     for field_name in desired_fields:
         if field_name not in candidate_data:
+            if field_name in optional_fields:
+                if debug:
+                    print(
+                        f"    Preprocess: skipping missing optional field "
+                        f"{field_name} for {symbol_name}"
+                    )
+                continue
             if debug:
                 print(
                     f"    Preprocess: missing desired field {field_name} "
