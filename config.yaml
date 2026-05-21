@@ -5784,6 +5784,15 @@ modules:
         expected_input:
           - CNetworkUtlVectorEmbedded_NetworkStateChanged_m_perRoundStats.{platform}.yaml
 
+      - name: find-EntityInstanceAddChangeAccessorPath-AND-EntityInstanceAssignChangeAccessorPathIds
+        expected_output:
+          - EntityInstanceAddChangeAccessorPath.{platform}.yaml
+          - EntityInstanceAssignChangeAccessorPathIds.{platform}.yaml
+        expected_input:
+          - CNetworkUtlVectorEmbedded_NetworkStateChanged_m_perRoundStats.{platform}.yaml
+        expected_input_windows:
+          - CUtlVectorEmbeddedNetworkVar_CSPerRoundStats_t_NetworkVar_m_perRoundStats_SetCount.{platform}.yaml
+
       - name: find-CNetworkUtlVectorEmbedded_TryLateResolve_m_vecRenderAttributes
         platform: windows
         expected_output:
@@ -6109,6 +6118,20 @@ modules:
           - CEntityInstance_AssignChangeAccessorPathIdsPolymorphic.{platform}.yaml
         expected_input:
           - PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
+
+      - name: find-CEntityInstance_AddChangeAccessorPath
+        expected_output:
+          - CEntityInstance_AddChangeAccessorPath.{platform}.yaml
+        expected_input:
+          - EntityInstanceAddChangeAccessorPath.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
+
+      - name: find-CEntityInstance_AssignChangeAccessorPathIds
+        expected_output:
+          - CEntityInstance_AssignChangeAccessorPathIds.{platform}.yaml
+        expected_input:
+          - EntityInstanceAssignChangeAccessorPathIds.{platform}.yaml
           - CEntityInstance_vtable.{platform}.yaml
 
       - name: find-CNavPhysicsInterface_vtable
@@ -6527,6 +6550,16 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::AssignChangeAccessorPathIdsPolymorphic
+
+      - name: CEntityInstance_AddChangeAccessorPath
+        category: vfunc
+        alias:
+          - CEntityInstance::AddChangeAccessorPath
+
+      - name: CEntityInstance_AssignChangeAccessorPathIds
+        category: vfunc
+        alias:
+          - CEntityInstance::AssignChangeAccessorPathIds
 
       - name: CGameSceneNode_vtable
         category: vtable
@@ -8809,6 +8842,12 @@ modules:
         category: func
         alias:
           - CUtlVectorEmbeddedNetworkVar<CSPerRoundStats_t, NetworkVar>::SetCount
+
+      - name: EntityInstanceAddChangeAccessorPath
+        category: func
+
+      - name: EntityInstanceAssignChangeAccessorPathIds
+        category: func
 
       - name: CNetworkUtlVectorEmbedded_TryLateResolve_m_vecRenderAttributes
         category: func
