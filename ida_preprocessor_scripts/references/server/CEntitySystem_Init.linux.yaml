@@ -853,11 +853,11 @@ procedure: |-
     COM_TimestampedLog("EntitySystem - Class Tables");
     if ( qword_2743670 )
     {
-      (*(void (__fastcall **)(_QWORD *, const char *, _QWORD, __int64))(*qword_2743670 + 160LL))(
+      (*(void (__fastcall **)(_QWORD *, const char *, _QWORD, __int64))(*qword_2743670 + 160LL))( // 0xA0 = 160LL = INetworkMessages_SetNetworkSerializationContextData
         qword_2743670,
         "string_t_table",
         *(unsigned int *)(a1 + 3004),
-        a1 + 7888);                               // 0xA0 = 160LL = INetworkMessages_SetNetworkSerializationContextData
+        a1 + 7888);
       v66 = (__m128i)0x121uLL;
       v20 = _mm_loadu_si128(&v66);
       v21 = *qword_2743670;
