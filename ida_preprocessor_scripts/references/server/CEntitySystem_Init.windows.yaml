@@ -656,11 +656,11 @@ procedure: |-
     COM_TimestampedLog("EntitySystem - Class Tables", v9, m);
     if ( qword_182117C88 )
     {
-      (*(void (__fastcall **)(__int64, const char *, _QWORD, __int64))(*(_QWORD *)qword_182117C88 + 160LL))(
+      (*(void (__fastcall **)(__int64, const char *, _QWORD, __int64))(*(_QWORD *)qword_182117C88 + 160LL))( // 0xA0 = 160LL = INetworkMessages_SetNetworkSerializationContextData
         qword_182117C88,
         "string_t_table",
         *(unsigned int *)(a1 + 3004),
-        a1 + 7880);                               // 0xA0 = 160LL = INetworkMessages_SetNetworkSerializationContextData
+        a1 + 7880);
       v35 = *(_QWORD *)qword_182117C88;
       v59 = sub_1811E4FA0;
       v58 = nullptr;
