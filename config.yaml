@@ -1123,6 +1123,12 @@ modules:
         expected_input:
           - CEngineServiceMgr_vtable.{platform}.yaml
 
+      - name: find-CEngineServiceMgr_SwitchToLoop
+        expected_output:
+          - CEngineServiceMgr_SwitchToLoop.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_vtable.{platform}.yaml
+
       - name: find-CEngineServiceMgr__MainLoop
         expected_output:
           - CEngineServiceMgr__MainLoop.{platform}.yaml
@@ -1918,6 +1924,11 @@ modules:
         category: vfunc
         alias:
           - CEngineServiceMgr::RegisterLoopMode
+
+      - name: CEngineServiceMgr_SwitchToLoop
+        category: vfunc
+        alias:
+          - CEngineServiceMgr::SwitchToLoop
 
       - name: CEngineServiceMgr__MainLoop
         category: func
