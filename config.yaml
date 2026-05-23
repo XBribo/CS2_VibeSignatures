@@ -2514,6 +2514,13 @@ modules:
           - CLoopModeGame_StaticInit.{platform}.yaml
           - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
 
+      - name: find-CLoopModeFactory_CLoopModeGame_Shutdown
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_Shutdown.{platform}.yaml
+        expected_input:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+          - ../engine/ILoopModeFactory_Shutdown.{platform}.yaml
+
       - name: find-CEntityInstance_vtable
         expected_output:
           - CEntityInstance_vtable.{platform}.yaml
@@ -3230,6 +3237,11 @@ modules:
         category: vfunc
         alias:
           - CLoopModeFactory<CLoopModeGame>::Init
+
+      - name: CLoopModeFactory_CLoopModeGame_Shutdown
+        category: vfunc
+        alias:
+          - CLoopModeFactory<CLoopModeGame>::Shutdown
 
       - name: CLoopModeGame_OnLoopActivate
         category: vfunc
@@ -6304,6 +6316,13 @@ modules:
         expected_input:
           - CLoopModeGame_StaticInit.{platform}.yaml
           - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeFactory_CLoopModeGame_Shutdown
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_Shutdown.{platform}.yaml
+        expected_input:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+          - ../engine/ILoopModeFactory_Shutdown.{platform}.yaml
 
       - name: find-CLoopModeGame_OnLoopActivate
         expected_output:
@@ -9477,6 +9496,11 @@ modules:
         category: vfunc
         alias:
           - CLoopModeFactory<CLoopModeGame>::Init
+
+      - name: CLoopModeFactory_CLoopModeGame_Shutdown
+        category: vfunc
+        alias:
+          - CLoopModeFactory<CLoopModeGame>::Shutdown
 
       - name: CLoopModeGame_OnLoopActivate
         category: vfunc
