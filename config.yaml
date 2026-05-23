@@ -624,6 +624,12 @@ modules:
         expected_input:
           - CGameResourceService_vtable.{platform}.yaml
 
+      - name: find-CGameResourceService_AppendToGameResourceManifest
+        expected_output:
+          - CGameResourceService_AppendToGameResourceManifest.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
       - name: find-CNetworkGameServerBase_SendPeerList
         expected_output:
           - CNetworkGameServerBase_SendPeerList.{platform}.yaml
@@ -1376,6 +1382,11 @@ modules:
         category: vfunc
         alias:
           - CGameResourceService::DescribeContents
+
+      - name: CGameResourceService_AppendToGameResourceManifest
+        category: vfunc
+        alias:
+          - CGameResourceService::AppendToGameResourceManifest
 
       - name: IEntityResourceManifestBuilder_BuildResourceManifest_ManifestNameOrGroupName
         category: vfunc
