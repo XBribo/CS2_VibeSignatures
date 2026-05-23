@@ -13,11 +13,12 @@ FUNC_XREFS = [
         "xref_strings": [],
         "xref_gvs": [],
         "xref_signatures": [],
-        "xref_funcs": ["CSource2EntitySystem_StaticInit"],
+        "xref_funcs": [],
         "exclude_funcs": [],
         "exclude_strings": [],
         "exclude_gvs": [],
         "exclude_signatures": [],
+        "inline_alias": "CSource2EntitySystem_StaticInit",
     },
 ]
 
