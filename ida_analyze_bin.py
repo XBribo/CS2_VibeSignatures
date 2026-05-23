@@ -2376,10 +2376,7 @@ def process_binary(
                     )
                 else:
                     success_count += 1
-                    if old_binary_dir:
-                        print(f"  Pre-processed: {skill_name} (signature reuse)")
-                    else:
-                        print(f"  Pre-processed: {skill_name}")
+                    print(f"  Pre-processed: {skill_name} OK")
                 continue
             if preprocess_status == PREPROCESS_STATUS_ABSENT_OK:
                 skip_count += 1
