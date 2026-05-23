@@ -630,6 +630,26 @@ modules:
         expected_input:
           - CGameResourceService_vtable.{platform}.yaml
 
+      - name: find-CGameResourceService_RegisterEventMapInternal-windows
+        platform: windows
+        expected_output:
+          - CGameResourceService_RegisterEventMapInternal.{platform}.yaml
+
+      - name: find-CGameResourceService_RegisterEventMap-windows
+        platform: windows
+        expected_output:
+          - CGameResourceService_RegisterEventMap.{platform}.yaml
+        expected_input:
+          - CGameResourceService_RegisterEventMapInternal.{platform}.yaml
+          - CGameResourceService_vtable.{platform}.yaml
+
+      - name: find-CGameResourceService_RegisterEventMap-linux
+        platform: linux
+        expected_output:
+          - CGameResourceService_RegisterEventMap.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
       - name: find-CNetworkGameServerBase_SendPeerList
         expected_output:
           - CNetworkGameServerBase_SendPeerList.{platform}.yaml
@@ -1387,6 +1407,16 @@ modules:
         category: vfunc
         alias:
           - CGameResourceService::AppendToGameResourceManifest
+
+      - name: CGameResourceService_RegisterEventMapInternal
+        category: func
+        alias:
+          - CGameResourceService::RegisterEventMapInternal
+
+      - name: CGameResourceService_RegisterEventMap
+        category: vfunc
+        alias:
+          - CGameResourceService::RegisterEventMap
 
       - name: IEntityResourceManifestBuilder_BuildResourceManifest_ManifestNameOrGroupName
         category: vfunc
