@@ -2427,6 +2427,10 @@ modules:
         expected_output:
           - CLoopModeGame_vtable.{platform}.yaml
 
+      - name: find-CLoopModeFactory_CLoopModeGame_vtable
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+
       - name: find-CLoopModeGame_StaticInit
         expected_output:
           - CLoopModeGame_StaticInit.{platform}.yaml
@@ -3138,6 +3142,9 @@ modules:
           - CLoopModeGame::StaticInit
 
       - name: CLoopModeGame_vtable
+        category: vtable
+
+      - name: CLoopModeFactory_CLoopModeGame_vtable
         category: vtable
 
       - name: CLoopModeGame_OnLoopActivate
@@ -6159,6 +6166,10 @@ modules:
       - name: find-CLoopModeGame_vtable
         expected_output:
           - CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeFactory_CLoopModeGame_vtable
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
 
       - name: find-CLoopModeGame_StaticInit
         expected_output:
@@ -9287,6 +9298,9 @@ modules:
           - CLoopModeGame::StaticInit
 
       - name: CLoopModeGame_vtable
+        category: vtable
+
+      - name: CLoopModeFactory_CLoopModeGame_vtable
         category: vtable
 
       - name: CLoopModeGame_OnLoopActivate
