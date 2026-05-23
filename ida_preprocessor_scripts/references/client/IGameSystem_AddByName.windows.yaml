@@ -53,7 +53,7 @@ disasm_code: |-
   .text:000000018031F96C                 mov     cs:byte_1821CFE89, 1
   .text:000000018031F973                 mov     rcx, [rdi]
   .text:000000018031F976                 mov     rax, [rcx]
-  .text:000000018031F979                 call    qword ptr [rax+18h] ; 0x18 = IGameSystemFactory_Allocate
+  .text:000000018031F979                 call    qword ptr [rax+18h] ; 0x18 = IGameSystemFactory_CreateGameSystem
   .text:000000018031F97C                 mov     cs:byte_1821CFE89, 0
   .text:000000018031F983                 mov     rsi, rax
   .text:000000018031F986                 mov     rcx, [rdi]
@@ -126,7 +126,7 @@ procedure: |-
       v4 = 0;
     }
     byte_1821CFE89 = 1;
-    v6 = (*(__int64 (__fastcall **)(_QWORD))(*(_QWORD *)*v2 + 24LL))(*v2);// 0x18 = 24LL = IGameSystemFactory_Allocate
+    v6 = (*(__int64 (__fastcall **)(_QWORD))(*(_QWORD *)*v2 + 24LL))(*v2);// 0x18 = 24LL = IGameSystemFactory_CreateGameSystem
     byte_1821CFE89 = 0;
     v7 = v6;
     if ( (*(unsigned __int8 (__fastcall **)(_QWORD))(*(_QWORD *)*v2 + 64LL))(*v2) )// 0x40 = 64LL = IGameSystemFactory_DoesGameSystemReallocate

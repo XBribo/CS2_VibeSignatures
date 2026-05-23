@@ -1,4 +1,4 @@
-func_name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate
+func_name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem
 func_va: '0x180389340'
 disasm_code: |-
   .text:0000000180389340                 mov     [rsp+arg_0], rbx
@@ -25,7 +25,7 @@ disasm_code: |-
   .text:0000000180389390                 pop     rdi
   .text:0000000180389391                 jmp     qword ptr [rax+18h]
 procedure: |-
-  __int64 __fastcall CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate(__int64 a1, __int64 a2)
+  __int64 __fastcall CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem(__int64 a1, __int64 a2)
   {
     __int64 v2; // rdi
 

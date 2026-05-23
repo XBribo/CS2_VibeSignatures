@@ -2562,9 +2562,9 @@ modules:
         expected_input:
           - CLoopModeGame_ReceivedServerInfo.{platform}.yaml
 
-      - name: find-IGameSystemFactory_Allocate-AND-IGameSystemFactory_DoesGameSystemReallocate-AND-IGameSystem_SetName
+      - name: find-IGameSystemFactory_CreateGameSystem-AND-IGameSystemFactory_DoesGameSystemReallocate-AND-IGameSystem_SetName
         expected_output:
-          - IGameSystemFactory_Allocate.{platform}.yaml
+          - IGameSystemFactory_CreateGameSystem.{platform}.yaml
           - IGameSystemFactory_DoesGameSystemReallocate.{platform}.yaml
           - IGameSystem_SetName.{platform}.yaml
         expected_input:
@@ -2705,10 +2705,10 @@ modules:
         expected_output:
           - CSteamworksGameStats_OnReceivedSessionID.{platform}.yaml
 
-      - name: find-IGameSystem_GetName-AND-IGameSystemFactory_Deallocate
+      - name: find-IGameSystem_GetName-AND-IGameSystemFactory_DestroyGameSystem
         expected_output:
           - IGameSystem_GetName.{platform}.yaml
-          - IGameSystemFactory_Deallocate.{platform}.yaml
+          - IGameSystemFactory_DestroyGameSystem.{platform}.yaml
         expected_input:
           - IGameSystem_DestroyAllGameSystems.{platform}.yaml
 
@@ -2749,19 +2749,19 @@ modules:
           - CSource2EntitySystem_StaticInit.{platform}.yaml
           - CGameSystemReallocatingFactory_CSource2EntitySystem_vtable.{platform}.yaml
 
-      - name: find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate-impl
+      - name: find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem-impl
         expected_output:
-          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml
+          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml
         expected_input:
           - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.{platform}.yaml
-          - ../client/IGameSystemFactory_Deallocate.{platform}.yaml
+          - ../client/IGameSystemFactory_DestroyGameSystem.{platform}.yaml
 
       - name: find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_dtor
         expected_output:
           - IGameSystem_SetGameSystemGlobalPtrs.{platform}.yaml
           - IGameSystem_dtor.{platform}.yaml
         expected_input:
-          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml
+          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml
 
       - name: find-CPrediction_vtable
         expected_output:
@@ -3189,10 +3189,10 @@ modules:
         alias:
           - IGameSystem::Add
 
-      - name: IGameSystemFactory_Allocate
+      - name: IGameSystemFactory_CreateGameSystem
         category: vfunc
         alias:
-          - IGameSystemFactory::Allocate
+          - IGameSystemFactory::CreateGameSystem
 
       - name: IGameSystemFactory_DoesGameSystemReallocate
         category: vfunc
@@ -3325,10 +3325,10 @@ modules:
         alias:
           - IGameSystem::GetName
 
-      - name: IGameSystemFactory_Deallocate
+      - name: IGameSystemFactory_DestroyGameSystem
         category: vfunc
         alias:
-          - IGameSystemFactory::Deallocate
+          - IGameSystemFactory::DestroyGameSystem
 
       - name: CPrediction_vtable
         category: vtable
@@ -6544,7 +6544,7 @@ modules:
         alias:
           - CGameSystemReallocatingFactory<CSource2EntitySystem>::Init
 
-      - name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate
+      - name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem
         category: vfunc
         alias:
           - CGameSystemReallocatingFactory<CSpawnGroupMgrGameSystem>::Deallocate

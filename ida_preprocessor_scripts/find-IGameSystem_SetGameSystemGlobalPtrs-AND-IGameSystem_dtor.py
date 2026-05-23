@@ -13,12 +13,12 @@ LLM_DECOMPILE = [
     (
         "IGameSystem_SetGameSystemGlobalPtrs",
         "prompt/call_llm_decompile.md",
-        "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml",
+        "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml",
     ),
     (
         "IGameSystem_dtor",
         "prompt/call_llm_decompile.md",
-        "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml",
+        "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml",
     ),
 ]
 

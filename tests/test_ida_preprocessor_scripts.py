@@ -42,7 +42,7 @@ REALLOCATING_FACTORY_SCRIPT_PATH = Path(
 )
 REALLOCATING_FACTORY_DEALLOCATE_SCRIPT_PATH = Path(
     "ida_preprocessor_scripts/"
-    "find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate-impl.py"
+    "find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem-impl.py"
 )
 CSPAWNGROUP_VTABLE2_SCRIPT_PATH = Path(
     "ida_preprocessor_scripts/"
@@ -1416,20 +1416,20 @@ class TestFindCGameSystemReallocatingFactoryCSpawnGroupMgrGameSystemDeallocateIm
     async def test_preprocess_skill_forwards_expected_inherit_vfuncs(self) -> None:
         module = _load_module(
             REALLOCATING_FACTORY_DEALLOCATE_SCRIPT_PATH,
-            "find_CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate_impl",
+            "find_CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem_impl",
         )
         mock_preprocess_common_skill = AsyncMock(return_value=True)
         expected_inherit_vfuncs = [
             (
-                "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate",
+                "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem",
                 "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem",
-                "../client/IGameSystemFactory_Deallocate",
+                "../client/IGameSystemFactory_DestroyGameSystem",
                 True,
             )
         ]
         expected_generate_yaml_desired_fields = [
             (
-                "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate",
+                "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem",
                 [
                     "func_name",
                     "func_va",

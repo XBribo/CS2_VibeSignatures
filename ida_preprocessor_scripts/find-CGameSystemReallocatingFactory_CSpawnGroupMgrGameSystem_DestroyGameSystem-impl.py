@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate-impl skill."""
+"""Preprocess script for find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem-impl skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 INHERIT_VFUNCS = [
     # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
     (
-        "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate",
+        "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem",
         "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem",
-        "../client/IGameSystemFactory_Deallocate",
+        "../client/IGameSystemFactory_DestroyGameSystem",
         True,
     ),
 ]
@@ -17,7 +17,7 @@ INHERIT_VFUNCS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate",
+        "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem",
         [
             "func_name",
             "func_va",

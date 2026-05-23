@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-IGameSystem_GetName-AND-IGameSystemFactory_Deallocate skill."""
+"""Preprocess script for find-IGameSystem_GetName-AND-IGameSystemFactory_DestroyGameSystem skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
     "IGameSystem_GetName",
-    "IGameSystemFactory_Deallocate",
+    "IGameSystemFactory_DestroyGameSystem",
 ]
 
 LLM_DECOMPILE = [
@@ -16,7 +16,7 @@ LLM_DECOMPILE = [
         "references/client/IGameSystem_DestroyAllGameSystems.{platform}.yaml",
     ),
     (
-        "IGameSystemFactory_Deallocate",
+        "IGameSystemFactory_DestroyGameSystem",
         "prompt/call_llm_decompile.md",
         "references/client/IGameSystem_DestroyAllGameSystems.{platform}.yaml",
     ),
@@ -25,7 +25,7 @@ LLM_DECOMPILE = [
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
     ("IGameSystem_GetName", "IGameSystem"),
-    ("IGameSystemFactory_Deallocate", "IGameSystemFactory"),
+    ("IGameSystemFactory_DestroyGameSystem", "IGameSystemFactory"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
@@ -41,7 +41,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
     (
-        "IGameSystemFactory_Deallocate",
+        "IGameSystemFactory_DestroyGameSystem",
         [
             "func_name",
             "vfunc_sig",

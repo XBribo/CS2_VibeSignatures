@@ -39,7 +39,7 @@ disasm_code: |-
   .text:0000000000E353A7                 mov     rdi, [rax]
   .text:0000000000E353AA                 mov     r14, rax
   .text:0000000000E353AD                 mov     rdx, [rdi]
-  .text:0000000000E353B0                 call    qword ptr [rdx+20h] ; 0x20 = IGameSystemFactory_Deallocate
+  .text:0000000000E353B0                 call    qword ptr [rdx+20h] ; 0x20 = IGameSystemFactory_DestroyGameSystem
   .text:0000000000E353B3                 mov     cs:byte_43EC37A, 0
   .text:0000000000E353BA                 mov     byte ptr [r14+8], 0
   .text:0000000000E353BF                 cmp     rbx, r12
@@ -61,7 +61,7 @@ disasm_code: |-
   .text:0000000000E353FE                 mov     rdi, qword ptr ds:stru_FFFF0.r_offset[rax]
   .text:0000000000E35405                 mov     [rbp+var_50], rax
   .text:0000000000E35409                 mov     rdx, [rdi]
-  .text:0000000000E3540C                 call    qword ptr [rdx+20h] ; 0x20 = IGameSystemFactory_Deallocate
+  .text:0000000000E3540C                 call    qword ptr [rdx+20h] ; 0x20 = IGameSystemFactory_DestroyGameSystem
   .text:0000000000E3540F                 mov     rax, [rbp+var_50]
   .text:0000000000E35413                 mov     cs:byte_43EC37A, 0
   .text:0000000000E3541A                 mov     byte ptr [rax+0FFFF8h], 0
@@ -152,7 +152,7 @@ procedure: |-
           v1 -= 16;
           byte_43EC37A = 1;
           v4 = (_BYTE *)(qword_43EC2E8 + 16LL * v13[0]);
-          (*(void (__fastcall **)(_QWORD, _QWORD *))(**(_QWORD **)v4 + 32LL))(*(_QWORD *)v4, v5);// 32LL = 0x20 = IGameSystemFactory_Deallocate
+          (*(void (__fastcall **)(_QWORD, _QWORD *))(**(_QWORD **)v4 + 32LL))(*(_QWORD *)v4, v5);// 32LL = 0x20 = IGameSystemFactory_DestroyGameSystem
           byte_43EC37A = 0;
           v4[8] = 0;
           if ( v1 == v2 )

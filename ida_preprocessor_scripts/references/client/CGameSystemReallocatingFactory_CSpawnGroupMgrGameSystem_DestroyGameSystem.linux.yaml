@@ -1,4 +1,4 @@
-func_name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate
+func_name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem
 func_va: '0xeb1d90'
 disasm_code: |-
   .text:0000000000EB1D90                 test    rsi, rsi
@@ -40,7 +40,7 @@ disasm_code: |-
   .text:0000000000EB1E05                 mov     rax, qword ptr ds:dword_0
   .text:0000000000EB1E0D                 ud2
 procedure: |-
-  __int64 __fastcall CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate(__int64 a1, __int64 a2)
+  __int64 __fastcall CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem(__int64 a1, __int64 a2)
   {
     __int64 v2; // rax
     __int64 v3; // r12

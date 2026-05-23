@@ -35,7 +35,7 @@ disasm_code: |-
   .text:0000000180366D0C                 add     rbx, cs:qword_181FD71C8
   .text:0000000180366D13                 mov     rcx, [rbx]
   .text:0000000180366D16                 mov     rax, [rcx]
-  .text:0000000180366D19                 call    qword ptr [rax+20h] ; 0x20 = IGameSystemFactory_Deallocate
+  .text:0000000180366D19                 call    qword ptr [rax+20h] ; 0x20 = IGameSystemFactory_DestroyGameSystem
   .text:0000000180366D1C                 sub     rsi, 10h
   .text:0000000180366D20                 mov     cs:byte_1821CFE8A, 0
   .text:0000000180366D27                 sub     rdi, 1
@@ -75,7 +75,7 @@ procedure: |-
           v4 = -1;
         byte_1821CFE8A = 1;
         v5 = (_BYTE *)(qword_181FD71C8 + 16LL * v4);
-        (*(void (__fastcall **)(_QWORD, __int64))(**(_QWORD **)v5 + 32LL))(*(_QWORD *)v5, pGameSystem);// 32LL = 0x20 = IGameSystemFactory_Deallocate
+        (*(void (__fastcall **)(_QWORD, __int64))(**(_QWORD **)v5 + 32LL))(*(_QWORD *)v5, pGameSystem);// 32LL = 0x20 = IGameSystemFactory_DestroyGameSystem
         v1 -= 16;
         byte_1821CFE8A = 0;
         --v0;
