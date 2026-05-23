@@ -2798,6 +2798,13 @@ modules:
         expected_output:
           - CEntitySystem_ctor.{platform}.yaml
 
+      - name: find-CGameEntitySystem_ctor
+        expected_output:
+          - CGameEntitySystem_ctor.{platform}.yaml
+        expected_input:
+          - CGameEntitySystem_vtable.{platform}.yaml
+          - CEntitySystem_ctor.{platform}.yaml
+
       - name: find-CEntitySystem_CreateEntitySystem
         expected_output:
           - CEntitySystem_CreateEntitySystem.{platform}.yaml
@@ -3326,6 +3333,11 @@ modules:
         category: func
         alias:
           - CEntitySystem::CEntitySystem
+
+      - name: CGameEntitySystem_ctor
+        category: func
+        alias:
+          - CGameEntitySystem::CGameEntitySystem
 
       - name: CEntitySystem_CreateEntitySystem
         category: func
@@ -5748,6 +5760,13 @@ modules:
 
       - name: find-CEntitySystem_ctor
         expected_output:
+          - CEntitySystem_ctor.{platform}.yaml
+
+      - name: find-CGameEntitySystem_ctor
+        expected_output:
+          - CGameEntitySystem_ctor.{platform}.yaml
+        expected_input:
+          - CGameEntitySystem_vtable.{platform}.yaml
           - CEntitySystem_ctor.{platform}.yaml
 
       - name: find-CEntitySystem_CreateEntitySystem
@@ -8836,6 +8855,11 @@ modules:
         category: func
         alias:
           - CEntitySystem::CEntitySystem
+
+      - name: CGameEntitySystem_ctor
+        category: func
+        alias:
+          - CGameEntitySystem::CGameEntitySystem
 
       - name: CEntitySystem_CreateEntitySystem
         category: func
