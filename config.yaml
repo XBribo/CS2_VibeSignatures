@@ -2427,6 +2427,10 @@ modules:
         expected_output:
           - CLoopModeGame_vtable.{platform}.yaml
 
+      - name: find-CLoopModeGame_StaticInit
+        expected_output:
+          - CLoopModeGame_StaticInit.{platform}.yaml
+
       - name: find-CEntityInstance_vtable
         expected_output:
           - CEntityInstance_vtable.{platform}.yaml
@@ -3127,6 +3131,11 @@ modules:
         category: func
         alias:
           - CLoopModeGame::OnFrameBoundary
+
+      - name: CLoopModeGame_StaticInit
+        category: func
+        alias:
+          - CLoopModeGame::StaticInit
 
       - name: CLoopModeGame_vtable
         category: vtable
@@ -6150,6 +6159,10 @@ modules:
       - name: find-CLoopModeGame_vtable
         expected_output:
           - CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeGame_StaticInit
+        expected_output:
+          - CLoopModeGame_StaticInit.{platform}.yaml
 
       - name: find-CLoopModeGame_OnLoopActivate
         expected_output:
@@ -9267,6 +9280,11 @@ modules:
 
       - name: PhysEnableEntityCollisions
         category: func
+
+      - name: CLoopModeGame_StaticInit
+        category: func
+        alias:
+          - CLoopModeGame::StaticInit
 
       - name: CLoopModeGame_vtable
         category: vtable
