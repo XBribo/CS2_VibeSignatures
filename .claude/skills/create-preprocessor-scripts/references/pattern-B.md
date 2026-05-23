@@ -76,11 +76,18 @@ async def preprocess_skill(
 
 When xref strings differ between Windows and Linux, use `FUNC_XREFS_WINDOWS` / `FUNC_XREFS_LINUX` and a ternary in `preprocess_skill`. See [Pattern A](pattern-A.md#platform-specific-xref-strings-variant) for the full example -- the same approach applies to Pattern B.
 
+## FUNC_VTABLE_RELATIONS: Class Name vs Artifact Stem
+
+If config.yaml `expected_input` includes an existing vtable YAML such as `{VTABLE_CLASS}_vtable.{platform}.yaml`, set the second value in `FUNC_VTABLE_RELATIONS` to the artifact stem (`"{VTABLE_CLASS}_vtable"`), not the bare class name. `preprocess_common_skill` only reads the local YAML when the value ends with `_vtable` / `_vtableN`; a bare class name triggers live IDA vtable lookup instead, which may fail for templated classes unless `mangled_class_names` aliases are also passed.
+
+Use a bare class name only when no vtable YAML should be read and the value is intended as metadata or for live lookup.
+
 ## Checklist
 
 - [ ] `TARGET_FUNCTION_NAMES` lists all functions the script should find
 - [ ] `FUNC_XREFS` xref strings match the user's specified debug strings
 - [ ] `FUNC_VTABLE_RELATIONS` lists correct vtable class for each target that has `vtable_name` or `vfunc_*` in its `GENERATE_YAML_DESIRED_FIELDS`
+- [ ] If config.yaml `expected_input` includes `{VTABLE_CLASS}_vtable.{platform}.yaml`, `FUNC_VTABLE_RELATIONS` uses `{VTABLE_CLASS}_vtable` as the second value
 - [ ] `preprocess_common_skill` call passes `func_names=`, `func_xrefs=`, and `func_vtable_relations=`
 - [ ] config.yaml `expected_input` includes the vtable YAML
 - [ ] No `LLM_DECOMPILE`, no `llm_config` parameter
