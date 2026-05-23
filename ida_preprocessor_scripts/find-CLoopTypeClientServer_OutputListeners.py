@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CLoopTypeClientServer_FrameUpdate skill."""
+"""Preprocess script for find-CLoopTypeClientServer_OutputListeners skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CLoopTypeClientServer_FrameUpdate",
+    "CLoopTypeClientServer_OutputListeners",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CLoopTypeClientServer_FrameUpdate",
+        "func_name": "CLoopTypeClientServer_OutputListeners",
         "xref_strings": [
-            "%f FRAME start %d ticks",
+            "\nClientServerEngineLoop\n{\n",
         ],
         "xref_gvs": [],
         "xref_signatures": [],
@@ -24,12 +24,12 @@ FUNC_XREFS = [
 ]
 
 FUNC_VTABLE_RELATIONS = [
-    ("CLoopTypeClientServer_FrameUpdate", "CLoopTypeClientServer"),
+    ("CLoopTypeClientServer_OutputListeners", "CLoopTypeClientServer"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     (
-        "CLoopTypeClientServer_FrameUpdate",
+        "CLoopTypeClientServer_OutputListeners",
         [
             "func_name",
             "func_va",

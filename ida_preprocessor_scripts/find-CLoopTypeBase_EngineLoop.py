@@ -5,7 +5,7 @@ from ida_analyze_util import preprocess_common_skill
 
 INHERIT_VFUNCS = [
     # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
-    ("CLoopTypeBase_EngineLoop", "CLoopTypeBase", "CLoopTypeClientServer_EngineLoop", False),
+    ("CLoopTypeBase_EngineLoop", "CLoopTypeBase", "CLoopTypeClientServer_OutputListeners", False),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
@@ -31,7 +31,7 @@ async def preprocess_skill(
     image_base,
     debug=False,
 ):
-    """Reuse old vfunc slot; fallback to inheriting vtable index from CLoopTypeClientServer_EngineLoop."""
+    """Reuse old vfunc slot; fallback to inheriting vtable index from CLoopTypeClientServer_OutputListeners."""
     _ = skill_name
 
     return await preprocess_common_skill(

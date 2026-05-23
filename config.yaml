@@ -1017,9 +1017,9 @@ modules:
         expected_input:
           - CLoopTypeClientServer_LoopTypeInit.{platform}.yaml
 
-      - name: find-CLoopTypeClientServer_FrameUpdate
+      - name: find-CLoopTypeClientServer_Update
         expected_output:
-          - CLoopTypeClientServer_FrameUpdate.{platform}.yaml
+          - CLoopTypeClientServer_Update.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_vtable.{platform}.yaml
 
@@ -1047,9 +1047,9 @@ modules:
           - CLoopTypeClientServer_vtable.{platform}.yaml
           - CLoopTypeClientServer_WritePerfStats.{platform}.yaml
 
-      - name: find-CLoopTypeClientServer_EngineLoop
+      - name: find-CLoopTypeClientServer_OutputListeners
         expected_output:
-          - CLoopTypeClientServer_EngineLoop.{platform}.yaml
+          - CLoopTypeClientServer_OutputListeners.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_vtable.{platform}.yaml
 
@@ -1057,13 +1057,13 @@ modules:
         expected_output:
           - CLoopTypeBase_EngineLoop.{platform}.yaml
         expected_input:
-          - CLoopTypeClientServer_EngineLoop.{platform}.yaml
+          - CLoopTypeClientServer_OutputListeners.{platform}.yaml
 
       - name: find-CLoopTypeBase_FrameUpdate
         expected_output:
           - CLoopTypeBase_FrameUpdate.{platform}.yaml
         expected_input:
-          - CLoopTypeClientServer_FrameUpdate.{platform}.yaml
+          - CLoopTypeClientServer_Update.{platform}.yaml
 
       - name: find-CLoopTypeBase_ActivateLoop
         expected_output:
@@ -1828,10 +1828,10 @@ modules:
         alias:
           - CLoopTypeClientServer::LoopTypeInit
 
-      - name: CLoopTypeClientServer_FrameUpdate
+      - name: CLoopTypeClientServer_Update
         category: vfunc
         alias:
-          - CLoopTypeClientServer::FrameUpdate
+          - CLoopTypeClientServer::Update
 
       - name: CLoopTypeClientServer_ActivateLoop
         category: vfunc
@@ -1853,10 +1853,10 @@ modules:
         alias:
           - CLoopTypeClientServer::DeactivateLoop
 
-      - name: CLoopTypeClientServer_EngineLoop
+      - name: CLoopTypeClientServer_OutputListeners
         category: vfunc
         alias:
-          - CLoopTypeClientServer::EngineLoop
+          - CLoopTypeClientServer::OutputListeners
 
       - name: CLoopTypeSimple_vtable
         category: vtable
