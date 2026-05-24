@@ -4070,6 +4070,18 @@ modules:
         expected_output:
           - CSource2Server_vtable.{platform}.yaml
 
+      - name: find-CSource2Server_vtable2
+        expected_output:
+          - CSource2Server_vtable2.{platform}.yaml
+        expected_input:
+          - CSource2Server_vtable.{platform}.yaml
+
+      - name: find-CSource2Server_OnStreamEntitiesFromFileCompleted
+        expected_output:
+          - CSource2Server_OnStreamEntitiesFromFileCompleted.{platform}.yaml
+        expected_input:
+          - CSource2Server_vtable2.{platform}.yaml
+
       - name: find-CSource2Server_OutOfGameFrameBoundary
         expected_output:
           - CSource2Server_OutOfGameFrameBoundary.{platform}.yaml
@@ -4094,6 +4106,13 @@ modules:
 
       - name: find-IGameSystem_vtable
         expected_output:
+          - IGameSystem_vtable.{platform}.yaml
+
+      - name: find-IGameSystem_OnRestoreGame
+        expected_output:
+          - IGameSystem_OnRestoreGame.{platform}.yaml
+        expected_input:
+          - CSource2Server_OnStreamEntitiesFromFileCompleted.{platform}.yaml
           - IGameSystem_vtable.{platform}.yaml
 
       - name: find-CGameEntitySystem_vtable
@@ -6929,6 +6948,14 @@ modules:
       - name: CSource2Server_vtable
         category: vtable
 
+      - name: CSource2Server_vtable2
+        category: vtable
+
+      - name: CSource2Server_OnStreamEntitiesFromFileCompleted
+        category: vfunc
+        alias:
+          - CSource2Server::OnStreamEntitiesFromFileCompleted
+
       - name: CSource2Server_PreWorldUpdate
         category: vfunc
         alias:
@@ -9056,6 +9083,11 @@ modules:
         category: vfunc
         alias:
           - IGameSystem::OnSaveGame
+
+      - name: IGameSystem_OnRestoreGame
+        category: vfunc
+        alias:
+          - IGameSystem::OnRestoreGame
 
       - name: IGameSystem_OnOutOfGameFrameBoundary
         category: vfunc
