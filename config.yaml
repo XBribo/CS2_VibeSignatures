@@ -2888,6 +2888,19 @@ modules:
         expected_input:
           - CGameSystemReallocatingFactory_CSource2EntitySystem_Init.{platform}.yaml
 
+      - name: find-CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+        expected_output:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem.{platform}.yaml
+        expected_input:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_vtable.{platform}.yaml
+          - IGameSystemFactory_CreateGameSystem.{platform}.yaml
+
+      - name: find-IGameSystemFactory_SetGlobalPtr
+        expected_output:
+          - IGameSystemFactory_SetGlobalPtr.{platform}.yaml
+        expected_input:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem.{platform}.yaml
+
       - name: find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem-impl
         expected_output:
           - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml
@@ -3537,6 +3550,11 @@ modules:
         alias:
           - IGameSystemFactory::Shutdown
 
+      - name: IGameSystemFactory_SetGlobalPtr
+        category: vfunc
+        alias:
+          - IGameSystemFactory::SetGlobalPtr
+
       - name: CPrediction_vtable
         category: vtable
 
@@ -3610,6 +3628,11 @@ modules:
         category: vfunc
         alias:
           - CGameSystemReallocatingFactory<CSource2EntitySystem>::Init
+
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+        category: vfunc
+        alias:
+          - CGameSystemReallocatingFactory<CSource2EntitySystem>::CreateGameSystem
 
       - name: CSkeletonInstance
         category: struct
@@ -6851,6 +6874,11 @@ modules:
         alias:
           - CGameSystemReallocatingFactory<CSource2EntitySystem>::Init
 
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+        category: vfunc
+        alias:
+          - CGameSystemReallocatingFactory<CSource2EntitySystem>::CreateGameSystem
+
       - name: IGameSystemFactory_Init
         category: vfunc
         alias:
@@ -6860,6 +6888,11 @@ modules:
         category: vfunc
         alias:
           - IGameSystemFactory::Shutdown
+
+      - name: IGameSystemFactory_SetGlobalPtr
+        category: vfunc
+        alias:
+          - IGameSystemFactory::SetGlobalPtr
 
       - name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem
         category: vfunc

@@ -1,0 +1,49 @@
+func_name: CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+func_va: '0x1533920'
+disasm_code: |-
+  .text:0000000001533920                 push    rbp
+  .text:0000000001533921                 mov     esi, 18h
+  .text:0000000001533926                 mov     rbp, rsp
+  .text:0000000001533929                 push    rbx
+  .text:000000000153392A                 sub     rsp, 8
+  .text:000000000153392E                 mov     rax, cs:g_pMemAlloc_ptr
+  .text:0000000001533935                 mov     rdi, [rax]
+  .text:0000000001533938                 mov     rax, [rdi]
+  .text:000000000153393B                 call    qword ptr [rax+10h]
+  .text:000000000153393E                 mov     rbx, rax
+  .text:0000000001533941                 test    rax, rax
+  .text:0000000001533944                 jz      short loc_1533954
+  .text:0000000001533946                 mov     dword ptr [rax+11h], 0
+  .text:000000000153394D                 mov     dword ptr [rax+14h], 0
+  .text:0000000001533954                 lea     rax, off_424D390
+  .text:000000000153395B                 mov     qword ptr [rbx+8], 0
+  .text:0000000001533963                 mov     [rbx], rax
+  .text:0000000001533966                 mov     rdi, cs:off_4404C58
+  .text:000000000153396D                 test    rdi, rdi
+  .text:0000000001533970                 jz      short loc_153397B
+  .text:0000000001533972                 mov     rax, [rdi]
+  .text:0000000001533975                 mov     rsi, rbx
+  .text:0000000001533978                 call    qword ptr [rax+38h]  ; 38h = IGameSystemFactory_SetGlobalPtr
+  .text:000000000153397B                 mov     rax, rbx
+  .text:000000000153397E                 mov     rbx, [rbp+var_8]
+  .text:0000000001533982                 leave
+  .text:0000000001533983                 retn
+procedure: |-
+  __int64 CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem()
+  {
+    __int64 v0; // rax
+    __int64 v1; // rbx
+
+    v0 = (*(__int64 (__fastcall **)(_QWORD *, __int64))(*g_pMemAlloc + 16LL))(g_pMemAlloc, 24);
+    v1 = v0;
+    if ( v0 )
+    {
+      *(_DWORD *)(v0 + 17) = 0;
+      *(_DWORD *)(v0 + 20) = 0;
+    }
+    *(_QWORD *)(v0 + 8) = 0;
+    *(_QWORD *)v0 = off_424D390;
+    if ( off_4404C58 )
+      (*(void (__fastcall **)(__int64 *, __int64))(*off_4404C58 + 56))(off_4404C58, v0);// 56LL = 0x38 = IGameSystemFactory_SetGlobalPtr
+    return v1;
+  }
