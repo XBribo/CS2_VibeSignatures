@@ -2908,10 +2908,10 @@ modules:
           - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.{platform}.yaml
           - ../client/IGameSystemFactory_DestroyGameSystem.{platform}.yaml
 
-      - name: find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_dtor
+      - name: find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_vdtor
         expected_output:
           - IGameSystem_SetGameSystemGlobalPtrs.{platform}.yaml
-          - IGameSystem_dtor.{platform}.yaml
+          - IGameSystem_vdtor.{platform}.yaml
         expected_input:
           - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml
 
@@ -6934,7 +6934,7 @@ modules:
         alias:
           - IGameSystem::SetGameSystemGlobalPtrs
 
-      - name: IGameSystem_dtor
+      - name: IGameSystem_vdtor
         category: vfunc
         alias:
           - IGameSystem::~IGameSystem

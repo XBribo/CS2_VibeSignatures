@@ -22,7 +22,7 @@ disasm_code: |-
   .text:0000000000EB1DCB                 call    qword ptr [rax+38h]
   .text:0000000000EB1DCE                 mov     rax, [rbx-8]
   .text:0000000000EB1DD2                 mov     rdi, r12
-  .text:0000000000EB1DD5                 call    qword ptr [rax+0E0h] ; 0xE0 = IGameSystem_dtor
+  .text:0000000000EB1DD5                 call    qword ptr [rax+0E0h] ; 0xE0 = IGameSystem_vdtor
   .text:0000000000EB1DDB                 mov     rax, cs:g_pMemAlloc_ptr
   .text:0000000000EB1DE2                 mov     rsi, r12
   .text:0000000000EB1DE5                 pop     rbx
@@ -64,6 +64,6 @@ procedure: |-
       ((void (__fastcall *)(__int64, _QWORD))v4)(v3, 0);
       v2 = *(_QWORD *)(a2 - 8);
     }
-    (*(void (__fastcall **)(__int64))(v2 + 224))(v3); // 224 = 0xE0 = IGameSystem_dtor
+    (*(void (__fastcall **)(__int64))(v2 + 224))(v3); // 224 = 0xE0 = IGameSystem_vdtor
     return (*(__int64 (__fastcall **)(_QWORD *, __int64))(*g_pMemAlloc + 32LL))(g_pMemAlloc, v3);
   }

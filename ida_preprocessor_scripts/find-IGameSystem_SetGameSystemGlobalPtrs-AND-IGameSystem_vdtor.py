@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_dtor skill."""
+"""Preprocess script for find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_vdtor skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
     "IGameSystem_SetGameSystemGlobalPtrs",
-    "IGameSystem_dtor",
+    "IGameSystem_vdtor",
 ]
 
 LLM_DECOMPILE = [
@@ -16,7 +16,7 @@ LLM_DECOMPILE = [
         "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml",
     ),
     (
-        "IGameSystem_dtor",
+        "IGameSystem_vdtor",
         "prompt/call_llm_decompile.md",
         "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml",
     ),
@@ -25,7 +25,7 @@ LLM_DECOMPILE = [
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
     ("IGameSystem_SetGameSystemGlobalPtrs", "IGameSystem"),
-    ("IGameSystem_dtor", "IGameSystem"),
+    ("IGameSystem_vdtor", "IGameSystem"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
@@ -44,7 +44,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
     (
-        "IGameSystem_dtor",
+        "IGameSystem_vdtor",
         [
             "func_name",
             "func_va",
