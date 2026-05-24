@@ -9,3 +9,5 @@ __pycache__
 cs2_depot
 bin
 vcall_finder
+.codex/skills
+.agents/skills

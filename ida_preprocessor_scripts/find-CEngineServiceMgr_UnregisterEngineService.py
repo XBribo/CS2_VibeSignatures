@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate-impl skill."""
+"""Preprocess script for find-CEngineServiceMgr_UnregisterEngineService skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 INHERIT_VFUNCS = [
     # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
     (
-        "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate",
-        "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem",
-        "../client/IGameSystemFactory_Deallocate",
+        "CEngineServiceMgr_UnregisterEngineService",
+        "CEngineServiceMgr",
+        "../server/IEngineServiceMgr_UnregisterEngineService",
         True,
     ),
 ]
 
-
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate",
+        "CEngineServiceMgr_UnregisterEngineService",
         [
             "func_name",
             "func_va",
@@ -41,6 +40,7 @@ async def preprocess_skill(
     image_base,
     debug=False,
 ):
+    """Reuse old func_sig first; fallback to vtable index + generated signature when needed."""
     _ = skill_name
 
     return await preprocess_common_skill(

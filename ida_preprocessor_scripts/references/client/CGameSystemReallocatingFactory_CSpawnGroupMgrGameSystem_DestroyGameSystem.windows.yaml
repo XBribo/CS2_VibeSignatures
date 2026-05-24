@@ -1,4 +1,4 @@
-func_name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate
+func_name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem
 func_va: '0x180389340'
 disasm_code: |-
   .text:0000000180389340                 mov     [rsp+arg_0], rbx
@@ -15,7 +15,7 @@ disasm_code: |-
   .text:0000000180389367                 mov     rax, [rdi+8]
   .text:000000018038936B                 lea     rcx, [rdi+8]
   .text:000000018038936F                 xor     edx, edx
-  .text:0000000180389371                 call    qword ptr [rax+1E8h] ; 0x1E8 = IGameSystem_dtor
+  .text:0000000180389371                 call    qword ptr [rax+1E8h] ; 0x1E8 = IGameSystem_vdtor
   .text:0000000180389377                 mov     rax, cs:g_pMemAlloc
   .text:000000018038937E                 mov     rdx, rdi
   .text:0000000180389381                 mov     rcx, [rax]
@@ -25,7 +25,7 @@ disasm_code: |-
   .text:0000000180389390                 pop     rdi
   .text:0000000180389391                 jmp     qword ptr [rax+18h]
 procedure: |-
-  __int64 __fastcall CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate(__int64 a1, __int64 a2)
+  __int64 __fastcall CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem(__int64 a1, __int64 a2)
   {
     __int64 v2; // rdi
 
@@ -33,6 +33,6 @@ procedure: |-
     if ( !a2 )
       v2 = 0;
     (*(void (__fastcall **)(__int64, _QWORD))(*(_QWORD *)(v2 + 8) + 464LL))(v2 + 8, 0); // 464LL = 0x1D0 = IGameSystem_SetGameSystemGlobalPtrs
-    (*(void (__fastcall **)(__int64, _QWORD))(*(_QWORD *)(v2 + 8) + 488LL))(v2 + 8, 0); // 488LL = 0x1E8 = IGameSystem_dtor
+    (*(void (__fastcall **)(__int64, _QWORD))(*(_QWORD *)(v2 + 8) + 488LL))(v2 + 8, 0); // 488LL = 0x1E8 = IGameSystem_vdtor
     return (*(__int64 (__fastcall **)(_QWORD, __int64))(*g_pMemAlloc + 24LL))(g_pMemAlloc, v2);
   }

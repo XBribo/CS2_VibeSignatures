@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CLoopTypeClientServer_FrameUpdate skill."""
+"""Preprocess script for find-CLoopModeGame_StaticInit skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CLoopTypeClientServer_FrameUpdate",
+    "CLoopModeGame_StaticInit",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CLoopTypeClientServer_FrameUpdate",
+        "func_name": "CLoopModeGame_StaticInit",
         "xref_strings": [
-            "%f FRAME start %d ticks",
+            "FULLMATCH:CLoopModeGame::StaticInit-start",
         ],
         "xref_gvs": [],
         "xref_signatures": [],
@@ -23,22 +23,18 @@ FUNC_XREFS = [
     },
 ]
 
-FUNC_VTABLE_RELATIONS = [
-    ("CLoopTypeClientServer_FrameUpdate", "CLoopTypeClientServer"),
-]
+FUNC_VTABLE_RELATIONS = []
 
 GENERATE_YAML_DESIRED_FIELDS = [
+    # (symbol_name, generate_yaml_fields)
     (
-        "CLoopTypeClientServer_FrameUpdate",
+        "CLoopModeGame_StaticInit",
         [
             "func_name",
+            "func_sig",
             "func_va",
             "func_rva",
             "func_size",
-            "func_sig",
-            "vtable_name",
-            "vfunc_offset",
-            "vfunc_index",
         ],
     ),
 ]

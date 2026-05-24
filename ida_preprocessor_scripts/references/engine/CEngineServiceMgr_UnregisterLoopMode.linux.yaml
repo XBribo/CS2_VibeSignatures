@@ -1,0 +1,142 @@
+func_name: CEngineServiceMgr_UnregisterLoopMode
+func_va: '0x517190'
+disasm_code: |-
+  .text:0000000000517190                 push    rbp
+  .text:0000000000517191                 mov     rbp, rsp
+  .text:0000000000517194                 push    r15
+  .text:0000000000517196                 push    r14
+  .text:0000000000517198                 push    r13
+  .text:000000000051719A                 mov     r13, rdx
+  .text:000000000051719D                 ; _QWORD
+  .text:000000000051719D                 mov     rdx, rsi; _QWORD
+  .text:00000000005171A0                 push    r12
+  .text:00000000005171A2                 push    rbx
+  .text:00000000005171A3                 mov     rbx, rdi
+  .text:00000000005171A6                 lea     rax, [rbx+48h]
+  .text:00000000005171AA                 sub     rsp, 18h
+  .text:00000000005171AE                 ; _QWORD
+  .text:00000000005171AE                 lea     rdi, [rbp+var_32]; _QWORD
+  .text:00000000005171B2                 ; _QWORD
+  .text:00000000005171B2                 mov     rsi, rax; _QWORD
+  .text:00000000005171B5                 call    __ZNK15CUtlSymbolTable4FindEPKc; CUtlSymbolTable::Find(char const*)
+  .text:00000000005171BA                 movzx   r12d, [rbp+var_32]
+  .text:00000000005171BF                 cmp     r12w, 0FFFFh
+  .text:00000000005171C4                 jz      short loc_517215
+  .text:00000000005171C6                 mov     rax, [rbx+38h]
+  .text:00000000005171CA                 lea     r14, ds:0[r12*8]
+  .text:00000000005171D2                 mov     r15, [rax+r12*8]
+  .text:00000000005171D6                 mov     rax, [r15]
+  .text:00000000005171D9                 mov     rdi, r15
+  .text:00000000005171DC                 call    qword ptr [rax+50h]  ; 50h = CLoopTypeBase_GetImplType
+  .text:00000000005171DF                 cmp     eax, 1
+  .text:00000000005171E2                 jz      short loc_517228
+  .text:00000000005171E4                 mov     rax, [rbx+38h]
+  .text:00000000005171E8                 mov     rdi, [rax+r12*8]
+  .text:00000000005171EC                 mov     rax, [rdi]
+  .text:00000000005171EF                 call    qword ptr [rax+20h]
+  .text:00000000005171F2                 mov     rax, [rbx+38h]
+  .text:00000000005171F6                 add     rax, r14
+  .text:00000000005171F9                 mov     rdi, [rax]
+  .text:00000000005171FC                 test    rdi, rdi
+  .text:00000000005171FF                 jz      short loc_51720E
+  .text:0000000000517201                 mov     rax, [rdi]
+  .text:0000000000517204                 call    qword ptr [rax+10h]
+  .text:0000000000517207                 mov     rax, [rbx+38h]
+  .text:000000000051720B                 add     rax, r14
+  .text:000000000051720E                 mov     qword ptr [rax], 0
+  .text:0000000000517215                 add     rsp, 18h
+  .text:0000000000517219                 pop     rbx
+  .text:000000000051721A                 pop     r12
+  .text:000000000051721C                 pop     r13
+  .text:000000000051721E                 pop     r14
+  .text:0000000000517220                 pop     r15
+  .text:0000000000517222                 pop     rbp
+  .text:0000000000517223                 retn
+  .text:0000000000517228                 mov     rax, [r13+0]
+  .text:000000000051722C                 mov     rdi, r13
+  .text:000000000051722F                 call    qword ptr [rax+20h]  ; 20h = ILoopModeFactory_GetLoopModeType
+  .text:0000000000517232                 cmp     eax, 2
+  .text:0000000000517235                 jz      short loc_5172A8
+  .text:0000000000517237                 cmp     eax, 3
+  .text:000000000051723A                 jz      short loc_517280
+  .text:000000000051723C                 cmp     eax, 1
+  .text:000000000051723F                 jnz     short loc_517215
+  .text:0000000000517241                 cmp     qword ptr [r15+90h], 0
+  .text:0000000000517249                 jz      short loc_517215
+  .text:000000000051724B                 mov     qword ptr [r15+90h], 0
+  .text:0000000000517256                 mov     qword ptr [r15+0A0h], 0
+  .text:0000000000517261                 mov     rax, [r13+0]
+  .text:0000000000517265                 mov     rdi, r13
+  .text:0000000000517268                 mov     rax, [rax+8]         ; 8h = ILoopModeFactory_Shutdown (tail-call via jmp rax)
+  .text:000000000051726C                 add     rsp, 18h
+  .text:0000000000517270                 pop     rbx
+  .text:0000000000517271                 pop     r12
+  .text:0000000000517273                 pop     r13
+  .text:0000000000517275                 pop     r14
+  .text:0000000000517277                 pop     r15
+  .text:0000000000517279                 pop     rbp
+  .text:000000000051727A                 jmp     rax
+  .text:0000000000517280                 cmp     qword ptr [r15+0C0h], 0
+  .text:0000000000517288                 jz      short loc_517215
+  .text:000000000051728A                 mov     qword ptr [r15+0C0h], 0
+  .text:0000000000517295                 mov     qword ptr [r15+0D0h], 0
+  .text:00000000005172A0                 jmp     short loc_517261
+  .text:00000000005172A8                 cmp     qword ptr [r15+0A8h], 0
+  .text:00000000005172B0                 jz      loc_517215
+  .text:00000000005172B6                 mov     qword ptr [r15+0A8h], 0
+  .text:00000000005172C1                 mov     qword ptr [r15+0B8h], 0
+  .text:00000000005172CC                 jmp     short loc_517261
+procedure: |-
+  _QWORD *__fastcall CEngineServiceMgr_UnregisterLoopMode(__int64 a1, __int64 a2, __int64 a3)
+  {
+    _QWORD *result; // rax
+    __int64 v6; // r12
+    __int64 v7; // r14
+    _QWORD *v8; // r15
+    __int64 v9; // rdi
+    unsigned __int16 v10[25]; // [rsp+Eh] [rbp-32h] BYREF
+
+    result = (_QWORD *)CUtlSymbolTable::Find(v10, a1 + 72, a2);
+    v6 = v10[0];
+    if ( v10[0] != 0xFFFF )
+    {
+      v7 = 8LL * v10[0];
+      v8 = *(_QWORD **)(*(_QWORD *)(a1 + 56) + v7);
+      if ( (*(unsigned int (__fastcall **)(_QWORD *))(*v8 + 80LL))(v8) == 1 ) // 80LL = 0x50 = CLoopTypeBase_GetImplType
+      {
+        result = (_QWORD *)(*(__int64 (__fastcall **)(__int64))(*(_QWORD *)a3 + 32LL))(a3); // 32LL = 0x20 = ILoopModeFactory_GetLoopModeType
+        if ( (_DWORD)result == 2 )
+        {
+          if ( !v8[21] )
+            return result;
+          v8[21] = 0;
+          v8[23] = 0;
+        }
+        else if ( (_DWORD)result == 3 )
+        {
+          if ( !v8[24] )
+            return result;
+          v8[24] = 0;
+          v8[26] = 0;
+        }
+        else
+        {
+          if ( (_DWORD)result != 1 || !v8[18] )
+            return result;
+          v8[18] = 0;
+          v8[20] = 0;
+        }
+        return (*(_QWORD *(__fastcall **)(__int64))(*(_QWORD *)a3 + 8LL))(a3); // 8LL = 0x8 = ILoopModeFactory_Shutdown
+      }
+      v9 = *(_QWORD *)(*(_QWORD *)(a1 + 56) + 8 * v6);
+      (*(void (__fastcall **)(__int64))(*(_QWORD *)v9 + 32LL))(v9);
+      result = (_QWORD *)(v7 + *(_QWORD *)(a1 + 56));
+      if ( *result )
+      {
+        (*(void (__fastcall **)(_QWORD))(*(_QWORD *)*result + 16LL))(*result);
+        result = (_QWORD *)(v7 + *(_QWORD *)(a1 + 56));
+      }
+      *result = 0;
+    }
+    return result;
+  }

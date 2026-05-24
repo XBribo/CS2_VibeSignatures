@@ -600,6 +600,56 @@ modules:
         expected_input:
           - CGameResourceService_BuildResourceManifest.{platform}.yaml
 
+      - name: find-CGameResourceService_GetResourceManifestDebugName
+        expected_output:
+          - CGameResourceService_GetResourceManifestDebugName.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
+      - name: find-CGameResourceService_LoadGameResourceManifest_IEntityResourceManifest
+        expected_output:
+          - CGameResourceService_LoadGameResourceManifest_IEntityResourceManifest.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
+      - name: find-CGameResourceService_PrecacheEntitiesAndConfirmResourcesAreLoaded
+        expected_output:
+          - CGameResourceService_PrecacheEntitiesAndConfirmResourcesAreLoaded.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
+      - name: find-CGameResourceService_DescribeContents
+        expected_output:
+          - CGameResourceService_DescribeContents.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
+      - name: find-CGameResourceService_AppendToGameResourceManifest
+        expected_output:
+          - CGameResourceService_AppendToGameResourceManifest.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
+      - name: find-CGameResourceService_RegisterEventMapInternal-windows
+        platform: windows
+        expected_output:
+          - CGameResourceService_RegisterEventMapInternal.{platform}.yaml
+
+      - name: find-CGameResourceService_RegisterEventMap-windows
+        platform: windows
+        expected_output:
+          - CGameResourceService_RegisterEventMap.{platform}.yaml
+        expected_input:
+          - CGameResourceService_RegisterEventMapInternal.{platform}.yaml
+          - CGameResourceService_vtable.{platform}.yaml
+
+      - name: find-CGameResourceService_RegisterEventMap-linux
+        platform: linux
+        expected_output:
+          - CGameResourceService_RegisterEventMap.{platform}.yaml
+        expected_input:
+          - CGameResourceService_vtable.{platform}.yaml
+
       - name: find-CNetworkGameServerBase_SendPeerList
         expected_output:
           - CNetworkGameServerBase_SendPeerList.{platform}.yaml
@@ -967,9 +1017,9 @@ modules:
         expected_input:
           - CLoopTypeClientServer_LoopTypeInit.{platform}.yaml
 
-      - name: find-CLoopTypeClientServer_FrameUpdate
+      - name: find-CLoopTypeClientServer_Update
         expected_output:
-          - CLoopTypeClientServer_FrameUpdate.{platform}.yaml
+          - CLoopTypeClientServer_Update.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_vtable.{platform}.yaml
 
@@ -997,9 +1047,9 @@ modules:
           - CLoopTypeClientServer_vtable.{platform}.yaml
           - CLoopTypeClientServer_WritePerfStats.{platform}.yaml
 
-      - name: find-CLoopTypeClientServer_EngineLoop
+      - name: find-CLoopTypeClientServer_OutputListeners
         expected_output:
-          - CLoopTypeClientServer_EngineLoop.{platform}.yaml
+          - CLoopTypeClientServer_OutputListeners.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_vtable.{platform}.yaml
 
@@ -1007,13 +1057,13 @@ modules:
         expected_output:
           - CLoopTypeBase_EngineLoop.{platform}.yaml
         expected_input:
-          - CLoopTypeClientServer_EngineLoop.{platform}.yaml
+          - CLoopTypeClientServer_OutputListeners.{platform}.yaml
 
       - name: find-CLoopTypeBase_FrameUpdate
         expected_output:
           - CLoopTypeBase_FrameUpdate.{platform}.yaml
         expected_input:
-          - CLoopTypeClientServer_FrameUpdate.{platform}.yaml
+          - CLoopTypeClientServer_Update.{platform}.yaml
 
       - name: find-CLoopTypeBase_ActivateLoop
         expected_output:
@@ -1064,6 +1114,38 @@ modules:
       - name: find-CEngineServiceMgr_RegisterEngineService
         expected_output:
           - CEngineServiceMgr_RegisterEngineService.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_vtable.{platform}.yaml
+
+      - name: find-CEngineServiceMgr_RegisterLoopMode
+        expected_output:
+          - CEngineServiceMgr_RegisterLoopMode.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_vtable.{platform}.yaml
+
+      - name: find-CEngineServiceMgr_UnregisterLoopMode
+        expected_output:
+          - CEngineServiceMgr_UnregisterLoopMode.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_vtable.{platform}.yaml
+          - ../server/IEngineServiceMgr_UnregisterLoopMode.{platform}.yaml
+
+      - name: find-CEngineServiceMgr_UnregisterEngineService
+        expected_output:
+          - CEngineServiceMgr_UnregisterEngineService.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_vtable.{platform}.yaml
+          - ../server/IEngineServiceMgr_UnregisterEngineService.{platform}.yaml
+
+      - name: find-CEngineServiceMgr_SwitchToLoop
+        expected_output:
+          - CEngineServiceMgr_SwitchToLoop.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_vtable.{platform}.yaml
+
+      - name: find-CEngineServiceMgr_PrintStatus
+        expected_output:
+          - CEngineServiceMgr_PrintStatus.{platform}.yaml
         expected_input:
           - CEngineServiceMgr_vtable.{platform}.yaml
 
@@ -1332,6 +1414,41 @@ modules:
         category: vfunc
         alias:
           - CGameResourceService::LoadGameResourceManifestGroup
+
+      - name: CGameResourceService_GetResourceManifestDebugName
+        category: vfunc
+        alias:
+          - CGameResourceService::GetResourceManifestDebugName
+
+      - name: CGameResourceService_PrecacheEntitiesAndConfirmResourcesAreLoaded
+        category: vfunc
+        alias:
+          - CGameResourceService::PrecacheEntitiesAndConfirmResourcesAreLoaded
+
+      - name: CGameResourceService_LoadGameResourceManifest_IEntityResourceManifest
+        category: vfunc
+        alias:
+          - CGameResourceService::LoadGameResourceManifest
+
+      - name: CGameResourceService_DescribeContents
+        category: vfunc
+        alias:
+          - CGameResourceService::DescribeContents
+
+      - name: CGameResourceService_AppendToGameResourceManifest
+        category: vfunc
+        alias:
+          - CGameResourceService::AppendToGameResourceManifest
+
+      - name: CGameResourceService_RegisterEventMapInternal
+        category: func
+        alias:
+          - CGameResourceService::RegisterEventMapInternal
+
+      - name: CGameResourceService_RegisterEventMap
+        category: vfunc
+        alias:
+          - CGameResourceService::RegisterEventMap
 
       - name: IEntityResourceManifestBuilder_BuildResourceManifest_ManifestNameOrGroupName
         category: vfunc
@@ -1711,10 +1828,10 @@ modules:
         alias:
           - CLoopTypeClientServer::LoopTypeInit
 
-      - name: CLoopTypeClientServer_FrameUpdate
+      - name: CLoopTypeClientServer_Update
         category: vfunc
         alias:
-          - CLoopTypeClientServer::FrameUpdate
+          - CLoopTypeClientServer::Update
 
       - name: CLoopTypeClientServer_ActivateLoop
         category: vfunc
@@ -1736,10 +1853,10 @@ modules:
         alias:
           - CLoopTypeClientServer::DeactivateLoop
 
-      - name: CLoopTypeClientServer_EngineLoop
+      - name: CLoopTypeClientServer_OutputListeners
         category: vfunc
         alias:
-          - CLoopTypeClientServer::EngineLoop
+          - CLoopTypeClientServer::OutputListeners
 
       - name: CLoopTypeSimple_vtable
         category: vtable
@@ -1815,6 +1932,21 @@ modules:
         alias:
           - CLoopTypeBase::GetClientServerMode
 
+      - name: CLoopTypeBase_GetImplType
+        category: vfunc
+        alias:
+          - CLoopTypeBase::GetImplType
+
+      - name: ILoopModeFactory_GetLoopModeType
+        category: vfunc
+        alias:
+          - ILoopModeFactory::GetLoopModeType
+
+      - name: ILoopModeFactory_Shutdown
+        category: vfunc
+        alias:
+          - ILoopModeFactory::Shutdown
+
       - name: CEngineServiceMgr_vtable
         category: vtable
 
@@ -1822,6 +1954,31 @@ modules:
         category: vfunc
         alias:
           - CEngineServiceMgr::RegisterEngineService
+
+      - name: CEngineServiceMgr_RegisterLoopMode
+        category: vfunc
+        alias:
+          - CEngineServiceMgr::RegisterLoopMode
+
+      - name: CEngineServiceMgr_UnregisterLoopMode
+        category: vfunc
+        alias:
+          - CEngineServiceMgr::UnregisterLoopMode
+
+      - name: CEngineServiceMgr_UnregisterEngineService
+        category: vfunc
+        alias:
+          - CEngineServiceMgr::UnregisterEngineService
+
+      - name: CEngineServiceMgr_SwitchToLoop
+        category: vfunc
+        alias:
+          - CEngineServiceMgr::SwitchToLoop
+
+      - name: CEngineServiceMgr_PrintStatus
+        category: vfunc
+        alias:
+          - CEngineServiceMgr::PrintStatus
 
       - name: CEngineServiceMgr__MainLoop
         category: func
@@ -1842,6 +1999,11 @@ modules:
         category: vfunc
         alias:
           - CEngineServiceMgr::GetActiveLoopClientServerMode
+
+      - name: CEngineServiceMgr_GetEventDispatcher
+        category: vfunc
+        alias:
+          - CEngineServiceMgr::GetEventDispatcher
 
       - name: CEngineGameUI_vtable
         category: vtable
@@ -2342,6 +2504,41 @@ modules:
         expected_output:
           - CLoopModeGame_vtable.{platform}.yaml
 
+      - name: find-CLoopModeFactory_CLoopModeGame_vtable
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeGame_StaticInit
+        expected_output:
+          - CLoopModeGame_StaticInit.{platform}.yaml
+
+      - name: find-CLoopModeFactory_CLoopModeGame_Init
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_Init.{platform}.yaml
+        expected_input:
+          - CLoopModeGame_StaticInit.{platform}.yaml
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeFactory_CLoopModeGame_Shutdown
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_Shutdown.{platform}.yaml
+        expected_input:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+          - ../engine/ILoopModeFactory_Shutdown.{platform}.yaml
+
+      - name: find-IEngineServiceMgr_GetEventDispatcher-AND-IGameSystem_ShutdownAllSystems
+        expected_output:
+          - IEngineServiceMgr_GetEventDispatcher.{platform}.yaml
+          - IGameSystem_ShutdownAllSystems.{platform}.yaml
+        expected_input:
+          - CLoopModeFactory_CLoopModeGame_Shutdown.{platform}.yaml
+
+      - name: find-IGameSystemFactory_Shutdown
+        expected_output:
+          - IGameSystemFactory_Shutdown.{platform}.yaml
+        expected_input:
+          - IGameSystem_ShutdownAllSystems.{platform}.yaml
+
       - name: find-CEntityInstance_vtable
         expected_output:
           - CEntityInstance_vtable.{platform}.yaml
@@ -2477,13 +2674,34 @@ modules:
         expected_input:
           - CLoopModeGame_ReceivedServerInfo.{platform}.yaml
 
-      - name: find-IGameSystemFactory_Allocate-AND-IGameSystemFactory_DoesGameSystemReallocate-AND-IGameSystem_SetName
+      - name: find-IGameSystem_PostInit
         expected_output:
-          - IGameSystemFactory_Allocate.{platform}.yaml
-          - IGameSystemFactory_DoesGameSystemReallocate.{platform}.yaml
-          - IGameSystem_SetName.{platform}.yaml
+          - IGameSystem_PostInit.{platform}.yaml
+
+      - name: find-IGameSystem_InitAllSystems
+        expected_output:
+          - IGameSystem_InitAllSystems.{platform}.yaml
+
+      - name: find-IGameSystemFactory_PostInit-AND-IGameSystemFactory_GetStaticGameSystem
+        expected_output:
+          - IGameSystemFactory_PostInit.{platform}.yaml
+          - IGameSystemFactory_GetStaticGameSystem.{platform}.yaml
         expected_input:
-          - IGameSystem_AddByName.{platform}.yaml
+          - IGameSystem_PostInit.{platform}.yaml
+
+      - name: find-IGameSystem_LoopInitAllSystems
+        expected_output:
+          - IGameSystem_LoopInitAllSystems.{platform}.yaml
+
+      - name: find-IGameSystemFactory_ShouldAutoAdd-AND-IGameSystemFactory_CreateGameSystem-AND-IGameSystemFactory_IsReallocating-AND-IGameSystem_SetName-AND-IGameSystemFactory_GetPriority
+        expected_output:
+          - IGameSystemFactory_ShouldAutoAdd.{platform}.yaml
+          - IGameSystemFactory_CreateGameSystem.{platform}.yaml
+          - IGameSystemFactory_IsReallocating.{platform}.yaml
+          - IGameSystem_SetName.{platform}.yaml
+          - IGameSystemFactory_GetPriority.{platform}.yaml
+        expected_input:
+          - IGameSystem_LoopInitAllSystems.{platform}.yaml
 
       - name: find-IGameSystem_DestroyAllGameSystems-AND-IGameSystem_LoopDestroyAllSystems-AND-IGameSystem_LoopPreShutdownAllSystems
         expected_output:
@@ -2620,10 +2838,10 @@ modules:
         expected_output:
           - CSteamworksGameStats_OnReceivedSessionID.{platform}.yaml
 
-      - name: find-IGameSystem_GetName-AND-IGameSystemFactory_Deallocate
+      - name: find-IGameSystem_GetName-AND-IGameSystemFactory_DestroyGameSystem
         expected_output:
           - IGameSystem_GetName.{platform}.yaml
-          - IGameSystemFactory_Deallocate.{platform}.yaml
+          - IGameSystemFactory_DestroyGameSystem.{platform}.yaml
         expected_input:
           - IGameSystem_DestroyAllGameSystems.{platform}.yaml
 
@@ -2639,7 +2857,7 @@ modules:
         expected_output:
           - CSpawnGroupMgrGameSystem_DoesGameSystemReallocate.{platform}.yaml
         expected_input:
-          - IGameSystemFactory_DoesGameSystemReallocate.{platform}.yaml
+          - IGameSystemFactory_IsReallocating.{platform}.yaml
           - CSpawnGroupMgrGameSystem_vtable2.{platform}.yaml
 
       - name: find-IGameSystem_DoesGameSystemReallocate
@@ -2653,19 +2871,49 @@ modules:
         expected_output:
           - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.{platform}.yaml
 
-      - name: find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate-impl
+      - name: find-CGameSystemReallocatingFactory_CSource2EntitySystem_vtable
         expected_output:
-          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_vtable.{platform}.yaml
+
+      - name: find-CGameSystemReallocatingFactory_CSource2EntitySystem_Init
+        expected_output:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_Init.{platform}.yaml
+        expected_input:
+          - CSource2EntitySystem_StaticInit.{platform}.yaml
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_vtable.{platform}.yaml
+
+      - name: find-IGameSystemFactory_Init
+        expected_output:
+          - IGameSystemFactory_Init.{platform}.yaml
+        expected_input:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_Init.{platform}.yaml
+
+      - name: find-CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+        expected_output:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem.{platform}.yaml
+        expected_input:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_vtable.{platform}.yaml
+          - IGameSystemFactory_CreateGameSystem.{platform}.yaml
+
+      - name: find-IGameSystemFactory_SetGlobalPtr
+        expected_output:
+          - IGameSystemFactory_SetGlobalPtr.{platform}.yaml
+        expected_input:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem.{platform}.yaml
+
+      - name: find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem-impl
+        expected_output:
+          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml
         expected_input:
           - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.{platform}.yaml
-          - ../client/IGameSystemFactory_Deallocate.{platform}.yaml
+          - ../client/IGameSystemFactory_DestroyGameSystem.{platform}.yaml
 
-      - name: find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_dtor
+      - name: find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_vdtor
         expected_output:
           - IGameSystem_SetGameSystemGlobalPtrs.{platform}.yaml
-          - IGameSystem_dtor.{platform}.yaml
+          - IGameSystem_vdtor.{platform}.yaml
         expected_input:
-          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml
+          - CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem.{platform}.yaml
 
       - name: find-CPrediction_vtable
         expected_output:
@@ -2713,6 +2961,13 @@ modules:
         expected_output:
           - CEntitySystem_ctor.{platform}.yaml
 
+      - name: find-CGameEntitySystem_ctor
+        expected_output:
+          - CGameEntitySystem_ctor.{platform}.yaml
+        expected_input:
+          - CGameEntitySystem_vtable.{platform}.yaml
+          - CEntitySystem_ctor.{platform}.yaml
+
       - name: find-CEntitySystem_CreateEntitySystem
         expected_output:
           - CEntitySystem_CreateEntitySystem.{platform}.yaml
@@ -2729,6 +2984,26 @@ modules:
       - name: find-CEntitySystem_Init
         expected_output:
           - CEntitySystem_Init.{platform}.yaml
+
+      - name: find-CEntitySystem_PostCreateEntitySystem
+        expected_output:
+          - CEntitySystem_PostCreateEntitySystem.{platform}.yaml
+        expected_input:
+          - CEntitySystem_Init.{platform}.yaml
+          - CEntitySystem_ctor.{platform}.yaml
+          - CEntitySystem_CreateEntitySystem.{platform}.yaml
+
+      - name: find-CSource2EntitySystem_StaticInit
+        expected_output:
+          - CSource2EntitySystem_StaticInit.{platform}.yaml
+
+      - name: find-IGameResourceService_SetEntityResourceManifestHandler-AND-g_pGameResourceService-AND-g_pGameEntitySystem
+        expected_output:
+          - IGameResourceService_SetEntityResourceManifestHandler.{platform}.yaml
+          - g_pGameResourceService.{platform}.yaml
+          - g_pGameEntitySystem.{platform}.yaml
+        expected_input:
+          - CSource2EntitySystem_StaticInit.{platform}.yaml
 
       - name: find-CSkeletonInstance_vtable
         expected_output:
@@ -2983,8 +3258,26 @@ modules:
         alias:
           - CLoopModeGame::OnFrameBoundary
 
+      - name: CLoopModeGame_StaticInit
+        category: func
+        alias:
+          - CLoopModeGame::StaticInit
+
       - name: CLoopModeGame_vtable
         category: vtable
+
+      - name: CLoopModeFactory_CLoopModeGame_vtable
+        category: vtable
+
+      - name: CLoopModeFactory_CLoopModeGame_Init
+        category: vfunc
+        alias:
+          - CLoopModeFactory<CLoopModeGame>::Init
+
+      - name: CLoopModeFactory_CLoopModeGame_Shutdown
+        category: vfunc
+        alias:
+          - CLoopModeFactory<CLoopModeGame>::Shutdown
 
       - name: CLoopModeGame_OnLoopActivate
         category: vfunc
@@ -3066,15 +3359,45 @@ modules:
         alias:
           - IGameSystem::Add
 
-      - name: IGameSystemFactory_Allocate
-        category: vfunc
+      - name: IGameSystem_PostInit
+        category: func
         alias:
-          - IGameSystemFactory::Allocate
+          - IGameSystem::PostInit
 
-      - name: IGameSystemFactory_DoesGameSystemReallocate
+      - name: IGameSystem_InitAllSystems
+        category: func
+        alias:
+          - IGameSystem::InitAllSystems
+
+      - name: IGameSystem_LoopInitAllSystems
+        category: func
+        alias:
+          - IGameSystem::LoopInitAllSystems
+
+      - name: IGameSystemFactory_PostInit
         category: vfunc
         alias:
-          - IGameSystemFactory::DoesGameSystemReallocate
+          - IGameSystemFactory::PostInit
+
+      - name: IGameSystemFactory_GetStaticGameSystem
+        category: vfunc
+        alias:
+          - IGameSystemFactory::GetStaticGameSystem
+
+      - name: IGameSystemFactory_ShouldAutoAdd
+        category: vfunc
+        alias:
+          - IGameSystemFactory::ShouldAutoAdd
+
+      - name: IGameSystemFactory_CreateGameSystem
+        category: vfunc
+        alias:
+          - IGameSystemFactory::CreateGameSystem
+
+      - name: IGameSystemFactory_IsReallocating
+        category: vfunc
+        alias:
+          - IGameSystemFactory::IsReallocating
 
       - name: IGameSystem_SetName
         category: vfunc
@@ -3090,6 +3413,11 @@ modules:
         category: func
         alias:
           - IGameSystem::DestroyAllGameSystems
+
+      - name: IGameSystem_ShutdownAllSystems
+        category: func
+        alias:
+          - IGameSystem::ShutdownAllSystems
 
       - name: IGameSystem_LoopDestroyAllSystems
         category: func
@@ -3202,10 +3530,30 @@ modules:
         alias:
           - IGameSystem::GetName
 
-      - name: IGameSystemFactory_Deallocate
+      - name: IGameSystemFactory_DestroyGameSystem
         category: vfunc
         alias:
-          - IGameSystemFactory::Deallocate
+          - IGameSystemFactory::DestroyGameSystem
+
+      - name: IGameSystemFactory_Init
+        category: vfunc
+        alias:
+          - IGameSystemFactory::Init
+
+      - name: IGameSystemFactory_GetPriority
+        category: vfunc
+        alias:
+          - IGameSystemFactory::GetPriority
+
+      - name: IGameSystemFactory_Shutdown
+        category: vfunc
+        alias:
+          - IGameSystemFactory::Shutdown
+
+      - name: IGameSystemFactory_SetGlobalPtr
+        category: vfunc
+        alias:
+          - IGameSystemFactory::SetGlobalPtr
 
       - name: CPrediction_vtable
         category: vtable
@@ -3219,6 +3567,11 @@ modules:
         category: vfunc
         alias:
           - IEngineServiceMgr::GetActiveLoopClientServerMode
+
+      - name: IEngineServiceMgr_GetEventDispatcher
+        category: vfunc
+        alias:
+          - IEngineServiceMgr::GetEventDispatcher
 
       - name: CAM_Command_CommandHandler
         category: func
@@ -3242,6 +3595,11 @@ modules:
         alias:
           - CEntitySystem::CEntitySystem
 
+      - name: CGameEntitySystem_ctor
+        category: func
+        alias:
+          - CGameEntitySystem::CGameEntitySystem
+
       - name: CEntitySystem_CreateEntitySystem
         category: func
 
@@ -3252,6 +3610,29 @@ modules:
         category: func
         alias:
           - CEntitySystem::Init
+
+      - name: CEntitySystem_PostCreateEntitySystem
+        category: func
+        alias:
+          - CEntitySystem::PostCreateEntitySystem
+
+      - name: CSource2EntitySystem_StaticInit
+        category: func
+        alias:
+          - CSource2EntitySystem::StaticInit
+
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_vtable
+        category: vtable
+
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_Init
+        category: vfunc
+        alias:
+          - CGameSystemReallocatingFactory<CSource2EntitySystem>::Init
+
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+        category: vfunc
+        alias:
+          - CGameSystemReallocatingFactory<CSource2EntitySystem>::CreateGameSystem
 
       - name: CSkeletonInstance
         category: struct
@@ -3618,6 +3999,17 @@ modules:
       - name: g_pGameResourceServiceServer
         category: gv
 
+      - name: IGameResourceService_SetEntityResourceManifestHandler
+        category: vfunc
+        alias:
+          - IGameResourceService::SetEntityResourceManifestHandler
+
+      - name: g_pGameResourceService
+        category: gv
+
+      - name: g_pGameEntitySystem
+        category: gv
+
       - name: g_pSource2EngineToClient
         category: gv
 
@@ -3811,6 +4203,10 @@ modules:
       - name: find-CBaseEntity_vtable
         expected_output:
           - CBaseEntity_vtable.{platform}.yaml
+
+      - name: find-CNetworkTransmitComponent_vtable
+        expected_output:
+          - CNetworkTransmitComponent_vtable.{platform}.yaml
 
       - name: find-CGameSceneNode_vtable
         expected_output:
@@ -4453,6 +4849,45 @@ modules:
         expected_input:
           - CSource2Server_Connect.{platform}.yaml
 
+      - name: find-CSource2Server_PreShutdown
+        expected_output:
+          - CSource2Server_PreShutdown.{platform}.yaml
+        expected_input:
+          - CSource2Server_vtable.{platform}.yaml
+
+      - name: find-IAppSystem_PreShutdown
+        expected_output:
+          - IAppSystem_PreShutdown.{platform}.yaml
+        expected_input:
+          - CSource2Server_PreShutdown.{platform}.yaml
+
+      - name: find-CSource2Server_Shutdown
+        expected_output:
+          - CSource2Server_Shutdown.{platform}.yaml
+        expected_input:
+          - CSource2Server_vtable.{platform}.yaml
+          - ../engine/IAppSystem_Shutdown.{platform}.yaml
+
+      - name: find-CGameEventManager_Shutdown-AND-CLoopModeRegistry_UnregisterLoopModes-AND-CEngineServiceRegistry_UnregisterEngineServices
+        expected_output:
+          - CGameEventManager_Shutdown.{platform}.yaml
+          - CLoopModeRegistry_UnregisterLoopModes.{platform}.yaml
+          - CEngineServiceRegistry_UnregisterEngineServices.{platform}.yaml
+        expected_input:
+          - CSource2Server_Shutdown.{platform}.yaml
+
+      - name: find-IEngineServiceMgr_UnregisterLoopMode
+        expected_output:
+          - IEngineServiceMgr_UnregisterLoopMode.{platform}.yaml
+        expected_input:
+          - CLoopModeRegistry_UnregisterLoopModes.{platform}.yaml
+
+      - name: find-IEngineServiceMgr_UnregisterEngineService
+        expected_output:
+          - IEngineServiceMgr_UnregisterEngineService.{platform}.yaml
+        expected_input:
+          - CEngineServiceRegistry_UnregisterEngineServices.{platform}.yaml
+
       - name: find-CSource2Server_Init
         expected_output:
           - CSource2Server_Init.{platform}.yaml
@@ -4867,9 +5302,24 @@ modules:
         expected_input:
           - IGameSystem_InitAllSystems.{platform}.yaml
 
+      - name: find-IGameSystem_LoopInitAllSystems
+        expected_output:
+          - IGameSystem_LoopInitAllSystems.{platform}.yaml
+
       - name: find-IGameSystem_LoopPostInitAllSystems
         expected_output:
           - IGameSystem_LoopPostInitAllSystems.{platform}.yaml
+
+      - name: find-IGameSystem_PostInit
+        expected_output:
+          - IGameSystem_PostInit.{platform}.yaml
+
+      - name: find-IGameSystemFactory_PostInit-AND-IGameSystemFactory_GetStaticGameSystem
+        expected_output:
+          - IGameSystemFactory_PostInit.{platform}.yaml
+          - IGameSystemFactory_GetStaticGameSystem.{platform}.yaml
+        expected_input:
+          - IGameSystem_PostInit.{platform}.yaml
 
       - name: find-IGameSystem_LoopPostInitAllSystems_pEventDispatcher-AND-IGameSystem_LoopDestroyAllSystems_s_GameSystems
         expected_output:
@@ -5095,6 +5545,50 @@ modules:
       - name: find-CEntFireOutputAutoCompletionFunctor_vtable
         expected_output:
           - CEntFireOutputAutoCompletionFunctor_vtable.{platform}.yaml
+
+      - name: find-CEntityIOOutput_vtable
+        expected_output:
+          - CEntityIOOutput_vtable.{platform}.yaml
+
+      - name: find-CBaseEntity_ctor
+        expected_output:
+          - CBaseEntity_ctor.{platform}.yaml
+        expected_input:
+          - CNetworkTransmitComponent_vtable.{platform}.yaml
+          - CBaseEntity_vtable.{platform}.yaml
+          - CEntityIOOutput_vtable.{platform}.yaml
+
+      - name: find-CBaseEntity_dtor
+        expected_output:
+          - CBaseEntity_dtor.{platform}.yaml
+        expected_input:
+          - CBaseEntity_vtable.{platform}.yaml
+          - CBaseEntity_ctor.{platform}.yaml
+
+      - name: find-CBaseEntity_vdtor
+        expected_output:
+          - CBaseEntity_vdtor.{platform}.yaml
+        expected_input:
+          - CBaseEntity_dtor.{platform}.yaml
+          - CBaseEntity_vtable.{platform}.yaml
+
+      - name: find-CEntityInstance_vdtor
+        expected_output:
+          - CEntityInstance_vdtor.{platform}.yaml
+        expected_input:
+          - CBaseEntity_vdtor.{platform}.yaml
+
+      - name: find-CEntityInstance_Spawn
+        expected_output:
+          - CEntityInstance_Spawn.{platform}.yaml
+        expected_input:
+          - CFlashbangProjectile_Spawn.{platform}.yaml
+
+      - name: find-CEntityInstance_Activate
+        expected_output:
+          - CEntityInstance_Activate.{platform}.yaml
+        expected_input:
+          - CPhysExplosion_Activate.{platform}.yaml
 
       - name: find-CEntFireOutputAutoCompletionFunctor_FireOutput
         expected_output:
@@ -5442,11 +5936,28 @@ modules:
         expected_output:
           - CSpawnGroupMgrGameSystem_vtable2.{platform}.yaml
 
+      - name: find-CGameSystemReallocatingFactory_CSource2EntitySystem_vtable
+        expected_output:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_vtable.{platform}.yaml
+
+      - name: find-CGameSystemReallocatingFactory_CSource2EntitySystem_Init
+        expected_output:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_Init.{platform}.yaml
+        expected_input:
+          - CSource2EntitySystem_StaticInit.{platform}.yaml
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_vtable.{platform}.yaml
+
+      - name: find-IGameSystemFactory_Init
+        expected_output:
+          - IGameSystemFactory_Init.{platform}.yaml
+        expected_input:
+          - CGameSystemReallocatingFactory_CSource2EntitySystem_Init.{platform}.yaml
+
       - name: find-CSpawnGroupMgrGameSystem_DoesGameSystemReallocate
         expected_output:
           - CSpawnGroupMgrGameSystem_DoesGameSystemReallocate.{platform}.yaml
         expected_input:
-          - ../client/IGameSystemFactory_DoesGameSystemReallocate.{platform}.yaml
+          - ../client/IGameSystemFactory_IsReallocating.{platform}.yaml
           - CSpawnGroupMgrGameSystem_vtable2.{platform}.yaml
 
       - name: find-CSpawnGroupMgrGameSystem_GetSpawnGroups
@@ -5665,6 +6176,13 @@ modules:
         expected_output:
           - CEntitySystem_ctor.{platform}.yaml
 
+      - name: find-CGameEntitySystem_ctor
+        expected_output:
+          - CGameEntitySystem_ctor.{platform}.yaml
+        expected_input:
+          - CGameEntitySystem_vtable.{platform}.yaml
+          - CEntitySystem_ctor.{platform}.yaml
+
       - name: find-CEntitySystem_CreateEntitySystem
         expected_output:
           - CEntitySystem_CreateEntitySystem.{platform}.yaml
@@ -5687,6 +6205,26 @@ modules:
           - CEntitySystem_m_sEntSystemName.{platform}.yaml
         expected_input:
           - CEntitySystem_Init.{platform}.yaml
+
+      - name: find-CEntitySystem_PostCreateEntitySystem
+        expected_output:
+          - CEntitySystem_PostCreateEntitySystem.{platform}.yaml
+        expected_input:
+          - CEntitySystem_Init.{platform}.yaml
+          - CEntitySystem_ctor.{platform}.yaml
+          - CEntitySystem_CreateEntitySystem.{platform}.yaml
+
+      - name: find-CSource2EntitySystem_StaticInit
+        expected_output:
+          - CSource2EntitySystem_StaticInit.{platform}.yaml
+
+      - name: find-IGameResourceService_SetEntityResourceManifestHandler-AND-g_pGameResourceService-AND-g_pGameEntitySystem
+        expected_output:
+          - IGameResourceService_SetEntityResourceManifestHandler.{platform}.yaml
+          - g_pGameResourceService.{platform}.yaml
+          - g_pGameEntitySystem.{platform}.yaml
+        expected_input:
+          - CSource2EntitySystem_StaticInit.{platform}.yaml
 
       - name: find-INetworkMessages_SetNetworkSerializationContextData-AND-IFlattenedSerializers_CreateFieldChangedEventQueue
         expected_output:
@@ -5886,6 +6424,41 @@ modules:
       - name: find-CLoopModeGame_vtable
         expected_output:
           - CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeFactory_CLoopModeGame_vtable
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeGame_StaticInit
+        expected_output:
+          - CLoopModeGame_StaticInit.{platform}.yaml
+
+      - name: find-CLoopModeFactory_CLoopModeGame_Init
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_Init.{platform}.yaml
+        expected_input:
+          - CLoopModeGame_StaticInit.{platform}.yaml
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+
+      - name: find-CLoopModeFactory_CLoopModeGame_Shutdown
+        expected_output:
+          - CLoopModeFactory_CLoopModeGame_Shutdown.{platform}.yaml
+        expected_input:
+          - CLoopModeFactory_CLoopModeGame_vtable.{platform}.yaml
+          - ../engine/ILoopModeFactory_Shutdown.{platform}.yaml
+
+      - name: find-IEngineServiceMgr_GetEventDispatcher-AND-IGameSystem_ShutdownAllSystems
+        expected_output:
+          - IEngineServiceMgr_GetEventDispatcher.{platform}.yaml
+          - IGameSystem_ShutdownAllSystems.{platform}.yaml
+        expected_input:
+          - CLoopModeFactory_CLoopModeGame_Shutdown.{platform}.yaml
+
+      - name: find-IGameSystemFactory_Shutdown
+        expected_output:
+          - IGameSystemFactory_Shutdown.{platform}.yaml
+        expected_input:
+          - IGameSystem_ShutdownAllSystems.{platform}.yaml
 
       - name: find-CLoopModeGame_OnLoopActivate
         expected_output:
@@ -6341,7 +6914,35 @@ modules:
       - name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable
         category: vtable
 
-      - name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_vtable
+        category: vtable
+
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_Init
+        category: vfunc
+        alias:
+          - CGameSystemReallocatingFactory<CSource2EntitySystem>::Init
+
+      - name: CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+        category: vfunc
+        alias:
+          - CGameSystemReallocatingFactory<CSource2EntitySystem>::CreateGameSystem
+
+      - name: IGameSystemFactory_Init
+        category: vfunc
+        alias:
+          - IGameSystemFactory::Init
+
+      - name: IGameSystemFactory_Shutdown
+        category: vfunc
+        alias:
+          - IGameSystemFactory::Shutdown
+
+      - name: IGameSystemFactory_SetGlobalPtr
+        category: vfunc
+        alias:
+          - IGameSystemFactory::SetGlobalPtr
+
+      - name: CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem
         category: vfunc
         alias:
           - CGameSystemReallocatingFactory<CSpawnGroupMgrGameSystem>::Deallocate
@@ -6351,7 +6952,7 @@ modules:
         alias:
           - IGameSystem::SetGameSystemGlobalPtrs
 
-      - name: IGameSystem_dtor
+      - name: IGameSystem_vdtor
         category: vfunc
         alias:
           - IGameSystem::~IGameSystem
@@ -6513,6 +7114,29 @@ modules:
 
       - name: CBaseEntity_vtable
         category: vtable
+
+      - name: CNetworkTransmitComponent_vtable
+        category: vtable
+
+      - name: CBaseEntity_ctor
+        category: func
+        alias:
+          - CBaseEntity::CBaseEntity
+
+      - name: CBaseEntity_dtor
+        category: func
+        alias:
+          - CBaseEntity::~CBaseEntity
+
+      - name: CBaseEntity_vdtor
+        category: vfunc
+        alias:
+          - CBaseEntity::~CBaseEntity (virtual)
+
+      - name: CEntityInstance_vdtor
+        category: vfunc
+        alias:
+          - CEntityInstance::~CEntityInstance (virtual)
 
       - name: CEntitySaveRestoreBlockHandler_vtable
         category: vtable
@@ -7295,10 +7919,50 @@ modules:
         alias:
           - CSource2Server::Connect
 
+      - name: CSource2Server_PreShutdown
+        category: vfunc
+        alias:
+          - CSource2Server::PreShutdown
+
       - name: IAppSystem_Connect
         category: vfunc
         alias:
           - IAppSystem::Connect
+
+      - name: IAppSystem_PreShutdown
+        category: vfunc
+        alias:
+          - IAppSystem::PreShutdown
+
+      - name: CSource2Server_Shutdown
+        category: vfunc
+        alias:
+          - CSource2Server::Shutdown
+
+      - name: CGameEventManager_Shutdown
+        category: func
+        alias:
+          - CGameEventManager::Shutdown
+
+      - name: CLoopModeRegistry_UnregisterLoopModes
+        category: func
+        alias:
+          - CLoopModeRegistry::UnregisterLoopModes
+
+      - name: CEngineServiceRegistry_UnregisterEngineServices
+        category: func
+        alias:
+          - CEngineServiceRegistry::UnregisterEngineServices
+
+      - name: IEngineServiceMgr_UnregisterLoopMode
+        category: vfunc
+        alias:
+          - IEngineServiceMgr::UnregisterLoopMode
+
+      - name: IEngineServiceMgr_UnregisterEngineService
+        category: vfunc
+        alias:
+          - IEngineServiceMgr::UnregisterEngineService
 
       - name: CSource2Server_GameFrame
         category: vfunc
@@ -7598,10 +8262,30 @@ modules:
         alias:
           - IGameSystem::InitAllSystems
 
+      - name: IGameSystem_LoopInitAllSystems
+        category: func
+        alias:
+          - IGameSystem::LoopInitAllSystems
+
       - name: IGameSystem_LoopPostInitAllSystems
         category: func
         alias:
           - IGameSystem::LoopPostInitAllSystems
+
+      - name: IGameSystem_PostInit
+        category: func
+        alias:
+          - IGameSystem::PostInit
+
+      - name: IGameSystemFactory_PostInit
+        category: vfunc
+        alias:
+          - IGameSystemFactory::PostInit
+
+      - name: IGameSystemFactory_GetStaticGameSystem
+        category: vfunc
+        alias:
+          - IGameSystemFactory::GetStaticGameSystem
 
       - name: IGameSystem_InitAllSystems_pFirst
         category: gv
@@ -8174,6 +8858,9 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::ScriptEntityIO
+
+      - name: CEntityIOOutput_vtable
+        category: vtable
 
       - name: CEntityIOOutput_FireOutputInternal
         category: func
@@ -8752,6 +9439,11 @@ modules:
         alias:
           - CEntitySystem::CEntitySystem
 
+      - name: CGameEntitySystem_ctor
+        category: func
+        alias:
+          - CGameEntitySystem::CGameEntitySystem
+
       - name: CEntitySystem_CreateEntitySystem
         category: func
 
@@ -8762,6 +9454,16 @@ modules:
         category: func
         alias:
           - CEntitySystem::Init
+
+      - name: CEntitySystem_PostCreateEntitySystem
+        category: func
+        alias:
+          - CEntitySystem::PostCreateEntitySystem
+
+      - name: CSource2EntitySystem_StaticInit
+        category: func
+        alias:
+          - CSource2EntitySystem::StaticInit
 
       - name: CEntitySystem_m_sEntSystemName
         category: structmember
@@ -8814,6 +9516,16 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::GetScriptDesc
+
+      - name: CEntityInstance_Spawn
+        category: vfunc
+        alias:
+          - CEntityInstance::Spawn
+
+      - name: CEntityInstance_Activate
+        category: vfunc
+        alias:
+          - CEntityInstance::Activate
 
       - name: CEntityInstance_Precache
         category: vfunc
@@ -8961,8 +9673,26 @@ modules:
       - name: PhysEnableEntityCollisions
         category: func
 
+      - name: CLoopModeGame_StaticInit
+        category: func
+        alias:
+          - CLoopModeGame::StaticInit
+
       - name: CLoopModeGame_vtable
         category: vtable
+
+      - name: CLoopModeFactory_CLoopModeGame_vtable
+        category: vtable
+
+      - name: CLoopModeFactory_CLoopModeGame_Init
+        category: vfunc
+        alias:
+          - CLoopModeFactory<CLoopModeGame>::Init
+
+      - name: CLoopModeFactory_CLoopModeGame_Shutdown
+        category: vfunc
+        alias:
+          - CLoopModeFactory<CLoopModeGame>::Shutdown
 
       - name: CLoopModeGame_OnLoopActivate
         category: vfunc
@@ -9066,6 +9796,11 @@ modules:
         category: func
         alias:
           - IGameSystem::DestroyAllGameSystems
+
+      - name: IGameSystem_ShutdownAllSystems
+        category: func
+        alias:
+          - IGameSystem::ShutdownAllSystems
 
       - name: IGameSystem_LoopDestroyAllSystems
         category: func
@@ -9413,6 +10148,17 @@ modules:
       - name: g_pGameResourceServiceServer
         category: gv
 
+      - name: IGameResourceService_SetEntityResourceManifestHandler
+        category: vfunc
+        alias:
+          - IGameResourceService::SetEntityResourceManifestHandler
+
+      - name: g_pGameResourceService
+        category: gv
+
+      - name: g_pGameEntitySystem
+        category: gv
+
       - name: g_pSource2EngineToClient
         category: gv
 
@@ -9475,11 +10221,26 @@ modules:
           - CEngineServiceMgr_vtable.{platform}.yaml
           - ../client/IEngineServiceMgr_GetActiveLoopClientServerMode.{platform}.yaml
 
+      - name: find-CEngineServiceMgr_GetEventDispatcher
+        expected_output:
+          - CEngineServiceMgr_GetEventDispatcher.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_vtable.{platform}.yaml
+          - ../client/IEngineServiceMgr_GetEventDispatcher.{platform}.yaml
+
       - name: find-CLoopTypeBase_GetClientServerMode
         expected_output:
           - CLoopTypeBase_GetClientServerMode.{platform}.yaml
         expected_input:
           - CEngineServiceMgr_GetActiveLoopClientServerMode.{platform}.yaml
+
+      - name: find-CLoopTypeBase_GetImplType-AND-ILoopModeFactory_GetLoopModeType-AND-ILoopModeFactory_Shutdown
+        expected_output:
+          - CLoopTypeBase_GetImplType.{platform}.yaml
+          - ILoopModeFactory_GetLoopModeType.{platform}.yaml
+          - ILoopModeFactory_Shutdown.{platform}.yaml
+        expected_input:
+          - CEngineServiceMgr_UnregisterLoopMode.{platform}.yaml
 
       - name: find-CNetSupportImpl_vtable
         expected_output:
@@ -9717,6 +10478,7 @@ cpp_tests:
       - fdump-vtable-layouts
     reference_modules:
       - server # bin/{gamever}/server/CEntityInstance_*.{platform}.yaml
+      - client # bin/{gamever}/client/CEntityInstance_*.{platform}.yaml
 
   - name: IGameSystem_MSVC
     symbol: IGameSystem
@@ -9851,6 +10613,33 @@ cpp_tests:
       - fdump-vtable-layouts
     reference_modules:
       - engine # bin/{gamever}/engine/CLoopTypeClientServer_*.{platform}.yaml
+
+  - name: IGameSystemFactory_MSVC
+    symbol: IGameSystemFactory
+    cpp: cpp_tests/igamesystemfactory.cpp
+    headers:
+    - hl2sdk_cs2/game/shared/igamesystemfactory.h # This is for LLM agent
+    claude_permission_mode: acceptEdits
+    claude_allowed_tools: Read,Edit,MultiEdit,Write
+    target: x86_64-pc-windows-msvc
+    include_directories:
+      - cpp_tests/stubs
+      - hl2sdk_cs2/game/shared
+      - hl2sdk_cs2/public
+      - hl2sdk_cs2/public/tier0
+      - hl2sdk_cs2/public/tier1
+    defines:
+      - COMPILER_MSVC=1
+      - COMPILER_MSVC64=1
+      - _MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION
+    additional_compiler_options:
+      - fms-extensions
+      - fms-compatibility
+      - Xclang
+      - fdump-vtable-layouts
+    reference_modules:
+      - server # bin/{gamever}/server/IGameSystemFactory_*.{platform}.yaml
+      - client # bin/{gamever}/client/IGameSystemFactory_*.{platform}.yaml
 
   - name: SDL_Mouse_MSVC
     symbol: SDL_Mouse

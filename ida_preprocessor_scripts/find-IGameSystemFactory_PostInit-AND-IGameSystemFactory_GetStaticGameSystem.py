@@ -1,37 +1,37 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-IGameSystem_GetName-AND-IGameSystemFactory_Deallocate skill."""
+"""Preprocess script for find-IGameSystemFactory_PostInit-AND-IGameSystemFactory_GetStaticGameSystem skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "IGameSystem_GetName",
-    "IGameSystemFactory_Deallocate",
+    "IGameSystemFactory_PostInit",
+    "IGameSystemFactory_GetStaticGameSystem",
 ]
 
 LLM_DECOMPILE = [
     # (symbol_name, path_to_prompt, path_to_reference)
     (
-        "IGameSystem_GetName",
+        "IGameSystemFactory_PostInit",
         "prompt/call_llm_decompile.md",
-        "references/client/IGameSystem_DestroyAllGameSystems.{platform}.yaml",
+        "references/server/IGameSystem_PostInit.{platform}.yaml",
     ),
     (
-        "IGameSystemFactory_Deallocate",
+        "IGameSystemFactory_GetStaticGameSystem",
         "prompt/call_llm_decompile.md",
-        "references/client/IGameSystem_DestroyAllGameSystems.{platform}.yaml",
+        "references/server/IGameSystem_PostInit.{platform}.yaml",
     ),
 ]
 
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
-    ("IGameSystem_GetName", "IGameSystem"),
-    ("IGameSystemFactory_Deallocate", "IGameSystemFactory"),
+    ("IGameSystemFactory_PostInit", "IGameSystemFactory"),
+    ("IGameSystemFactory_GetStaticGameSystem", "IGameSystemFactory"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "IGameSystem_GetName",
+        "IGameSystemFactory_PostInit",
         [
             "func_name",
             "vfunc_sig",
@@ -41,7 +41,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
     (
-        "IGameSystemFactory_Deallocate",
+        "IGameSystemFactory_GetStaticGameSystem",
         [
             "func_name",
             "vfunc_sig",
@@ -52,13 +52,11 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
-
 async def preprocess_skill(
     session, skill_name, expected_outputs, old_yaml_map,
     new_binary_dir, platform, image_base, llm_config=None, debug=False,
 ):
-    """Reuse previous gamever vfunc_sig to locate target function(s) and write YAML."""
-    _ = skill_name
+    """Locate target vfunc(s) via preprocessing and LLM decompile fallback."""
     return await preprocess_common_skill(
         session=session,
         expected_outputs=expected_outputs,

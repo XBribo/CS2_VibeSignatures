@@ -20,3 +20,4 @@ Rules:
 - YOU MUST ensure the new vtable layout after edit matches vfunc index from reference YAMLs.
 - If the prototype of new virtual functions are unknown, leave them `virtual void KnownFunctionName() = 0;`;
 - If there are gaps between known functions, leave the unkown functions `virtual void unk001() = 0;`, `virtual void unk002() = 0;` or something like that.
+- `YAML:[N]: XXXX_dtor` or `YAML:[N]: XXXX_vdtor` stands for virtual destructor of class `XXXX`

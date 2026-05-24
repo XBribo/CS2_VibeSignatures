@@ -1974,6 +1974,7 @@ def run_skill(skill_name, agent="claude", debug=False, expected_yaml_paths=None,
 
     # Verify SKILL.md exists before launching agent
     skill_md_path = os.path.join(".claude", "skills", skill_name, "SKILL.md")
+    print(f"    Falling back to: {skill_md_path}")
     if not os.path.exists(skill_md_path):
         print(f"    Error: Skill file not found: {skill_md_path}")
         return False
@@ -2375,10 +2376,7 @@ def process_binary(
                     )
                 else:
                     success_count += 1
-                    if old_binary_dir:
-                        print(f"  Pre-processed: {skill_name} (signature reuse)")
-                    else:
-                        print(f"  Pre-processed: {skill_name}")
+                    print(f"  Pre-processed: {skill_name} OK")
                 continue
             if preprocess_status == PREPROCESS_STATUS_ABSENT_OK:
                 skip_count += 1

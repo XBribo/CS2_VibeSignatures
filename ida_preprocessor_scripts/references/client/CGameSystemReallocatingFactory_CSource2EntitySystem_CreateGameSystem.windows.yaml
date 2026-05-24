@@ -1,0 +1,42 @@
+func_name: CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem
+func_va: '0x1809248c0'
+disasm_code: |-
+  .text:00000001809248C0                 push    rbx
+  .text:00000001809248C2                 sub     rsp, 20h
+  .text:00000001809248C6                 mov     rax, cs:g_pMemAlloc
+  .text:00000001809248CD                 mov     edx, 18h
+  .text:00000001809248D2                 mov     rcx, [rax]
+  .text:00000001809248D5                 mov     rax, [rcx]
+  .text:00000001809248D8                 call    qword ptr [rax+8]
+  .text:00000001809248DB                 mov     rbx, rax
+  .text:00000001809248DE                 xor     eax, eax
+  .text:00000001809248E0                 test    rbx, rbx
+  .text:00000001809248E3                 jz      short loc_1809248E9
+  .text:00000001809248E5                 mov     [rbx+10h], rax
+  .text:00000001809248E9                 mov     [rbx+8], rax
+  .text:00000001809248ED                 lea     rax, ??_7CSource2EntitySystem@@6B@; const CSource2EntitySystem::`vftable'
+  .text:00000001809248F4                 mov     [rbx], rax
+  .text:00000001809248F7                 mov     rcx, cs:s_Source2EntitySystem
+  .text:00000001809248FE                 test    rcx, rcx
+  .text:0000000180924901                 jz      short loc_18092490D
+  .text:0000000180924903                 mov     r8, [rcx]
+  .text:0000000180924906                 mov     rdx, rbx
+  .text:0000000180924909                 call    qword ptr [r8+38h]  ; 38h = IGameSystemFactory_SetGlobalPtr
+  .text:000000018092490D                 mov     rax, rbx
+  .text:0000000180924910                 add     rsp, 20h
+  .text:0000000180924914                 pop     rbx
+  .text:0000000180924915                 retn
+procedure: |-
+  _QWORD *CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem()
+  {
+    _QWORD *v0; // rbx
+
+    v0 = (_QWORD *)(*(__int64 (__fastcall **)(_QWORD, __int64))(*g_pMemAlloc + 8LL))(g_pMemAlloc, 24);
+    if ( v0 )
+      v0[2] = 0;
+    v0[1] = 0;
+    *v0 = &CSource2EntitySystem::`vftable';
+    if ( s_Source2EntitySystem )
+      (*(void (__fastcall **)(__int64, _QWORD *))(*(_QWORD *)s_Source2EntitySystem + 56LL))(s_Source2EntitySystem, v0);// 56LL = 0x38 = IGameSystemFactory_SetGlobalPtr
+    return v0;
+  }

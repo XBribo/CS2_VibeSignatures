@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CLoopTypeClientServer_EngineLoop skill."""
+"""Preprocess script for find-CBaseEntity_vdtor skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CLoopTypeClientServer_EngineLoop",
+    "CBaseEntity_vdtor",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CLoopTypeClientServer_EngineLoop",
-        "xref_strings": [
-            "\nClientServerEngineLoop\n{\n",
-        ],
+        "func_name": "CBaseEntity_vdtor",
+        "xref_strings": [],
         "xref_gvs": [],
         "xref_signatures": [],
         "xref_funcs": [],
@@ -20,16 +18,19 @@ FUNC_XREFS = [
         "exclude_strings": [],
         "exclude_gvs": [],
         "exclude_signatures": [],
+        "inline_alias": "CBaseEntity_dtor",
     },
 ]
 
 FUNC_VTABLE_RELATIONS = [
-    ("CLoopTypeClientServer_EngineLoop", "CLoopTypeClientServer"),
+    # (func_name, vtable_class)
+    ("CBaseEntity_vdtor", "CBaseEntity"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
+    # (symbol_name, generate_yaml_fields)
     (
-        "CLoopTypeClientServer_EngineLoop",
+        "CBaseEntity_vdtor",
         [
             "func_name",
             "func_va",
@@ -42,6 +43,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
 ]
+
 
 async def preprocess_skill(
     session, skill_name, expected_outputs, old_yaml_map,

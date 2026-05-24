@@ -1,42 +1,39 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-IGameSystem_SetGameSystemGlobalPtrs-AND-IGameSystem_dtor skill."""
+"""Preprocess script for find-IGameSystem_GetName-AND-IGameSystemFactory_DestroyGameSystem skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "IGameSystem_SetGameSystemGlobalPtrs",
-    "IGameSystem_dtor",
+    "IGameSystem_GetName",
+    "IGameSystemFactory_DestroyGameSystem",
 ]
 
 LLM_DECOMPILE = [
     # (symbol_name, path_to_prompt, path_to_reference)
     (
-        "IGameSystem_SetGameSystemGlobalPtrs",
+        "IGameSystem_GetName",
         "prompt/call_llm_decompile.md",
-        "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml",
+        "references/client/IGameSystem_DestroyAllGameSystems.{platform}.yaml",
     ),
     (
-        "IGameSystem_dtor",
+        "IGameSystemFactory_DestroyGameSystem",
         "prompt/call_llm_decompile.md",
-        "references/client/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Deallocate.{platform}.yaml",
+        "references/client/IGameSystem_DestroyAllGameSystems.{platform}.yaml",
     ),
 ]
 
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
-    ("IGameSystem_SetGameSystemGlobalPtrs", "IGameSystem"),
-    ("IGameSystem_dtor", "IGameSystem"),
+    ("IGameSystem_GetName", "IGameSystem"),
+    ("IGameSystemFactory_DestroyGameSystem", "IGameSystemFactory"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "IGameSystem_SetGameSystemGlobalPtrs",
+        "IGameSystem_GetName",
         [
             "func_name",
-            "func_va",
-            "func_rva",
-            "func_size",
             "vfunc_sig",
             "vfunc_offset",
             "vfunc_index",
@@ -44,12 +41,9 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
     (
-        "IGameSystem_dtor",
+        "IGameSystemFactory_DestroyGameSystem",
         [
             "func_name",
-            "func_va",
-            "func_rva",
-            "func_size",
             "vfunc_sig",
             "vfunc_offset",
             "vfunc_index",
