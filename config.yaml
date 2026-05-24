@@ -10478,6 +10478,7 @@ cpp_tests:
       - fdump-vtable-layouts
     reference_modules:
       - server # bin/{gamever}/server/CEntityInstance_*.{platform}.yaml
+      - client # bin/{gamever}/client/CEntityInstance_*.{platform}.yaml
 
   - name: IGameSystem_MSVC
     symbol: IGameSystem
