@@ -6,6 +6,7 @@ description: |
   pulls the latest, deletes the local dev branch, and deletes the remote dev branch if it still exists.
   STOPS and warns the user if the current branch is not yet merged.
   Triggers: cleanup workspace, cleanup branch, delete merged branch, finish dev branch, post-merge cleanup
+disable-model-invocation: true
 ---
 
 # Cleanup Workspace
