@@ -4204,6 +4204,18 @@ modules:
         expected_output:
           - CBaseEntity_vtable.{platform}.yaml
 
+      - name: find-CBaseEntity_OnRestore
+        expected_output:
+          - CBaseEntity_OnRestore.{platform}.yaml
+        expected_input:
+          - CBaseEntity_vtable.{platform}.yaml
+
+      - name: find-CEntityInstance_OnRestore
+        expected_output:
+          - CEntityInstance_OnRestore.{platform}.yaml
+        expected_input:
+          - CBaseEntity_OnRestore.{platform}.yaml
+
       - name: find-CNetworkTransmitComponent_vtable
         expected_output:
           - CNetworkTransmitComponent_vtable.{platform}.yaml
@@ -6732,11 +6744,13 @@ modules:
           - CEntitySaveRestoreBlockHandler_DoRestoreEntity.{platform}.yaml
           - CEntityInstance_vtable.{platform}.yaml
 
-      - name: find-CEntitySaveRestoreBlockHandler_SaveInitEntities
+      - name: find-CEntitySaveRestoreBlockHandler_SaveInitEntities-AND-CEntityInstance_OnSave
         expected_output:
           - CEntitySaveRestoreBlockHandler_SaveInitEntities.{platform}.yaml
+          - CEntityInstance_OnSave.{platform}.yaml
         expected_input:
           - CEntitySaveRestoreBlockHandler_PreSave.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
 
       - name: find-CEntityInstance_RequiredEdictIndex
         expected_output:
@@ -7141,6 +7155,16 @@ modules:
       - name: CBaseEntity_vtable
         category: vtable
 
+      - name: CBaseEntity_OnRestore
+        category: vfunc
+        alias:
+          - CBaseEntity::OnRestore
+
+      - name: CEntityInstance_OnRestore
+        category: vfunc
+        alias:
+          - CEntityInstance::OnRestore
+
       - name: CNetworkTransmitComponent_vtable
         category: vtable
 
@@ -7231,6 +7255,11 @@ modules:
         category: func
         alias:
           - CEntitySaveRestoreBlockHandler::SaveInitEntities
+
+      - name: CEntityInstance_OnSave
+        category: vfunc
+        alias:
+          - CEntityInstance::OnSave
 
       - name: CEntityInstance_RequiredEdictIndex
         category: vfunc
