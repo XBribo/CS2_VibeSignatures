@@ -6279,6 +6279,12 @@ modules:
         expected_output:
           - CSource2EntitySystem_StaticInit.{platform}.yaml
 
+      - name: find-CEntitySystem_m_entityIONotifiers
+        expected_output:
+          - CEntitySystem_m_entityIONotifiers.{platform}.yaml
+        expected_input:
+          - CSource2EntitySystem_StaticInit.{platform}.yaml
+
       - name: find-IGameResourceService_SetEntityResourceManifestHandler-AND-g_pGameResourceService-AND-g_pGameEntitySystem
         expected_output:
           - IGameResourceService_SetEntityResourceManifestHandler.{platform}.yaml
@@ -8147,6 +8153,11 @@ modules:
         category: structmember
         struct: CEntitySystem
         member: m_entityNames
+
+      - name: CEntitySystem_m_entityIONotifiers
+        category: structmember
+        struct: CEntitySystem
+        member: m_entityIONotifiers
 
       - name: CEntitySystem_OnAddEntity
         category: vfunc

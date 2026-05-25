@@ -32,7 +32,7 @@ disasm_code: |-
   .text:0000000180B8D7A3                 call    CEntitySystem_PostCreateEntitySystem
   .text:0000000180B8D7A8                 mov     rbx, cs:g_pEntitySystem
   .text:0000000180B8D7AF                 mov     cs:g_pGameEntitySystem, rbx
-  .text:0000000180B8D7B6                 movsxd  r14, dword ptr [rbx+0B90h]
+  .text:0000000180B8D7B6                 movsxd  r14, dword ptr [rbx+0B90h]  ; 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
   .text:0000000180B8D7BD                 cmp     r14d, [rbx+0BA0h]
   .text:0000000180B8D7C4                 jnz     loc_180B8D88F
   .text:0000000180B8D7CA                 test    dword ptr [rbx+0BA4h], 40000000h
@@ -80,7 +80,7 @@ disasm_code: |-
   .text:0000000180B8D87E                 and     eax, 3FFFFFFFh
   .text:0000000180B8D883                 mov     [rbx+0BA4h], eax
   .text:0000000180B8D889                 mov     [rbx+0BA0h], edi
-  .text:0000000180B8D88F                 inc     dword ptr [rbx+0B90h]
+  .text:0000000180B8D88F                 inc     dword ptr [rbx+0B90h]  ; 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
   .text:0000000180B8D895                 lea     rdx, off_181C16478
   .text:0000000180B8D89C                 mov     rax, [rbx+0B98h]
   .text:0000000180B8D8A3                 mov     ecx, 1340h
@@ -255,7 +255,7 @@ procedure: |-
     }
     v3 = g_pEntitySystem;
     g_pGameEntitySystem = g_pEntitySystem;
-    v4 = *(int *)(g_pEntitySystem + 2960);
+    v4 = *(int *)(g_pEntitySystem + 2960);  // 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
     if ( (_DWORD)v4 == *(_DWORD *)(g_pEntitySystem + 2976) && (*(_DWORD *)(g_pEntitySystem + 2980) & 0x40000000) == 0 )
     {
       v5 = *(unsigned int *)(g_pEntitySystem + 2976);
@@ -288,7 +288,7 @@ procedure: |-
         *(_DWORD *)(v3 + 2980) = v11 & 0x3FFFFFFF;
       *(_DWORD *)(v3 + 2976) = v10;
     }
-    ++*(_DWORD *)(v3 + 2960);
+    ++*(_DWORD *)(v3 + 2960);  // 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
     *(_QWORD *)(*(_QWORD *)(v3 + 2968) + 8 * v4) = &off_181C16478;
     v12 = operator_new(4928);
     if ( v12 )
