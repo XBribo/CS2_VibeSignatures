@@ -1,29 +1,30 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEntitySystem_m_entityIONotifiers skill."""
+"""Preprocess script for find-CEntitySystem_m_sEntSystemName skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_STRUCT_MEMBER_NAMES = [
-    "CEntitySystem_m_entityIONotifiers",
+    "CEntitySystem_m_sEntSystemName",
 ]
 
 LLM_DECOMPILE = [
+    # (symbol_name, path_to_prompt, path_to_reference)
     (
-        "CEntitySystem_m_entityIONotifiers",
+        "CEntitySystem_m_sEntSystemName",
         "prompt/call_llm_decompile.md",
-        "references/server/CSource2EntitySystem_StaticInit.{platform}.yaml",
+        "references/server/CEntitySystem_Init.{platform}.yaml",
     ),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEntitySystem_m_entityIONotifiers",
+        "CEntitySystem_m_sEntSystemName",
         [
             "struct_name",
             "member_name",
             "offset",
-            "size",
+            #"size",
             "offset_sig",
             "offset_sig_disp",
         ],

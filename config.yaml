@@ -5085,16 +5085,6 @@ modules:
         expected_input:
           - CEntitySystem_CreateEntity.{platform}.yaml
 
-      - name: find-CEntitySystem_AddEntityToNameList
-        expected_output:
-          - CEntitySystem_AddEntityToNameList.{platform}.yaml
-
-      - name: find-CEntitySystem_m_entityNames
-        expected_output:
-          - CEntitySystem_m_entityNames.{platform}.yaml
-        expected_input:
-          - CEntitySystem_AddEntityToNameList.{platform}.yaml
-
       - name: find-CEntitySystem_OnAddEntity-AND-CEntityInstance_AddedToEntityDatabase
         expected_output:
           - CEntitySystem_OnAddEntity.{platform}.yaml
@@ -6261,10 +6251,9 @@ modules:
         expected_output:
           - CEntitySystem_Init.{platform}.yaml
 
-      - name: find-CEntitySystem_m_sEntSystemName-AND-CEntitySystem_m_entityComponentHelpers
+      - name: find-CEntitySystem_m_sEntSystemName
         expected_output:
           - CEntitySystem_m_sEntSystemName.{platform}.yaml
-          - CEntitySystem_m_entityComponentHelpers.{platform}.yaml
         expected_input:
           - CEntitySystem_Init.{platform}.yaml
 
@@ -6278,12 +6267,6 @@ modules:
 
       - name: find-CSource2EntitySystem_StaticInit
         expected_output:
-          - CSource2EntitySystem_StaticInit.{platform}.yaml
-
-      - name: find-CEntitySystem_m_entityIONotifiers
-        expected_output:
-          - CEntitySystem_m_entityIONotifiers.{platform}.yaml
-        expected_input:
           - CSource2EntitySystem_StaticInit.{platform}.yaml
 
       - name: find-IGameResourceService_SetEntityResourceManifestHandler-AND-g_pGameResourceService-AND-g_pGameEntitySystem
@@ -8145,21 +8128,6 @@ modules:
         alias:
           - CEntitySystem::AddEntityToEntityDataBase
 
-      - name: CEntitySystem_AddEntityToNameList
-        category: func
-        alias:
-          - CEntitySystem::AddEntityToNameList
-
-      - name: CEntitySystem_m_entityNames
-        category: structmember
-        struct: CEntitySystem
-        member: m_entityNames
-
-      - name: CEntitySystem_m_entityIONotifiers
-        category: structmember
-        struct: CEntitySystem
-        member: m_entityIONotifiers
-
       - name: CEntitySystem_OnAddEntity
         category: vfunc
         alias:
@@ -9608,11 +9576,6 @@ modules:
         struct: CEntitySystem
         member: m_sEntSystemName
 
-      - name: CEntitySystem_m_entityComponentHelpers
-        category: structmember
-        struct: CEntitySystem
-        member: m_entityComponentHelpers
-
       - name: CEntitySystem_ClearEntityDatabase
         category: vfunc
         alias:
@@ -10810,35 +10773,3 @@ cpp_tests:
       - fdump-record-layouts
     reference_modules:
       - SDL3 # bin/{gamever}/SDL3/SDL_Mouse_*.{platform}.yaml
-
-  - name: CEntitySystem_MSVC
-    symbol: CEntitySystem
-    alias_symbols:
-      - CGameEntitySystem
-    cpp: cpp_tests/centitysystem.cpp
-    headers:
-    - hl2sdk_cs2/public/entity2/entitysystem.h # This is for LLM agent
-    claude_permission_mode: acceptEdits
-    claude_allowed_tools: Read,Edit,MultiEdit,Write
-    target: x86_64-pc-windows-msvc
-    include_directories:
-      - cpp_tests/stubs
-      - hl2sdk_cs2/game/shared
-      - hl2sdk_cs2/public
-      - hl2sdk_cs2/public/mathlib
-      - hl2sdk_cs2/public/tier0
-      - hl2sdk_cs2/public/tier1
-    defines:
-      - COMPILER_MSVC=1
-      - COMPILER_MSVC64=1
-      - _MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION
-    additional_compiler_options:
-      - fms-extensions
-      - fms-compatibility
-      - Xclang
-      - fdump-vtable-layouts
-      - Xclang
-      - fdump-record-layouts
-    reference_modules:
-      - server # bin/{gamever}/server/{CEntitySystem,CGameEntitySystem}_*.{platform}.yaml
-      - client # bin/{gamever}/client/{CEntitySystem,CGameEntitySystem}_*.{platform}.yaml

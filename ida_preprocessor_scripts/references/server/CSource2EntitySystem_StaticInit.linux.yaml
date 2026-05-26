@@ -29,7 +29,7 @@ disasm_code: |-
   .text:00000000015BC6D9                 call    CEntitySystem_PostCreateEntitySystem
   .text:00000000015BC6DE                 lea     r13, g_pEntitySystem
   .text:00000000015BC6E5                 mov     rbx, [r13+0]
-  .text:00000000015BC6E9                 movsxd  r12, dword ptr [rbx+0B90h]  ; 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
+  .text:00000000015BC6E9                 movsxd  r12, dword ptr [rbx+0B90h]
   .text:00000000015BC6F0                 mov     cs:g_pGameEntitySystem, rbx
   .text:00000000015BC6F7                 mov     eax, r12d
   .text:00000000015BC6FA                 cmp     r12d, [rbx+0BA0h]
@@ -37,7 +37,7 @@ disasm_code: |-
   .text:00000000015BC707                 add     eax, 1
   .text:00000000015BC70A                 ; _QWORD
   .text:00000000015BC70A                 mov     edi, 1340h; _QWORD
-  .text:00000000015BC70F                 mov     [rbx+0B90h], eax  ; 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
+  .text:00000000015BC70F                 mov     [rbx+0B90h], eax
   .text:00000000015BC715                 mov     rax, [rbx+0B98h]
   .text:00000000015BC71C                 lea     rcx, off_24C9FE0
   .text:00000000015BC723                 mov     [rax+r12*8], rcx
@@ -210,7 +210,7 @@ disasm_code: |-
   .text:00000000015BCA30                 lea     rdi, [rbx+0B98h]
   .text:00000000015BCA37                 mov     esi, 1
   .text:00000000015BCA3C                 call    sub_11A8EC0
-  .text:00000000015BCA41                 mov     eax, [rbx+0B90h]  ; 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
+  .text:00000000015BCA41                 mov     eax, [rbx+0B90h]
   .text:00000000015BCA47                 jmp     loc_15BC707
   .text:00000000015BCA50                 mov     rdi, rbx
   .text:00000000015BCA53                 call    r15
@@ -268,7 +268,7 @@ procedure: |-
       CEntitySystem_PostCreateEntitySystem(v1, "server_entities", 0, 0, 0);
     }
     v2 = g_pEntitySystem;
-    v3 = *(int *)(g_pEntitySystem + 2960LL);  // 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
+    v3 = *(int *)(g_pEntitySystem + 2960LL);
     g_pGameEntitySystem = g_pEntitySystem;
     v4 = v3;
     if ( (_DWORD)v3 == *(_DWORD *)(g_pEntitySystem + 2976LL) )
@@ -276,7 +276,7 @@ procedure: |-
       sub_11A8EC0(g_pEntitySystem + 2968LL, 1);
       v4 = *(_DWORD *)(v2 + 2960);
     }
-    *(_DWORD *)(v2 + 2960) = v4 + 1;  // 0xB90 = 2960 = CEntitySystem::m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
+    *(_DWORD *)(v2 + 2960) = v4 + 1;
     *(_QWORD *)(*(_QWORD *)(v2 + 2968) + 8 * v3) = &off_24C9FE0;
     v5 = operator new(4928);
     sub_1569780(v5);
