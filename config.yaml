@@ -6840,6 +6840,26 @@ modules:
           - CEntitySaveRestoreBlockHandler_vtable.{platform}.yaml
           - CSaveRestoreBlockSet_PreRestore.{platform}.yaml
 
+      - name: find-CEntitySystem_ForceSetInPVSCallsIntoQueue
+        expected_output:
+          - CEntitySystem_ForceSetInPVSCallsIntoQueue.{platform}.yaml
+        expected_input:
+          - CEntitySaveRestoreBlockHandler_PreRestore.{platform}.yaml
+
+      - name: find-CEntitySystem_m_nSuppressDormancyChangeCount-AND-CEntitySystem_m_nExecuteQueuedCreationDepth-AND-CEntitySystem_ExecuteQueuedSetInPVS
+        expected_output:
+          - CEntitySystem_m_nSuppressDormancyChangeCount.{platform}.yaml
+          - CEntitySystem_m_nExecuteQueuedCreationDepth.{platform}.yaml
+          - CEntitySystem_ExecuteQueuedSetInPVS.{platform}.yaml
+        expected_input:
+          - CEntitySystem_ForceSetInPVSCallsIntoQueue.{platform}.yaml
+
+      - name: find-CEntitySystem_m_queuedDormancyChanges
+        expected_output:
+          - CEntitySystem_m_queuedDormancyChanges.{platform}.yaml
+        expected_input:
+          - CEntitySystem_ExecuteQueuedSetInPVS.{platform}.yaml
+
       - name: find-CEntitySaveRestoreBlockHandler_PostRestore
         expected_output:
           - CEntitySaveRestoreBlockHandler_PostRestore.{platform}.yaml
@@ -7354,6 +7374,37 @@ modules:
         category: vfunc
         alias:
           - CEntitySaveRestoreBlockHandler::PostRestore
+
+      - name: CEntitySystem_ForceSetInPVSCallsIntoQueue
+        category: func
+        alias:
+          - CEntitySystem::ForceSetInPVSCallsIntoQueue
+
+      - name: CEntitySystem_ExecuteQueuedSetInPVS
+        category: func
+        alias:
+          - CEntitySystem::ExecuteQueuedSetInPVS
+
+      - name: CEntitySystem_m_nSuppressDormancyChangeCount
+        category: structmember
+        struct: CEntitySystem
+        member: m_nSuppressDormancyChangeCount
+        alias:
+          - CEntitySystem::m_nSuppressDormancyChangeCount
+
+      - name: CEntitySystem_m_nExecuteQueuedCreationDepth
+        category: structmember
+        struct: CEntitySystem
+        member: m_nExecuteQueuedCreationDepth
+        alias:
+          - CEntitySystem::m_nExecuteQueuedCreationDepth
+
+      - name: CEntitySystem_m_queuedDormancyChanges
+        category: structmember
+        struct: CEntitySystem
+        member: m_queuedDormancyChanges
+        alias:
+          - CEntitySystem::m_queuedDormancyChanges
 
       - name: CEntitySystem_SetInPVS
         category: func

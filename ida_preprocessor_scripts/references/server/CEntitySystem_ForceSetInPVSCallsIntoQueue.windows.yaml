@@ -1,0 +1,36 @@
+func_name: CEntitySystem_ForceSetInPVSCallsIntoQueue
+func_va: '0x1811f7200'
+disasm_code: |-
+  .text:00000001811F7200                 mov     eax, [rcx+0BB8h]  ; 0BB8h = CEntitySystem::m_nSuppressDormancyChangeCount (structmember, struct=CEntitySystem, member=m_nSuppressDormancyChangeCount)
+  .text:00000001811F7206                 test    dl, dl
+  .text:00000001811F7208                 jz      short loc_1811F7213
+  .text:00000001811F720A                 inc     eax
+  .text:00000001811F720C                 mov     [rcx+0BB8h], eax  ; 0BB8h = CEntitySystem::m_nSuppressDormancyChangeCount (structmember, struct=CEntitySystem, member=m_nSuppressDormancyChangeCount)
+  .text:00000001811F7212                 retn
+  .text:00000001811F7213                 sub     eax, 1
+  .text:00000001811F7216                 mov     [rcx+0BB8h], eax  ; 0BB8h = CEntitySystem::m_nSuppressDormancyChangeCount (structmember, struct=CEntitySystem, member=m_nSuppressDormancyChangeCount)
+  .text:00000001811F721C                 jnz     short locret_1811F722B
+  .text:00000001811F721E                 cmp     dword ptr [rcx+0BC0h], 0  ; 0BC0h = CEntitySystem::m_nExecuteQueuedCreationDepth (structmember, struct=CEntitySystem, member=m_nExecuteQueuedCreationDepth)
+  .text:00000001811F7225                 jz      CEntitySystem_ExecuteQueuedSetInPVS
+  .text:00000001811F722B                 retn
+procedure: |-
+  __int64 __fastcall CEntitySystem_ForceSetInPVSCallsIntoQueue(__int64 a1, char a2)
+  {
+    int v2; // eax
+    __int64 result; // rax
+
+    v2 = *(_DWORD *)(a1 + 3000);                  // 3000 = 0xBB8 = CEntitySystem::m_nSuppressDormancyChangeCount (structmember, struct=CEntitySystem, member=m_nSuppressDormancyChangeCount)
+    if ( a2 )
+    {
+      result = (unsigned int)(v2 + 1);
+      *(_DWORD *)(a1 + 3000) = result;            // 3000 = 0xBB8 = CEntitySystem::m_nSuppressDormancyChangeCount (structmember, struct=CEntitySystem, member=m_nSuppressDormancyChangeCount)
+    }
+    else
+    {
+      result = (unsigned int)(v2 - 1);
+      *(_DWORD *)(a1 + 3000) = result;            // 3000 = 0xBB8 = CEntitySystem::m_nSuppressDormancyChangeCount (structmember, struct=CEntitySystem, member=m_nSuppressDormancyChangeCount)
+      if ( !(_DWORD)result && !*(_DWORD *)(a1 + 3008) )// 3008 = 0xBC0 = CEntitySystem::m_nExecuteQueuedCreationDepth (structmember, struct=CEntitySystem, member=m_nExecuteQueuedCreationDepth)
+        return CEntitySystem_ExecuteQueuedSetInPVS(a1);
+    }
+    return result;
+  }
