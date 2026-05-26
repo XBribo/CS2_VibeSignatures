@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-IGameResourceService_SetEntityResourceManifestHandler-AND-g_pGameResourceService-AND-g_pGameEntitySystem skill."""
+"""Preprocess script for find-CSource2EntitySystem_StaticInit-decompiles skill."""
 
 import os
 
@@ -7,11 +7,17 @@ from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
     "IGameResourceService_SetEntityResourceManifestHandler",
+    "CEntitySystem_EnableAutoDeletionExecution",
+    "CEntitySystem_InstallPostSpawnCallback",
 ]
 
 TARGET_GLOBALVAR_NAMES = [
     "g_pGameResourceService",
     "g_pGameEntitySystem",
+]
+
+TARGET_STRUCT_MEMBER_NAMES = [
+    "CEntitySystem_m_entityIONotifiers",
 ]
 
 FUNC_VTABLE_RELATIONS = [
@@ -57,13 +63,44 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "gv_inst_disp",
         ],
     ),
+    (
+        "CEntitySystem_m_entityIONotifiers",
+        [
+            "struct_name",
+            "member_name",
+            "offset",
+            "size",
+            "offset_sig",
+            "offset_sig_disp",
+        ],
+    ),
+    (
+        "CEntitySystem_EnableAutoDeletionExecution",
+        [
+            "func_name",
+            "func_sig",
+            "func_va",
+            "func_rva",
+            "func_size",
+        ],
+    ),
+    (
+        "CEntitySystem_InstallPostSpawnCallback",
+        [
+            "func_name",
+            "func_sig",
+            "func_va",
+            "func_rva",
+            "func_size",
+        ],
+    ),
 ]
 
 async def preprocess_skill(
     session, skill_name, expected_outputs, old_yaml_map,
     new_binary_dir, platform, image_base, llm_config=None, debug=False,
 ):
-    """Reuse previous gamever vfunc_sig/gv_sig to locate targets and write YAML."""
+    """Reuse previous gamever vfunc_sig/gv_sig/offset_sig to locate targets and write YAML."""
     module_name = os.path.basename(os.path.normpath(new_binary_dir)) if new_binary_dir else "server"
 
     llm_decompile = [
@@ -82,6 +119,21 @@ async def preprocess_skill(
             "prompt/call_llm_decompile.md",
             f"references/{module_name}/CSource2EntitySystem_StaticInit.{{platform}}.yaml",
         ),
+        (
+            "CEntitySystem_m_entityIONotifiers",
+            "prompt/call_llm_decompile.md",
+            f"references/{module_name}/CSource2EntitySystem_StaticInit.{{platform}}.yaml",
+        ),
+        (
+            "CEntitySystem_EnableAutoDeletionExecution",
+            "prompt/call_llm_decompile.md",
+            f"references/{module_name}/CSource2EntitySystem_StaticInit.{{platform}}.yaml",
+        ),
+        (
+            "CEntitySystem_InstallPostSpawnCallback",
+            "prompt/call_llm_decompile.md",
+            f"references/{module_name}/CSource2EntitySystem_StaticInit.{{platform}}.yaml",
+        ),
     ]
 
     return await preprocess_common_skill(
@@ -93,6 +145,7 @@ async def preprocess_skill(
         image_base=image_base,
         func_names=TARGET_FUNCTION_NAMES,
         gv_names=TARGET_GLOBALVAR_NAMES,
+        struct_member_names=TARGET_STRUCT_MEMBER_NAMES,
         func_vtable_relations=FUNC_VTABLE_RELATIONS,
         llm_decompile_specs=llm_decompile,
         llm_config=llm_config,

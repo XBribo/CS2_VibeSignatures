@@ -32,7 +32,7 @@ disasm_code: |-
   .text:000000018098F4A6                 call    CEntitySystem_PostCreateEntitySystem
   .text:000000018098F4AB                 mov     rbx, cs:g_pEntitySystem
   .text:000000018098F4B2                 mov     cs:g_pGameEntitySystem, rbx
-  .text:000000018098F4B9                 movsxd  r14, dword ptr [rbx+0B90h]
+  .text:000000018098F4B9                 movsxd  r14, dword ptr [rbx+0B90h]  ; 0B90h = CEntitySystem_m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
   .text:000000018098F4C0                 cmp     r14d, [rbx+0BA0h]
   .text:000000018098F4C7                 jnz     loc_18098F58F
   .text:000000018098F4CD                 test    dword ptr [rbx+0BA4h], 40000000h
@@ -178,7 +178,7 @@ disasm_code: |-
   .text:000000018098F773                 call    sub_1809771B0
   .text:000000018098F778                 mov     rcx, cs:g_pGameEntitySystem
   .text:000000018098F77F                 mov     dl, 1
-  .text:000000018098F781                 call    sub_1814B5020
+  .text:000000018098F781                 call    CEntitySystem_EnableAutoDeletionExecution
   .text:000000018098F786                 mov     rcx, cs:qword_1823275E8
   .text:000000018098F78D                 add     rcx, 8
   .text:000000018098F791                 mov     rax, [rcx]
@@ -196,13 +196,13 @@ disasm_code: |-
   .text:000000018098F7C4                 lea     rdx, [rbp+var_20]
   .text:000000018098F7C8                 lea     rax, sub_180950550
   .text:000000018098F7CF                 mov     [rbp+var_20], rax
-  .text:000000018098F7D3                 call    sub_1814BBE10
+  .text:000000018098F7D3                 call    CEntitySystem_InstallPostSpawnCallback
   .text:000000018098F7D8                 mov     rcx, cs:g_pGameResourceService
   .text:000000018098F7DF                 test    rcx, rcx
   .text:000000018098F7E2                 jz      short loc_18098F7F4
   .text:000000018098F7E4                 mov     rax, [rcx]
   .text:000000018098F7E7                 mov     rdx, cs:g_pGameEntitySystem
-  .text:000000018098F7EE                 call    qword ptr [rax+110h]  ; 110h = IGameResourceService_SetEntityResourceManifestHandler
+  .text:000000018098F7EE                 call    qword ptr [rax+110h]
   .text:000000018098F7F4                 mov     rax, cs:g_pEntitySystem
   .text:000000018098F7FB                 lea     rcx, [rbp+var_20]
   .text:000000018098F7FF                 mov     r14, cs:g_pGameEntitySystem
@@ -328,7 +328,7 @@ procedure: |-
     }
     v3 = g_pEntitySystem;
     g_pGameEntitySystem = g_pEntitySystem;
-    v4 = *(int *)(g_pEntitySystem + 2960);
+    v4 = *(int *)(g_pEntitySystem + 2960);  // 2960 = 0xB90 = CEntitySystem_m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
     if ( (_DWORD)v4 == *(_DWORD *)(g_pEntitySystem + 2976) && (*(_DWORD *)(g_pEntitySystem + 2980) & 0x40000000) == 0 )
     {
       v5 = *(unsigned int *)(g_pEntitySystem + 2976);
@@ -434,16 +434,16 @@ procedure: |-
       ((void (__fastcall *)(__int64, const char *))v15)(v12, v16);
     sub_1809771B0();
     LOBYTE(v17) = 1;
-    sub_1814B5020(g_pGameEntitySystem, v17);
+    CEntitySystem_EnableAutoDeletionExecution(g_pGameEntitySystem, v17);
     if ( (*(unsigned __int8 (__fastcall **)(__int64))(*(_QWORD *)(qword_1823275E8 + 8) + 168LL))(qword_1823275E8 + 8)
       || (*(unsigned __int8 (__fastcall **)(__int64))(*(_QWORD *)g_pVApplication + 176LL))(g_pVApplication) )
     {
       v28 = (__int64)sub_180964B60;
       v27 = (const char *)sub_180950550;
-      sub_1814BBE10(g_pGameEntitySystem, &v27);
+      CEntitySystem_InstallPostSpawnCallback(g_pGameEntitySystem, &v27);
     }
     if ( g_pGameResourceService )
-      (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)g_pGameResourceService + 272LL))(  // 272LL = 0x110 = IGameResourceService_SetEntityResourceManifestHandler
+      (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)g_pGameResourceService + 272LL))(
         g_pGameResourceService,
         g_pGameEntitySystem);
     v18 = g_pGameEntitySystem;

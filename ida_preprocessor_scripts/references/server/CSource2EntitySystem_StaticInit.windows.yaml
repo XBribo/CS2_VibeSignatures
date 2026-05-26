@@ -32,7 +32,7 @@ disasm_code: |-
   .text:0000000180B8D7A3                 call    CEntitySystem_PostCreateEntitySystem
   .text:0000000180B8D7A8                 mov     rbx, cs:g_pEntitySystem
   .text:0000000180B8D7AF                 mov     cs:g_pGameEntitySystem, rbx
-  .text:0000000180B8D7B6                 movsxd  r14, dword ptr [rbx+0B90h]
+  .text:0000000180B8D7B6                 movsxd  r14, dword ptr [rbx+0B90h]  ; 0B90h = CEntitySystem_m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
   .text:0000000180B8D7BD                 cmp     r14d, [rbx+0BA0h]
   .text:0000000180B8D7C4                 jnz     loc_180B8D88F
   .text:0000000180B8D7CA                 test    dword ptr [rbx+0BA4h], 40000000h
@@ -106,10 +106,10 @@ disasm_code: |-
   .text:0000000180B8D8F6                 mov     rdx, rax
   .text:0000000180B8D8F9                 mov     rcx, rdi
   .text:0000000180B8D8FC                 call    rbx
-  .text:0000000180B8D8FE                 call    sub_180B7AFE0
+  .text:0000000180B8D8FE                 call    CSpawnGroupEntityFilterRegistrar_RegisterSpawnGroupEntityFilters
   .text:0000000180B8D903                 mov     rcx, cs:g_pGameEntitySystem
   .text:0000000180B8D90A                 mov     dl, 1
-  .text:0000000180B8D90C                 call    sub_1811F3F90
+  .text:0000000180B8D90C                 call    CEntitySystem_EnableAutoDeletionExecution
   .text:0000000180B8D911                 mov     rcx, cs:qword_181F65210
   .text:0000000180B8D918                 add     rcx, 8
   .text:0000000180B8D91C                 mov     rax, [rcx]
@@ -127,13 +127,13 @@ disasm_code: |-
   .text:0000000180B8D94F                 lea     rdx, [rbp+var_20]
   .text:0000000180B8D953                 lea     rax, sub_180B56140
   .text:0000000180B8D95A                 mov     [rbp+var_20], rax
-  .text:0000000180B8D95E                 call    sub_1811FA800
+  .text:0000000180B8D95E                 call    CEntitySystem_InstallPostSpawnCallback
   .text:0000000180B8D963                 mov     rcx, cs:g_pGameResourceService
   .text:0000000180B8D96A                 test    rcx, rcx
   .text:0000000180B8D96D                 jz      short loc_180B8D97F
   .text:0000000180B8D96F                 mov     rax, [rcx]
   .text:0000000180B8D972                 mov     rdx, cs:g_pGameEntitySystem
-  .text:0000000180B8D979                 call    qword ptr [rax+110h]  ; 110h = IGameResourceService_SetEntityResourceManifestHandler
+  .text:0000000180B8D979                 call    qword ptr [rax+110h]
   .text:0000000180B8D97F                 mov     rax, cs:g_pEntitySystem
   .text:0000000180B8D986                 lea     rcx, [rbp+var_20]
   .text:0000000180B8D98A                 mov     r14, cs:g_pGameEntitySystem
@@ -255,7 +255,7 @@ procedure: |-
     }
     v3 = g_pEntitySystem;
     g_pGameEntitySystem = g_pEntitySystem;
-    v4 = *(int *)(g_pEntitySystem + 2960);
+    v4 = *(int *)(g_pEntitySystem + 2960);  // 2960 = 0xB90 = CEntitySystem_m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
     if ( (_DWORD)v4 == *(_DWORD *)(g_pEntitySystem + 2976) && (*(_DWORD *)(g_pEntitySystem + 2980) & 0x40000000) == 0 )
     {
       v5 = *(unsigned int *)(g_pEntitySystem + 2976);
@@ -300,18 +300,18 @@ procedure: |-
     v14 = *(void (__fastcall **)(__int64, __int64))(*(_QWORD *)v13 + 136LL);
     v15 = (*(__int64 (__fastcall **)(__int64))(*(_QWORD *)qword_181F65210 + 192LL))(qword_181F65210);
     v14(v13, v15);
-    sub_180B7AFE0();
-    sub_1811F3F90(g_pGameEntitySystem, 1);
+    CSpawnGroupEntityFilterRegistrar_RegisterSpawnGroupEntityFilters();
+    CEntitySystem_EnableAutoDeletionExecution(g_pGameEntitySystem, 1);
     if ( (*(unsigned __int8 (__fastcall **)(__int64))(*(_QWORD *)(qword_181F65210 + 8) + 168LL))(qword_181F65210 + 8)
       || (*(unsigned __int8 (__fastcall **)(__int64))(*(_QWORD *)g_pVApplication + 176LL))(g_pVApplication) )
     {
       v26 = (__int64)sub_180B68B10;
       v25 = sub_180B56140;
-      sub_1811FA800(g_pGameEntitySystem, (__int64 *)&v25);
+      CEntitySystem_InstallPostSpawnCallback(g_pGameEntitySystem, (__int64 *)&v25);
     }
     if ( g_pGameResourceService )
       (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)g_pGameResourceService
-                                               + 272LL))(// 272LL = 0x110 = IGameResourceService_SetEntityResourceManifestHandler
+                                               + 272LL))(// IGameResourceService_SetEntityResourceManifestHandler
         g_pGameResourceService,
         g_pGameEntitySystem);
     v16 = g_pGameEntitySystem;

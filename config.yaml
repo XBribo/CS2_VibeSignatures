@@ -2997,14 +2997,6 @@ modules:
         expected_output:
           - CSource2EntitySystem_StaticInit.{platform}.yaml
 
-      - name: find-IGameResourceService_SetEntityResourceManifestHandler-AND-g_pGameResourceService-AND-g_pGameEntitySystem
-        expected_output:
-          - IGameResourceService_SetEntityResourceManifestHandler.{platform}.yaml
-          - g_pGameResourceService.{platform}.yaml
-          - g_pGameEntitySystem.{platform}.yaml
-        expected_input:
-          - CSource2EntitySystem_StaticInit.{platform}.yaml
-
       - name: find-CSkeletonInstance_vtable
         expected_output:
           - CSkeletonInstance_vtable.{platform}.yaml
@@ -6269,14 +6261,17 @@ modules:
         expected_output:
           - CSource2EntitySystem_StaticInit.{platform}.yaml
 
-      - name: find-IGameResourceService_SetEntityResourceManifestHandler-AND-g_pGameResourceService-AND-g_pGameEntitySystem
+
+      - name: find-CSource2EntitySystem_StaticInit-decompiles
         expected_output:
           - IGameResourceService_SetEntityResourceManifestHandler.{platform}.yaml
           - g_pGameResourceService.{platform}.yaml
           - g_pGameEntitySystem.{platform}.yaml
+          - CEntitySystem_m_entityIONotifiers.{platform}.yaml
+          - CEntitySystem_EnableAutoDeletionExecution.{platform}.yaml
+          - CEntitySystem_InstallPostSpawnCallback.{platform}.yaml
         expected_input:
           - CSource2EntitySystem_StaticInit.{platform}.yaml
-
       - name: find-INetworkMessages_SetNetworkSerializationContextData-AND-IFlattenedSerializers_CreateFieldChangedEventQueue
         expected_output:
           - INetworkMessages_SetNetworkSerializationContextData.{platform}.yaml

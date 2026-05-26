@@ -27,7 +27,7 @@ disasm_code: |-
   .text:00000000015C0A9B                 call    CEntitySystem_PostCreateEntitySystem
   .text:00000000015C0AA0                 lea     r13, g_pEntitySystem
   .text:00000000015C0AA7                 mov     rbx, [r13+0]
-  .text:00000000015C0AAB                 movsxd  r12, dword ptr [rbx+0B90h]
+  .text:00000000015C0AAB                 movsxd  r12, dword ptr [rbx+0B90h]  ; 0B90h = CEntitySystem_m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
   .text:00000000015C0AB2                 mov     cs:g_pGameEntitySystem, rbx
   .text:00000000015C0AB9                 mov     eax, r12d
   .text:00000000015C0ABC                 cmp     r12d, [rbx+0BA0h]
@@ -101,7 +101,7 @@ disasm_code: |-
   .text:00000000015C0BED                 jnz     short loc_15C0BD0
   .text:00000000015C0BEF                 mov     rdi, cs:g_pGameEntitySystem
   .text:00000000015C0BF6                 mov     esi, 1
-  .text:00000000015C0BFB                 call    sub_2AFF180
+  .text:00000000015C0BFB                 call    CEntitySystem_EnableAutoDeletionExecution
   .text:00000000015C0C00                 mov     rax, cs:qword_465A318
   .text:00000000015C0C07                 lea     rdx, sub_1531B60
   .text:00000000015C0C0E                 lea     rdi, [rax+8]
@@ -122,7 +122,7 @@ disasm_code: |-
   .text:00000000015C0C52                 jz      short loc_15C0C64
   .text:00000000015C0C54                 mov     rax, [rdi]
   .text:00000000015C0C57                 mov     rsi, cs:g_pGameEntitySystem
-  .text:00000000015C0C5E                 call    qword ptr [rax+110h]  ; 110h = IGameResourceService_SetEntityResourceManifestHandler
+  .text:00000000015C0C5E                 call    qword ptr [rax+110h]
   .text:00000000015C0C64                 mov     rax, [r13+0]
   .text:00000000015C0C68                 lea     r12, sub_152AE70
   .text:00000000015C0C6F                 mov     rdi, cs:g_pGameEntitySystem
@@ -177,7 +177,7 @@ disasm_code: |-
   .text:00000000015C0D59                 mov     [rbp+var_38], rax
   .text:00000000015C0D5D                 lea     rax, sub_153EE00
   .text:00000000015C0D64                 mov     [rbp+var_40], rax
-  .text:00000000015C0D68                 call    sub_2AF98D0
+  .text:00000000015C0D68                 call    CEntitySystem_InstallPostSpawnCallback
   .text:00000000015C0D6D                 jmp     loc_15C0C45
   .text:00000000015C0D78                 lea     rdi, [rbx+0B98h]
   .text:00000000015C0D7F                 mov     esi, 1
@@ -195,7 +195,7 @@ disasm_code: |-
   .text:00000000015C0DC0                 lea     rax, sub_153EE00
   .text:00000000015C0DC7                 mov     rsi, rbx
   .text:00000000015C0DCA                 mov     [rbp+var_40], rax
-  .text:00000000015C0DCE                 call    sub_2AF98D0
+  .text:00000000015C0DCE                 call    CEntitySystem_InstallPostSpawnCallback
   .text:00000000015C0DD3                 jmp     loc_15C0C45
   .text:00000000015C0DE0                 mov     rdi, rbx
   .text:00000000015C0DE3                 call    r12
@@ -257,7 +257,7 @@ procedure: |-
       CEntitySystem_PostCreateEntitySystem(v1, "client_entities", 1, 1, 0);
     }
     v2 = g_pEntitySystem;
-    v3 = *(int *)(g_pEntitySystem + 2960LL);
+    v3 = *(int *)(g_pEntitySystem + 2960LL);  // 2960 = 0xB90 = CEntitySystem_m_entityIONotifiers (structmember, struct=CEntitySystem, member=m_entityIONotifiers)
     g_pGameEntitySystem = g_pEntitySystem;
     v4 = v3;
     if ( (_DWORD)v3 == *(_DWORD *)(g_pEntitySystem + 2976LL) )
@@ -297,7 +297,7 @@ procedure: |-
       ((void (__fastcall *)(__int64, const char *))v8)(v5, v10);
     for ( i = qword_465A2C8; i; i = *(_QWORD *)(i + 24) )
       sub_15BD4D0(g_pGameEntitySystem, *(_QWORD *)(i + 8), *(_QWORD *)i, *(unsigned int *)(i + 16));
-    sub_2AFF180(g_pGameEntitySystem, 1);
+    CEntitySystem_EnableAutoDeletionExecution(g_pGameEntitySystem, 1);
     v12 = *(__int64 (__fastcall **)())(*(_QWORD *)(qword_465A318 + 8) + 168LL);
     if ( v12 == sub_1531B60 || !((unsigned __int8 (__fastcall *)(__int64))v12)(qword_465A318 + 8) )
     {
@@ -306,7 +306,7 @@ procedure: |-
         v29 = 0;
         v28 = sub_152AE60;
         v27 = sub_153EE00;
-        ((void (__fastcall *)(__int64, __int64 (__fastcall **)(), __int64, __int64, __int64, __int64))sub_2AF98D0)(
+        ((void (__fastcall *)(__int64, __int64 (__fastcall **)(), __int64, __int64, __int64, __int64))CEntitySystem_InstallPostSpawnCallback)(
           g_pGameEntitySystem,
           &v27,
           v13,
@@ -320,11 +320,12 @@ procedure: |-
       v29 = 0;
       v28 = sub_152AE60;
       v27 = sub_153EE00;
-      ((void (__fastcall *)(__int64, __int64 (__fastcall **)()))sub_2AF98D0)(g_pGameEntitySystem, &v27);
+      ((void (__fastcall *)(__int64, __int64 (__fastcall **)()))CEntitySystem_InstallPostSpawnCallback)(g_pGameEntitySystem, &v27);
     }
     if ( g_pGameResourceService )
-      (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)g_pGameResourceService + 272LL))(  // 272LL = 0x110 = IGameResourceService_SetEntityResourceManifestHandler
-        g_pGameResourceService, g_pGameEntitySystem);
+      (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)g_pGameResourceService + 272LL))(
+        g_pGameResourceService,
+        g_pGameEntitySystem);
     sub_15C0990(g_pGameEntitySystem, *(unsigned int *)(g_pEntitySystem + 632LL));
     v28 = sub_152AE70;
     v29 = 0;
