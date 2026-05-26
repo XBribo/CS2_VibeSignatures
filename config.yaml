@@ -4674,6 +4674,19 @@ modules:
         expected_input:
           - ScriptBinding_Entity_SetEntityName.{platform}.yaml
 
+      - name: find-CEntitySystem_RemoveEntityFromNameMap-AND-CEntitySystem_AddEntityToNameMap
+        expected_output:
+          - CEntitySystem_RemoveEntityFromNameMap.{platform}.yaml
+          - CEntitySystem_AddEntityToNameMap.{platform}.yaml
+        expected_input:
+          - CEntityIdentity_SetEntityName.{platform}.yaml
+
+      - name: find-CEntitySystem_m_entityNames
+        expected_output:
+          - CEntitySystem_m_entityNames.{platform}.yaml
+        expected_input:
+          - CEntitySystem_AddEntityToNameMap.{platform}.yaml
+
       - name: find-ScriptBinding_Entity_SetEntityName
         expected_output:
           - ScriptBinding_Entity_SetEntityName.{platform}.yaml
@@ -7725,6 +7738,16 @@ modules:
         alias:
           - CEntityIdentity::SetEntityName
 
+      - name: CEntitySystem_RemoveEntityFromNameMap
+        category: func
+        alias:
+          - CEntitySystem::RemoveEntityFromNameMap
+
+      - name: CEntitySystem_AddEntityToNameMap
+        category: func
+        alias:
+          - CEntitySystem::AddEntityToNameMap
+
       - name: ScriptBinding_Entity_SetEntityName
         category: func
         alias:
@@ -8177,6 +8200,13 @@ modules:
         member: m_EntityList
         alias:
           - CEntitySystem::m_EntityList
+
+      - name: CEntitySystem_m_entityNames
+        category: structmember
+        struct: CEntitySystem
+        member: m_entityNames
+        alias:
+          - CEntitySystem::m_entityNames
 
       - name: CEntityIdentity_FreeAttributes
         category: func

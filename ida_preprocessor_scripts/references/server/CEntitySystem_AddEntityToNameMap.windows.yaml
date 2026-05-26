@@ -1,0 +1,280 @@
+func_name: CEntitySystem_AddEntityToNameMap
+func_va: '0x1811ed720'
+disasm_code: |-
+  .text:00000001811ED720                 push    rbp
+  .text:00000001811ED722                 push    rbx
+  .text:00000001811ED723                 push    rsi
+  .text:00000001811ED724                 mov     rbp, rsp
+  .text:00000001811ED727                 sub     rsp, 70h
+  .text:00000001811ED72B                 mov     rax, [rdx+18h]
+  .text:00000001811ED72F                 mov     rsi, rdx
+  .text:00000001811ED732                 mov     [rbp+arg_18], rax
+  .text:00000001811ED736                 mov     rbx, rcx
+  .text:00000001811ED739                 test    rax, rax
+  .text:00000001811ED73C                 jz      loc_1811ED94F
+  .text:00000001811ED742                 mov     [rsp+70h+arg_0], rdi
+  .text:00000001811ED74A                 lea     rax, [rbp+arg_18]
+  .text:00000001811ED74E                 lea     rdi, [rcx+0AF0h]  ; 0AF0h = CEntitySystem::m_entityNames (structmember, struct=CEntitySystem, member=m_entityNames)
+  .text:00000001811ED755                 mov     [rsp+70h+var_8], r14
+  .text:00000001811ED75A                 lea     rcx, [rdi+8]
+  .text:00000001811ED75E                 mov     [rsp+70h+var_10], r15
+  .text:00000001811ED763                 lea     r8, [rbp+var_50]
+  .text:00000001811ED767                 mov     [rbp+var_50], rdi
+  .text:00000001811ED76B                 lea     rdx, [rbp+arg_10]
+  .text:00000001811ED76F                 mov     [rbp+var_48], rax
+  .text:00000001811ED773                 mov     [rbp+var_40], rdi
+  .text:00000001811ED777                 call    sub_1811EA730
+  .text:00000001811ED77C                 mov     r15d, 0FFFFh
+  .text:00000001811ED782                 movzx   ecx, word ptr [rax+2]
+  .text:00000001811ED786                 cmp     cx, r15w
+  .text:00000001811ED78A                 jz      loc_1811ED842
+  .text:00000001811ED790                 xor     r8d, r8d
+  .text:00000001811ED793                 mov     r10d, 7FFFh
+  .text:00000001811ED799                 mov     r11d, r10d
+  .text:00000001811ED79C                 mov     edx, r8d
+  .text:00000001811ED79F                 and     r11w, [rbx+0AFAh]
+  .text:00000001811ED7A7                 jz      short loc_1811ED7B0
+  .text:00000001811ED7A9                 mov     rdx, [rbx+0B00h]
+  .text:00000001811ED7B0                 mov     eax, [rsi+30h]
+  .text:00000001811ED7B3                 lea     rcx, [rcx+rcx*2]
+  .text:00000001811ED7B7                 and     eax, 1
+  .text:00000001811ED7BA                 lea     r14, ds:0[rcx*8]
+  .text:00000001811ED7C2                 mov     ecx, [rsi+10h]
+  .text:00000001811ED7C5                 mov     r9d, ecx
+  .text:00000001811ED7C8                 mov     rdi, [r14+rdx+10h]
+  .text:00000001811ED7CD                 mov     edx, r8d
+  .text:00000001811ED7D0                 shr     r9d, 0Fh
+  .text:00000001811ED7D4                 sub     r9d, eax
+  .text:00000001811ED7D7                 mov     eax, ecx
+  .text:00000001811ED7D9                 and     eax, r10d
+  .text:00000001811ED7DC                 shl     r9d, 0Fh
+  .text:00000001811ED7E0                 cmp     ecx, 0FFFFFFFFh
+  .text:00000001811ED7E3                 cmovnz  r10d, eax
+  .text:00000001811ED7E7                 movsxd  rax, dword ptr [rdi]
+  .text:00000001811ED7EA                 or      r9d, r10d
+  .text:00000001811ED7ED                 test    eax, eax
+  .text:00000001811ED7EF                 jle     short loc_1811ED81E
+  .text:00000001811ED7F1                 mov     r10, rax
+  .text:00000001811ED7F4                 mov     rcx, r8
+  .text:00000001811ED7F7                 mov     rax, [rdi+8]
+  .text:00000001811ED7FB                 nop     dword ptr [rax+rax+00h]
+  .text:00000001811ED800                 cmp     [rax], r9d
+  .text:00000001811ED803                 jz      short loc_1811ED815
+  .text:00000001811ED805                 inc     edx
+  .text:00000001811ED807                 inc     rcx
+  .text:00000001811ED80A                 add     rax, 4
+  .text:00000001811ED80E                 cmp     rcx, r10
+  .text:00000001811ED811                 jl      short loc_1811ED800
+  .text:00000001811ED813                 jmp     short loc_1811ED81E
+  .text:00000001811ED815                 cmp     edx, 0FFFFFFFFh
+  .text:00000001811ED818                 jnz     loc_1811ED93D
+  .text:00000001811ED81E                 test    r11w, r11w
+  .text:00000001811ED822                 jz      short loc_1811ED82B
+  .text:00000001811ED824                 mov     r8, [rbx+0B00h]
+  .text:00000001811ED82B                 mov     rcx, [r14+r8+10h]
+  .text:00000001811ED830                 lea     rdx, [rbp+arg_8]
+  .text:00000001811ED834                 mov     [rbp+arg_8], r9d
+  .text:00000001811ED838                 call    sub_1811EE020
+  .text:00000001811ED83D                 jmp     loc_1811ED93D
+  .text:00000001811ED842                 mov     ecx, 20h ; ' '
+  .text:00000001811ED847                 call    operator_new
+  .text:00000001811ED84C                 xor     r8d, r8d
+  .text:00000001811ED84F                 mov     rbx, rax
+  .text:00000001811ED852                 test    rax, rax
+  .text:00000001811ED855                 jz      short loc_1811ED868
+  .text:00000001811ED857                 mov     [rax+8], r8
+  .text:00000001811ED85B                 mov     [rax+10h], r8
+  .text:00000001811ED85F                 mov     [rax], r8d
+  .text:00000001811ED862                 mov     [rax+18h], r8d
+  .text:00000001811ED866                 jmp     short loc_1811ED86B
+  .text:00000001811ED868                 mov     rbx, r8
+  .text:00000001811ED86B                 inc     dword ptr [rbx+18h]
+  .text:00000001811ED86E                 mov     r10d, 7FFFh
+  .text:00000001811ED874                 mov     ecx, [rsi+10h]
+  .text:00000001811ED877                 mov     edx, ecx
+  .text:00000001811ED879                 mov     eax, [rsi+30h]
+  .text:00000001811ED87C                 shr     edx, 0Fh
+  .text:00000001811ED87F                 and     eax, 1
+  .text:00000001811ED882                 sub     edx, eax
+  .text:00000001811ED884                 mov     eax, ecx
+  .text:00000001811ED886                 shl     edx, 0Fh
+  .text:00000001811ED889                 and     eax, r10d
+  .text:00000001811ED88C                 cmp     ecx, 0FFFFFFFFh
+  .text:00000001811ED88F                 mov     rcx, rbx
+  .text:00000001811ED892                 cmovnz  r10d, eax
+  .text:00000001811ED896                 or      edx, r10d
+  .text:00000001811ED899                 mov     [rbp+arg_8], edx
+  .text:00000001811ED89C                 lea     rdx, [rbp+arg_8]
+  .text:00000001811ED8A0                 call    sub_1811EE020
+  .text:00000001811ED8A5                 mov     rax, [rbp+arg_18]
+  .text:00000001811ED8A9                 lea     r8, [rbp+var_38]
+  .text:00000001811ED8AD                 mov     [rbp+var_50], rax
+  .text:00000001811ED8B1                 lea     rdx, [rbp+arg_8]
+  .text:00000001811ED8B5                 lea     rax, [rbp+var_50]
+  .text:00000001811ED8B9                 mov     [rbp+var_48], rbx
+  .text:00000001811ED8BD                 lea     rcx, [rdi+8]
+  .text:00000001811ED8C1                 mov     [rbp+var_28], rax
+  .text:00000001811ED8C5                 mov     [rbp+var_38], rdi
+  .text:00000001811ED8C9                 mov     byte ptr [rbp+var_30], 1
+  .text:00000001811ED8CD                 call    sub_1811EAC90
+  .text:00000001811ED8D2                 cmp     word ptr [rbp+arg_8+2], r15w
+  .text:00000001811ED8D7                 jz      short loc_1811ED91E
+  .text:00000001811ED8D9                 lea     rax, aCBuildworkerCs_1; "C:\\buildworker\\csgo_rel_win64\\build"...
+  .text:00000001811ED8E0                 mov     [rbp+var_20], 8B0h
+  .text:00000001811ED8E7                 mov     [rbp+var_38], rax
+  .text:00000001811ED8EB                 lea     rdx, aFoundExistingV_0; "Found existing value when inserting int"...
+  .text:00000001811ED8F2                 lea     rax, aCutlrbtreeStru_86; "CUtlRBTree<struct CUtlOrderedMapBase<cl"...
+  .text:00000001811ED8F9                 mov     [rbp+var_1C], 14h
+  .text:00000001811ED900                 mov     [rbp+var_30], rax
+  .text:00000001811ED904                 lea     rcx, [rbp+var_38]
+  .text:00000001811ED908                 lea     rax, aLink; "!link"
+  .text:00000001811ED90F                 mov     [rbp+var_28], rax
+  .text:00000001811ED913                 call    cs:?Assert_ConditionFailed@@YA_NAEBU_AssertCompileTimeConstantStruct_t@@PEBDZZ; Assert_ConditionFailed(_AssertCompileTimeConstantStruct_t const &,char const *,...)
+  .text:00000001811ED919                 test    al, al
+  .text:00000001811ED91B                 jz      short loc_1811ED91E
+  .text:00000001811ED91D                 ; Trap to Debugger
+  .text:00000001811ED91D                 int     3; Trap to Debugger
+  .text:00000001811ED91E                 mov     eax, [rbp+arg_8]
+  .text:00000001811ED921                 lea     r8, [rbp+var_50]
+  .text:00000001811ED925                 mov     [rbp+arg_10], eax
+  .text:00000001811ED928                 lea     rdx, [rbp+arg_10]
+  .text:00000001811ED92C                 movzx   eax, [rbp+arg_C]
+  .text:00000001811ED930                 lea     rcx, [rdi+8]
+  .text:00000001811ED934                 mov     [rbp+arg_14], ax
+  .text:00000001811ED938                 call    sub_1811E9AC0
+  .text:00000001811ED93D                 mov     r14, [rsp+70h+var_8]
+  .text:00000001811ED942                 mov     rdi, [rsp+70h+arg_0]
+  .text:00000001811ED94A                 mov     r15, [rsp+70h+var_10]
+  .text:00000001811ED94F                 add     rsp, 70h
+  .text:00000001811ED953                 pop     rsi
+  .text:00000001811ED954                 pop     rbx
+  .text:00000001811ED955                 pop     rbp
+  .text:00000001811ED956                 retn
+procedure: |-
+  _DWORD *__fastcall CEntitySystem_AddEntityToNameMap(__int64 a1, __int64 a2)
+  {
+    _DWORD *result; // rax
+    const char *v5; // rdi
+    __int64 v6; // rcx
+    __int64 v7; // r8
+    int v8; // r10d
+    __int64 v9; // rdx
+    __int64 v10; // r14
+    int *v11; // rdi
+    int v12; // edx
+    __int64 v13; // rcx
+    __int64 v14; // rcx
+    __int64 v15; // rax
+    __int64 v16; // rbx
+    int v17; // r10d
+    _DWORD *v18; // [rsp+20h] [rbp-50h] BYREF
+    _QWORD *v19; // [rsp+28h] [rbp-48h]
+    __int64 v20; // [rsp+30h] [rbp-40h]
+    const char *v21; // [rsp+38h] [rbp-38h] BYREF
+    const char *v22; // [rsp+40h] [rbp-30h]
+    const char *v23; // [rsp+48h] [rbp-28h]
+    int v24; // [rsp+50h] [rbp-20h]
+    int v25; // [rsp+54h] [rbp-1Ch]
+    int v26; // [rsp+98h] [rbp+28h] BYREF
+    __int16 v27; // [rsp+9Ch] [rbp+2Ch]
+    int v28; // [rsp+A0h] [rbp+30h] BYREF
+    __int16 v29; // [rsp+A4h] [rbp+34h]
+    _DWORD *v30; // [rsp+A8h] [rbp+38h] BYREF
+
+    result = *(_DWORD **)(a2 + 24);
+    v30 = result;
+    if ( result )
+    {
+      v5 = (const char *)(a1 + 2800);             // 2800 = 0xAF0 = CEntitySystem::m_entityNames (structmember, struct=CEntitySystem, member=m_entityNames)
+      v18 = (_DWORD *)(a1 + 2800);                // 2800 = 0xAF0 = CEntitySystem::m_entityNames (structmember, struct=CEntitySystem, member=m_entityNames)
+      v19 = &v30;
+      v20 = a1 + 2800;                            // 2800 = 0xAF0 = CEntitySystem::m_entityNames (structmember, struct=CEntitySystem, member=m_entityNames)
+      v6 = *(unsigned __int16 *)(sub_1811EA730(a1 + 2808, &v28, &v18) + 2);
+      if ( (_WORD)v6 == 0xFFFF )
+      {
+        v15 = operator_new(32);
+        v16 = v15;
+        if ( v15 )
+        {
+          *(_QWORD *)(v15 + 8) = 0;
+          *(_QWORD *)(v15 + 16) = 0;
+          *(_DWORD *)v15 = 0;
+          *(_DWORD *)(v15 + 24) = 0;
+        }
+        else
+        {
+          v16 = 0;
+        }
+        ++*(_DWORD *)(v16 + 24);
+        v17 = 0x7FFF;
+        if ( *(_DWORD *)(a2 + 16) != -1 )
+          v17 = *(_DWORD *)(a2 + 16) & 0x7FFF;
+        v26 = v17 | (((*(_DWORD *)(a2 + 16) >> 15) - (*(_DWORD *)(a2 + 48) & 1)) << 15);
+        sub_1811EE020(v16, &v26, 0);
+        v18 = v30;
+        v19 = (_QWORD *)v16;
+        v23 = (const char *)&v18;
+        v21 = v5;
+        LOBYTE(v22) = 1;
+        sub_1811EAC90(v5 + 8, &v26, &v21);
+        if ( HIWORD(v26) != 0xFFFF )
+        {
+          v24 = 2224;
+          v21 = "C:\\buildworker\\csgo_rel_win64\\build\\src\\public\\tier0\\utlrbtree.h";
+          v25 = 20;
+          v22 = "CUtlRBTree<struct CUtlOrderedMapBase<class CUtlSymbolLarge,class CEntityNameList *,class CDefLess<class CU"
+                "tlSymbolLarge>,unsigned short>::Node_t,class CUtlOrderedMapBase<class CUtlSymbolLarge,class CEntityNameLis"
+                "t *,class CDefLess<class CUtlSymbolLarge>,unsigned short>::CKeyLess,unsigned short,class CUtlLeanVector<st"
+                "ruct UtlRBTreeNode_t<struct CUtlOrderedMapBase<class CUtlSymbolLarge,class CEntityNameList *,class CDefLes"
+                "s<class CUtlSymbolLarge>,unsigned short>::Node_t,unsigned short>,unsigned short,class CMemAllocAllocator> >::Insert";
+          v23 = "!link";
+          if ( Assert_ConditionFailed(
+                 (const struct _AssertCompileTimeConstantStruct_t *)&v21,
+                 "Found existing value when inserting into tree - replacing existing value with new value. If this is inten"
+                 "ded behavior, use InsertOrReplace. If leaving existing values alone is intended, use InsertIfNotFound. If"
+                 " duplicate entries are intended, use InsertWithDupes.") )
+          {
+            __debugbreak();
+          }
+        }
+        v28 = v26;
+        v29 = v27;
+        return (_DWORD *)sub_1811E9AC0(v5 + 8, &v28, &v18);
+      }
+      else
+      {
+        v7 = 0;
+        v8 = 0x7FFF;
+        v9 = 0;
+        if ( (*(_WORD *)(a1 + 2810) & 0x7FFF) != 0 )
+          v9 = *(_QWORD *)(a1 + 2816);
+        v10 = 24 * v6;
+        v11 = *(int **)(24 * v6 + v9 + 16);
+        v12 = 0;
+        if ( *(_DWORD *)(a2 + 16) != -1 )
+          v8 = *(_DWORD *)(a2 + 16) & 0x7FFF;
+        if ( *v11 <= 0 )
+          goto LABEL_13;
+        v13 = 0;
+        result = *((_DWORD **)v11 + 1);
+        while ( *result != (v8 | (((*(_DWORD *)(a2 + 16) >> 15) - (*(_DWORD *)(a2 + 48) & 1)) << 15)) )
+        {
+          ++v12;
+          ++v13;
+          ++result;
+          if ( v13 >= *v11 )
+            goto LABEL_13;
+        }
+        if ( v12 == -1 )
+        {
+  LABEL_13:
+          if ( (*(_WORD *)(a1 + 2810) & 0x7FFF) != 0 )
+            v7 = *(_QWORD *)(a1 + 2816);
+          v14 = *(_QWORD *)(v10 + v7 + 16);
+          v26 = v8 | (((*(_DWORD *)(a2 + 16) >> 15) - (*(_DWORD *)(a2 + 48) & 1)) << 15);
+          return (_DWORD *)sub_1811EE020(v14, &v26, v7);
+        }
+      }
+    }
+    return result;
+  }

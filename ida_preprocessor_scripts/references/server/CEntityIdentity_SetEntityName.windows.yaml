@@ -1,0 +1,134 @@
+func_name: CEntityIdentity_SetEntityName
+func_va: '0x181218100'
+disasm_code: |-
+  .text:0000000181218100                 mov     [rsp+arg_8], rbx
+  .text:0000000181218105                 push    rdi
+  .text:0000000181218106                 sub     rsp, 20h
+  .text:000000018121810A                 mov     rbx, rcx
+  .text:000000018121810D                 mov     r8, rdx
+  .text:0000000181218110                 mov     rcx, cs:g_pEntitySystem
+  .text:0000000181218117                 lea     rdx, [rsp+28h+arg_0]
+  .text:000000018121811C                 call    sub_1811EED20
+  .text:0000000181218121                 mov     rdi, [rsp+28h+arg_0]
+  .text:0000000181218126                 cmp     [rbx+18h], rdi
+  .text:000000018121812A                 jz      loc_181218222
+  .text:0000000181218130                 test    dword ptr [rbx+30h], 4800h
+  .text:0000000181218137                 jnz     short loc_18121815D
+  .text:0000000181218139                 mov     rcx, cs:g_pEntitySystem
+  .text:0000000181218140                 mov     rdx, rbx
+  .text:0000000181218143                 call    CEntitySystem_RemoveEntityFromNameMap
+  .text:0000000181218148                 mov     [rbx+18h], rdi
+  .text:000000018121814C                 mov     rdx, rbx
+  .text:000000018121814F                 mov     rcx, cs:g_pEntitySystem
+  .text:0000000181218156                 call    CEntitySystem_AddEntityToNameMap
+  .text:000000018121815B                 jmp     short loc_181218161
+  .text:000000018121815D                 mov     [rbx+18h], rdi
+  .text:0000000181218161                 movzx   edx, cs:byte_1820B97B8
+  .text:0000000181218168                 test    dl, dl
+  .text:000000018121816A                 jz      loc_181218222
+  .text:0000000181218170                 test    rdi, rdi
+  .text:0000000181218173                 jnz     short loc_1812181A5
+  .text:0000000181218175                 cmp     dword ptr [rbx+14h], 0FFFFFFFFh
+  .text:0000000181218179                 jz      loc_181218222
+  .text:000000018121817F                 mov     edx, 0FFFFFFFFh
+  .text:0000000181218184                 lea     rcx, [rbx+14h]
+  .text:0000000181218188                 mov     r8d, 0FFFFFFFFh
+  .text:000000018121818E                 call    sub_180B6E400
+  .text:0000000181218193                 mov     dword ptr [rbx+14h], 0FFFFFFFFh
+  .text:000000018121819A                 mov     rbx, [rsp+28h+arg_8]
+  .text:000000018121819F                 add     rsp, 20h
+  .text:00000001812181A3                 pop     rdi
+  .text:00000001812181A4                 retn
+  .text:00000001812181A5                 mov     rcx, cs:qword_1820B97B0
+  .text:00000001812181AC                 test    rcx, rcx
+  .text:00000001812181AF                 jnz     short loc_1812181E9
+  .text:00000001812181B1                 mov     ecx, cs:dword_1820B9828
+  .text:00000001812181B7                 mov     edx, 3
+  .text:00000001812181BC                 call    cs:LoggingSystem_IsChannelEnabled
+  .text:00000001812181C2                 test    al, al
+  .text:00000001812181C4                 jz      short loc_181218222
+  .text:00000001812181C6                 mov     ecx, cs:dword_1820B9828
+  .text:00000001812181CC                 lea     r8, aCentityidentit; "CEntityIdentity::SetEntityName called, "...
+  .text:00000001812181D3                 mov     edx, 3
+  .text:00000001812181D8                 call    cs:LoggingSystem_Log
+  .text:00000001812181DE                 mov     rbx, [rsp+28h+arg_8]
+  .text:00000001812181E3                 add     rsp, 20h
+  .text:00000001812181E7                 pop     rdi
+  .text:00000001812181E8                 retn
+  .text:00000001812181E9                 mov     rax, [rbx+18h]
+  .text:00000001812181ED                 lea     r8, Src
+  .text:00000001812181F4                 test    rax, rax
+  .text:00000001812181F7                 cmovnz  r8, rax
+  .text:00000001812181FB                 mov     rax, [rcx]
+  .text:00000001812181FE                 xor     r9d, r9d
+  .text:0000000181218201                 call    qword ptr [rax+38h]
+  .text:0000000181218204                 mov     edi, eax
+  .text:0000000181218206                 cmp     [rbx+14h], eax
+  .text:0000000181218209                 jz      short loc_181218222
+  .text:000000018121820B                 mov     edx, 0FFFFFFFFh
+  .text:0000000181218210                 lea     rcx, [rbx+14h]
+  .text:0000000181218214                 mov     r8d, 0FFFFFFFFh
+  .text:000000018121821A                 call    sub_180B6E400
+  .text:000000018121821F                 mov     [rbx+14h], edi
+  .text:0000000181218222                 mov     rbx, [rsp+28h+arg_8]
+  .text:0000000181218227                 add     rsp, 20h
+  .text:000000018121822B                 pop     rdi
+  .text:000000018121822C                 retn
+procedure: |-
+  void __fastcall CEntityIdentity_SetEntityName(__int64 a1, __int64 a2)
+  {
+    __int64 v3; // rdi
+    char *v4; // r8
+    int v5; // edi
+    __int64 v6; // [rsp+30h] [rbp+8h] BYREF
+
+    sub_1811EED20(g_pEntitySystem, &v6, (_BYTE *)a2);
+    v3 = v6;
+    if ( *(_QWORD *)(a1 + 24) != v6 )
+    {
+      if ( (*(_DWORD *)(a1 + 48) & 0x4800) != 0 )
+      {
+        *(_QWORD *)(a1 + 24) = v6;
+      }
+      else
+      {
+        CEntitySystem_RemoveEntityFromNameMap(g_pEntitySystem, a1);
+        *(_QWORD *)(a1 + 24) = v3;
+        CEntitySystem_AddEntityToNameMap(g_pEntitySystem, a1);
+      }
+      if ( byte_1820B97B8 )
+      {
+        if ( v3 )
+        {
+          if ( qword_1820B97B0 )
+          {
+            v4 = Src;
+            if ( *(_QWORD *)(a1 + 24) )
+              v4 = *(char **)(a1 + 24);
+            v5 = (*(__int64 (__fastcall **)(__int64, _QWORD, char *, _QWORD))(*(_QWORD *)qword_1820B97B0 + 56LL))(
+                   qword_1820B97B0,
+                   (unsigned __int8)byte_1820B97B8,
+                   v4,
+                   0);
+            if ( *(_DWORD *)(a1 + 20) != v5 )
+            {
+              sub_180B6E400(a1 + 20, -1, -1);
+              *(_DWORD *)(a1 + 20) = v5;
+            }
+          }
+          else if ( (unsigned __int8)LoggingSystem_IsChannelEnabled((unsigned int)dword_1820B9828, 3) )
+          {
+            LoggingSystem_Log(
+              (unsigned int)dword_1820B9828,
+              3,
+              "CEntityIdentity::SetEntityName called, but there is no entity name string table pointer!\n");
+          }
+        }
+        else if ( *(_DWORD *)(a1 + 20) != -1 )
+        {
+          sub_180B6E400(a1 + 20, -1, -1);
+          *(_DWORD *)(a1 + 20) = -1;
+        }
+      }
+    }
+  }
