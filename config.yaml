@@ -4361,9 +4361,10 @@ modules:
         expected_input:
           - SV_Kill_SmokeGrenade_CommandHandler.{platform}.yaml
 
-      - name: find-CEntitySystem_ExecuteQueuedDeletion
+      - name: find-CEntitySystem_ExecuteQueuedDeletion-AND-CEntitySystem_m_nExecuteQueuedDeletionDepth
         expected_output:
           - CEntitySystem_ExecuteQueuedDeletion.{platform}.yaml
+          - CEntitySystem_m_nExecuteQueuedDeletionDepth.{platform}.yaml
         expected_input:
           - CEntitySystem_QueueDestroyEntity.{platform}.yaml
 
@@ -7609,6 +7610,13 @@ modules:
         category: func
         alias:
           - CEntitySystem::ExecuteQueuedDeletion
+
+      - name: CEntitySystem_m_nExecuteQueuedDeletionDepth
+        category: structmember
+        struct: CEntitySystem
+        member: m_nExecuteQueuedDeletionDepth
+        alias:
+          - CEntitySystem::m_nExecuteQueuedDeletionDepth
 
       - name: CBaseModelEntity_SetModel
         category: func
