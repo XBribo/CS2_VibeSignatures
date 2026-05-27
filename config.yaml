@@ -7072,6 +7072,12 @@ modules:
         expected_input:
           - CNetworkSerializerBindingBuildFilter_GetFieldPriority.{platform}.yaml
 
+      - name: find-CEntitySystem_m_entityComponentHelpers
+        expected_output:
+          - CEntitySystem_m_entityComponentHelpers.{platform}.yaml
+        expected_input:
+          - CEntitySystem_FindComponentTypeByName.{platform}.yaml
+
     symbols:
       - name: CSource2Server_vtable
         category: vtable
@@ -8416,6 +8422,13 @@ modules:
         member: m_entityNames
         alias:
           - CEntitySystem::m_entityNames
+
+      - name: CEntitySystem_m_entityComponentHelpers
+        category: structmember
+        struct: CEntitySystem
+        member: m_entityComponentHelpers
+        alias:
+          - CEntitySystem::m_entityComponentHelpers
 
       - name: CEntityIdentity_FreeAttributes
         category: func
