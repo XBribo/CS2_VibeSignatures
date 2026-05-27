@@ -7066,6 +7066,12 @@ modules:
         expected_input:
           - CNetworkSerializerBindingBuildFilter_vtable.{platform}.yaml
 
+      - name: find-CEntitySystem_FindComponentTypeByName
+        expected_output:
+          - CEntitySystem_FindComponentTypeByName.{platform}.yaml
+        expected_input:
+          - CNetworkSerializerBindingBuildFilter_GetFieldPriority.{platform}.yaml
+
     symbols:
       - name: CSource2Server_vtable
         category: vtable
@@ -10554,6 +10560,11 @@ modules:
         category: vfunc
         alias:
           - CNetworkSerializerBindingBuildFilter::GetFieldPriority
+
+      - name: CEntitySystem_FindComponentTypeByName
+        category: func
+        alias:
+          - CEntitySystem::FindComponentTypeByName
 
   - name: engine # Execute skills for engine2.dll again after client.dll
     path_windows: game/bin/win64/engine2.dll
