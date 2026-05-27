@@ -5500,6 +5500,13 @@ modules:
         expected_input:
           - CEntitySystem_DestroyEntityImmediate.{platform}.yaml
 
+      - name: find-CEntitySystem_m_nSuppressDestroyImmediateCount-AND-CEntitySystem_m_nSuppressAutoDeletionExecutionCount
+        expected_output:
+          - CEntitySystem_m_nSuppressDestroyImmediateCount.{platform}.yaml
+          - CEntitySystem_m_nSuppressAutoDeletionExecutionCount.{platform}.yaml
+        expected_input:
+          - CEntitySystem_DestroyEntityImmediate.{platform}.yaml
+
       - name: find-CEntitySystem_OnRemoveEntity
         expected_output:
           - CEntitySystem_OnRemoveEntity.{platform}.yaml
@@ -9819,6 +9826,16 @@ modules:
         category: structmember
         struct: CEntitySystem
         member: m_eNetworkSerializationMode
+
+      - name: CEntitySystem_m_nSuppressDestroyImmediateCount
+        category: structmember
+        struct: CEntitySystem
+        member: m_nSuppressDestroyImmediateCount
+
+      - name: CEntitySystem_m_nSuppressAutoDeletionExecutionCount
+        category: structmember
+        struct: CEntitySystem
+        member: m_nSuppressAutoDeletionExecutionCount
 
       - name: CEntitySystem_ClearEntityDatabase
         category: vfunc
