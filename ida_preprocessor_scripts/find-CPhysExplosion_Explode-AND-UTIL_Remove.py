@@ -40,9 +40,11 @@ GENERATE_YAML_DESIRED_FIELDS = [
         "UTIL_Remove",
         [
             "func_name",
+            "func_sig",
             "func_va",
             "func_rva",
             "func_size",
+            "func_sig_allow_across_function_boundary:true",
         ],
     ),
 ]
