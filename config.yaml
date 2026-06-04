@@ -5365,6 +5365,22 @@ modules:
         expected_input:
           - CCSPlayerPawn_vtable.{platform}.yaml
 
+      - name: find-CCSPlayerPawn_SprayPaint
+        expected_output:
+          - CCSPlayerPawn_SprayPaint.{platform}.yaml
+
+      - name: find-CEntitySpawner_CPlayerSprayDecal_Spawn
+        expected_output:
+          - CEntitySpawner_CPlayerSprayDecal_Spawn.{platform}.yaml
+        expected_input:
+          - CCSPlayerPawn_SprayPaint.{platform}.yaml
+
+      - name: find-CEntitySystem_m_EntityKeyValuesAllocator
+        expected_output:
+          - CEntitySystem_m_EntityKeyValuesAllocator.{platform}.yaml
+        expected_input:
+          - CEntitySpawner_CPlayerSprayDecal_Spawn.{platform}.yaml
+
       - name: find-CCSPlayerController_HandleCommandDrop
         expected_output:
           - CCSPlayerController_HandleCommandDrop.{platform}.yaml
@@ -8620,6 +8636,21 @@ modules:
         category: vfunc
         alias:
           - CCSPlayerPawn::ClientCommand
+
+      - name: CCSPlayerPawn_SprayPaint
+        category: func
+        alias:
+          - CCSPlayerPawn::SprayPaint
+
+      - name: CEntitySpawner_CPlayerSprayDecal_Spawn
+        category: func
+        alias:
+          - CEntitySpawner<CPlayerSprayDecal>::Spawn
+
+      - name: CEntitySystem_m_EntityKeyValuesAllocator
+        category: structmember
+        struct: CEntitySystem
+        member: m_EntityKeyValuesAllocator
 
       - name: CCSPlayerController_HandleCommandDrop
         category: func
