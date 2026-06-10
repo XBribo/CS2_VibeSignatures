@@ -52,7 +52,7 @@ disasm_code: |-
   .text:0000000001534CA7                 call    rax
   .text:0000000001534CA9                 test    al, al
   .text:0000000001534CAB                 jz      short loc_1534C3E
-  .text:0000000001534CAD                 add     dword ptr [r14+20A4h], 1
+  .text:0000000001534CAD                 add     dword ptr [r14+20A4h], 1; 8356 = 0x20A4 = CGameEntitySystem::m_iNonNetworkedSavedEntCount (structmember, struct=CGameEntitySystem, member=m_iNonNetworkedSavedEntCount)
   .text:0000000001534CB5                 jmp     short loc_1534C3E
 procedure: |-
   void __fastcall CGameEntitySystem_OnAddEntity(__int64 a1, __int64 a2, int a3)
@@ -69,7 +69,7 @@ procedure: |-
         return;
       v8 = *(__int64 (__fastcall **)())(*(_QWORD *)a2 + 872LL);
       if ( v8 != sub_9B0860 && ((unsigned __int8 (__fastcall *)(__int64))v8)(a2) )
-        ++*(_DWORD *)(a1 + 8356);
+        ++*(_DWORD *)(a1 + 8356);// 8356 = 0x20A4 = CGameEntitySystem::m_iNonNetworkedSavedEntCount (structmember, struct=CGameEntitySystem, member=m_iNonNetworkedSavedEntCount)
     }
     else
     {

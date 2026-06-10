@@ -5141,9 +5141,10 @@ modules:
           - CEntitySystem_AddEntityToEntityDataBase.{platform}.yaml
           - CGameEntitySystem_vtable.{platform}.yaml
 
-      - name: find-CGameEntitySystem_m_iNetworkedEntCount
+      - name: find-CGameEntitySystem_m_iNetworkedEntCount-AND-CGameEntitySystem_m_iNonNetworkedSavedEntCount
         expected_output:
           - CGameEntitySystem_m_iNetworkedEntCount.{platform}.yaml
+          - CGameEntitySystem_m_iNonNetworkedSavedEntCount.{platform}.yaml
         expected_input:
           - CGameEntitySystem_OnAddEntity.{platform}.yaml
 
@@ -9339,6 +9340,11 @@ modules:
         category: structmember
         struct: CGameEntitySystem
         member: m_iNetworkedEntCount
+
+      - name: CGameEntitySystem_m_iNonNetworkedSavedEntCount
+        category: structmember
+        struct: CGameEntitySystem
+        member: m_iNonNetworkedSavedEntCount
 
       - name: CGameEntitySystem_BuildResourceManifest_ManifestNameOrGroupName
         category: vfunc
