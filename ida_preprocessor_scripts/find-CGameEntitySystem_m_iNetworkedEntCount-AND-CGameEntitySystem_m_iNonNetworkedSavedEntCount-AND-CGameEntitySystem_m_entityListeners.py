@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CGameEntitySystem_m_iNetworkedEntCount-AND-CGameEntitySystem_m_iNonNetworkedSavedEntCount skill."""
+"""Preprocess script for find-CGameEntitySystem_m_iNetworkedEntCount-AND-CGameEntitySystem_m_iNonNetworkedSavedEntCount-AND-CGameEntitySystem_m_entityListeners skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_STRUCT_MEMBER_NAMES = [
     "CGameEntitySystem_m_iNetworkedEntCount",
     "CGameEntitySystem_m_iNonNetworkedSavedEntCount",
+    "CGameEntitySystem_m_entityListeners",
 ]
 
 LLM_DECOMPILE = [
@@ -17,6 +18,11 @@ LLM_DECOMPILE = [
     ),
     (
         "CGameEntitySystem_m_iNonNetworkedSavedEntCount",
+        "prompt/call_llm_decompile.md",
+        "references/server/CGameEntitySystem_OnAddEntity.{platform}.yaml",
+    ),
+    (
+        "CGameEntitySystem_m_entityListeners",
         "prompt/call_llm_decompile.md",
         "references/server/CGameEntitySystem_OnAddEntity.{platform}.yaml",
     ),
@@ -37,6 +43,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
     (
         "CGameEntitySystem_m_iNonNetworkedSavedEntCount",
+        [
+            "struct_name",
+            "member_name",
+            "offset",
+            "size",
+            "offset_sig",
+            "offset_sig_disp",
+        ],
+    ),
+    (
+        "CGameEntitySystem_m_entityListeners",
         [
             "struct_name",
             "member_name",

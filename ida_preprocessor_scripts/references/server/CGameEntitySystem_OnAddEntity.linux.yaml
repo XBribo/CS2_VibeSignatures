@@ -18,7 +18,8 @@ disasm_code: |-
   .text:0000000001534C32                 add     dword ptr [rdi+20A0h], 1; 8352 = 0x20A0 = CGameEntitySystem::m_iNetworkedEntCount (structmember, struct=CGameEntitySystem, member=m_iNetworkedEntCount)
   .text:0000000001534C39                 test    rsi, rsi
   .text:0000000001534C3C                 jz      short loc_1534C7C
-  .text:0000000001534C3E                 movsxd  rax, dword ptr [r14+20D0h]
+  .text:0000000001534C3E                 ; 8400 = 0x20D0 = CGameEntitySystem::m_entityListeners (structmember, struct=CGameEntitySystem, member=m_entityListeners)
+  .text:0000000001534C3E                 movsxd  rax, dword ptr [r14+20D0h]; 8400 = 0x20D0 = CGameEntitySystem::m_entityListeners (structmember, struct=CGameEntitySystem, member=m_entityListeners)
   .text:0000000001534C45                 mov     edx, eax
   .text:0000000001534C47                 sub     edx, 1
   .text:0000000001534C4A                 js      short loc_1534C7C
@@ -77,7 +78,7 @@ procedure: |-
       if ( !a2 )
         return;
     }
-    v4 = *(_DWORD *)(a1 + 8400) - 1;
+    v4 = *(_DWORD *)(a1 + 8400) - 1;// 8400 = 0x20D0 = CGameEntitySystem::m_entityListeners (structmember, struct=CGameEntitySystem, member=m_entityListeners)
     if ( v4 >= 0 )
     {
       v5 = 8LL * v4;

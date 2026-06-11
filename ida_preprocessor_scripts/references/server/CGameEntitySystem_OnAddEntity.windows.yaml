@@ -26,7 +26,8 @@ disasm_code: |-
   .text:0000000180B6F4BB                 test    al, al
   .text:0000000180B6F4BD                 jz      short loc_180B6F4C5
   .text:0000000180B6F4BF                 inc     dword ptr [rdi+2094h]; 8340 = 0x2094 = CGameEntitySystem::m_iNonNetworkedSavedEntCount (structmember, struct=CGameEntitySystem, member=m_iNonNetworkedSavedEntCount)
-  .text:0000000180B6F4C5                 mov     eax, [rdi+20C0h]
+  .text:0000000180B6F4C5                 ; 8384 = 0x20C0 = CGameEntitySystem::m_entityListeners (structmember, struct=CGameEntitySystem, member=m_entityListeners)
+  .text:0000000180B6F4C5                 mov     eax, [rdi+20C0h]; 8384 = 0x20C0 = CGameEntitySystem::m_entityListeners (structmember, struct=CGameEntitySystem, member=m_entityListeners)
   .text:0000000180B6F4CB                 sub     eax, 1
   .text:0000000180B6F4CE                 mov     [rsp+28h+arg_0], rbx
   .text:0000000180B6F4D3                 movsxd  rbx, eax
@@ -69,7 +70,7 @@ procedure: |-
       if ( !a2 )
         return result;
     }
-    result = (unsigned int)(*(_DWORD *)(a1 + 8384) - 1);
+    result = (unsigned int)(*(_DWORD *)(a1 + 8384) - 1);// 8384 = 0x20C0 = CGameEntitySystem::m_entityListeners (structmember, struct=CGameEntitySystem, member=m_entityListeners)
     for ( i = (int)result; i >= 0; --i )
     {
       v8 = *(__int64 (__fastcall ****)(_QWORD, __int64))(*(_QWORD *)(a1 + 8392) + 8 * i);
