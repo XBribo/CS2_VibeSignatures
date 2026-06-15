@@ -170,3 +170,38 @@ jobs:
           tag_name: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}
           name: gamedata-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}
           files: gamedata-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}.7z
+
+      - name: Clean temporary IDA database files
+        if: always()
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PERSISTED_WORKSPACE)) {
+            Write-Host "PERSISTED_WORKSPACE is not configured; skipping temporary IDA database cleanup."
+            exit 0
+          }
+
+          if ([string]::IsNullOrWhiteSpace($env:GAMEVER)) {
+            Write-Host "GAMEVER is not configured; skipping temporary IDA database cleanup."
+            exit 0
+          }
+
+          $targetDirs = @(
+            (Join-Path $env:PERSISTED_WORKSPACE "bin\$($env:GAMEVER)")
+            (Join-Path $env:PERSISTED_WORKSPACE "bin\gamever\$($env:GAMEVER)")
+          )
+          $extensions = @("*.id0", "*.id1", "*.id2", "*.nam", "*.til")
+
+          foreach ($targetDir in $targetDirs) {
+            if (-not (Test-Path -LiteralPath $targetDir -PathType Container)) {
+              Write-Host "Temporary IDA database cleanup target does not exist: $targetDir"
+              continue
+            }
+
+            foreach ($extension in $extensions) {
+              Get-ChildItem -LiteralPath $targetDir -Directory |
+                ForEach-Object {
+                  Get-ChildItem -LiteralPath $_.FullName -Filter $extension -File -Force -ErrorAction SilentlyContinue |
+                    ForEach-Object { Remove-Item -LiteralPath $_.FullName -Force }
+                }
+            }
+          }
