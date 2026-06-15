@@ -4155,6 +4155,10 @@ modules:
         expected_input:
           - CGameMoney_vtable.{platform}.yaml
 
+      - name: find-CGameMoney_m_DataMap
+        expected_output:
+          - CGameMoney_m_DataMap.{platform}.yaml
+
       - name: find-CCSPlayer_ItemServices_vtable
         expected_output:
           - CCSPlayer_ItemServices_vtable.{platform}.yaml
@@ -7268,6 +7272,11 @@ modules:
         category: func
         alias:
           - CGameMoney::OnMoneySpent
+
+      - name: CGameMoney_m_DataMap
+        category: gv
+        alias:
+          - CGameMoney::m_DataMap
 
       - name: CCSPlayer_ItemServices_vtable
         category: vtable
