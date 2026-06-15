@@ -4149,6 +4149,12 @@ modules:
         expected_output:
           - CGameMoney_vtable.{platform}.yaml
 
+      - name: find-CGameMoney_OnMoneySpent
+        expected_output:
+          - CGameMoney_OnMoneySpent.{platform}.yaml
+        expected_input:
+          - CGameMoney_vtable.{platform}.yaml
+
       - name: find-CCSPlayer_ItemServices_vtable
         expected_output:
           - CCSPlayer_ItemServices_vtable.{platform}.yaml
@@ -6997,6 +7003,13 @@ modules:
           - EntityInstanceAssignChangeAccessorPathIds.{platform}.yaml
           - CEntityInstance_vtable.{platform}.yaml
 
+      - name: find-CEntityInstance_Schema_DynamicBinding
+        expected_output:
+          - CEntityInstance_Schema_DynamicBinding.{platform}.yaml
+        expected_input:
+          - CGameMoney_OnMoneySpent.{platform}.yaml
+          - CEntityInstance_vtable.{platform}.yaml
+
       - name: find-CNavPhysicsInterface_vtable
         expected_output:
           - CNavPhysicsInterface_vtable.{platform}.yaml
@@ -7250,6 +7263,11 @@ modules:
 
       - name: CGameMoney_vtable
         category: vtable
+
+      - name: CGameMoney_OnMoneySpent
+        category: func
+        alias:
+          - CGameMoney::OnMoneySpent
 
       - name: CCSPlayer_ItemServices_vtable
         category: vtable
@@ -10162,6 +10180,11 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::OnSetDormant
+
+      - name: CEntityInstance_Schema_DynamicBinding
+        category: vfunc
+        alias:
+          - CEntityInstance::Schema_DynamicBinding
 
       - name: CEntitySystem_OnRemoveEntity
         category: vfunc
