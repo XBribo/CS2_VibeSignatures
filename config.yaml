@@ -5168,6 +5168,7 @@ modules:
           - CEntitySystem_GetSpawnGroupWorldId.{platform}.yaml
           - CEntitySystem_FindClassByDesignName.{platform}.yaml
           - CEntitySystem_m_EntityList.{platform}.yaml
+          - CEntitySystem_m_hActiveSpawnGroup.{platform}.yaml
           - CEntityIdentity_FreeAttributes.{platform}.yaml
           - CConcreteEntityList_FreeEntity.{platform}.yaml
         expected_input:

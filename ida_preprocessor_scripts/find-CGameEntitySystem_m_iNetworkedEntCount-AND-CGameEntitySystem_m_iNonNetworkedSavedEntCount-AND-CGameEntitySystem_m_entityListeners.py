@@ -39,6 +39,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "size",
             "offset_sig",
             "offset_sig_disp",
+            "offset_sig_allow_across_function_boundary:true",
         ],
     ),
     (
@@ -50,6 +51,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "size",
             "offset_sig",
             "offset_sig_disp",
+            "offset_sig_allow_across_function_boundary:true",
         ],
     ),
     (
@@ -58,9 +60,10 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            "size",
+            #"size",
             "offset_sig",
             "offset_sig_disp",
+            "offset_sig_allow_across_function_boundary:true",
         ],
     ),
 ]
