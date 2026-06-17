@@ -5445,6 +5445,12 @@ modules:
         expected_output:
           - CEntityKeyValues_LoadFromContext.{platform}.yaml
 
+      - name: find-CEntityKeyValues_Initialized
+        expected_output:
+          - CEntityKeyValues_Initialized.{platform}.yaml
+        expected_input:
+          - CEntityKeyValues_LoadFromContext.{platform}.yaml
+
       - name: find-CCSPlayerController_HandleCommandDrop
         expected_output:
           - CCSPlayerController_HandleCommandDrop.{platform}.yaml
@@ -8775,6 +8781,11 @@ modules:
         category: func
         alias:
           - CEntityKeyValues::LoadFromContext
+
+      - name: CEntityKeyValues_Initialized
+        category: func
+        alias:
+          - CEntityKeyValues::Initialized
 
       - name: CCSPlayerController_HandleCommandDrop
         category: func

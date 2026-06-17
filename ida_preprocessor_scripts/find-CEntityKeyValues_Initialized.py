@@ -1,32 +1,25 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEntityKeyValues_LoadFromContext skill."""
+"""Preprocess script for find-CEntityKeyValues_Initialized skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CEntityKeyValues_LoadFromContext",
+    "CEntityKeyValues_Initialized",
 ]
 
-FUNC_XREFS = [
-    {
-        "func_name": "CEntityKeyValues_LoadFromContext",
-        "xref_strings": [
-            "CEntityKeyValues::LoadFromContext: Invalid version! Expected %d, encountered %d!\n",
-        ],
-        "xref_gvs": [],
-        "xref_signatures": [],
-        "xref_funcs": [],
-        "exclude_funcs": [],
-        "exclude_strings": [],
-        "exclude_gvs": [],
-        "exclude_signatures": [],
-    },
+LLM_DECOMPILE = [
+    # (symbol_name, path_to_prompt, path_to_reference)
+    (
+        "CEntityKeyValues_Initialized",
+        "prompt/call_llm_decompile.md",
+        "references/server/CEntityKeyValues_LoadFromContext.{platform}.yaml",
+    ),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEntityKeyValues_LoadFromContext",
+        "CEntityKeyValues_Initialized",
         [
             "func_name",
             "func_sig",
@@ -39,7 +32,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
 
 async def preprocess_skill(
     session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    new_binary_dir, platform, image_base, llm_config=None, debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(
@@ -50,7 +43,8 @@ async def preprocess_skill(
         platform=platform,
         image_base=image_base,
         func_names=TARGET_FUNCTION_NAMES,
-        func_xrefs=FUNC_XREFS,
+        llm_decompile_specs=LLM_DECOMPILE,
+        llm_config=llm_config,
         generate_yaml_desired_fields=GENERATE_YAML_DESIRED_FIELDS,
         debug=debug,
     )
