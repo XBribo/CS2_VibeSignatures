@@ -303,7 +303,8 @@ disasm_code: |-
   .text:0000000001E7C8FD                 movsxd  rdx, r14d
   .text:0000000001E7C900                 mov     [rax+rdx*8], r13
   .text:0000000001E7C904                 lea     rax, g_pFlattenedSerializers
-  .text:0000000001E7C90B                 mov     rdx, [rbx+0C98h]
+  .text:0000000001E7C90B                 ; 3224 = 0xC98 = CEntitySystem::m_pFieldChangeLimitSpew (structmember, struct=CEntitySystem, member=m_pFieldChangeLimitSpew)
+  .text:0000000001E7C90B                 mov     rdx, [rbx+0C98h]; 3224 = 0xC98 = CEntitySystem::m_pFieldChangeLimitSpew (structmember, struct=CEntitySystem, member=m_pFieldChangeLimitSpew)
   .text:0000000001E7C912                 ; 3216 = 0xC90 = CEntitySystem::m_pNetworkFieldScratchData (structmember, struct=CEntitySystem, member=m_pNetworkFieldScratchData)
   .text:0000000001E7C912                 mov     rsi, [rbx+0C90h]; 3216 = 0xC90 = CEntitySystem::m_pNetworkFieldScratchData (structmember, struct=CEntitySystem, member=m_pNetworkFieldScratchData)
   .text:0000000001E7C919                 mov     rdi, [rax]
@@ -958,7 +959,7 @@ procedure: |-
                                                                    + 280LL))(// 0x118 = 280LL = IFlattenedSerializers_CreateFieldChangedEventQueue
                  g_pFlattenedSerializers,
                  *(_QWORD *)(a1 + 3216),          // 3216 = 0xC90 = CEntitySystem::m_pNetworkFieldScratchData (structmember, struct=CEntitySystem, member=m_pNetworkFieldScratchData)
-                 *(_QWORD *)(a1 + 3224));
+                 *(_QWORD *)(a1 + 3224));          // 3224 = 0xC98 = CEntitySystem::m_pFieldChangeLimitSpew (structmember, struct=CEntitySystem, member=m_pFieldChangeLimitSpew)
       *(_QWORD *)(a1 + 3208) = result;            // 3208 = 0xC88 = CEntitySystem::m_pNetworkFieldChangedEventQueue (structmember, struct=CEntitySystem, member=m_pNetworkFieldChangedEventQueue)
     }
     if ( byte_27C42C0 )
