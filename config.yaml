@@ -5441,6 +5441,22 @@ modules:
         expected_input:
           - CEntitySpawner_CPlayerSprayDecal_Spawn.{platform}.yaml
 
+      - name: find-CEntityKeyValues_LoadFromContext
+        expected_output:
+          - CEntityKeyValues_LoadFromContext.{platform}.yaml
+
+      - name: find-CEntityKeyValues_Initialized
+        expected_output:
+          - CEntityKeyValues_Initialized.{platform}.yaml
+        expected_input:
+          - CEntityKeyValues_LoadFromContext.{platform}.yaml
+
+      - name: find-CEntitySystem_m_nEntityKeyValuesAllocatorRefCount
+        expected_output:
+          - CEntitySystem_m_nEntityKeyValuesAllocatorRefCount.{platform}.yaml
+        expected_input:
+          - CEntityKeyValues_Initialized.{platform}.yaml
+
       - name: find-CCSPlayerController_HandleCommandDrop
         expected_output:
           - CCSPlayerController_HandleCommandDrop.{platform}.yaml
@@ -6376,6 +6392,7 @@ modules:
           - CEntitySystem_m_Symbols.{platform}.yaml
           - CEntitySystem_m_pNetworkFieldChangedEventQueue.{platform}.yaml
           - CEntitySystem_m_pNetworkFieldScratchData.{platform}.yaml
+          - CEntitySystem_m_pFieldChangeLimitSpew.{platform}.yaml
         expected_input:
           - CEntitySystem_Init.{platform}.yaml
 
@@ -7000,10 +7017,11 @@ modules:
         expected_output:
           - PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml
 
-      - name: find-CEntityInstance_AddChangeAccessorPathPolymorphic-AND-CEntityInstance_AssignChangeAccessorPathIdsPolymorphic
+      - name: find-PolymorphicHelper_t__SetPolymorphicPointer-decompiles
         expected_output:
           - CEntityInstance_AddChangeAccessorPathPolymorphic.{platform}.yaml
           - CEntityInstance_AssignChangeAccessorPathIdsPolymorphic.{platform}.yaml
+          - CEntityInstance_GetChangeAccessorPathInfo_1.{platform}.yaml
         expected_input:
           - PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml
           - CEntityInstance_vtable.{platform}.yaml
@@ -7651,6 +7669,11 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::AssignChangeAccessorPathIds
+
+      - name: CEntityInstance_GetChangeAccessorPathInfo_1
+        category: vfunc
+        alias:
+          - CEntityInstance::GetChangeAccessorPathInfo_1
 
       - name: CGameSceneNode_vtable
         category: vtable
@@ -8766,6 +8789,21 @@ modules:
         category: structmember
         struct: CEntitySystem
         member: m_EntityKeyValuesAllocator
+
+      - name: CEntityKeyValues_LoadFromContext
+        category: func
+        alias:
+          - CEntityKeyValues::LoadFromContext
+
+      - name: CEntityKeyValues_Initialized
+        category: func
+        alias:
+          - CEntityKeyValues::Initialized
+
+      - name: CEntitySystem_m_nEntityKeyValuesAllocatorRefCount
+        category: structmember
+        alias:
+          - CEntitySystem::m_nEntityKeyValuesAllocatorRefCount
 
       - name: CCSPlayerController_HandleCommandDrop
         category: func
@@ -10052,6 +10090,13 @@ modules:
         member: m_Symbols
         alias:
           - CEntitySystem::m_pNetworkFieldScratchData
+
+      - name: CEntitySystem_m_pFieldChangeLimitSpew
+        category: structmember
+        struct: CEntitySystem
+        member: m_Symbols
+        alias:
+          - CEntitySystem::m_pFieldChangeLimitSpew
 
       - name: CEntitySystem_m_nSuppressDestroyImmediateCount
         category: structmember
