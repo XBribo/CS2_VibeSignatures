@@ -386,7 +386,7 @@ Pattern C, D, and E scripts reference a predecessor function's YAML at:
 - `ida_preprocessor_scripts/references/{module}/{PREDECESSOR_FUNC}.linux.yaml`
 - `ida_preprocessor_scripts/references/{module}/{PREDECESSOR_FUNC}.windows.yaml`
 
-If NOT present, generate them using `generate_reference_yaml.py`:
+**Always** generate them using `generate_reference_yaml.py`:
 
 ```bash
 # Windows -- always pass -platform windows explicitly
@@ -424,6 +424,14 @@ The `(structmember, struct=StructName, member=member_name)` tag is **required** 
 2. **Phase 2:** Run `uv run ida_analyze_bin.py -debug` -- the vtable and xref_string scripts will succeed and populate the NEW predecessor's output YAMLs. The LLM_DECOMPILE script will fail (no reference YAML yet) or be skipped.
 3. **Phase 3:** Now that the predecessor has output YAMLs, run `generate_reference_yaml.py` to create reference YAMLs, then annotate them.
 4. **Phase 4:** Run `uv run ida_analyze_bin.py -debug` again -- this time the LLM_DECOMPILE path runs and the full pipeline is validated.
+
+**IMPORTANT -- When the reference YAML already existed:** `generate_reference_yaml.py` regenerates the file from scratch and silently overwrites any hand-written annotation comments. After running it, check the diff for each regenerated file:
+
+```bash
+git diff ida_preprocessor_scripts/references/{module}/{PREDECESSOR_FUNC}.{platform}.yaml
+```
+
+Look for removed lines (prefixed with `-` in the diff) that are annotation comments: lines beginning with `;` inside `disasm_code` or `//` inside `procedure`. If any were dropped, restore them verbatim by copying directly from the `-` lines in the diff output into the correct locations in the regenerated file. Do **not** reconstruct comments from memory -- copy from the diff.
 
 ---
 
