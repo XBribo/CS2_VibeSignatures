@@ -5441,6 +5441,12 @@ modules:
         expected_input:
           - CEntitySpawner_CPlayerSprayDecal_Spawn.{platform}.yaml
 
+      - name: find-CEntityKeyValuesAllocator_GetTempBuffer
+        expected_output:
+          - CEntityKeyValuesAllocator_GetTempBuffer.{platform}.yaml
+        expected_input:
+          - CEntitySpawner_CPlayerSprayDecal_Spawn.{platform}.yaml
+
       - name: find-CEntityKeyValues_LoadFromContext
         expected_output:
           - CEntityKeyValues_LoadFromContext.{platform}.yaml
@@ -8792,6 +8798,11 @@ modules:
         category: structmember
         struct: CEntitySystem
         member: m_EntityKeyValuesAllocator
+
+      - name: CEntityKeyValuesAllocator_GetTempBuffer
+        category: func
+        alias:
+          - CEntityKeyValuesAllocator::GetTempBuffer
 
       - name: CEntityKeyValues_LoadFromContext
         category: func
