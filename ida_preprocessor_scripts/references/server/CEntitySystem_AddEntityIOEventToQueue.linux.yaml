@@ -1,0 +1,114 @@
+func_name: CEntitySystem_AddEntityIOEventToQueue
+func_va: '0x1e62fa0'
+disasm_code: |-
+  .text:0000000001E62FA0                 push    rbp
+  .text:0000000001E62FA1                 mov     rbp, rsp
+  .text:0000000001E62FA4                 push    r13
+  .text:0000000001E62FA6                 mov     r13, rdi
+  .text:0000000001E62FA9                 push    r12
+  .text:0000000001E62FAB                 ; 0xB10 = 2832LL = CEntitySystem::m_EventQueue(structmember,struct=CEntitySystem,member=m_EventQueue)
+  .text:0000000001E62FAB                 lea     r12, [rdi+0B10h]; 0xB10 = 2832LL = CEntitySystem::m_EventQueue(structmember,struct=CEntitySystem,member=m_EventQueue)
+  .text:0000000001E62FB2                 push    rbx
+  .text:0000000001E62FB3                 mov     rbx, rsi
+  .text:0000000001E62FB6                 sub     rsp, 8
+  .text:0000000001E62FBA                 call    sub_9846D0
+  .text:0000000001E62FBF                 cmp     rax, [r13+0B18h]
+  .text:0000000001E62FC6                 jz      loc_1E63090
+  .text:0000000001E62FCC                 mov     rsi, rax
+  .text:0000000001E62FCF                 mov     eax, [r13+0B10h]
+  .text:0000000001E62FD6                 test    eax, eax
+  .text:0000000001E62FD8                 jz      loc_1E63060
+  .text:0000000001E62FDE                 mov     rdi, r12
+  .text:0000000001E62FE1                 call    sub_9835E0
+  .text:0000000001E62FE6                 lea     rax, [r13+0B20h]
+  .text:0000000001E62FED                 jmp     short loc_1E6300B
+  .text:0000000001E63000                 movss   xmm0, dword ptr [rax+4]
+  .text:0000000001E63005                 comiss  xmm0, dword ptr [rbx+4]
+  .text:0000000001E63009                 ja      short loc_1E63017
+  .text:0000000001E6300B                 mov     rdx, rax
+  .text:0000000001E6300E                 mov     rax, [rax+60h]
+  .text:0000000001E63012                 test    rax, rax
+  .text:0000000001E63015                 jnz     short loc_1E63000
+  .text:0000000001E63017                 lea     rdi, [rbx+30h]
+  .text:0000000001E6301B                 movq    xmm0, rax
+  .text:0000000001E63020                 mov     esi, 1
+  .text:0000000001E63025                 pinsrq  xmm0, rdx, 1
+  .text:0000000001E6302C                 movups  xmmword ptr [rbx+60h], xmm0
+  .text:0000000001E63030                 mov     [rdx+60h], rbx
+  .text:0000000001E63034                 call    sub_9C0600
+  .text:0000000001E63039                 mov     rax, [rbx+60h]
+  .text:0000000001E6303D                 test    rax, rax
+  .text:0000000001E63040                 jz      short loc_1E63046
+  .text:0000000001E63042                 mov     [rax+68h], rbx
+  .text:0000000001E63046                 sub     word ptr [r13+0B14h], 1
+  .text:0000000001E6304F                 jz      short loc_1E630A0
+  .text:0000000001E63051                 add     rsp, 8
+  .text:0000000001E63055                 pop     rbx
+  .text:0000000001E63056                 pop     r12
+  .text:0000000001E63058                 pop     r13
+  .text:0000000001E6305A                 pop     rbp
+  .text:0000000001E6305B                 retn
+  .text:0000000001E63060                 mov     edx, 3
+  .text:0000000001E63065                 lock cmpxchg [r12], edx
+  .text:0000000001E6306B                 jnz     loc_1E62FDE
+  .text:0000000001E63071                 mov     eax, 1
+  .text:0000000001E63076                 mov     [r13+0B18h], rsi
+  .text:0000000001E6307D                 mov     [r13+0B14h], ax
+  .text:0000000001E63085                 jmp     loc_1E62FE6
+  .text:0000000001E63090                 add     word ptr [r13+0B14h], 1
+  .text:0000000001E63099                 jmp     loc_1E62FE6
+  .text:0000000001E630A0                 mov     qword ptr [r13+0B18h], 0
+  .text:0000000001E630AB                 lock sub dword ptr [r12], 3
+  .text:0000000001E630B1                 jz      short loc_1E63051
+  .text:0000000001E630B3                 add     rsp, 8
+  .text:0000000001E630B7                 mov     rdi, r12
+  .text:0000000001E630BA                 pop     rbx
+  .text:0000000001E630BB                 pop     r12
+  .text:0000000001E630BD                 pop     r13
+  .text:0000000001E630BF                 pop     rbp
+  .text:0000000001E630C0                 jmp     sub_983A60
+procedure: |-
+  __int64 __fastcall sub_1E62FA0(__int64 a1, __int64 a2)
+  {
+    volatile signed __int32 *v2; // r12
+    __int64 v3; // rax
+    signed __int64 v4; // rax
+    signed __int64 v5; // rdx
+    __int64 result; // rax
+
+    v2 = (volatile signed __int32 *)(a1 + 2832);  // 0xB10 = 2832LL = CEntitySystem::m_EventQueue(structmember,struct=CEntitySystem,member=m_EventQueue)
+    v3 = sub_9846D0();
+    if ( v3 == *(_QWORD *)(a1 + 2840) )
+    {
+      ++*(_WORD *)(a1 + 2836);
+    }
+    else if ( *(_DWORD *)(a1 + 2832) || _InterlockedCompareExchange(v2, 3, 0) )
+    {
+      sub_9835E0(a1 + 2832, v3);
+    }
+    else
+    {
+      *(_QWORD *)(a1 + 2840) = v3;
+      *(_WORD *)(a1 + 2836) = 1;
+    }
+    v4 = a1 + 2848;
+    do
+    {
+      v5 = v4;
+      v4 = *(_QWORD *)(v4 + 96);
+    }
+    while ( v4 && *(float *)(v4 + 4) <= *(float *)(a2 + 4) );
+    *(__m128i *)(a2 + 96) = _mm_insert_epi64((__m128i)(unsigned __int64)v4, v5, 1);
+    *(_QWORD *)(v5 + 96) = a2;
+    sub_9C0600(a2 + 48, 1);
+    result = *(_QWORD *)(a2 + 96);
+    if ( result )
+      *(_QWORD *)(result + 104) = a2;
+    if ( (*(_WORD *)(a1 + 2836))-- == 1 )
+    {
+      *(_QWORD *)(a1 + 2840) = 0;
+      if ( _InterlockedSub(v2, 3u) )
+        return sub_983A60(v2);
+    }
+    return result;
+  }

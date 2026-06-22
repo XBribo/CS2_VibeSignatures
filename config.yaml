@@ -5826,6 +5826,12 @@ modules:
         expected_input:
           - CEntitySystem_AddEntityIOEventBuildStruct.{platform}.yaml
 
+      - name: find-CEntitySystem_m_EventQueue
+        expected_output:
+          - CEntitySystem_m_EventQueue.{platform}.yaml
+        expected_input:
+          - CEntitySystem_AddEntityIOEventToQueue.{platform}.yaml
+
       - name: find-CGameEntitySystem_FindEntityByClassName
         expected_output:
           - CGameEntitySystem_FindEntityByClassName.{platform}.yaml
@@ -9462,6 +9468,13 @@ modules:
         category: func
         alias:
           - CEntitySystem::AddEntityIOEventToQueue
+
+      - name: CEntitySystem_m_EventQueue
+        category: structmember
+        struct: CEntitySystem
+        member: m_EventQueue
+        alias:
+          - CEntitySystem::m_EventQueue
 
       - name: CGameEntitySystem_FindEntityByClassName
         category: func

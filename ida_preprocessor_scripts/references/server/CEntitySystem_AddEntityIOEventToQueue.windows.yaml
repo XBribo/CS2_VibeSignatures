@@ -1,0 +1,223 @@
+func_name: CEntitySystem_AddEntityIOEventToQueue
+func_va: '0x1811ec970'
+disasm_code: |-
+  .text:00000001811EC970                 mov     [rsp+arg_8], rbx
+  .text:00000001811EC975                 mov     [rsp+arg_10], rbp
+  .text:00000001811EC97A                 push    rsi
+  .text:00000001811EC97B                 push    rdi
+  .text:00000001811EC97C                 push    r14
+  .text:00000001811EC97E                 sub     rsp, 20h
+  .text:00000001811EC982                 mov     rbp, rdx
+  .text:00000001811EC985                 ; 0xB10 = 2832LL = CEntitySystem::m_EventQueue(structmember,struct=CEntitySystem,member=m_EventQueue)
+  .text:00000001811EC985                 lea     rdi, [rcx+0B10h]; 0xB10 = 2832LL = CEntitySystem::m_EventQueue(structmember,struct=CEntitySystem,member=m_EventQueue)
+  .text:00000001811EC98C                 mov     rsi, rcx
+  .text:00000001811EC98F                 call    cs:GetCurrentThreadId
+  .text:00000001811EC995                 mov     edx, eax
+  .text:00000001811EC997                 cmp     [rdi+8], eax
+  .text:00000001811EC99A                 jnz     short loc_1811EC9A2
+  .text:00000001811EC99C                 inc     word ptr [rdi+4]
+  .text:00000001811EC9A0                 jmp     short loc_1811EC9C8
+  .text:00000001811EC9A2                 mov     eax, [rdi]
+  .text:00000001811EC9A4                 nop
+  .text:00000001811EC9A5                 test    eax, eax
+  .text:00000001811EC9A7                 jnz     short loc_1811EC9BF
+  .text:00000001811EC9A9                 mov     ecx, 3
+  .text:00000001811EC9AE                 lock cmpxchg [rdi], ecx
+  .text:00000001811EC9B2                 jnz     short loc_1811EC9BF
+  .text:00000001811EC9B4                 mov     word ptr [rdi+4], 1
+  .text:00000001811EC9BA                 mov     [rdi+8], edx
+  .text:00000001811EC9BD                 jmp     short loc_1811EC9C8
+  .text:00000001811EC9BF                 mov     rcx, rdi
+  .text:00000001811EC9C2                 call    cs:?AcquireLock@CAtomicMutex@@AEAAXI@Z; CAtomicMutex::AcquireLock(uint)
+  .text:00000001811EC9C8                 add     rsi, 0B20h
+  .text:00000001811EC9CF                 mov     rbx, [rsi+60h]
+  .text:00000001811EC9D3                 test    rbx, rbx
+  .text:00000001811EC9D6                 jz      short loc_1811EC9FD
+  .text:00000001811EC9D8                 nop     dword ptr [rax+rax+00000000h]
+  .text:00000001811EC9E0                 lea     rcx, [rbx+4]
+  .text:00000001811EC9E4                 lea     rdx, [rbp+4]
+  .text:00000001811EC9E8                 call    sub_1801E3770
+  .text:00000001811EC9ED                 test    al, al
+  .text:00000001811EC9EF                 jnz     short loc_1811EC9FD
+  .text:00000001811EC9F1                 mov     rsi, rbx
+  .text:00000001811EC9F4                 mov     rbx, [rbx+60h]
+  .text:00000001811EC9F8                 test    rbx, rbx
+  .text:00000001811EC9FB                 jnz     short loc_1811EC9E0
+  .text:00000001811EC9FD                 mov     rax, [rsi+60h]
+  .text:00000001811ECA01                 xor     r14d, r14d
+  .text:00000001811ECA04                 mov     [rbp+60h], rax
+  .text:00000001811ECA08                 mov     [rbp+68h], rsi
+  .text:00000001811ECA0C                 mov     [rsi+60h], rbp
+  .text:00000001811ECA10                 test    byte ptr [rbp+3Ah], 1
+  .text:00000001811ECA14                 jnz     def_1811ECA45; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECA1A                 movzx   eax, byte ptr [rbp+38h]
+  .text:00000001811ECA1E                 ; switch 37 cases
+  .text:00000001811ECA1E                 add     eax, 0FFFFFFFDh; switch 37 cases
+  .text:00000001811ECA21                 cmp     eax, 24h
+  .text:00000001811ECA24                 ja      def_1811ECA45; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECA2A                 lea     rcx, cs:180000000h
+  .text:00000001811ECA31                 cdqe
+  .text:00000001811ECA33                 movzx   eax, ds:(byte_1811ECB48 - 180000000h)[rcx+rax]
+  .text:00000001811ECA3B                 mov     edx, ds:(jpt_1811ECA45 - 180000000h)[rcx+rax*4]
+  .text:00000001811ECA42                 add     rdx, rcx
+  .text:00000001811ECA45                 ; switch jump
+  .text:00000001811ECA45                 jmp     rdx; switch jump
+  .text:00000001811ECA47                 ; jumptable 00000001811ECA45 case 30
+  .text:00000001811ECA47                 mov     rdx, [rbp+30h]; jumptable 00000001811ECA45 case 30
+  .text:00000001811ECA4B                 lea     rcx, [rbp+30h]
+  .text:00000001811ECA4F                 mov     r8b, 1
+  .text:00000001811ECA52                 call    sub_1801833C0
+  .text:00000001811ECA57                 jmp     def_1811ECA45; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECA5C                 ; jumptable 00000001811ECA45 case 25
+  .text:00000001811ECA5C                 mov     rdx, [rbp+30h]; jumptable 00000001811ECA45 case 25
+  .text:00000001811ECA60                 lea     rcx, [rbp+30h]
+  .text:00000001811ECA64                 mov     r8b, 1
+  .text:00000001811ECA67                 call    sub_180179C80
+  .text:00000001811ECA6C                 jmp     short def_1811ECA45; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECA6E                 ; jumptable 00000001811ECA45 case 3
+  .text:00000001811ECA6E                 mov     byte ptr [rbp+38h], 3; jumptable 00000001811ECA45 case 3
+  .text:00000001811ECA72                 mov     rbx, [rbp+30h]
+  .text:00000001811ECA76                 mov     edx, 0Ch
+  .text:00000001811ECA7B                 mov     [rbp+30h], r14
+  .text:00000001811ECA7F                 mov     rax, cs:g_pMemAlloc
+  .text:00000001811ECA86                 mov     rcx, [rax]
+  .text:00000001811ECA89                 mov     rax, [rcx]
+  .text:00000001811ECA8C                 call    qword ptr [rax+8]
+  .text:00000001811ECA8F                 mov     [rbp+30h], rax
+  .text:00000001811ECA93                 movsd   xmm0, qword ptr [rbx]
+  .text:00000001811ECA97                 movsd   qword ptr [rax], xmm0
+  .text:00000001811ECA9B                 mov     ecx, [rbx+8]
+  .text:00000001811ECA9E                 mov     [rax+8], ecx
+  .text:00000001811ECAA1                 or      word ptr [rbp+3Ah], 1
+  .text:00000001811ECAA6                 jmp     short def_1811ECA45; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECAA8                 ; jumptable 00000001811ECA45 case 14
+  .text:00000001811ECAA8                 mov     byte ptr [rbp+38h], 0Eh; jumptable 00000001811ECA45 case 14
+  .text:00000001811ECAAC                 jmp     short loc_1811ECA72
+  .text:00000001811ECAAE                 ; jumptable 00000001811ECA45 case 27
+  .text:00000001811ECAAE                 mov     rdx, [rbp+30h]; jumptable 00000001811ECA45 case 27
+  .text:00000001811ECAB2                 lea     rcx, [rbp+30h]
+  .text:00000001811ECAB6                 mov     r8b, 1
+  .text:00000001811ECAB9                 call    sub_180179D20
+  .text:00000001811ECABE                 jmp     short def_1811ECA45; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECAC0                 ; jumptable 00000001811ECA45 case 39
+  .text:00000001811ECAC0                 mov     rdx, [rbp+30h]; jumptable 00000001811ECA45 case 39
+  .text:00000001811ECAC4                 lea     rcx, [rbp+30h]
+  .text:00000001811ECAC8                 mov     r8b, 1
+  .text:00000001811ECACB                 call    sub_180179DC0
+  .text:00000001811ECAD0                 jmp     short def_1811ECA45; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECAD2                 ; jumptable 00000001811ECA45 case 4
+  .text:00000001811ECAD2                 mov     rdx, [rbp+30h]; jumptable 00000001811ECA45 case 4
+  .text:00000001811ECAD6                 lea     rcx, [rbp+30h]
+  .text:00000001811ECADA                 mov     r8b, 1
+  .text:00000001811ECADD                 call    sub_180179E60
+  .text:00000001811ECAE2                 ; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECAE2                 mov     rax, [rbp+60h]; jumptable 00000001811ECA45 default case, cases 5-13,15-24,26,28,29,31-38
+  .text:00000001811ECAE6                 test    rax, rax
+  .text:00000001811ECAE9                 jz      short loc_1811ECAEF
+  .text:00000001811ECAEB                 mov     [rax+68h], rbp
+  .text:00000001811ECAEF                 mov     eax, 0FFFFh
+  .text:00000001811ECAF4                 add     [rdi+4], ax
+  .text:00000001811ECAF8                 jnz     short loc_1811ECB15
+  .text:00000001811ECAFA                 mov     [rdi+8], r14d
+  .text:00000001811ECAFE                 mov     eax, 0FFFFFFFDh
+  .text:00000001811ECB03                 lock xadd [rdi], eax
+  .text:00000001811ECB07                 add     eax, 0FFFFFFFDh
+  .text:00000001811ECB0A                 jz      short loc_1811ECB15
+  .text:00000001811ECB0C                 mov     rcx, rdi
+  .text:00000001811ECB0F                 call    cs:?ThreadAtomicNotifyOne@@YAXPEBI@Z; ThreadAtomicNotifyOne(uint const *)
+  .text:00000001811ECB15                 mov     rbx, [rsp+38h+arg_8]
+  .text:00000001811ECB1A                 mov     rbp, [rsp+38h+arg_10]
+  .text:00000001811ECB1F                 add     rsp, 20h
+  .text:00000001811ECB23                 pop     r14
+  .text:00000001811ECB25                 pop     rdi
+  .text:00000001811ECB26                 pop     rsi
+  .text:00000001811ECB27                 retn
+procedure: |-
+  void __fastcall sub_1811EC970(__int64 a1, __int64 a2)
+  {
+    __int64 v3; // rdi
+    DWORD CurrentThreadId; // edx
+    __int64 v6; // r8
+    __int64 v7; // rsi
+    __int64 i; // rbx
+    __int64 v9; // rbx
+    __int64 v10; // rax
+    __int64 v11; // rax
+
+    v3 = a1 + 2832;                               // 0xB10 = 2832LL = CEntitySystem::m_EventQueue(structmember,struct=CEntitySystem,member=m_EventQueue)
+    CurrentThreadId = GetCurrentThreadId();
+    if ( *(_DWORD *)(v3 + 8) == CurrentThreadId )
+    {
+      ++*(_WORD *)(v3 + 4);
+    }
+    else if ( *(_DWORD *)v3 || _InterlockedCompareExchange((volatile signed __int32 *)v3, 3, 0) )
+    {
+      CAtomicMutex::AcquireLock((CAtomicMutex *)v3, CurrentThreadId);
+    }
+    else
+    {
+      *(_WORD *)(v3 + 4) = 1;
+      *(_DWORD *)(v3 + 8) = CurrentThreadId;
+    }
+    v7 = a1 + 2848;
+    for ( i = *(_QWORD *)(v7 + 96); i; i = *(_QWORD *)(i + 96) )
+    {
+      if ( (unsigned __int8)sub_1801E3770(i + 4, a2 + 4) )
+        break;
+      v7 = i;
+    }
+    *(_QWORD *)(a2 + 96) = *(_QWORD *)(v7 + 96);
+    *(_QWORD *)(a2 + 104) = v7;
+    *(_QWORD *)(v7 + 96) = a2;
+    if ( (*(_BYTE *)(a2 + 58) & 1) == 0 )
+    {
+      switch ( *(_BYTE *)(a2 + 56) )
+      {
+        case 3:
+          *(_BYTE *)(a2 + 56) = 3;
+          goto LABEL_15;
+        case 4:
+          LOBYTE(v6) = 1;
+          sub_180179E60(a2 + 48, *(_QWORD *)(a2 + 48), v6);
+          break;
+        case 0xE:
+          *(_BYTE *)(a2 + 56) = 14;
+  LABEL_15:
+          v9 = *(_QWORD *)(a2 + 48);
+          *(_QWORD *)(a2 + 48) = 0;
+          v10 = (*(__int64 (__fastcall **)(_QWORD, __int64))(*g_pMemAlloc + 8LL))(g_pMemAlloc, 12);
+          *(_QWORD *)(a2 + 48) = v10;
+          *(_QWORD *)v10 = *(_QWORD *)v9;
+          *(_DWORD *)(v10 + 8) = *(_DWORD *)(v9 + 8);
+          *(_WORD *)(a2 + 58) |= 1u;
+          break;
+        case 0x19:
+          LOBYTE(v6) = 1;
+          sub_180179C80(a2 + 48, *(_QWORD *)(a2 + 48), v6);
+          break;
+        case 0x1B:
+          LOBYTE(v6) = 1;
+          sub_180179D20(a2 + 48, *(_QWORD *)(a2 + 48), v6);
+          break;
+        case 0x1E:
+          LOBYTE(v6) = 1;
+          sub_1801833C0(a2 + 48, *(_QWORD *)(a2 + 48), v6);
+          break;
+        case 0x27:
+          LOBYTE(v6) = 1;
+          sub_180179DC0(a2 + 48, *(_QWORD *)(a2 + 48), v6);
+          break;
+        default:
+          break;
+      }
+    }
+    v11 = *(_QWORD *)(a2 + 96);
+    if ( v11 )
+      *(_QWORD *)(v11 + 104) = a2;
+    if ( (*(_WORD *)(v3 + 4))-- == 1 )
+    {
+      *(_DWORD *)(v3 + 8) = 0;
+      if ( _InterlockedExchangeAdd((volatile signed __int32 *)v3, 0xFFFFFFFD) != 3 )
+        ThreadAtomicNotifyOne((const unsigned int *)v3);
+    }
+  }
