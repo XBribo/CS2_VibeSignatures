@@ -17,11 +17,11 @@ FUNC_XREFS = [
         "xref_signatures": [],
         "xref_funcs": [],
         "exclude_funcs": [],
-        "exclude_strings": [],
+        # The true AddRefKeyValues only references the AddRef string; a large spawn-entity
+        # function that also appears in the vtable references both AddRef and Release strings.
+        "exclude_strings": ["kv 0x%p Release refcount == %d\n"],
         "exclude_gvs": [],
-        # Linux: a large spawn-entity function also xrefs "kv 0x%p AddRef refcount == %d\n";
-        # exclude it by matching its prologue bytes (harmless on Windows).
-        "exclude_signatures": ["55 48 89 E5 41 57 49 89 D7 41 56 4D 89 C6 41 55"],
+        "exclude_signatures": [],
     },
 ]
 
