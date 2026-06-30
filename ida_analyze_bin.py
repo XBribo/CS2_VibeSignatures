@@ -75,6 +75,7 @@ DEFAULT_AGENT = "claude"
 DEFAULT_LLM_MODEL = "gpt-4o"
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 13337
+POST_PROCESS_FUNC_RENAME_BATCH_SIZE = 50
 MCP_STARTUP_TIMEOUT = 1200  # seconds to wait for MCP server
 SKILL_TIMEOUT = 1200  # 10 minutes per skill
 ERROR_MARKER_RE = re.compile(
@@ -1697,14 +1698,50 @@ async def _post_process_set_comments(session, comment_items, debug=False):
 async def _post_process_func_renames(session, func_renames, debug=False):
     if not func_renames:
         return
-    try:
-        await session.call_tool(
-            name="rename",
-            arguments={"batch": {"func": func_renames}},
-        )
-    except Exception as exc:
+
+    batch_size = POST_PROCESS_FUNC_RENAME_BATCH_SIZE
+    total = len(func_renames)
+    batch_count = (total + batch_size - 1) // batch_size
+    if debug:
+        print(f"  Post-process: function rename total={total} batch_size={batch_size}")
+
+    for batch_index, start in enumerate(range(0, total, batch_size), start=1):
+        batch = func_renames[start : start + batch_size]
+        end = start + len(batch)
         if debug:
-            print(f"  Post-process: function rename batch failed: {exc}")
+            print(
+                "  Post-process: function rename batch "
+                f"{batch_index}/{batch_count} items={len(batch)} "
+                f"range={start + 1}-{end} "
+                f"first={batch[0]['addr']} -> {batch[0]['name']} "
+                f"last={batch[-1]['addr']} -> {batch[-1]['name']}"
+            )
+        try:
+            result = await session.call_tool(
+                name="rename",
+                arguments={"batch": {"func": batch}},
+            )
+            payload = _parse_tool_json_content(result)
+            if isinstance(payload, dict) and debug:
+                for item in payload.get("func", []):
+                    if isinstance(item, dict) and item.get("error"):
+                        print(
+                            "  Post-process: function rename item failed "
+                            f"{item.get('addr')}: {item.get('error')}"
+                        )
+        except Exception as exc:
+            if debug:
+                print(
+                    "  Post-process: function rename batch "
+                    f"{batch_index}/{batch_count} failed "
+                    f"(items={len(batch)}, range={start + 1}-{end}): {exc}"
+                )
+                for offset, item in enumerate(batch, start=start + 1):
+                    print(
+                        "    Post-process: function rename item "
+                        f"{offset}: {item['addr']} -> {item['name']}"
+                    )
+            continue
 
 
 async def _post_process_data_renames(session, data_renames, debug=False):
