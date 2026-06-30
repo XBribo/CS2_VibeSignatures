@@ -989,6 +989,21 @@ modules:
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
 
+      - name: find-CEngineServer_GetFrameTimeAmnesty-linux-AND-CEngineServer_GetFrameTimeAmnesty_Impl-windows
+        expected_output_linux:
+          - CEngineServer_GetFrameTimeAmnesty.{platform}.yaml
+        expected_output_windows:
+          - CEngineServer_GetFrameTimeAmnesty_Impl.{platform}.yaml
+        expected_input_linux:
+          - CEngineServer_vtable.{platform}.yaml
+
+      - name: find-CEngineServer_GetFrameTimeAmnesty-windows
+        platform: windows
+        expected_output:
+          - CEngineServer_GetFrameTimeAmnesty.{platform}.yaml
+        expected_input:
+          - CEngineServer_GetFrameTimeAmnesty_Impl.{platform}.yaml
+          - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_ShowFrameTimeReport_Impl
         expected_output:
           - CEngineServer_ShowFrameTimeReport_Impl.{platform}.yaml
@@ -1850,6 +1865,24 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::ClientPrintf
+
+      - name: CEngineServer_GetFrameTimeAmnesty
+        category: vfunc
+        platform: linux
+        alias:
+          - CEngineServer::GetFrameTimeAmnesty
+
+      - name: CEngineServer_GetFrameTimeAmnesty
+        category: vfunc
+        platform: windows
+        alias:
+          - CEngineServer::GetFrameTimeAmnesty
+
+      - name: CEngineServer_GetFrameTimeAmnesty_Impl
+        category: func
+        platform: windows
+        alias:
+          - CEngineServer::GetFrameTimeAmnesty_Impl
 
       - name: CEngineServer_ShowFrameTimeReport_Impl
         category: func
