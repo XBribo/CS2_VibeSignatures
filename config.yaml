@@ -989,6 +989,17 @@ modules:
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
 
+      - name: find-CEngineServer_ShowFrameTimeReport_Impl
+        expected_output:
+          - CEngineServer_ShowFrameTimeReport_Impl.{platform}.yaml
+
+      - name: find-CEngineServer_ShowFrameTimeReport
+        expected_output:
+          - CEngineServer_ShowFrameTimeReport.{platform}.yaml
+        expected_input:
+          - CEngineServer_ShowFrameTimeReport_Impl.{platform}.yaml
+          - CEngineServer_vtable.{platform}.yaml
+
       - name: find-CEngineServer_SetFrameTimeAmnesty_Impl
         expected_output:
           - CEngineServer_SetFrameTimeAmnesty_Impl.{platform}.yaml
@@ -1839,6 +1850,16 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::ClientPrintf
+
+      - name: CEngineServer_ShowFrameTimeReport_Impl
+        category: func
+        alias:
+          - CEngineServer::ShowFrameTimeReport
+
+      - name: CEngineServer_ShowFrameTimeReport
+        category: vfunc
+        alias:
+          - CEngineServer::ShowFrameTimeReport
 
       - name: CEngineServer_SetFrameTimeAmnesty_Impl
         category: func
