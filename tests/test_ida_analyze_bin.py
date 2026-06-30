@@ -861,6 +861,52 @@ class TestPostProcessMcpExecution(unittest.IsolatedAsyncioTestCase):
             [call_item.kwargs["name"] for call_item in session.call_tool.await_args_list],
         )
 
+    async def test_post_process_func_renames_splits_large_batches(self) -> None:
+        session = MagicMock()
+        session.call_tool = AsyncMock(return_value=_tool_result({"func": []}))
+        func_renames = [
+            {"addr": f"0x{index:x}", "name": f"Func_{index}"}
+            for index in range(101)
+        ]
+
+        await ida_analyze_bin._post_process_func_renames(
+            session,
+            func_renames,
+            debug=False,
+        )
+
+        self.assertEqual(3, session.call_tool.await_count)
+        self.assertEqual(
+            [50, 50, 1],
+            [
+                len(call_item.kwargs["arguments"]["batch"]["func"])
+                for call_item in session.call_tool.await_args_list
+            ],
+        )
+
+    async def test_post_process_func_renames_debug_logs_failed_batch_items(self) -> None:
+        session = MagicMock()
+        session.call_tool = AsyncMock(
+            side_effect=RuntimeError("Invalid structured content returned by tool rename")
+        )
+        func_renames = [
+            {"addr": "0x180001000", "name": "FirstFunc"},
+            {"addr": "0x180002000", "name": "SecondFunc"},
+        ]
+
+        with patch("sys.stdout", new_callable=io.StringIO) as fake_stdout:
+            await ida_analyze_bin._post_process_func_renames(
+                session,
+                func_renames,
+                debug=True,
+            )
+
+        output = fake_stdout.getvalue()
+        self.assertIn("Post-process: function rename total=2 batch_size=50", output)
+        self.assertIn("Post-process: function rename batch 1/1 failed", output)
+        self.assertIn("0x180001000 -> FirstFunc", output)
+        self.assertIn("0x180002000 -> SecondFunc", output)
+
 
 class TestStartIdalibMcp(unittest.TestCase):
     @patch.object(ida_analyze_bin, "wait_for_port", return_value=True)
