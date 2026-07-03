@@ -987,11 +987,11 @@ class TestBumpDownload(unittest.TestCase):
                 "      - name: Synchronize git refs",
                 "        shell: pwsh",
                 "        run: |",
-                "          git fetch origin --prune --prune-tags --tags",
             ]
         )
 
         self.assertIn(sync_step, workflow)
+        self.assertIn("git fetch origin --prune --prune-tags --tags", workflow)
         checkout_index = workflow.index("- name: Checkout main")
         sync_index = workflow.index(sync_step)
         configure_index = workflow.index("- name: Configure git")

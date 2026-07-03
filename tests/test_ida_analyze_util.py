@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 import sys
@@ -38,6 +39,32 @@ def _function_detail_export_py_eval(func_va: str | int) -> str:
     else:
         func_va_int = int(func_va)
     return ida_analyze_util.build_function_detail_export_py_eval(func_va_int)
+
+
+def _function_detail_file_export_payload(py_code: str, payload: dict[str, object]):
+    output_path = None
+    for line in py_code.splitlines():
+        if line.startswith("output_path = "):
+            output_path = Path(ast.literal_eval(line.split("=", 1)[1].strip()))
+            break
+    if output_path is None:
+        raise AssertionError(f"missing remote export output_path in py_eval code: {py_code}")
+
+    payload_text = json.dumps(payload)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(payload_text, encoding="utf-8")
+    return _py_eval_payload(
+        {
+            "ok": True,
+            "output_path": str(output_path),
+            "bytes_written": len(payload_text.encode("utf-8")),
+            "format": "json",
+        }
+    )
+
+
+def _is_function_detail_file_export_py_eval(py_code: str) -> bool:
+    return "payload_text = result" in py_code and "format_name = 'json'" in py_code
 
 
 def _write_yaml(path: Path, payload: dict[str, object]) -> None:
@@ -4499,21 +4526,46 @@ class TestFunctionDetailExportPyEvalBuilder(unittest.IsolatedAsyncioTestCase):
         self,
     ) -> None:
         session = AsyncMock()
-        session.call_tool.return_value = _py_eval_payload(
-            {
-                "func_name": "sub_180123450",
-                "func_va": "0x180123450",
-                "disasm_code": "text:180123450 push rbp",
-                "procedure": None,
-            }
-        )
+        captured_output_path: dict[str, Path] = {}
 
-        payload = await ida_analyze_util._export_function_detail_via_mcp(
-            session,
-            "CNetworkMessages_FindNetworkGroup",
-            "0x180123450",
-            debug=False,
-        )
+        def _fake_builder(func_va_int: int, *, output_path: str | Path) -> str:
+            captured_output_path["path"] = Path(output_path)
+            self.assertEqual(0x180123450, func_va_int)
+            return "PY-CODE"
+
+        async def _fake_call_tool(**kwargs):
+            output_path = captured_output_path["path"]
+            payload_text = json.dumps(
+                {
+                    "func_name": "sub_180123450",
+                    "func_va": "0x180123450",
+                    "disasm_code": "text:180123450 push rbp",
+                    "procedure": None,
+                }
+            )
+            output_path.write_text(payload_text, encoding="utf-8")
+            return _py_eval_payload(
+                {
+                    "ok": True,
+                    "output_path": str(output_path),
+                    "bytes_written": len(payload_text.encode("utf-8")),
+                    "format": "json",
+                }
+            )
+
+        session.call_tool.side_effect = _fake_call_tool
+
+        with patch.object(
+            ida_analyze_util,
+            "build_function_detail_export_file_py_eval",
+            side_effect=_fake_builder,
+        ):
+            payload = await ida_analyze_util._export_function_detail_via_mcp(
+                session,
+                "CNetworkMessages_FindNetworkGroup",
+                "0x180123450",
+                debug=False,
+            )
 
         self.assertIsNotNone(payload)
         self.assertEqual("", payload["procedure"])
@@ -7146,10 +7198,6 @@ found_struct_offset: []
                     "procedure": "return this->vfptr[13](this);",
                 },
             )
-            expected_detail_export_code = _function_detail_export_py_eval(
-                target_detail_payload["func_va"]
-            )
-
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -7162,8 +7210,11 @@ found_struct_offset: []
                             }
                         ]
                     )
-                if code == expected_detail_export_code:
-                    return _py_eval_payload(target_detail_payload)
+                if _is_function_detail_file_export_py_eval(code):
+                    return _function_detail_file_export_payload(
+                        code,
+                        target_detail_payload,
+                    )
                 raise AssertionError(f"unexpected py_eval code: {code}")
 
             session.call_tool.side_effect = _session_call_tool
@@ -8870,10 +8921,6 @@ found_struct_offset: []
                     "procedure": target_detail_payload["procedure"],
                 },
             )
-            expected_detail_export_code = _function_detail_export_py_eval(
-                target_detail_payload["func_va"]
-            )
-
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -8886,8 +8933,11 @@ found_struct_offset: []
                             }
                         ]
                     )
-                if code == expected_detail_export_code:
-                    return _py_eval_payload(target_detail_payload)
+                if _is_function_detail_file_export_py_eval(code):
+                    return _function_detail_file_export_payload(
+                        code,
+                        target_detail_payload,
+                    )
                 raise AssertionError(f"unexpected py_eval code: {code}")
 
             session.call_tool.side_effect = _session_call_tool
@@ -9865,10 +9915,6 @@ found_struct_offset: []
                     "procedure": target_detail_payload["procedure"],
                 },
             )
-            expected_detail_export_code = _function_detail_export_py_eval(
-                target_detail_payload["func_va"]
-            )
-
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -9881,8 +9927,11 @@ found_struct_offset: []
                             }
                         ]
                     )
-                if code == expected_detail_export_code:
-                    return _py_eval_payload(target_detail_payload)
+                if _is_function_detail_file_export_py_eval(code):
+                    return _function_detail_file_export_payload(
+                        code,
+                        target_detail_payload,
+                    )
                 raise AssertionError(f"unexpected py_eval code: {code}")
 
             session.call_tool.side_effect = _session_call_tool
@@ -10025,10 +10074,6 @@ found_struct_offset: []
                     "procedure": target_detail_payload["procedure"],
                 },
             )
-            expected_detail_export_code = _function_detail_export_py_eval(
-                target_detail_payload["func_va"]
-            )
-
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -10041,8 +10086,11 @@ found_struct_offset: []
                             }
                         ]
                     )
-                if code == expected_detail_export_code:
-                    return _py_eval_payload(target_detail_payload)
+                if _is_function_detail_file_export_py_eval(code):
+                    return _function_detail_file_export_payload(
+                        code,
+                        target_detail_payload,
+                    )
                 raise AssertionError(f"unexpected py_eval code: {code}")
 
             session.call_tool.side_effect = _session_call_tool
