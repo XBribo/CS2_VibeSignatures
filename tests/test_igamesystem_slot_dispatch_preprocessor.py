@@ -194,18 +194,23 @@ class TestGamePostInitConfig(unittest.TestCase):
         server_modules = [
             module for module in config["modules"] if module.get("name") == "server"
         ]
-        self.assertEqual(1, len(server_modules))
-        server_module = server_modules[0]
-        skills = [
-            skill
-            for skill in server_module.get("skills", [])
-            if skill.get("name") == "find-IGameSystem_OnGamePostInit"
-        ]
-        symbols = [
-            symbol
-            for symbol in server_module.get("symbols", [])
-            if symbol.get("name") == "IGameSystem_OnGamePostInit"
-        ]
+        matching_modules = []
+        for server_module in server_modules:
+            skills = [
+                skill
+                for skill in server_module.get("skills", [])
+                if skill.get("name") == "find-IGameSystem_OnGamePostInit"
+            ]
+            symbols = [
+                symbol
+                for symbol in server_module.get("symbols", [])
+                if symbol.get("name") == "IGameSystem_OnGamePostInit"
+            ]
+            if skills or symbols:
+                matching_modules.append((server_module, skills, symbols))
+
+        self.assertEqual(1, len(matching_modules))
+        _server_module, skills, symbols = matching_modules[0]
         self.assertEqual(1, len(skills))
         self.assertEqual(1, len(symbols))
         skill = skills[0]

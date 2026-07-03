@@ -1,0 +1,278 @@
+name: PR Self Runner Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-self-runner-${{ github.repository }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: >-
+      (github.repository == 'HLND2T/CS2_VibeSignatures' ||
+       github.repository == 'hzqst/CS2_VibeSignatures') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !(github.event.pull_request.user.login == 'github-actions[bot]' &&
+        startsWith(github.event.pull_request.head.ref, 'bump-download/') &&
+        startsWith(github.event.pull_request.title, 'chore(download): Update manifest for '))
+    environment: win64
+    runs-on: [self-hosted, windows, x64]
+    env:
+      CS2VIBE_AGENT: ${{ secrets.CS2VIBE_AGENT }}
+      CS2VIBE_LLM_APIKEY: ${{ secrets.CS2VIBE_LLM_APIKEY }}
+      CS2VIBE_LLM_BASEURL: ${{ secrets.CS2VIBE_LLM_BASEURL }}
+      CS2VIBE_LLM_EFFORT: ${{ secrets.CS2VIBE_LLM_EFFORT }}
+      CS2VIBE_LLM_FAKE_AS: ${{ secrets.CS2VIBE_LLM_FAKE_AS }}
+      CS2VIBE_LLM_MODEL: ${{ secrets.CS2VIBE_LLM_MODEL }}
+      STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+      STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+      PERSISTED_WORKSPACE: ${{ secrets.PERSISTED_WORKSPACE }}
+
+    steps:
+      - name: Prepare PR workspace variables
+        shell: pwsh
+        run: |
+          $prNumber = "${{ github.event.pull_request.number }}"
+          if ([string]::IsNullOrWhiteSpace($prNumber)) {
+            throw "Unable to determine pull request number."
+          }
+
+          if ([string]::IsNullOrWhiteSpace($env:RUNNER_WORKSPACE)) {
+            throw "RUNNER_WORKSPACE is not configured."
+          }
+
+          if ([string]::IsNullOrWhiteSpace($env:PERSISTED_WORKSPACE)) {
+            throw "PERSISTED_WORKSPACE secret is not configured for the win64 environment."
+          }
+
+          $workspaceRoot = [IO.Path]::GetFullPath($env:RUNNER_WORKSPACE)
+          $workspaceName = "CS2_VibeSignatures-pr-$prNumber"
+          $prWorkspace = [IO.Path]::GetFullPath((Join-Path $workspaceRoot $workspaceName))
+
+          if ((Split-Path -Leaf $prWorkspace) -ne $workspaceName) {
+            throw "Resolved PR workspace leaf mismatch: $prWorkspace"
+          }
+
+          $rootWithSeparator = $workspaceRoot.TrimEnd('\') + '\'
+          if (-not $prWorkspace.StartsWith($rootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Resolved PR workspace is outside RUNNER_WORKSPACE: $prWorkspace"
+          }
+
+          "PR_NUMBER=$prNumber" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PR_WORKSPACE=$prWorkspace" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "WORKSPACE=$prWorkspace" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Checkout PR merge ref
+        shell: pwsh
+        run: |
+          $workspaceName = "CS2_VibeSignatures-pr-$env:PR_NUMBER"
+          $workspaceRoot = [IO.Path]::GetFullPath($env:RUNNER_WORKSPACE)
+          $prWorkspace = [IO.Path]::GetFullPath($env:PR_WORKSPACE)
+          $rootWithSeparator = $workspaceRoot.TrimEnd('\') + '\'
+
+          if ((Split-Path -Leaf $prWorkspace) -ne $workspaceName) {
+            throw "Refusing to clean unexpected workspace leaf: $prWorkspace"
+          }
+          if (-not $prWorkspace.StartsWith($rootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to clean workspace outside RUNNER_WORKSPACE: $prWorkspace"
+          }
+
+          if (Test-Path -LiteralPath $prWorkspace) {
+            Remove-Item -LiteralPath $prWorkspace -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $prWorkspace -Force | Out-Null
+
+          Set-Location $prWorkspace
+          $repoUrl = "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          $mergeRef = "refs/pull/$env:PR_NUMBER/merge"
+          $localRef = "refs/remotes/origin/pr-$env:PR_NUMBER-merge"
+
+          git init
+          if ($LASTEXITCODE -ne 0) { throw "git init failed." }
+
+          git remote add origin $repoUrl
+          if ($LASTEXITCODE -ne 0) { throw "git remote add failed." }
+
+          git fetch --prune origin ("+" + $mergeRef + ":" + $localRef)
+          if ($LASTEXITCODE -ne 0) { throw "git fetch $mergeRef failed." }
+
+          git checkout --detach $localRef
+          if ($LASTEXITCODE -ne 0) { throw "git checkout $localRef failed." }
+
+          git submodule update --init --recursive
+          if ($LASTEXITCODE -ne 0) { throw "git submodule update failed." }
+
+          $safeDirectory = $prWorkspace -replace '\\', '/'
+          git config --global --add safe.directory "$safeDirectory"
+
+      - name: Determine game version from PR download config
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          $gamever = uv run python -c "import yaml; d=yaml.safe_load(open('download.yaml', encoding='utf-8')); print(d['downloads'][-1]['tag'])"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to read latest game version from download.yaml."
+          }
+
+          $gamever = $gamever.Trim()
+          if ([string]::IsNullOrWhiteSpace($gamever)) {
+            throw "Latest game version from download.yaml is empty."
+          }
+
+          "GAMEVER=$gamever" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "PR validation GAMEVER=$gamever"
+
+      - name: Create persisted workspace links
+        shell: pwsh
+        run: |
+          function Ensure-DirectoryLink {
+            param(
+              [Parameter(Mandatory=$true)][string]$LinkPath,
+              [Parameter(Mandatory=$true)][string]$TargetPath
+            )
+
+            if (-not (Test-Path -LiteralPath $TargetPath -PathType Container)) {
+              New-Item -ItemType Directory -Path $TargetPath -Force | Out-Null
+            }
+
+            if (Test-Path -LiteralPath $LinkPath) {
+              $item = Get-Item -LiteralPath $LinkPath -Force
+              if (-not ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                throw "$LinkPath exists but is not a directory junction or symlink."
+              }
+              $actualTarget = [string]$item.Target
+              if ([IO.Path]::GetFullPath($actualTarget) -ne [IO.Path]::GetFullPath($TargetPath)) {
+                throw "$LinkPath link target mismatch: $actualTarget"
+              }
+              return
+            }
+
+            cmd /c mklink /d "$LinkPath" "$TargetPath"
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to create directory link $LinkPath -> $TargetPath"
+            }
+          }
+
+          Set-Location $env:WORKSPACE
+          $depotTarget = Join-Path $env:PERSISTED_WORKSPACE "cs2_depot"
+          $binTarget = Join-Path $env:PERSISTED_WORKSPACE "bin-pr\$env:PR_NUMBER"
+
+          Ensure-DirectoryLink `
+            -LinkPath (Join-Path $env:WORKSPACE "cs2_depot") `
+            -TargetPath $depotTarget
+
+          Ensure-DirectoryLink `
+            -LinkPath (Join-Path $env:WORKSPACE "bin") `
+            -TargetPath $binTarget
+
+      - name: Run Python unit tests
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          uv run python -m unittest discover -s tests
+
+      - name: Check cached binaries
+        id: check_cached_binaries
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          $PSNativeCommandUseErrorActionPreference = $false
+          uv run copy_depot_bin.py -gamever "$env:GAMEVER" -platform all-platform -checkonly
+          $exitCode = $LASTEXITCODE
+
+          if ($exitCode -eq 0) {
+            "bin_ready=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            Write-Host "All expected binaries already exist; skipping depot download."
+            exit 0
+          }
+
+          if ($exitCode -eq 1) {
+            "bin_ready=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            Write-Host "At least one expected binary is missing; depot download is required."
+            exit 0
+          }
+
+          throw "copy_depot_bin.py -checkonly failed with exit code $exitCode"
+
+      - name: Update CS2 depot
+        if: steps.check_cached_binaries.outputs.bin_ready != 'true'
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          $depotDir = Join-Path $env:WORKSPACE "cs2_depot"
+          uv run download_depot.py -tag "$env:GAMEVER" -depotdir "$depotDir" -config download.yaml -username "$env:STEAM_USERNAME" -password "$env:STEAM_PASSWORD" -remember-password
+
+      - name: Copy depot binaries
+        if: steps.check_cached_binaries.outputs.bin_ready != 'true'
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          uv run copy_depot_bin.py -gamever "$env:GAMEVER" -platform all-platform
+
+      - name: Clean stale PR analysis artifacts
+        shell: pwsh
+        run: |
+          $binRoot = [IO.Path]::GetFullPath((Join-Path $env:WORKSPACE "bin"))
+          $gameverDir = [IO.Path]::GetFullPath((Join-Path $binRoot $env:GAMEVER))
+          $binRootWithSeparator = $binRoot.TrimEnd('\') + '\'
+
+          if (-not $gameverDir.StartsWith($binRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to clean path outside PR bin root: $gameverDir"
+          }
+
+          if (-not (Test-Path -LiteralPath $gameverDir -PathType Container)) {
+            Write-Host "PR bin gamever directory does not exist yet: $gameverDir"
+            exit 0
+          }
+
+          $patterns = @("*.yaml", "*.id0", "*.id1", "*.id2", "*.nam", "*.til")
+          foreach ($pattern in $patterns) {
+            Get-ChildItem -LiteralPath $gameverDir -Recurse -File -Filter $pattern -Force -ErrorAction SilentlyContinue |
+              ForEach-Object { Remove-Item -LiteralPath $_.FullName -Force }
+          }
+
+      - name: Analyze binaries
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          uv run ida_analyze_bin.py -gamever "$env:GAMEVER" -debug
+
+      - name: Update gamedata
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          uv run update_gamedata.py -gamever "$env:GAMEVER" -debug -download_latest
+
+      - name: Run C++ tests
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          uv run run_cpp_tests.py -gamever "$env:GAMEVER" -debug
+
+      - name: Clean temporary IDA database files
+        if: always()
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PERSISTED_WORKSPACE) -or
+              [string]::IsNullOrWhiteSpace($env:PR_NUMBER) -or
+              [string]::IsNullOrWhiteSpace($env:GAMEVER)) {
+            Write-Host "Required cleanup variables are missing; skipping temporary IDA database cleanup."
+            exit 0
+          }
+
+          $targetDir = Join-Path $env:PERSISTED_WORKSPACE "bin-pr\$env:PR_NUMBER\$env:GAMEVER"
+          if (-not (Test-Path -LiteralPath $targetDir -PathType Container)) {
+            Write-Host "Temporary IDA database cleanup target does not exist: $targetDir"
+            exit 0
+          }
+
+          $extensions = @("*.id0", "*.id1", "*.id2", "*.nam", "*.til")
+          foreach ($extension in $extensions) {
+            Get-ChildItem -LiteralPath $targetDir -Recurse -File -Filter $extension -Force -ErrorAction SilentlyContinue |
+              ForEach-Object { Remove-Item -LiteralPath $_.FullName -Force }
+          }

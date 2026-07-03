@@ -694,7 +694,7 @@ class TestFindBotAddCommandHandler(unittest.IsolatedAsyncioTestCase):
                 debug=True,
             )
 
-        self.assertEqual("success", result)
+        self.assertTrue(result)
         mock_preprocess_registerconcommand_skill.assert_awaited_once_with(
             session="session",
             expected_outputs=["out.yaml"],
@@ -743,7 +743,7 @@ class TestFindShowHudHint(unittest.IsolatedAsyncioTestCase):
                 debug=True,
             )
 
-        self.assertEqual("success", result)
+        self.assertTrue(result)
         mock_helper.assert_awaited_once_with(
             session="session",
             expected_outputs=["out.yaml"],
@@ -2137,6 +2137,7 @@ class TestFindINetworkMessagesFindNetworkGroup(unittest.IsolatedAsyncioTestCase)
                     "vfunc_offset",
                     "vfunc_index",
                     "vtable_name",
+                    "vfunc_sig_allow_across_function_boundary:true",
                 ],
             )
         ]
@@ -2184,91 +2185,117 @@ class TestFindINetworkMessagesSetNetworkSerializationContextDataAndCFlattenedSer
     unittest.IsolatedAsyncioTestCase
 ):
     async def test_preprocess_skill_forwards_split_field_contracts(self) -> None:
-        module = _load_module(
-            "ida_preprocessor_scripts/find-INetworkMessages_SetNetworkSerializationContextData-AND-IFlattenedSerializers_CreateFieldChangedEventQueue.py",
-            "find_INetworkMessages_SetNetworkSerializationContextData_AND_IFlattenedSerializers_CreateFieldChangedEventQueue",
+        network_module = _load_module(
+            "ida_preprocessor_scripts/find-CNetworkMessages_SetNetworkSerializationContextData.py",
+            "find_CNetworkMessages_SetNetworkSerializationContextData",
         )
-        mock_preprocess_common_skill = AsyncMock(return_value=True)
-        expected_llm_decompile_specs = [
+        flattened_module = _load_module(
+            "ida_preprocessor_scripts/find-CFlattenedSerializers_CreateFieldChangedEventQueue.py",
+            "find_CFlattenedSerializers_CreateFieldChangedEventQueue",
+        )
+        mock_network_preprocess_common_skill = AsyncMock(return_value=True)
+        mock_flattened_preprocess_common_skill = AsyncMock(return_value=True)
+        expected_network_inherit_vfuncs = [
             (
-                "INetworkMessages_SetNetworkSerializationContextData",
-                "prompt/call_llm_decompile.md",
-                "references/server/CEntitySystem_Init.{platform}.yaml",
-            ),
-            (
-                "IFlattenedSerializers_CreateFieldChangedEventQueue",
-                "prompt/call_llm_decompile.md",
-                "references/server/CEntitySystem_Init.{platform}.yaml",
-            ),
-        ]
-        expected_func_vtable_relations = [
-            ("INetworkMessages_SetNetworkSerializationContextData", "INetworkMessages"),
-            (
-                "IFlattenedSerializers_CreateFieldChangedEventQueue",
-                "IFlattenedSerializers",
+                "CNetworkMessages_SetNetworkSerializationContextData",
+                "CNetworkMessages",
+                "../server/INetworkMessages_SetNetworkSerializationContextData",
+                True,
             ),
         ]
-        expected_generate_yaml_desired_fields = [
+        expected_network_generate_yaml_desired_fields = [
             (
-                "INetworkMessages_SetNetworkSerializationContextData",
+                "CNetworkMessages_SetNetworkSerializationContextData",
                 [
                     "func_name",
-                    "vfunc_sig",
+                    "func_va",
+                    "func_rva",
+                    "func_size",
+                    "func_sig",
+                    "vtable_name",
                     "vfunc_offset",
                     "vfunc_index",
-                    "vtable_name",
-                ],
-            ),
-            (
-                "IFlattenedSerializers_CreateFieldChangedEventQueue",
-                [
-                    "func_name",
-                    "vfunc_sig",
-                    "vfunc_offset",
-                    "vfunc_index",
-                    "vtable_name",
                 ],
             ),
         ]
-        llm_config = {
-            "model": "gpt-4.1-mini",
-            "api_key": "test-api-key",
-            "base_url": "https://example.invalid/v1",
-        }
+        expected_flattened_inherit_vfuncs = [
+            (
+                "CFlattenedSerializers_CreateFieldChangedEventQueue",
+                "CFlattenedSerializers",
+                "../server/IFlattenedSerializers_CreateFieldChangedEventQueue",
+                True,
+            ),
+        ]
+        expected_flattened_generate_yaml_desired_fields = [
+            (
+                "CFlattenedSerializers_CreateFieldChangedEventQueue",
+                [
+                    "func_name",
+                    "func_va",
+                    "func_rva",
+                    "func_size",
+                    "func_sig",
+                    "vtable_name",
+                    "vfunc_offset",
+                    "vfunc_index",
+                ],
+            ),
+        ]
 
         with patch.object(
-            module,
+            network_module,
             "preprocess_common_skill",
-            mock_preprocess_common_skill,
+            mock_network_preprocess_common_skill,
         ):
-            result = await module.preprocess_skill(
+            network_result = await network_module.preprocess_skill(
                 session="session",
                 skill_name="skill",
-                expected_outputs=["out-a.yaml", "out-b.yaml"],
+                expected_outputs=["network.yaml"],
                 old_yaml_map={"k": "v"},
                 new_binary_dir="bin_dir",
                 platform="linux",
                 image_base=0x180000000,
-                llm_config=llm_config,
                 debug=True,
             )
 
-        self.assertTrue(result)
-        mock_preprocess_common_skill.assert_awaited_once_with(
+        with patch.object(
+            flattened_module,
+            "preprocess_common_skill",
+            mock_flattened_preprocess_common_skill,
+        ):
+            flattened_result = await flattened_module.preprocess_skill(
+                session="session",
+                skill_name="skill",
+                expected_outputs=["flattened.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="linux",
+                image_base=0x180000000,
+                debug=True,
+            )
+
+        self.assertTrue(network_result)
+        self.assertTrue(flattened_result)
+        mock_network_preprocess_common_skill.assert_awaited_once_with(
             session="session",
-            expected_outputs=["out-a.yaml", "out-b.yaml"],
+            expected_outputs=["network.yaml"],
             old_yaml_map={"k": "v"},
             new_binary_dir="bin_dir",
             platform="linux",
             image_base=0x180000000,
-            func_names=[
-                "INetworkMessages_SetNetworkSerializationContextData",
-                "IFlattenedSerializers_CreateFieldChangedEventQueue",
-            ],
-            func_vtable_relations=expected_func_vtable_relations,
-            llm_decompile_specs=expected_llm_decompile_specs,
-            llm_config=llm_config,
-            generate_yaml_desired_fields=expected_generate_yaml_desired_fields,
+            inherit_vfuncs=expected_network_inherit_vfuncs,
+            generate_yaml_desired_fields=expected_network_generate_yaml_desired_fields,
+            debug=True,
+        )
+        mock_flattened_preprocess_common_skill.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["flattened.yaml"],
+            old_yaml_map={"k": "v"},
+            new_binary_dir="bin_dir",
+            platform="linux",
+            image_base=0x180000000,
+            inherit_vfuncs=expected_flattened_inherit_vfuncs,
+            generate_yaml_desired_fields=expected_flattened_generate_yaml_desired_fields,
             debug=True,
         )
 
@@ -2299,6 +2326,7 @@ class TestFindCBaseEntityCollisionRulesChanged(unittest.IsolatedAsyncioTestCase)
                     "vfunc_offset",
                     "vfunc_index",
                     "vtable_name",
+                    "vfunc_sig_allow_across_function_boundary:true",
                 ],
             )
         ]

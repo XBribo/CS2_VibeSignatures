@@ -40,7 +40,7 @@ class TestBuildFunctionDumpExportPyEval(unittest.TestCase):
         self.assertIn("import yaml", script)
         self.assertIn("PyYAML is required for vcall_finder detail export", script)
         self.assertIn("yaml.dump", script)
-        self.assertIn(output_path, script)
+        self.assertIn(repr(output_path), script)
 
 
 class TestExportObjectXrefDetailsViaMcp(unittest.IsolatedAsyncioTestCase):
@@ -91,7 +91,7 @@ class TestExportObjectXrefDetailsViaMcp(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(1, summary["exported_functions"])
             self.assertEqual(0, summary["failed_functions"])
             second_code = session.call_tool.await_args_list[1].kwargs["arguments"]["code"]
-            self.assertIn(str(detail_path), second_code)
+            self.assertIn(repr(str(detail_path)), second_code)
             self.assertIn("yaml.dump", second_code)
 
     async def test_export_object_xref_details_via_mcp_counts_failure_from_remote_ack(self) -> None:

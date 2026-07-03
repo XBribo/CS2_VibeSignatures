@@ -372,12 +372,13 @@ class TestReferenceYamlPureHelpers(unittest.TestCase):
             generate_reference_yaml.parse_args([])
 
     def test_parse_args_allows_missing_target_inputs(self) -> None:
-        args = generate_reference_yaml.parse_args(
-            [
-                "-func_name",
-                "CNetworkMessages_FindNetworkGroup",
-            ]
-        )
+        with patch.dict(generate_reference_yaml.os.environ, {}, clear=True):
+            args = generate_reference_yaml.parse_args(
+                [
+                    "-func_name",
+                    "CNetworkMessages_FindNetworkGroup",
+                ]
+            )
 
         self.assertIsNone(args.gamever)
         self.assertIsNone(args.module)
@@ -1418,7 +1419,7 @@ class TestRunReferenceGeneration(unittest.IsolatedAsyncioTestCase):
                 repo_root=Path("/repo"),
             )
 
-        self.assertEqual(output_path, result)
+        self.assertEqual(output_path.resolve(), result)
         self.assertEqual(
             [
                 "resolve_func_va",
@@ -1508,7 +1509,7 @@ class TestRunReferenceGeneration(unittest.IsolatedAsyncioTestCase):
                 repo_root=Path("/repo"),
             )
 
-        self.assertEqual(output_path, result)
+        self.assertEqual(output_path.resolve(), result)
         attach_existing_mcp_session.assert_not_called()
 
     async def test_run_reference_generation_fills_missing_inputs_from_current_idb_path(self) -> None:
@@ -1566,15 +1567,14 @@ class TestRunReferenceGeneration(unittest.IsolatedAsyncioTestCase):
             ) as resolve_func_va,
             patch.object(
                 generate_reference_yaml,
+                "export_reference_yaml_via_mcp",
+                AsyncMock(return_value=output_path),
+                create=True,
+            ) as export_reference_yaml_via_mcp,
+            patch.object(
+                generate_reference_yaml,
                 "export_reference_payload_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "func_name": "CNetworkMessages_FindNetworkGroup",
-                        "func_va": "0x180123450",
-                        "disasm_code": "text:180123450 push rbp",
-                        "procedure": "",
-                    }
-                ),
+                AsyncMock(),
                 create=True,
             ),
             patch.object(
@@ -1582,7 +1582,7 @@ class TestRunReferenceGeneration(unittest.IsolatedAsyncioTestCase):
                 "build_reference_output_path",
                 return_value=output_path,
             ) as build_reference_output_path,
-            patch.object(generate_reference_yaml, "write_reference_yaml"),
+            patch.object(generate_reference_yaml, "write_reference_yaml") as write_reference_yaml,
         ):
             result = await generate_reference_yaml.run_reference_generation(
                 _base_args(
@@ -1620,6 +1620,14 @@ class TestRunReferenceGeneration(unittest.IsolatedAsyncioTestCase):
             "CNetworkMessages_FindNetworkGroup",
             "windows",
         )
+        export_reference_yaml_via_mcp.assert_awaited_once_with(
+            fake_session,
+            func_name="CNetworkMessages_FindNetworkGroup",
+            func_va="0x180123450",
+            output_path=output_path,
+            debug=False,
+        )
+        write_reference_yaml.assert_not_called()
 
 
 class TestMain(unittest.TestCase):
