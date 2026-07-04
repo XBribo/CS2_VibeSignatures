@@ -78,11 +78,21 @@ DEFAULT_PORT = 13337
 POST_PROCESS_FUNC_RENAME_BATCH_SIZE = 50
 MCP_STARTUP_TIMEOUT = 1200  # seconds to wait for MCP server
 SKILL_TIMEOUT = 1200  # 10 minutes per skill
+MCP_LIST_TIMEOUT = 30
 ERROR_MARKER_RE = re.compile(
     r"(?<![A-Za-z0-9])error(?![A-Za-z0-9])",
     re.IGNORECASE,
 )
+_MCP_PREFLIGHT_DONE = False
+_MCP_PREFLIGHT_FAILED = False
 _ARTIFACT_SYMBOL_CATEGORY_CACHE = {}
+
+
+def _absolute_path_preserve_spelling(path):
+    """Make a local path absolute without resolving 8.3 names or junction targets."""
+    return os.path.abspath(os.path.normpath(os.fspath(path)))
+
+
 SURVEY_CURRENT_IDB_PATH_PY_EVAL = (
     "import json\n"
     "path = ''\n"
@@ -104,6 +114,66 @@ SURVEY_CURRENT_IDB_PATH_PY_EVAL = (
 def _output_contains_error_marker(*texts: str) -> bool:
     merged_output = "\n".join(text for text in texts if text)
     return bool(ERROR_MARKER_RE.search(merged_output))
+
+
+def _mcp_list_contains_server(output, server_name="ida-pro-mcp"):
+    if not output:
+        return False
+    pattern = re.compile(rf"(?m)^\s*(?:[-*]\s*)?{re.escape(server_name)}(?:\s|:|$)")
+    return bool(pattern.search(output))
+
+
+def _format_mcp_list_output(output, limit=1200):
+    text = (output or "").strip()
+    if not text:
+        return "<empty>"
+    if len(text) > limit:
+        text = text[:limit] + "... <truncated>"
+    return "\n".join(f"      {line}" for line in text.splitlines())
+
+
+def _ensure_agent_mcp_preflight(agent, debug=False, server_name="ida-pro-mcp"):
+    global _MCP_PREFLIGHT_DONE, _MCP_PREFLIGHT_FAILED
+
+    if _MCP_PREFLIGHT_DONE:
+        return True
+    if _MCP_PREFLIGHT_FAILED:
+        print("    Error: MCP preflight previously failed; refusing to start agent.")
+        return False
+
+    cmd = [agent, "mcp", "list"]
+    print(f"    Checking MCP server list: {' '.join(cmd)}")
+
+    try:
+        result = _run_process_with_stream_capture(
+            cmd,
+            debug=debug,
+            timeout=MCP_LIST_TIMEOUT,
+        )
+    except subprocess.TimeoutExpired:
+        _MCP_PREFLIGHT_FAILED = True
+        print(f"    Error: MCP list preflight timeout ({MCP_LIST_TIMEOUT} seconds): {' '.join(cmd)}")
+        return False
+    except FileNotFoundError:
+        _MCP_PREFLIGHT_FAILED = True
+        print(f"    Error: Agent '{agent}' not found while running MCP list preflight.")
+        return False
+    except Exception as e:
+        _MCP_PREFLIGHT_FAILED = True
+        print(f"    Error executing MCP list preflight: {e}")
+        return False
+
+    output = "\n".join(text for text in (result.stdout, result.stderr) if text)
+    if _mcp_list_contains_server(output, server_name):
+        _MCP_PREFLIGHT_DONE = True
+        return True
+
+    _MCP_PREFLIGHT_FAILED = True
+    print(f"    Error: Required MCP server '{server_name}' is not listed by '{agent} mcp list'.")
+    if result.returncode != 0:
+        print(f"    mcp list return code: {result.returncode}")
+    print(f"    mcp list output:\n{_format_mcp_list_output(output)}")
+    return False
 
 
 def _parse_tool_json_content(result):
@@ -1343,14 +1413,19 @@ def resolve_artifact_path(binary_dir, artifact_path, platform):
         raise ValueError("artifact path is empty")
 
     expanded = artifact_path.replace("{platform}", platform)
-    module_dir = Path(binary_dir).resolve()
-    gamever_dir = module_dir.parent.resolve()
-    candidate = (module_dir / expanded).resolve()
+    module_dir = _absolute_path_preserve_spelling(binary_dir)
+    candidate = _absolute_path_preserve_spelling(os.path.join(module_dir, expanded))
+    real_module_dir = Path(binary_dir).resolve()
+    real_gamever_dir = real_module_dir.parent.resolve()
+    real_candidate = (real_module_dir / expanded).resolve()
 
-    if os.path.commonpath([str(candidate), str(gamever_dir)]) != str(gamever_dir):
+    if (
+        os.path.commonpath([str(real_candidate), str(real_gamever_dir)])
+        != str(real_gamever_dir)
+    ):
         raise ValueError(f"artifact path escapes gamever root: {artifact_path}")
 
-    return str(candidate)
+    return candidate
 
 
 def expand_expected_paths(binary_dir, paths, platform):
@@ -1439,23 +1514,24 @@ def _collect_post_process_yaml_mappings(
             continue
 
         for output_path in expected_outputs:
-            resolved_path = str(Path(output_path).resolve())
-            if not _is_current_module_artifact_path(resolved_path, binary_dir):
+            artifact_path = _absolute_path_preserve_spelling(output_path)
+            if not _is_current_module_artifact_path(artifact_path, binary_dir):
                 if debug:
                     print(
                         "  Post-process: skipping YAML outside current module dir "
-                        f"{resolved_path}"
+                        f"{artifact_path}"
                     )
                 continue
-            if resolved_path in seen_paths:
+            seen_key = os.path.normcase(artifact_path)
+            if seen_key in seen_paths:
                 continue
-            seen_paths.add(resolved_path)
-            if not os.path.exists(resolved_path):
+            seen_paths.add(seen_key)
+            if not os.path.exists(artifact_path):
                 continue
-            payload = _load_post_process_yaml_mapping(resolved_path, debug=debug)
+            payload = _load_post_process_yaml_mapping(artifact_path, debug=debug)
             if payload is None:
                 continue
-            yaml_items.append((resolved_path, payload))
+            yaml_items.append((artifact_path, payload))
 
     return yaml_items
 
@@ -1978,8 +2054,25 @@ def run_skill(skill_name, agent="claude", debug=False, expected_yaml_paths=None,
     """
     claude_session_id = str(uuid.uuid4())
     codex_developer_instructions = None
+    agent_lower = agent.lower()
+    is_claude_agent = "claude" in agent_lower
+    is_codex_agent = "codex" in agent_lower
 
-    if "codex" in agent.lower():
+    if not is_claude_agent and not is_codex_agent:
+        print(f"    Error: Unknown agent type '{agent}'. Agent name must contain 'claude' or 'codex'.")
+        return False
+
+    # Verify SKILL.md exists before launching agent
+    skill_md_path = os.path.join(".claude", "skills", skill_name, "SKILL.md")
+    print(f"    Falling back to: {skill_md_path}")
+    if not os.path.exists(skill_md_path):
+        print(f"    Error: Skill file not found: {skill_md_path}")
+        return False
+
+    if not _ensure_agent_mcp_preflight(agent, debug=debug):
+        return False
+
+    if is_codex_agent:
         system_prompt_path = Path(".claude/agents/sig-finder.md")
         try:
             system_prompt_raw = system_prompt_path.read_text(encoding="utf-8")
@@ -2009,20 +2102,9 @@ def run_skill(skill_name, agent="claude", debug=False, expected_yaml_paths=None,
 
         codex_developer_instructions = f"developer_instructions={json.dumps(codex_system_prompt)}"
 
-    # Verify SKILL.md exists before launching agent
-    skill_md_path = os.path.join(".claude", "skills", skill_name, "SKILL.md")
-    print(f"    Falling back to: {skill_md_path}")
-    if not os.path.exists(skill_md_path):
-        print(f"    Error: Skill file not found: {skill_md_path}")
-        return False
-
     for attempt in range(max_retries):
         is_retry = attempt > 0
         agent_input = None
-
-        # Determine agent type based on executable name
-        is_claude_agent = "claude" in agent.lower()
-        is_codex_agent = "codex" in agent.lower()
 
         if is_claude_agent:
             cmd = [agent,
@@ -2046,9 +2128,6 @@ def run_skill(skill_name, agent="claude", debug=False, expected_yaml_paths=None,
             else:
                 cmd = [agent, "-c", codex_developer_instructions, "-c", "model_reasoning_effort=high", "-c", "model_reasoning_summary=none", "-c", "model_verbosity=low", "exec", "-"]
             retry_target_desc = "the latest codex session (--last)"
-        else:
-            print(f"    Error: Unknown agent type '{agent}'. Agent name must contain 'claude' or 'codex'.")
-            return False
 
         attempt_str = f"(attempt {attempt + 1}/{max_retries})" if max_retries > 1 else ""
         retry_str = "[RETRY] " if is_retry else ""

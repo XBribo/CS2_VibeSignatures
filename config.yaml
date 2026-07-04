@@ -7208,6 +7208,20 @@ modules:
           - PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml
           - CEntityInstance_vtable.{platform}.yaml
 
+      - name: find-CBaseEntity_GetChangeAccessorPathInfo_2
+        expected_output:
+          - CBaseEntity_GetChangeAccessorPathInfo_2.{platform}.yaml
+        expected_input:
+          - CBaseEntity_vtable.{platform}.yaml
+          - CEntityInstance_GetChangeAccessorPathInfo_2.{platform}.yaml
+
+      - name: find-CBaseEntity_GetChangeAccessorPathInfo_1
+        expected_output:
+          - CBaseEntity_GetChangeAccessorPathInfo_1.{platform}.yaml
+        expected_input:
+          - CBaseEntity_vtable.{platform}.yaml
+          - CBaseEntity_GetChangeAccessorPathInfo_2.{platform}.yaml
+
       - name: find-CEntityInstance_AddChangeAccessorPath
         expected_output:
           - CEntityInstance_AddChangeAccessorPath.{platform}.yaml
@@ -7856,6 +7870,16 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::GetChangeAccessorPathInfo_2
+
+      - name: CBaseEntity_GetChangeAccessorPathInfo_2
+        category: vfunc
+        alias:
+          - CBaseEntity::GetChangeAccessorPathInfo_2
+
+      - name: CBaseEntity_GetChangeAccessorPathInfo_1
+        category: vfunc
+        alias:
+          - CBaseEntity::GetChangeAccessorPathInfo_1
 
       - name: CGameSceneNode_vtable
         category: vtable

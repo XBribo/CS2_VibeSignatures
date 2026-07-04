@@ -580,7 +580,11 @@ class TestPostProcessActionCollection(unittest.TestCase):
                 debug=False,
             )
 
-        self.assertEqual([(str(valid_path.resolve()), {"func_name": "Valid", "func_va": "0x180100000"})], result)
+        expected_path = ida_analyze_bin._absolute_path_preserve_spelling(valid_path)
+        self.assertEqual(
+            [(expected_path, {"func_name": "Valid", "func_va": "0x180100000"})],
+            result,
+        )
 
     def test_collect_post_process_yaml_mappings_skips_paths_outside_current_binary_dir(
         self,
@@ -2177,6 +2181,10 @@ class _FakePopen:
 
 
 class TestRunSkillOutputDetection(unittest.TestCase):
+    def setUp(self) -> None:
+        ida_analyze_bin._MCP_PREFLIGHT_DONE = False
+        ida_analyze_bin._MCP_PREFLIGHT_FAILED = False
+
     def test_output_contains_error_marker_only_matches_standalone_tokens(self) -> None:
         self.assertTrue(ida_analyze_bin._output_contains_error_marker("Error"))
         self.assertTrue(ida_analyze_bin._output_contains_error_marker("prefix [ERROR] suffix"))
@@ -2190,6 +2198,10 @@ class TestRunSkillOutputDetection(unittest.TestCase):
 
 
 class TestRunSkillCodexPromptTransport(unittest.TestCase):
+    def setUp(self) -> None:
+        ida_analyze_bin._MCP_PREFLIGHT_DONE = False
+        ida_analyze_bin._MCP_PREFLIGHT_FAILED = False
+
     @patch.object(Path, 'read_text', return_value='sig finder prompt')
     @patch('ida_analyze_bin.os.path.exists', return_value=True)
     @patch('ida_analyze_bin._run_process_with_stream_capture')
@@ -2200,6 +2212,12 @@ class TestRunSkillCodexPromptTransport(unittest.TestCase):
         _mock_read_text,
     ) -> None:
         mock_run_process.side_effect = [
+            ida_analyze_bin.subprocess.CompletedProcess(
+                args=['codex', 'mcp', 'list'],
+                returncode=1,
+                stdout='Name\nida-pro-mcp  http://127.0.0.1:13337/mcp  enabled\n',
+                stderr='',
+            ),
             ida_analyze_bin.subprocess.CompletedProcess(
                 args=['codex'],
                 returncode=1,
@@ -2222,11 +2240,13 @@ class TestRunSkillCodexPromptTransport(unittest.TestCase):
         )
 
         self.assertTrue(result)
-        self.assertEqual(2, mock_run_process.call_count)
+        self.assertEqual(3, mock_run_process.call_count)
 
-        first_call = mock_run_process.call_args_list[0]
-        second_call = mock_run_process.call_args_list[1]
+        preflight_call = mock_run_process.call_args_list[0]
+        first_call = mock_run_process.call_args_list[1]
+        second_call = mock_run_process.call_args_list[2]
 
+        self.assertEqual(['codex', 'mcp', 'list'], preflight_call.args[0])
         self.assertEqual(['exec', '-'], first_call.args[0][-2:])
         self.assertEqual(['exec', 'resume', '--last', '-'], second_call.args[0][-4:])
         expected_prompt = 'Run SKILL: .claude/skills/find-IGameSystem_vtable/SKILL.md'
@@ -2244,11 +2264,17 @@ class TestRunSkillCodexPromptTransport(unittest.TestCase):
         mock_popen,
         _mock_exists,
     ) -> None:
-        mock_popen.return_value = _FakePopen(
+        preflight_process = _FakePopen(
+            stdout_chunks=['ida-pro-mcp: http://127.0.0.1:13337/mcp (HTTP) - Failed\n'],
+            stderr_chunks=[],
+            returncode=0,
+        )
+        agent_process = _FakePopen(
             stdout_chunks=['agent stdout line\n'],
             stderr_chunks=['agent stderr line\n'],
             returncode=0,
         )
+        mock_popen.side_effect = [preflight_process, agent_process]
 
         with patch('sys.stdout', new_callable=io.StringIO) as fake_stdout, patch(
             'sys.stderr', new_callable=io.StringIO
@@ -2261,6 +2287,7 @@ class TestRunSkillCodexPromptTransport(unittest.TestCase):
             )
 
         self.assertTrue(result)
+        self.assertEqual(['claude', 'mcp', 'list'], mock_popen.call_args_list[0].args[0])
         self.assertIn('agent stdout line\n', fake_stdout.getvalue())
         self.assertIn('agent stderr line\n', fake_stderr.getvalue())
 
@@ -2273,6 +2300,11 @@ class TestRunSkillCodexPromptTransport(unittest.TestCase):
         _mock_exists,
         _mock_read_text,
     ) -> None:
+        preflight_process = _FakePopen(
+            stdout_chunks=['ida-pro-mcp  http://127.0.0.1:13337/mcp  enabled\n'],
+            stderr_chunks=[],
+            returncode=0,
+        )
         first_process = _FakePopen(
             stdout_chunks=['starting\n', '[ERROR] lookup failed\n'],
             stderr_chunks=[],
@@ -2283,7 +2315,7 @@ class TestRunSkillCodexPromptTransport(unittest.TestCase):
             stderr_chunks=[],
             returncode=0,
         )
-        mock_popen.side_effect = [first_process, second_process]
+        mock_popen.side_effect = [preflight_process, first_process, second_process]
 
         with patch('sys.stdout', new_callable=io.StringIO) as fake_stdout, patch(
             'sys.stderr', new_callable=io.StringIO
@@ -2296,12 +2328,268 @@ class TestRunSkillCodexPromptTransport(unittest.TestCase):
             )
 
         self.assertTrue(result)
-        self.assertEqual(2, mock_popen.call_count)
+        self.assertEqual(3, mock_popen.call_count)
+        self.assertEqual(['codex', 'mcp', 'list'], mock_popen.call_args_list[0].args[0])
         self.assertNotIn('[ERROR] lookup failed\n', fake_stdout.getvalue())
         self.assertEqual('', fake_stderr.getvalue())
         expected_prompt = 'Run SKILL: .claude/skills/find-IGameSystem_vtable/SKILL.md'
         self.assertEqual(expected_prompt, ''.join(first_process.stdin.writes))
         self.assertEqual(expected_prompt, ''.join(second_process.stdin.writes))
+
+
+class TestRunSkillMcpListPreflight(unittest.TestCase):
+    def setUp(self) -> None:
+        ida_analyze_bin._MCP_PREFLIGHT_DONE = False
+        ida_analyze_bin._MCP_PREFLIGHT_FAILED = False
+
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin.subprocess.Popen')
+    def test_claude_mcp_list_accepts_failed_connection_when_server_is_listed(
+        self,
+        mock_popen,
+        _mock_exists,
+    ) -> None:
+        preflight_process = _FakePopen(
+            stdout_chunks=[
+                'ida-pro-mcp: http://127.0.0.1:13337/mcp (HTTP) - Failed to connect\n'
+            ],
+            stderr_chunks=[],
+            returncode=0,
+        )
+        agent_process = _FakePopen(stdout_chunks=['done\n'], stderr_chunks=[], returncode=0)
+        mock_popen.side_effect = [preflight_process, agent_process]
+
+        result = ida_analyze_bin.run_skill(
+            skill_name='find-IGameSystem_vtable',
+            agent='claude',
+            debug=False,
+            max_retries=1,
+        )
+
+        self.assertTrue(result)
+        self.assertEqual(['claude', 'mcp', 'list'], mock_popen.call_args_list[0].args[0])
+        self.assertEqual(2, mock_popen.call_count)
+
+    @patch.object(Path, 'read_text', return_value='sig finder prompt')
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin._run_process_with_stream_capture')
+    def test_codex_mcp_list_accepts_table_row_when_server_is_listed(
+        self,
+        mock_run_process,
+        _mock_exists,
+        _mock_read_text,
+    ) -> None:
+        mock_run_process.side_effect = [
+            ida_analyze_bin.subprocess.CompletedProcess(
+                args=['codex', 'mcp', 'list'],
+                returncode=0,
+                stdout=(
+                    'Name         Url                         Status\n'
+                    'ida-pro-mcp  http://127.0.0.1:13337/mcp  enabled\n'
+                ),
+                stderr='',
+            ),
+            ida_analyze_bin.subprocess.CompletedProcess(
+                args=['codex'],
+                returncode=0,
+                stdout='',
+                stderr='',
+            ),
+        ]
+
+        result = ida_analyze_bin.run_skill(
+            skill_name='find-IGameSystem_vtable',
+            agent='codex',
+            debug=False,
+            max_retries=1,
+        )
+
+        self.assertTrue(result)
+        self.assertEqual(['codex', 'mcp', 'list'], mock_run_process.call_args_list[0].args[0])
+        self.assertEqual(2, mock_run_process.call_count)
+
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin.subprocess.Popen')
+    def test_missing_ida_pro_mcp_blocks_agent_start(
+        self,
+        mock_popen,
+        _mock_exists,
+    ) -> None:
+        preflight_process = _FakePopen(
+            stdout_chunks=['serena: http://127.0.0.1:9131/mcp (HTTP) - Connected\n'],
+            stderr_chunks=[],
+            returncode=0,
+        )
+        mock_popen.return_value = preflight_process
+
+        with patch('sys.stdout', new_callable=io.StringIO) as fake_stdout:
+            result = ida_analyze_bin.run_skill(
+                skill_name='find-IGameSystem_vtable',
+                agent='claude',
+                debug=False,
+                max_retries=1,
+            )
+
+        self.assertFalse(result)
+        self.assertEqual(1, mock_popen.call_count)
+        self.assertEqual(['claude', 'mcp', 'list'], mock_popen.call_args.args[0])
+        self.assertIn("Required MCP server 'ida-pro-mcp' is not listed", fake_stdout.getvalue())
+
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin.subprocess.Popen')
+    def test_mcp_list_timeout_blocks_agent_start(
+        self,
+        mock_popen,
+        _mock_exists,
+    ) -> None:
+        timeout_process = _FakePopen(stdout_chunks=[], stderr_chunks=[], returncode=0)
+        timeout_process.wait = MagicMock(
+            side_effect=ida_analyze_bin.subprocess.TimeoutExpired(
+                ['claude', 'mcp', 'list'],
+                30,
+            )
+        )
+        mock_popen.return_value = timeout_process
+
+        with patch('sys.stdout', new_callable=io.StringIO) as fake_stdout:
+            result = ida_analyze_bin.run_skill(
+                skill_name='find-IGameSystem_vtable',
+                agent='claude',
+                debug=False,
+                max_retries=1,
+            )
+
+        self.assertFalse(result)
+        self.assertEqual(1, mock_popen.call_count)
+        self.assertIn('MCP list preflight timeout', fake_stdout.getvalue())
+        self.assertTrue(timeout_process.killed)
+
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin.subprocess.Popen', side_effect=FileNotFoundError)
+    def test_mcp_list_missing_agent_blocks_agent_start(
+        self,
+        mock_popen,
+        _mock_exists,
+    ) -> None:
+        with patch('sys.stdout', new_callable=io.StringIO) as fake_stdout:
+            result = ida_analyze_bin.run_skill(
+                skill_name='find-IGameSystem_vtable',
+                agent='claude',
+                debug=False,
+                max_retries=1,
+            )
+
+        self.assertFalse(result)
+        self.assertEqual(1, mock_popen.call_count)
+        self.assertIn(
+            "Agent 'claude' not found while running MCP list preflight",
+            fake_stdout.getvalue(),
+        )
+
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin.subprocess.Popen')
+    def test_empty_mcp_list_output_blocks_agent_start(
+        self,
+        mock_popen,
+        _mock_exists,
+    ) -> None:
+        mock_popen.return_value = _FakePopen(stdout_chunks=[], stderr_chunks=[], returncode=0)
+
+        with patch('sys.stdout', new_callable=io.StringIO) as fake_stdout:
+            result = ida_analyze_bin.run_skill(
+                skill_name='find-IGameSystem_vtable',
+                agent='claude',
+                debug=False,
+                max_retries=1,
+            )
+
+        self.assertFalse(result)
+        self.assertEqual(1, mock_popen.call_count)
+        self.assertIn("Required MCP server 'ida-pro-mcp' is not listed", fake_stdout.getvalue())
+
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin.subprocess.Popen')
+    def test_preflight_runs_only_once_for_multiple_skills(
+        self,
+        mock_popen,
+        _mock_exists,
+    ) -> None:
+        preflight_process = _FakePopen(
+            stdout_chunks=['ida-pro-mcp: http://127.0.0.1:13337/mcp (HTTP) - Failed\n'],
+            stderr_chunks=[],
+            returncode=0,
+        )
+        first_agent = _FakePopen(stdout_chunks=['first\n'], stderr_chunks=[], returncode=0)
+        second_agent = _FakePopen(stdout_chunks=['second\n'], stderr_chunks=[], returncode=0)
+        mock_popen.side_effect = [preflight_process, first_agent, second_agent]
+
+        first_result = ida_analyze_bin.run_skill(
+            skill_name='find-IGameSystem_vtable',
+            agent='claude',
+            debug=False,
+            max_retries=1,
+        )
+        second_result = ida_analyze_bin.run_skill(
+            skill_name='find-CBaseEntity_vtable',
+            agent='claude',
+            debug=False,
+            max_retries=1,
+        )
+
+        self.assertTrue(first_result)
+        self.assertTrue(second_result)
+        commands = [call_args.args[0] for call_args in mock_popen.call_args_list]
+        self.assertEqual(1, commands.count(['claude', 'mcp', 'list']))
+        self.assertEqual(3, mock_popen.call_count)
+
+    @patch('ida_analyze_bin.os.path.exists', return_value=True)
+    @patch('ida_analyze_bin.subprocess.Popen')
+    def test_failed_preflight_is_not_retried_for_later_skills(
+        self,
+        mock_popen,
+        _mock_exists,
+    ) -> None:
+        mock_popen.return_value = _FakePopen(
+            stdout_chunks=['serena: http://127.0.0.1:9131/mcp (HTTP) - Connected\n'],
+            stderr_chunks=[],
+            returncode=0,
+        )
+
+        with patch('sys.stdout', new_callable=io.StringIO) as fake_stdout:
+            first_result = ida_analyze_bin.run_skill(
+                skill_name='find-IGameSystem_vtable',
+                agent='claude',
+                debug=False,
+                max_retries=1,
+            )
+            second_result = ida_analyze_bin.run_skill(
+                skill_name='find-CBaseEntity_vtable',
+                agent='claude',
+                debug=False,
+                max_retries=1,
+            )
+
+        self.assertFalse(first_result)
+        self.assertFalse(second_result)
+        self.assertEqual(1, mock_popen.call_count)
+        self.assertIn('MCP preflight previously failed', fake_stdout.getvalue())
+
+    def test_mcp_list_server_matching_requires_list_item_name(self) -> None:
+        self.assertTrue(
+            ida_analyze_bin._mcp_list_contains_server(
+                'ida-pro-mcp: http://127.0.0.1:13337/mcp (HTTP) - Failed\n'
+            )
+        )
+        self.assertTrue(
+            ida_analyze_bin._mcp_list_contains_server(
+                'ida-pro-mcp  http://127.0.0.1:13337/mcp  enabled\n'
+            )
+        )
+        self.assertFalse(
+            ida_analyze_bin._mcp_list_contains_server(
+                'not-ida-pro-mcp: http://127.0.0.1:13337/mcp (HTTP) - Failed\n'
+            )
+        )
 
 
 @patch.dict(

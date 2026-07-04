@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from ida_analyze_util import build_remote_text_export_py_eval
 
@@ -24,6 +25,16 @@ class TestBuildRemoteTextExportPyEval(unittest.TestCase):
         self.assertIn("os.replace(tmp_path, output_path)", script)
         self.assertIn("'bytes_written'", script)
         self.assertIn("'format': format_name", script)
+
+    def test_build_remote_text_export_py_eval_accepts_posix_absolute_path(self) -> None:
+        with patch("ida_analyze_util.os.path.isabs", return_value=False):
+            script = build_remote_text_export_py_eval(
+                output_path="/tmp/vcall-detail.yaml",
+                producer_code="payload_text = 'ok'",
+                content_var="payload_text",
+            )
+
+        self.assertIn("posixpath.isabs(output_path)", script)
 
 
 if __name__ == "__main__":

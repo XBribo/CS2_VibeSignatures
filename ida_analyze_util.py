@@ -4,7 +4,9 @@
 import asyncio
 import json
 import math
+import ntpath
 import os
+import posixpath
 import re
 import tempfile
 import textwrap
@@ -25,6 +27,21 @@ except Exception:
     call_llm_text = None
     normalize_optional_effort = None
     normalize_optional_temperature = None
+
+
+def _is_remote_absolute_path(path):
+    """Return True for absolute paths in either host, POSIX, or Windows form."""
+    path_str = os.fspath(path)
+    return (
+        os.path.isabs(path_str)
+        or posixpath.isabs(path_str)
+        or ntpath.isabs(path_str)
+    )
+
+
+def _absolute_path_preserve_spelling(path):
+    """Make a local path absolute without resolving 8.3 names or junction targets."""
+    return Path(os.path.abspath(os.path.normpath(os.fspath(path))))
 
 
 # Combined vtable lookup + entry reading script for IDA py_eval.
@@ -704,7 +721,7 @@ def build_remote_text_export_py_eval(
 ):
     """Build a py_eval script that writes large text to disk and returns a small ack."""
     output_path_str = os.fspath(output_path)
-    if not os.path.isabs(output_path_str):
+    if not _is_remote_absolute_path(output_path_str):
         raise ValueError(f"output_path must be absolute, got {output_path_str!r}")
     if not str(producer_code).strip():
         raise ValueError("producer_code cannot be empty")
@@ -713,15 +730,21 @@ def build_remote_text_export_py_eval(
 
     producer_block = textwrap.indent(str(producer_code).rstrip(), "    ")
     return (
-        "import json, os, traceback\n"
+        "import json, ntpath, os, posixpath, traceback\n"
         f"output_path = {output_path_str!r}\n"
         f"format_name = {str(format_name)!r}\n"
         "tmp_path = output_path + '.tmp'\n"
+        "def _is_remote_absolute_path(output_path):\n"
+        "    return (\n"
+        "        os.path.isabs(output_path)\n"
+        "        or posixpath.isabs(output_path)\n"
+        "        or ntpath.isabs(output_path)\n"
+        "    )\n"
         "def _truncate_text(value, limit=800):\n"
         "    text = '' if value is None else str(value)\n"
         "    return text if len(text) <= limit else text[:limit] + ' [truncated]'\n"
         "try:\n"
-        "    if not os.path.isabs(output_path):\n"
+        "    if not _is_remote_absolute_path(output_path):\n"
         "        raise ValueError(f'output_path must be absolute: {output_path}')\n"
         f"{producer_block}\n"
         f"    payload_text = str({content_var})\n"
@@ -2583,7 +2606,7 @@ def _prepare_llm_decompile_request(
     )
     if not prompt_path.is_absolute():
         prompt_path = scripts_dir / prompt_path
-    prompt_path = prompt_path.resolve()
+    prompt_path = _absolute_path_preserve_spelling(prompt_path)
 
     if not prompt_path.is_file():
         if debug:
@@ -2624,7 +2647,7 @@ def _prepare_llm_decompile_request(
         )
         if not reference_yaml_path.is_absolute():
             reference_yaml_path = scripts_dir / reference_yaml_path
-        reference_yaml_path = reference_yaml_path.resolve()
+        reference_yaml_path = _absolute_path_preserve_spelling(reference_yaml_path)
 
         if not reference_yaml_path.is_file():
             if debug:
@@ -5608,10 +5631,15 @@ async def preprocess_index_based_vfunc_via_mcp(
 
     def _resolve_related_yaml_path(binary_dir, artifact_stem, platform_name):
         expanded = f"{artifact_stem}.{platform_name}.yaml"
-        module_dir = Path(binary_dir).resolve()
-        gamever_dir = module_dir.parent.resolve()
-        candidate = (module_dir / expanded).resolve()
-        if os.path.commonpath([str(candidate), str(gamever_dir)]) != str(gamever_dir):
+        module_dir = _absolute_path_preserve_spelling(binary_dir)
+        candidate = _absolute_path_preserve_spelling(module_dir / expanded)
+        real_module_dir = Path(binary_dir).resolve()
+        real_gamever_dir = real_module_dir.parent.resolve()
+        real_candidate = (real_module_dir / expanded).resolve()
+        if (
+            os.path.commonpath([str(real_candidate), str(real_gamever_dir)])
+            != str(real_gamever_dir)
+        ):
             raise ValueError(f"artifact path escapes gamever root: {artifact_stem}")
         return str(candidate)
 
