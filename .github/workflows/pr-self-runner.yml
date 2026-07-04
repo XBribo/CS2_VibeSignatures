@@ -199,43 +199,6 @@ jobs:
 
           throw "copy_depot_bin.py -checkonly failed with exit code $exitCode"
 
-      - name: Update CS2 depot
-        if: steps.check_cached_binaries.outputs.bin_ready != 'true'
-        shell: pwsh
-        run: |
-          Set-Location $env:WORKSPACE
-          $depotDir = Join-Path $env:WORKSPACE "cs2_depot"
-          uv run download_depot.py -tag "$env:GAMEVER" -depotdir "$depotDir" -config download.yaml -username "$env:STEAM_USERNAME" -password "$env:STEAM_PASSWORD" -remember-password
-
-      - name: Copy depot binaries
-        if: steps.check_cached_binaries.outputs.bin_ready != 'true'
-        shell: pwsh
-        run: |
-          Set-Location $env:WORKSPACE
-          uv run copy_depot_bin.py -gamever "$env:GAMEVER" -platform all-platform
-
-      - name: Clean stale PR analysis artifacts
-        shell: pwsh
-        run: |
-          $binRoot = [IO.Path]::GetFullPath((Join-Path $env:WORKSPACE "bin"))
-          $gameverDir = [IO.Path]::GetFullPath((Join-Path $binRoot $env:GAMEVER))
-          $binRootWithSeparator = $binRoot.TrimEnd('\') + '\'
-
-          if (-not $gameverDir.StartsWith($binRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
-            throw "Refusing to clean path outside PR bin root: $gameverDir"
-          }
-
-          if (-not (Test-Path -LiteralPath $gameverDir -PathType Container)) {
-            Write-Host "PR bin gamever directory does not exist yet: $gameverDir"
-            exit 0
-          }
-
-          $patterns = @("*.yaml", "*.id0", "*.id1", "*.id2", "*.nam", "*.til")
-          foreach ($pattern in $patterns) {
-            Get-ChildItem -LiteralPath $gameverDir -Recurse -File -Filter $pattern -Force -ErrorAction SilentlyContinue |
-              ForEach-Object { Remove-Item -LiteralPath $_.FullName -Force }
-          }
-
       - name: Analyze binaries
         shell: pwsh
         run: |
@@ -253,26 +216,3 @@ jobs:
         run: |
           Set-Location $env:WORKSPACE
           uv run run_cpp_tests.py -gamever "$env:GAMEVER" -debug
-
-      - name: Clean temporary IDA database files
-        if: always()
-        shell: pwsh
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:PERSISTED_WORKSPACE) -or
-              [string]::IsNullOrWhiteSpace($env:PR_NUMBER) -or
-              [string]::IsNullOrWhiteSpace($env:GAMEVER)) {
-            Write-Host "Required cleanup variables are missing; skipping temporary IDA database cleanup."
-            exit 0
-          }
-
-          $targetDir = Join-Path $env:PERSISTED_WORKSPACE "bin-pr\$env:PR_NUMBER\$env:GAMEVER"
-          if (-not (Test-Path -LiteralPath $targetDir -PathType Container)) {
-            Write-Host "Temporary IDA database cleanup target does not exist: $targetDir"
-            exit 0
-          }
-
-          $extensions = @("*.id0", "*.id1", "*.id2", "*.nam", "*.til")
-          foreach ($extension in $extensions) {
-            Get-ChildItem -LiteralPath $targetDir -Recurse -File -Filter $extension -Force -ErrorAction SilentlyContinue |
-              ForEach-Object { Remove-Item -LiteralPath $_.FullName -Force }
-          }
