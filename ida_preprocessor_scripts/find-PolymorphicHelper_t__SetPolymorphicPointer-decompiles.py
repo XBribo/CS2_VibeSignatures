@@ -6,7 +6,7 @@ from ida_analyze_util import preprocess_common_skill
 TARGET_FUNCTION_NAMES = [
     "CEntityInstance_AddChangeAccessorPathPolymorphic",
     "CEntityInstance_AssignChangeAccessorPathIdsPolymorphic",
-    "CEntityInstance_GetChangeAccessorPathInfo_1",
+    "CEntityInstance_GetChangeAccessorPathInfo_2",
 ]
 
 LLM_DECOMPILE = [
@@ -21,7 +21,7 @@ LLM_DECOMPILE = [
         "references/server/PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml",
     ),
     (
-        "CEntityInstance_GetChangeAccessorPathInfo_1",
+        "CEntityInstance_GetChangeAccessorPathInfo_2",
         "prompt/call_llm_decompile.md",
         "references/server/PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml",
     ),
@@ -30,7 +30,7 @@ LLM_DECOMPILE = [
 FUNC_VTABLE_RELATIONS = [
     ("CEntityInstance_AddChangeAccessorPathPolymorphic", "CEntityInstance"),
     ("CEntityInstance_AssignChangeAccessorPathIdsPolymorphic", "CEntityInstance"),
-    ("CEntityInstance_GetChangeAccessorPathInfo_1", "CEntityInstance"),
+    ("CEntityInstance_GetChangeAccessorPathInfo_2", "CEntityInstance"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
@@ -57,7 +57,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
     (
-        "CEntityInstance_GetChangeAccessorPathInfo_1",
+        "CEntityInstance_GetChangeAccessorPathInfo_2",
         [
             "func_name",
             "vfunc_sig",

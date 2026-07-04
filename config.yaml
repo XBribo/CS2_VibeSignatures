@@ -7203,7 +7203,7 @@ modules:
         expected_output:
           - CEntityInstance_AddChangeAccessorPathPolymorphic.{platform}.yaml
           - CEntityInstance_AssignChangeAccessorPathIdsPolymorphic.{platform}.yaml
-          - CEntityInstance_GetChangeAccessorPathInfo_1.{platform}.yaml
+          - CEntityInstance_GetChangeAccessorPathInfo_2.{platform}.yaml
         expected_input:
           - PolymorphicHelper_t__SetPolymorphicPointer.{platform}.yaml
           - CEntityInstance_vtable.{platform}.yaml
@@ -7851,11 +7851,6 @@ modules:
         category: vfunc
         alias:
           - CEntityInstance::AssignChangeAccessorPathIds
-
-      - name: CEntityInstance_GetChangeAccessorPathInfo_1
-        category: vfunc
-        alias:
-          - CEntityInstance::GetChangeAccessorPathInfo_1
 
       - name: CEntityInstance_GetChangeAccessorPathInfo_2
         category: vfunc
