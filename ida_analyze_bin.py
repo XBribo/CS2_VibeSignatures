@@ -86,6 +86,13 @@ ERROR_MARKER_RE = re.compile(
 _MCP_PREFLIGHT_DONE = False
 _MCP_PREFLIGHT_FAILED = False
 _ARTIFACT_SYMBOL_CATEGORY_CACHE = {}
+
+
+def _absolute_path_preserve_spelling(path):
+    """Make a local path absolute without resolving 8.3 names or junction targets."""
+    return os.path.abspath(os.path.normpath(os.fspath(path)))
+
+
 SURVEY_CURRENT_IDB_PATH_PY_EVAL = (
     "import json\n"
     "path = ''\n"
@@ -1406,14 +1413,19 @@ def resolve_artifact_path(binary_dir, artifact_path, platform):
         raise ValueError("artifact path is empty")
 
     expanded = artifact_path.replace("{platform}", platform)
-    module_dir = Path(binary_dir).resolve()
-    gamever_dir = module_dir.parent.resolve()
-    candidate = (module_dir / expanded).resolve()
+    module_dir = _absolute_path_preserve_spelling(binary_dir)
+    candidate = _absolute_path_preserve_spelling(os.path.join(module_dir, expanded))
+    real_module_dir = Path(binary_dir).resolve()
+    real_gamever_dir = real_module_dir.parent.resolve()
+    real_candidate = (real_module_dir / expanded).resolve()
 
-    if os.path.commonpath([str(candidate), str(gamever_dir)]) != str(gamever_dir):
+    if (
+        os.path.commonpath([str(real_candidate), str(real_gamever_dir)])
+        != str(real_gamever_dir)
+    ):
         raise ValueError(f"artifact path escapes gamever root: {artifact_path}")
 
-    return str(candidate)
+    return candidate
 
 
 def expand_expected_paths(binary_dir, paths, platform):
@@ -1502,23 +1514,24 @@ def _collect_post_process_yaml_mappings(
             continue
 
         for output_path in expected_outputs:
-            resolved_path = str(Path(output_path).resolve())
-            if not _is_current_module_artifact_path(resolved_path, binary_dir):
+            artifact_path = _absolute_path_preserve_spelling(output_path)
+            if not _is_current_module_artifact_path(artifact_path, binary_dir):
                 if debug:
                     print(
                         "  Post-process: skipping YAML outside current module dir "
-                        f"{resolved_path}"
+                        f"{artifact_path}"
                     )
                 continue
-            if resolved_path in seen_paths:
+            seen_key = os.path.normcase(artifact_path)
+            if seen_key in seen_paths:
                 continue
-            seen_paths.add(resolved_path)
-            if not os.path.exists(resolved_path):
+            seen_paths.add(seen_key)
+            if not os.path.exists(artifact_path):
                 continue
-            payload = _load_post_process_yaml_mapping(resolved_path, debug=debug)
+            payload = _load_post_process_yaml_mapping(artifact_path, debug=debug)
             if payload is None:
                 continue
-            yaml_items.append((resolved_path, payload))
+            yaml_items.append((artifact_path, payload))
 
     return yaml_items
 
