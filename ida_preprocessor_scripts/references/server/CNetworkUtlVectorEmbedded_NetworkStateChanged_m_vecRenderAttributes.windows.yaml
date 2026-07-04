@@ -169,8 +169,7 @@ disasm_code: |-
   .text:0000000180605B47                 mov     r8, rdi
   .text:0000000180605B4A                 mov     [r14+61h], dl
   .text:0000000180605B4E                 lea     rdx, [r14+28h]
-  .text:0000000180605B52                 ; PolymorphicHelper_t__GetChangeAccessorPathInfo_2
-  .text:0000000180605B52                 call    PolymorphicHelper_t__GetChangeAccessorPathInfo_2; PolymorphicHelper_t__GetChangeAccessorPathInfo_2
+  .text:0000000180605B52                 call    PolymorphicHelper_t__GetUnk501
   .text:0000000180605B57                 movzx   edx, byte ptr [r14+61h]
   .text:0000000180605B5C                 and     dl, 0EFh
   .text:0000000180605B5F                 shl     al, 4
@@ -452,7 +451,7 @@ procedure: |-
         if ( (v17 & 8) == 0 )
         {
           *(_BYTE *)(a1 + 97) = v17 | 8;
-          v17 = (16 * PolymorphicHelper_t__GetChangeAccessorPathInfo_2(v16, a1 + 40, a1 + 72)) | *(_BYTE *)(a1 + 97) & 0xEF;// PolymorphicHelper_t__GetChangeAccessorPathInfo_2
+          v17 = (16 * PolymorphicHelper_t__GetUnk501(v16, a1 + 40, a1 + 72)) | *(_BYTE *)(a1 + 97) & 0xEF;
           *(_BYTE *)(a1 + 97) = v17;
         }
         if ( (v17 & 0x10) != 0 )
