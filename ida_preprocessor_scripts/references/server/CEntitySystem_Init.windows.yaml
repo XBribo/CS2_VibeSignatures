@@ -670,7 +670,7 @@ procedure: |-
         g_pNetworkMessages,
         "string_t_table",
         *(unsigned int *)(a1 + 3004),             // 0xBBC = 3004LL = CEntitySystem::m_eNetworkSerializationMode
-        a1 + 7880);                               // 0x1EC8 = 7880LL = CEntitySystem::m_EntityMaterialAttributes
+        a1 + 7880);                               // 0x1EC8 = 7880LL = CEntitySystem::m_Symbols
       v35 = *(_QWORD *)g_pNetworkMessages;
       v59 = sub_1811EC730;
       v58 = nullptr;
@@ -746,7 +746,7 @@ procedure: |-
       v46 = qword_1820B9518;
       if ( qword_1820B9518 )
       {
-        v47 = a1 + 8304;                          // 0x2070 = 8304LL = CEntitySystem::m_Symbols
+        v47 = a1 + 8304;                          // 0x2070 = 8304LL = CEntitySystem::m_EntityMaterialAttributes
         do
         {
           v48 = (*(__int64 (**)(void))v46)();

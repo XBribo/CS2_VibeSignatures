@@ -108,7 +108,7 @@ disasm_code: |-
   .text:0000000001E689FB                 mov     r15d, 0BA96A1CDh
   .text:0000000001E68A01                 jmp     loc_1E68966
 procedure: |-
-  void __fastcall sub_1E68880(__int64 a1)
+  void __fastcall CEntitySystem_ProcessEntityRegistrars(__int64 a1)
   {
     __int64 v1; // r13
     __int64 i; // rbx
