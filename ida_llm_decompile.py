@@ -194,11 +194,38 @@ def _normalize_llm_entries(entries, required_keys):
     return normalized
 
 
+def _parse_llm_int_value(value):
+    text = str(value or "").strip().replace("_", "")
+    if not text:
+        return None
+
+    sign = 1
+    if text[0] in "+-":
+        if text[0] == "-":
+            sign = -1
+        text = text[1:].strip()
+    if not text:
+        return None
+
+    if text.lower().endswith("h"):
+        hex_text = text[:-1]
+        if re.fullmatch(r"[0-9a-fA-F]+", hex_text):
+            return sign * int(hex_text, 16)
+        return None
+
+    try:
+        return sign * int(text, 0)
+    except ValueError:
+        return None
+
+
 def _normalize_llm_struct_offset_entries(entries):
     if isinstance(entries, (str, bytes, bytearray)) or not isinstance(entries, (list, tuple)):
         return []
 
     normalized = []
+    best_index_by_member = {}
+    best_offset_by_member = {}
     for entry in entries:
         if not isinstance(entry, dict):
             continue
@@ -218,6 +245,19 @@ def _normalize_llm_struct_offset_entries(entries):
             size_text = str(size_value).strip()
             if size_text:
                 item["size"] = size_text
+
+        offset_value = _parse_llm_int_value(item["offset"])
+        if offset_value is not None:
+            member_key = (item["struct_name"], item["member_name"])
+            existing_index = best_index_by_member.get(member_key)
+            if existing_index is not None:
+                existing_offset = best_offset_by_member[member_key]
+                if offset_value < existing_offset:
+                    normalized[existing_index] = item
+                    best_offset_by_member[member_key] = offset_value
+                continue
+            best_index_by_member[member_key] = len(normalized)
+            best_offset_by_member[member_key] = offset_value
 
         normalized.append(item)
     return normalized

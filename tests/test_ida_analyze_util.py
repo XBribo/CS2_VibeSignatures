@@ -4772,6 +4772,41 @@ found_struct_offset:
             parsed,
         )
 
+    def test_parse_llm_decompile_response_keeps_smaller_duplicate_struct_offset(self) -> None:
+        response_text = """
+```yaml
+found_struct_offset:
+  - insn_va: '0x1811FA994'
+    insn_disasm: mov     [rcx+0C78h], rax
+    offset: '0xC78'
+    size: 8
+    struct_name: CEntitySystem
+    member_name: m_EntityPostSpawnCallback
+  - insn_va: '0x1811FA99E'
+    insn_disasm: mov     [rcx+0C70h], rax
+    offset: '0C70h'
+    size: 8
+    struct_name: CEntitySystem
+    member_name: m_EntityPostSpawnCallback
+```
+""".strip()
+
+        parsed = ida_analyze_util.parse_llm_decompile_response(response_text)
+
+        self.assertEqual(
+            [
+                {
+                    "insn_va": "0x1811FA99E",
+                    "insn_disasm": "mov     [rcx+0C70h], rax",
+                    "offset": "0C70h",
+                    "size": "8",
+                    "struct_name": "CEntitySystem",
+                    "member_name": "m_EntityPostSpawnCallback",
+                }
+            ],
+            parsed["found_struct_offset"],
+        )
+
     async def test_call_llm_decompile_uses_shared_llm_helper_and_parses_yaml(
         self,
     ) -> None:
