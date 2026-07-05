@@ -16,6 +16,10 @@ except ImportError:
 VFTABLE_HEADER_RE = re.compile(
     r"^\s*(?:VFTable|VTable) indices for '([^']+)' \((\d+) (?:entry|entries)\)\.\s*$"
 )
+VFTABLE_LAYOUT_HEADER_RE = re.compile(
+    r"^\s*(?:VFTable|VTable) for '([^']+)'(?: in '([^']+)')? "
+    r"\((\d+) (?:entry|entries)\)\.\s*$"
+)
 VFTABLE_ENTRY_RE = re.compile(r"^\s*(\d+)\s+\|\s+(.+?)\s*$")
 # Group 2 captures the run of spaces between `|` and the declaration so the
 # parser can derive nesting depth from clang's 2-space-per-level indentation.
@@ -75,17 +79,52 @@ def parse_vftable_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
     parsed: Dict[str, Dict[str, Any]] = {}
     current_class: Optional[str] = None
     current_declared_entries = 0
+    current_raw_declared_entries = 0
+    current_raw_entries = 0
+    current_metadata_entries = 0
+    current_section_kind = ""
 
     for raw_line in compiler_output.splitlines():
         header = VFTABLE_HEADER_RE.match(raw_line)
         if header:
-            current_class = header.group(1)
+            class_name = header.group(1)
             declared_entries = int(header.group(2))
+            if parsed.get(class_name, {}).get("source_kind") == "complete":
+                current_class = None
+                current_declared_entries = 0
+                current_raw_declared_entries = 0
+                current_raw_entries = 0
+                current_metadata_entries = 0
+                current_section_kind = ""
+                continue
+
+            current_class = class_name
             current_declared_entries = declared_entries
+            current_raw_declared_entries = declared_entries
+            current_raw_entries = 0
+            current_metadata_entries = 0
+            current_section_kind = "indices"
             parsed[current_class] = {
                 "declared_entries": declared_entries,
                 "methods_by_index": {},
                 "entry_count": 0,
+                "source_kind": "indices",
+            }
+            continue
+
+        layout_header = VFTABLE_LAYOUT_HEADER_RE.match(raw_line)
+        if layout_header:
+            current_class = layout_header.group(2) or layout_header.group(1)
+            current_declared_entries = 0
+            current_raw_declared_entries = int(layout_header.group(3))
+            current_raw_entries = 0
+            current_metadata_entries = 0
+            current_section_kind = "complete"
+            parsed[current_class] = {
+                "declared_entries": 0,
+                "methods_by_index": {},
+                "entry_count": 0,
+                "source_kind": "complete",
             }
             continue
 
@@ -96,14 +135,19 @@ def parse_vftable_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
         if not entry:
             if (
                 current_class is not None
-                and parsed[current_class]["methods_by_index"]
+                and current_raw_entries
                 and not raw_line.strip()
             ):
                 current_class = None
                 current_declared_entries = 0
+                current_raw_declared_entries = 0
+                current_raw_entries = 0
+                current_metadata_entries = 0
+                current_section_kind = ""
             continue
 
         index = int(entry.group(1))
+        current_raw_entries += 1
         # Sections are already bounded by the next ``VFTable …`` header, a blank
         # line, or by reaching the declared entry count post-insertion (below).
         # Don't reject indices that exceed ``declared``: clang reports the count
@@ -112,32 +156,90 @@ def parse_vftable_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
         # base lists its own 14 entries at indices 10..23 — well past 14.
 
         signature = entry.group(2).strip()
+        if current_section_kind == "complete" and _is_vftable_metadata_entry(signature):
+            if not parsed[current_class]["methods_by_index"]:
+                current_metadata_entries += 1
+            if current_raw_entries >= current_raw_declared_entries:
+                current_class = None
+                current_declared_entries = 0
+                current_raw_declared_entries = 0
+                current_raw_entries = 0
+                current_metadata_entries = 0
+                current_section_kind = ""
+            continue
+
+        if current_section_kind == "complete":
+            index -= current_metadata_entries
+            if index < 0:
+                continue
+
         member_name = _extract_member_name(signature, current_class)
         parsed[current_class]["methods_by_index"][index] = {
             "signature": signature,
             "member_name": member_name,
         }
 
-        if len(parsed[current_class]["methods_by_index"]) >= current_declared_entries:
+        if current_section_kind == "complete":
+            section_done = current_raw_entries >= current_raw_declared_entries
+        else:
+            section_done = (
+                len(parsed[current_class]["methods_by_index"])
+                >= current_declared_entries
+            )
+        if section_done:
             current_class = None
             current_declared_entries = 0
+            current_raw_declared_entries = 0
+            current_raw_entries = 0
+            current_metadata_entries = 0
+            current_section_kind = ""
 
     for class_name, section in parsed.items():
         section["entry_count"] = len(section["methods_by_index"])
+        if section.get("source_kind") == "complete":
+            section["declared_entries"] = section["entry_count"]
 
     return parsed
+
+
+def _is_vftable_metadata_entry(signature: str) -> bool:
+    text = signature.strip()
+    if not text:
+        return True
+    if "::" not in text and text.endswith(" RTTI"):
+        return True
+    return text.startswith("offset_to_top")
 
 
 def _extract_member_name(signature: str, class_name: str) -> str:
     marker = f"{class_name}::"
     pos = signature.find(marker)
-    if pos < 0:
+    if pos >= 0:
+        tail = signature[pos + len(marker) :]
+        end = tail.find("(")
+        if end < 0:
+            end = len(tail)
+        return tail[:end].strip()
+
+    match = re.search(
+        r"(?:[A-Za-z_][A-Za-z0-9_]*::)+(~?[A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        signature,
+    )
+    if not match:
         return ""
-    tail = signature[pos + len(marker) :]
-    end = tail.find("(")
-    if end < 0:
-        end = len(tail)
-    return tail[:end].strip()
+    return match.group(1).strip()
+
+
+def _reference_member_matches(expected_member: str, actual_member: str) -> bool:
+    expected = expected_member.strip()
+    actual = actual_member.strip()
+    if not expected or not actual:
+        return True
+    if expected == actual:
+        return True
+    if expected in {"dtor", "vdtor"} and actual.startswith("~"):
+        return True
+    return expected.startswith(f"{actual}_")
 
 
 def parse_record_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
@@ -1076,10 +1178,11 @@ def compare_compiler_vtable_with_yaml(
 
         expected_member = ref_item.get("member_name", "")
         actual_member = compiled.get("member_name", "")
-        if expected_member and actual_member and expected_member != actual_member:
-            # "dtor"/"vdtor" in YAML matches any destructor "~ClassName" from compiler
-            if expected_member in {"dtor", "vdtor"} and actual_member.startswith("~"):
-                continue
+        if (
+            expected_member
+            and actual_member
+            and not _reference_member_matches(expected_member, actual_member)
+        ):
             report["differences"].append(
                 {
                     "type": "vfunc_name_mismatch",

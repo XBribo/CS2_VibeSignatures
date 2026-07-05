@@ -25,6 +25,88 @@ class TestParseVftableLayouts(unittest.TestCase):
             parsed["ILoopType"]["methods_by_index"][0]["member_name"],
         )
 
+    def test_prefers_complete_vftable_for_derived_class(self) -> None:
+        compiler_output = (
+            "VFTable indices for 'IParent' (2 entries).\n"
+            "   0 | void IParent::ParentVirtual() [pure]\n"
+            "   1 | void IParent::ParentOverload(int) [pure]\n"
+            "\n"
+            "VFTable for 'IParent' in 'CDerived' (5 entries).\n"
+            "   0 | CDerived RTTI\n"
+            "   1 | void IParent::ParentVirtual() [pure]\n"
+            "   2 | void IParent::ParentOverload(int) [pure]\n"
+            "   3 | CDerived::~CDerived() [scalar deleting] [pure]\n"
+            "   4 | void CDerived::ChildVirtual() [pure]\n"
+            "\n"
+            "VFTable indices for 'CDerived' (2 entries).\n"
+            "   2 | CDerived::~CDerived() [scalar deleting]\n"
+            "   3 | void CDerived::ChildVirtual()\n"
+        )
+
+        parsed = cpp_tests_util.parse_vftable_layouts(compiler_output)
+
+        self.assertIn("CDerived", parsed)
+        self.assertEqual(4, parsed["CDerived"]["declared_entries"])
+        self.assertEqual(4, parsed["CDerived"]["entry_count"])
+        self.assertEqual(
+            "ParentVirtual",
+            parsed["CDerived"]["methods_by_index"][0]["member_name"],
+        )
+        self.assertEqual(
+            "ParentOverload",
+            parsed["CDerived"]["methods_by_index"][1]["member_name"],
+        )
+        self.assertEqual(
+            "~CDerived",
+            parsed["CDerived"]["methods_by_index"][2]["member_name"],
+        )
+        self.assertEqual(
+            "ChildVirtual",
+            parsed["CDerived"]["methods_by_index"][3]["member_name"],
+        )
+
+
+class TestCompareVtableWithYaml(unittest.TestCase):
+    def test_complete_derived_vftable_matches_inherited_overload_reference(self) -> None:
+        compiler_output = (
+            "VFTable for 'IParent' in 'CDerived' (4 entries).\n"
+            "   0 | CDerived RTTI\n"
+            "   1 | void IParent::ParentVirtual() [pure]\n"
+            "   2 | void IParent::ParentOverload(int) [pure]\n"
+            "   3 | void CDerived::ChildVirtual() [pure]\n"
+            "\n"
+            "VFTable indices for 'CDerived' (1 entry).\n"
+            "   2 | void CDerived::ChildVirtual()\n"
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            module_dir = Path(temp_dir) / "14167" / "server"
+            module_dir.mkdir(parents=True)
+            (module_dir / "CDerived_vtable.windows.yaml").write_text(
+                "vtable_class: CDerived\n"
+                "vtable_size: '0x18'\n"
+                "vtable_numvfunc: 3\n",
+                encoding="utf-8",
+            )
+            (module_dir / "CDerived_ParentOverload_Int.windows.yaml").write_text(
+                "func_name: CDerived_ParentOverload_Int\n"
+                "vtable_name: CDerived\n"
+                "vfunc_index: 1\n",
+                encoding="utf-8",
+            )
+
+            report = cpp_tests_util.compare_compiler_vtable_with_yaml(
+                class_name="CDerived",
+                compiler_output=compiler_output,
+                bindir=Path(temp_dir),
+                gamever="14167",
+                platform="windows",
+                reference_modules=["server"],
+                pointer_size=8,
+            )
+
+        self.assertEqual([], report["differences"])
+
 
 class TestParseRecordLayouts(unittest.TestCase):
     def test_parses_struct_member_offsets_from_record_layout(self) -> None:
