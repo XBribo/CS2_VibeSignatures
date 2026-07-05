@@ -1,4 +1,7 @@
+import json
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from ida_analyze_util import build_remote_text_export_py_eval
@@ -25,6 +28,23 @@ class TestBuildRemoteTextExportPyEval(unittest.TestCase):
         self.assertIn("os.replace(tmp_path, output_path)", script)
         self.assertIn("'bytes_written'", script)
         self.assertIn("'format': format_name", script)
+
+    def test_build_remote_text_export_py_eval_runs_with_separate_exec_namespaces(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "detail.txt"
+            script = build_remote_text_export_py_eval(
+                output_path=output_path,
+                producer_code="payload_text = 'ok'",
+                content_var="payload_text",
+            )
+            namespace = {}
+
+            exec(script, {}, namespace)
+
+            ack = json.loads(namespace["result"])
+            self.assertTrue(ack["ok"])
+            self.assertEqual(str(output_path), ack["output_path"])
+            self.assertEqual("ok", output_path.read_text(encoding="utf-8"))
 
     def test_build_remote_text_export_py_eval_accepts_posix_absolute_path(self) -> None:
         with patch("ida_analyze_util.os.path.isabs", return_value=False):

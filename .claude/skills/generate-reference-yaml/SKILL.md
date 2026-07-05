@@ -19,7 +19,7 @@ Do not call IDA API directly in this skill. Always run `generate_reference_yaml.
 
 ## Command examples
 
-### 1) Attach to existing MCP
+### 1) Attach to existing MCP (should be used when there is an existing ida-pro-mcp connection)
 
 ```bash
 uv run generate_reference_yaml.py -gamever 14141 -module engine -platform windows -func_name CNetworkGameClient_RecordEntityBandwidth -mcp_host 127.0.0.1 -mcp_port 13337
