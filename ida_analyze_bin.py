@@ -59,6 +59,7 @@ except ImportError as e:
 from ida_skill_preprocessor import (
     PREPROCESS_STATUS_ABSENT_OK,
     PREPROCESS_STATUS_FAILED,
+    PREPROCESS_STATUS_NO_SCRIPT,
     PREPROCESS_STATUS_SUCCESS,
     preprocess_single_skill_via_mcp,
 )
@@ -2363,6 +2364,7 @@ def process_binary(
 
     try:
         # Process each skill: try preprocess first, then run_skill if needed
+        abort_binary_processing = False
         for skill_index, (
             skill_name,
             required_outputs,
@@ -2399,6 +2401,7 @@ def process_binary(
                 remaining = len(skills_to_process) - skill_index
                 fail_count += remaining
                 print(f"  Failed to restore MCP connection, aborting remaining {remaining} skill(s)")
+                abort_binary_processing = True
                 break
 
             # Check if all expected_input files are available before running the skill
@@ -2477,6 +2480,8 @@ def process_binary(
                 preprocess_status = PREPROCESS_STATUS_SUCCESS
             elif preprocess_status == PREPROCESS_STATUS_ABSENT_OK:
                 preprocess_status = PREPROCESS_STATUS_ABSENT_OK
+            elif preprocess_status == PREPROCESS_STATUS_NO_SCRIPT:
+                preprocess_status = PREPROCESS_STATUS_NO_SCRIPT
             else:
                 preprocess_status = PREPROCESS_STATUS_FAILED
 
@@ -2496,6 +2501,9 @@ def process_binary(
                         f"  Pre-processed but missing expected_output: {skill_name} "
                         f"({', '.join(missing_names)})"
                     )
+                    print("  Aborting remaining skills after preprocess output validation failure")
+                    abort_binary_processing = True
+                    break
                 elif (
                     not required_outputs
                     and optional_outputs
@@ -2514,6 +2522,12 @@ def process_binary(
                 skip_count += 1
                 print(f"  Skipping skill: {skill_name} (preprocess reported absent_ok)")
                 continue
+            if preprocess_status == PREPROCESS_STATUS_FAILED:
+                fail_count += 1
+                print(f"  Failed: {skill_name} (preprocess failed)")
+                print("  Aborting remaining skills after preprocess failure")
+                abort_binary_processing = True
+                break
 
             if should_skip_skill_for_existing_outputs(required_outputs, optional_outputs):
                 print(f"  Skipping skill: {skill_name} (all outputs exist)")
@@ -2542,6 +2556,12 @@ def process_binary(
             else:
                 fail_count += 1
                 print(f"    Failed")
+                print("  Aborting remaining skills after fallback skill failure")
+                abort_binary_processing = True
+                break
+
+        if abort_binary_processing:
+            return success_count, fail_count, skip_count
 
         for object_index, object_name in enumerate(vcall_targets):
             process, mcp_ok = ensure_mcp_available(
@@ -2687,6 +2707,7 @@ def main():
     total_fail = 0
     total_skip = 0
     all_vcall_objects = set()
+    abort_processing = False
 
     for module in modules:
         module_name = module["name"]
@@ -2763,8 +2784,15 @@ def main():
             total_success += success
             total_fail += fail
             total_skip += skip
+            if fail > 0:
+                abort_processing = True
+                print("  Aborting remaining modules after binary processing failure")
+                break
 
-    if args.vcall_finder_filter and all_vcall_objects:
+        if abort_processing:
+            break
+
+    if args.vcall_finder_filter and all_vcall_objects and not abort_processing:
         print("\nRunning vcall_finder LLM aggregation")
         for object_name in sorted(all_vcall_objects):
             print(f"  Aggregating vcall_finder: {object_name}")

@@ -40,6 +40,7 @@ class PreprocessStatus(str):
 PREPROCESS_STATUS_SUCCESS = PreprocessStatus("success", True)
 PREPROCESS_STATUS_FAILED = PreprocessStatus("failed", False)
 PREPROCESS_STATUS_ABSENT_OK = PreprocessStatus("absent_ok", True)
+PREPROCESS_STATUS_NO_SCRIPT = PreprocessStatus("no_script", False)
 
 
 def _normalize_preprocess_status(result):
@@ -47,6 +48,8 @@ def _normalize_preprocess_status(result):
         return PREPROCESS_STATUS_SUCCESS
     if result == PREPROCESS_STATUS_ABSENT_OK:
         return PREPROCESS_STATUS_ABSENT_OK
+    if result == PREPROCESS_STATUS_NO_SCRIPT:
+        return PREPROCESS_STATUS_NO_SCRIPT
     return PREPROCESS_STATUS_FAILED
 
 
@@ -125,8 +128,15 @@ async def preprocess_single_skill_via_mcp(
         debug: enable debug output
 
     Returns:
-        One of: "success", "absent_ok", or "failed"
+        One of: "success", "absent_ok", "no_script", or "failed"
     """
+    script_path = _SCRIPT_DIR / f"{skill_name}.py"
+    if not script_path.exists():
+        if debug:
+            print(f"    Preprocess: no script for skill {skill_name}: {script_path}")
+        _SCRIPT_ENTRY_CACHE[skill_name] = None
+        return PREPROCESS_STATUS_NO_SCRIPT
+
     preprocess_func = _get_preprocess_entry(skill_name, debug=debug)
     if preprocess_func is None:
         return PREPROCESS_STATUS_FAILED

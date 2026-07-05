@@ -12,7 +12,7 @@ Currently, all signatures/offsets from **CounterStrikeSharp** and **CS2Fixes** c
 
 1. [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-2. [depotdownloader](https://github.com/steamre/depotdownloader)
+2. [depotdownloader](https://github.com/steamre/depotdownloader) (`depotdownloader.exe` must be available in PATH)
 
 3. claude / codex
 
@@ -22,7 +22,7 @@ Currently, all signatures/offsets from **CounterStrikeSharp** and **CS2Fixes** c
 
 6. [idalib](https://docs.hex-rays.com/user-guide/idalib) (mandatory for `ida_analyze_bin.py`)
 
-7. Clang-LLVM (mandatory for `run_cpp_tests.py`)
+7. Clang-LLVM (mandatory for `run_cpp_tests.py`, `clang.exe` must be available in PATH)
 
 ## Overall workflow
 

@@ -12,7 +12,7 @@
 
 1. 安装 [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-2. [depotdownloader](https://github.com/steamre/depotdownloader)
+2. [depotdownloader](https://github.com/steamre/depotdownloader) (需要将depotdownloader.exe所在目录添加到PATH中)
 
 3. `uv sync`
 
@@ -24,7 +24,7 @@
 
 7. [idalib](https://docs.hex-rays.com/user-guide/idalib)（运行 `ida_analyze_bin.py` 的必需项）
 
-8. Clang-LLVM（运行 `run_cpp_tests.py` 的必需项）
+8. Clang-LLVM（运行 `run_cpp_tests.py` 的必需项，需要将clang.exe所在目录添加到PATH中）
 
 ## 整体工作流
 

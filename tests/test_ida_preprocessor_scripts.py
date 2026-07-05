@@ -1698,6 +1698,25 @@ class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(
 
 
 class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
+    async def test_returns_no_script_when_skill_has_no_preprocessor_script(self) -> None:
+        with patch.object(
+            ida_skill_preprocessor,
+            "_get_preprocess_entry",
+            return_value=None,
+        ):
+            result = await ida_skill_preprocessor.preprocess_single_skill_via_mcp(
+                host="127.0.0.1",
+                port=13337,
+                skill_name="find-NoPreprocessorScript",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={},
+                new_binary_dir="bin_dir",
+                platform="windows",
+                debug=True,
+            )
+
+        self.assertEqual("no_script", result)
+
     async def test_forwards_llm_config_when_script_accepts_it(self) -> None:
         received = {}
 
