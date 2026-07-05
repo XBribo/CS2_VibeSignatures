@@ -4823,6 +4823,46 @@ found_struct_offset: []
         self.assertEqual("gpt-4.1-mini", mock_call_llm_text.call_args.kwargs["model"])
         self.assertNotIn("temperature", mock_call_llm_text.call_args.kwargs)
 
+    async def test_call_llm_decompile_omits_comments_from_target_blocks(
+        self,
+    ) -> None:
+        response_text = """
+```yaml
+found_vcall: []
+found_call: []
+found_gv: []
+found_struct_offset: []
+```
+""".strip()
+
+        with patch.object(
+            ida_analyze_util,
+            "call_llm_text",
+            return_value=response_text,
+            create=True,
+        ) as mock_call_llm_text:
+            await ida_analyze_util.call_llm_decompile(
+                client=object(),
+                model="gpt-4.1-mini",
+                symbol_name_list=["ILoopMode_OnLoopActivate"],
+                disasm_code=(
+                    ".text:0000000180777700                 ; misleading IDA comment\n"
+                    ".text:0000000180777704                 call    [rax+68h] ; inline comment"
+                ),
+                procedure=(
+                    "int result = call_target(\"// not a comment\"); // misleading IDA comment\n"
+                    "/* misleading block comment */\n"
+                    "return result;"
+                ),
+            )
+
+        prompt = mock_call_llm_text.call_args.kwargs["messages"][1]["content"]
+        self.assertIn("call    [rax+68h]", prompt)
+        self.assertIn('"// not a comment"', prompt)
+        self.assertNotIn("misleading IDA comment", prompt)
+        self.assertNotIn("misleading block comment", prompt)
+        self.assertNotIn("; inline comment", prompt)
+
     async def test_call_llm_decompile_forwards_explicit_temperature(
         self,
     ) -> None:

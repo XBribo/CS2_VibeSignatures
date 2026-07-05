@@ -223,6 +223,106 @@ def _normalize_llm_struct_offset_entries(entries):
     return normalized
 
 
+def _strip_line_comment_outside_quotes(line, marker):
+    quote = None
+    escaped = False
+    index = 0
+    while index < len(line):
+        char = line[index]
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            index += 1
+            continue
+        if char in ("'", '"'):
+            quote = char
+            index += 1
+            continue
+        if line.startswith(marker, index):
+            return line[:index]
+        index += 1
+    return line
+
+
+def _strip_disasm_comments(text):
+    cleaned_lines = []
+    for line in str(text or "").splitlines():
+        cleaned = _strip_line_comment_outside_quotes(line, ";").rstrip()
+        stripped = cleaned.strip()
+        if not stripped:
+            continue
+        if re.fullmatch(r"[\w.$?@]+:[0-9A-Fa-f`]+", stripped):
+            continue
+        cleaned_lines.append(cleaned)
+    return "\n".join(cleaned_lines)
+
+
+def _strip_empty_text_lines(text):
+    return "\n".join(line.rstrip() for line in text.splitlines() if line.strip())
+
+
+def _advance_quote_state(chars, char, quote, escaped):
+    chars.append(char)
+    if escaped:
+        return quote, False
+    if char == "\\":
+        return quote, True
+    if char == quote:
+        return None, False
+    return quote, False
+
+
+def _strip_c_like_comments(text):
+    chars = []
+    quote = None
+    escaped = False
+    state = "code"
+    index = 0
+    text = str(text or "")
+    while index < len(text):
+        char = text[index]
+        pair = text[index : index + 2]
+        if state == "line_comment":
+            if char in "\r\n":
+                chars.append(char)
+                state = "code"
+            index += 1
+            continue
+        if state == "block_comment":
+            if pair == "*/":
+                state = "code"
+                index += 2
+                continue
+            if char in "\r\n":
+                chars.append(char)
+            index += 1
+            continue
+        if quote:
+            quote, escaped = _advance_quote_state(chars, char, quote, escaped)
+            index += 1
+            continue
+        if char in ("'", '"'):
+            quote = char
+            chars.append(char)
+            index += 1
+            continue
+        if pair == "//":
+            state = "line_comment"
+            index += 2
+            continue
+        if pair == "/*":
+            state = "block_comment"
+            index += 2
+            continue
+        chars.append(char)
+        index += 1
+    return _strip_empty_text_lines("".join(chars))
+
+
 def _render_llm_decompile_blocks(reference_items, target_items):
     def _normalize_items(items):
         if isinstance(items, dict):
@@ -235,6 +335,9 @@ def _render_llm_decompile_blocks(reference_items, target_items):
         func_name = str(item.get("func_name", "") or "").strip() or "<unknown>"
         disasm_code = str(item.get("disasm_code", "") or "")
         procedure = str(item.get("procedure", "") or "")
+        if block_kind == "Target":
+            disasm_code = _strip_disasm_comments(disasm_code)
+            procedure = _strip_c_like_comments(procedure)
         return (
             f"### {block_kind} Function: {func_name}\n\n"
             "**Disassembly**\n\n"
