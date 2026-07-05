@@ -188,6 +188,22 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+LLM_DECOMPILE_LINUX = [
+    (
+        "CEntitySystem_ProcessEntityRegistration",
+        "prompt/call_llm_decompile.md",
+        "references/server/CEntitySystem_Init.{platform}.yaml",
+    ),
+]
+
+LLM_DECOMPILE_WINDOWS = [
+    (
+        "CEntitySystem_m_EntityMaterialAttributes",
+        "prompt/call_llm_decompile.md",
+        "references/server/CEntitySystem_Init.{platform}.yaml",
+    ),
+]
+
 GENERATE_YAML_DESIRED_FIELDS_WINDOWS = [
     (
         "CEntitySystem_m_EntityMaterialAttributes",
@@ -229,20 +245,12 @@ async def preprocess_skill(
     if platform == "linux":
         func_names += TARGET_FUNCTION_NAMES_LINUX
         generate_yaml_desired_fields += GENERATE_YAML_DESIRED_FIELDS_LINUX
-        llm_decompile.append((
-            "CEntitySystem_ProcessEntityRegistration",
-            "prompt/call_llm_decompile.md",
-            "references/server/CEntitySystem_Init.{platform}.yaml",
-        ))
+        llm_decompile += LLM_DECOMPILE_LINUX
 
     if platform == "windows":
         struct_member_names += TARGET_STRUCT_MEMBER_NAMES_WINDOWS
         generate_yaml_desired_fields += GENERATE_YAML_DESIRED_FIELDS_WINDOWS
-        llm_decompile.append((
-            "CEntitySystem_m_EntityMaterialAttributes",
-            "prompt/call_llm_decompile.md",
-            "references/server/CEntitySystem_Init.{platform}.yaml",
-        ))
+        llm_decompile += LLM_DECOMPILE_WINDOWS
 
     return await preprocess_common_skill(
         session=session,
