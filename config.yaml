@@ -6632,6 +6632,12 @@ modules:
         expected_input:
           - CEntitySystem_InstallCreationWrapperCallbacks.{platform}.yaml
 
+      - name: find-CEntitySystem_m_EntityPostSpawnCallback
+        expected_output:
+          - CEntitySystem_m_EntityPostSpawnCallback.{platform}.yaml
+        expected_input:
+          - CEntitySystem_InstallPostSpawnCallback.{platform}.yaml
+
       - name: find-INetworkMessages_RegisterSchemaTypeOverride
         expected_output:
           - INetworkMessages_RegisterSchemaTypeOverride.{platform}.yaml
@@ -8792,6 +8798,13 @@ modules:
         member: m_DataDescKeyUnserializers
         alias:
           - CEntitySystem::m_DataDescKeyUnserializers
+
+      - name: CEntitySystem_m_EntityPostSpawnCallback
+        category: structmember
+        struct: CEntitySystem
+        member: m_EntityPostSpawnCallback
+        alias:
+          - CEntitySystem::m_EntityPostSpawnCallback
 
       - name: CEntityIdentity_FreeAttributes
         category: func
