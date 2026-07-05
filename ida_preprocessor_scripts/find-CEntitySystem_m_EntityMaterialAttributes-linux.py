@@ -12,7 +12,7 @@ LLM_DECOMPILE = [
     (
         "CEntitySystem_m_EntityMaterialAttributes",
         "prompt/call_llm_decompile.md",
-        "references/server/CEntitySystem_ProcessEntityRegistrars.{platform}.yaml",
+        "references/server/CEntitySystem_ProcessEntityRegistration.{platform}.yaml",
     ),
 ]
 

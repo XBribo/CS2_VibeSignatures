@@ -6568,7 +6568,7 @@ modules:
           - CEntitySystem_m_pFieldChangeLimitSpew.{platform}.yaml
           - CEntitySystem_m_ComponentUnserializerInfoAllocator.{platform}.yaml
         expected_output_linux:
-          - CEntitySystem_ProcessEntityRegistrars.{platform}.yaml
+          - CEntitySystem_ProcessEntityRegistration.{platform}.yaml
         expected_output_windows:
           - CEntitySystem_m_EntityMaterialAttributes.{platform}.yaml
         expected_input:
@@ -6623,7 +6623,7 @@ modules:
         expected_output:
           - CEntitySystem_m_EntityMaterialAttributes.{platform}.yaml
         expected_input:
-          - CEntitySystem_ProcessEntityRegistrars.{platform}.yaml
+          - CEntitySystem_ProcessEntityRegistration.{platform}.yaml
         platform: linux
 
       - name: find-CEntitySystem_m_DataDescKeyUnserializers
@@ -10283,10 +10283,10 @@ modules:
         alias:
           - CEntitySystem::Init
 
-      - name: CEntitySystem_ProcessEntityRegistrars
+      - name: CEntitySystem_ProcessEntityRegistration
         category: func
         alias:
-          - CEntitySystem::ProcessEntityRegistrars
+          - CEntitySystem::ProcessEntityRegistration
 
       - name: CEntitySystem_PostCreateEntitySystem
         category: func

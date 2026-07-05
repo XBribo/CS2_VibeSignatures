@@ -9,7 +9,7 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 TARGET_FUNCTION_NAMES_LINUX = [
-    "CEntitySystem_ProcessEntityRegistrars",
+    "CEntitySystem_ProcessEntityRegistration",
 ]
 
 TARGET_STRUCT_MEMBER_NAMES = [
@@ -204,7 +204,7 @@ GENERATE_YAML_DESIRED_FIELDS_WINDOWS = [
 
 GENERATE_YAML_DESIRED_FIELDS_LINUX = [
     (
-        "CEntitySystem_ProcessEntityRegistrars",
+        "CEntitySystem_ProcessEntityRegistration",
         [
             "func_name",
             "func_sig",
@@ -230,7 +230,7 @@ async def preprocess_skill(
         func_names += TARGET_FUNCTION_NAMES_LINUX
         generate_yaml_desired_fields += GENERATE_YAML_DESIRED_FIELDS_LINUX
         llm_decompile.append((
-            "CEntitySystem_ProcessEntityRegistrars",
+            "CEntitySystem_ProcessEntityRegistration",
             "prompt/call_llm_decompile.md",
             "references/server/CEntitySystem_Init.{platform}.yaml",
         ))
