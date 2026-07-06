@@ -815,6 +815,9 @@ modules:
       - name: find-CEngineServer_vtable
         expected_output:
           - CEngineServer_vtable.{platform}.yaml
+      - name: find-CMapListService_vtable
+        expected_output:
+          - CMapListService_vtable.{platform}.yaml
       - name: find-CEngineServer_DumpNetStats
         expected_output:
           - CEngineServer_DumpNetStats.{platform}.yaml
@@ -880,6 +883,37 @@ modules:
         expected_output:
           - CEngineServer_ChangeLevel.{platform}.yaml
         expected_input:
+          - CEngineServer_vtable.{platform}.yaml
+      - name: find-CMapListService_IsMapValid-windows
+        platform: windows
+        expected_output:
+          - CMapListService_IsMapValid.{platform}.yaml
+        expected_input:
+          - CMapListService_vtable.{platform}.yaml
+      - name: find-IsMapValid-linux
+        platform: linux
+        expected_output:
+          - IsMapValid.{platform}.yaml
+      - name: find-CMapListService_IsMapValid-linux
+        platform: linux
+        expected_output:
+          - CMapListService_IsMapValid.{platform}.yaml
+        expected_input:
+          - IsMapValid.{platform}.yaml
+          - CMapListService_vtable.{platform}.yaml
+      - name: find-CEngineServer_IsMapValid-windows
+        platform: windows
+        expected_output:
+          - CEngineServer_IsMapValid.{platform}.yaml
+        expected_input:
+          - CMapListService_IsMapValid.{platform}.yaml
+          - CEngineServer_vtable.{platform}.yaml
+      - name: find-CEngineServer_IsMapValid-linux
+        platform: linux
+        expected_output:
+          - CEngineServer_IsMapValid.{platform}.yaml
+        expected_input:
+          - IsMapValid.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_PrecacheGeneric
         expected_output:
@@ -1557,6 +1591,8 @@ modules:
           - CEngineClient::DumpNetStats
       - name: CEngineServer_vtable
         category: vtable
+      - name: CMapListService_vtable
+        category: vtable
       - name: CEngineServer_DumpNetStats
         category: vfunc
         alias:
@@ -1608,6 +1644,18 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::ChangeLevel
+      - name: IsMapValid
+        category: func
+        platform: linux
+      - name: CMapListService_IsMapValid
+        category: vfunc
+        alias:
+          - CMapListService::IsMapValid
+          - IMapListService::IsMapValid
+      - name: CEngineServer_IsMapValid
+        category: vfunc
+        alias:
+          - CEngineServer::IsMapValid
       - name: CEngineServer_PrecacheGeneric
         category: vfunc
         alias:
