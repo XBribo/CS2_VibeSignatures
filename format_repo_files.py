@@ -6,9 +6,11 @@ import argparse
 import subprocess
 import sys
 from collections.abc import Iterable, Sequence
+from pathlib import Path
 
 MAX_WINDOWS_COMMAND_CHARS = 30000
 GENERATED_REFERENCE_YAML_PREFIX = "ida_preprocessor_scripts/references/"
+ALWAYS_CHECK_PY_GLOB = "ida_preprocessor_scripts/*.py"
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -34,6 +36,15 @@ def list_tracked_format_files() -> list[str]:
         raise RuntimeError(message)
 
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def list_unchecked_preprocessor_scripts(tracked_files: Sequence[str]) -> list[str]:
+    tracked_set = {Path(path).resolve().as_posix() for path in tracked_files}
+    extra: list[str] = []
+    for path in Path("").glob(ALWAYS_CHECK_PY_GLOB):
+        if path.is_file() and path.resolve().as_posix() not in tracked_set:
+            extra.append(path.as_posix())
+    return extra
 
 
 def chunk_paths(
@@ -81,6 +92,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
 
     python_files = [path for path in tracked_files if path.endswith(".py")]
+    python_files.extend(list_unchecked_preprocessor_scripts(tracked_files))
     yaml_files = [path for path in tracked_files if path.endswith(".yaml") and should_format_yaml(path)]
 
     ruff_command = ["ruff", "format"]

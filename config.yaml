@@ -935,6 +935,11 @@ modules:
           - CEngineServer_GetClientConVarValue.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
+      - name: find-CEngineServer_SetFakeClientConVarValue
+        expected_output:
+          - CEngineServer_SetFakeClientConVarValue.{platform}.yaml
+        expected_input:
+          - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_GetPlayerInfo
         expected_output:
           - CEngineServer_GetPlayerInfo.{platform}.yaml
@@ -1696,6 +1701,10 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::GetClientConVarValue
+      - name: CEngineServer_SetFakeClientConVarValue
+        category: vfunc
+        alias:
+          - CEngineServer::SetFakeClientConVarValue
       - name: CEngineServer_GetPlayerInfo
         category: vfunc
         alias:

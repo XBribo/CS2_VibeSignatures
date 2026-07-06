@@ -1,6 +1,7 @@
 import importlib
 import subprocess
 import unittest
+from pathlib import Path
 from unittest.mock import call, patch
 
 
@@ -35,6 +36,7 @@ class TestFormatRepoFiles(unittest.TestCase):
 
         with (
             patch("format_repo_files.list_tracked_format_files", return_value=["a.py", "config.yaml"]),
+            patch("format_repo_files.list_unchecked_preprocessor_scripts", return_value=[]),
             patch("format_repo_files.run_command_chunks", return_value=0) as run_chunks,
         ):
             self.assertEqual(0, module.main(["--check"]))
@@ -56,6 +58,7 @@ class TestFormatRepoFiles(unittest.TestCase):
 
         with (
             patch("format_repo_files.list_tracked_format_files", return_value=tracked_files),
+            patch("format_repo_files.list_unchecked_preprocessor_scripts", return_value=[]),
             patch("format_repo_files.run_command_chunks", return_value=0) as run_chunks,
         ):
             self.assertEqual(0, module.main(["--check"]))
@@ -66,6 +69,22 @@ class TestFormatRepoFiles(unittest.TestCase):
                 call(["yamlfix", "--check"], ["config.yaml"]),
             ]
         )
+
+    def test_list_unchecked_preprocessor_scripts_includes_untracked_py_files(self) -> None:
+        module = self._load_module()
+        tracked = ["ida_preprocessor_scripts/find-Tracker.py", "other.py"]
+        with (
+            patch(
+                "format_repo_files.Path.glob",
+                return_value=[
+                    Path("ida_preprocessor_scripts/find-Tracker.py"),
+                    Path("ida_preprocessor_scripts/find-Untracked.py"),
+                ],
+            ),
+            patch("format_repo_files.Path.is_file", return_value=True),
+        ):
+            extra = module.list_unchecked_preprocessor_scripts(tracked)
+        self.assertEqual(["ida_preprocessor_scripts/find-Untracked.py"], extra)
 
     def test_paths_are_split_into_windows_safe_command_chunks(self) -> None:
         module = self._load_module()
