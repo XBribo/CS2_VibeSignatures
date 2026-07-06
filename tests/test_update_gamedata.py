@@ -50,10 +50,7 @@ class TestLoadAllYamlData(unittest.TestCase):
         self.assertIn("windows", yaml_data["WindowsOnlyGlobal"])
         self.assertNotIn("linux", yaml_data["WindowsOnlyGlobal"])
         self.assertFalse(
-            any(
-                item["name"] == "WindowsOnlyGlobal" and item["platform"] == "linux"
-                for item in missing_symbols
-            )
+            any(item["name"] == "WindowsOnlyGlobal" and item["platform"] == "linux" for item in missing_symbols)
         )
 
 

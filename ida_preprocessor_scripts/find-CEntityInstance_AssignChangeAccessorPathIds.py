@@ -28,7 +28,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         "CEntityInstance_AssignChangeAccessorPathIds",
         [
             "func_name",
-            "vfunc_sig",    # REQUIRED for Pattern C
+            "vfunc_sig",  # REQUIRED for Pattern C
             "vfunc_offset",
             "vfunc_index",
             "vtable_name",
@@ -37,9 +37,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Locate CEntityInstance_AssignChangeAccessorPathIds vfunc via LLM decompile of EntityInstanceAssignChangeAccessorPathIds."""
     return await preprocess_common_skill(

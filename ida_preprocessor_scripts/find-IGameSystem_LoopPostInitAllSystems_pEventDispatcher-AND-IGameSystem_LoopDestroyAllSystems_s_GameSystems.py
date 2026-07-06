@@ -5,7 +5,10 @@ from ida_analyze_util import preprocess_common_skill
 
 
 TARGET_FUNCTION_NAMES = []
-TARGET_GLOBALVAR_NAMES = ["IGameSystem_LoopPostInitAllSystems_pEventDispatcher", "IGameSystem_LoopDestroyAllSystems_s_GameSystems"]
+TARGET_GLOBALVAR_NAMES = [
+    "IGameSystem_LoopPostInitAllSystems_pEventDispatcher",
+    "IGameSystem_LoopDestroyAllSystems_s_GameSystems",
+]
 
 LLM_DECOMPILE = [
     # (symbol_name, path_to_prompt, path_to_reference)
@@ -54,9 +57,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Reuse previous gamever gv_sig to locate targets; fallback to LLM_DECOMPILE of IGameSystem_LoopDestroyAllSystems."""
     return await preprocess_common_skill(

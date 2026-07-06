@@ -27,6 +27,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
     session,
     skill_name,

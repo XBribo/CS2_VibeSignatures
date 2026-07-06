@@ -8,18 +8,18 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 FUNC_XREFS = [
-                 {
-                     "func_name": 'NetworkStateChanged',
-                     "xref_strings": ['light_capsule', 'light_omni'],
-                     "xref_gvs": [],
-                     "xref_signatures": [],
-                     "xref_funcs": [],
-                     "exclude_funcs": [],
-                     "exclude_strings": [],
-                     "exclude_gvs": [],
-                     "exclude_signatures": [],
-                 },
-             ]
+    {
+        "func_name": "NetworkStateChanged",
+        "xref_strings": ["light_capsule", "light_omni"],
+        "xref_gvs": [],
+        "xref_signatures": [],
+        "xref_funcs": [],
+        "exclude_funcs": [],
+        "exclude_strings": [],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
+    },
+]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
@@ -35,9 +35,16 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(

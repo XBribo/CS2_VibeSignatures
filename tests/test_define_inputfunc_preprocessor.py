@@ -215,48 +215,52 @@ class TestPreprocessDefineInputFuncSkill(unittest.IsolatedAsyncioTestCase):
             )
         ]
 
-        with patch.object(
-            define_inputfunc,
-            "_collect_define_inputfunc_candidates",
-            AsyncMock(
-                return_value={
-                    "string_eas": ["0x180800000"],
-                    "items": [
-                        {
-                            "string_ea": "0x180800000",
-                            "xref_from": "0x180900000",
-                            "xref_seg_name": ".data",
-                            "handler_ptr_ea": "0x180900010",
-                            "handler_va": "0x180123450",
-                            "handler_seg_name": ".text",
-                        }
-                    ],
-                }
+        with (
+            patch.object(
+                define_inputfunc,
+                "_collect_define_inputfunc_candidates",
+                AsyncMock(
+                    return_value={
+                        "string_eas": ["0x180800000"],
+                        "items": [
+                            {
+                                "string_ea": "0x180800000",
+                                "xref_from": "0x180900000",
+                                "xref_seg_name": ".data",
+                                "handler_ptr_ea": "0x180900010",
+                                "handler_va": "0x180123450",
+                                "handler_seg_name": ".text",
+                            }
+                        ],
+                    }
+                ),
             ),
-        ), patch.object(
-            define_inputfunc,
-            "_query_func_info",
-            AsyncMock(
-                return_value={"func_va": "0x180123450", "func_size": "0x90"}
+            patch.object(
+                define_inputfunc,
+                "_query_func_info",
+                AsyncMock(return_value={"func_va": "0x180123450", "func_size": "0x90"}),
             ),
-        ), patch.object(
-            define_inputfunc,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_sig": "48 89 5C 24 ? 57 48 83 EC ?",
-                    "func_rva": "0x123450",
-                    "func_size": "0x90",
-                }
+            patch.object(
+                define_inputfunc,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_sig": "48 89 5C 24 ? 57 48 83 EC ?",
+                        "func_rva": "0x123450",
+                        "func_size": "0x90",
+                    }
+                ),
             ),
-        ), patch.object(
-            define_inputfunc,
-            "write_func_yaml",
-        ) as mock_write, patch.object(
-            define_inputfunc,
-            "_rename_func_best_effort",
-            AsyncMock(),
-        ) as mock_rename:
+            patch.object(
+                define_inputfunc,
+                "write_func_yaml",
+            ) as mock_write,
+            patch.object(
+                define_inputfunc,
+                "_rename_func_best_effort",
+                AsyncMock(),
+            ) as mock_rename,
+        ):
             result = await define_inputfunc.preprocess_define_inputfunc_skill(
                 session=session,
                 expected_outputs=["/tmp/ShowHudHint.windows.yaml"],
@@ -299,33 +303,36 @@ class TestPreprocessDefineInputFuncSkill(unittest.IsolatedAsyncioTestCase):
             )
         ]
 
-        with patch.object(
-            define_inputfunc,
-            "_collect_define_inputfunc_candidates",
-            AsyncMock(
-                return_value={
-                    "string_eas": ["0x180800000"],
-                    "items": [
-                        {
-                            "string_ea": "0x180800000",
-                            "xref_from": "0x180900000",
-                            "xref_seg_name": ".data",
-                            "handler_ptr_ea": "0x180900010",
-                            "handler_va": "0x180123450",
-                            "handler_seg_name": ".text",
-                        },
-                        {
-                            "string_ea": "0x180800000",
-                            "xref_from": "0x180910000",
-                            "xref_seg_name": ".data",
-                            "handler_ptr_ea": "0x180910010",
-                            "handler_va": "0x180223450",
-                            "handler_seg_name": ".text",
-                        },
-                    ],
-                }
+        with (
+            patch.object(
+                define_inputfunc,
+                "_collect_define_inputfunc_candidates",
+                AsyncMock(
+                    return_value={
+                        "string_eas": ["0x180800000"],
+                        "items": [
+                            {
+                                "string_ea": "0x180800000",
+                                "xref_from": "0x180900000",
+                                "xref_seg_name": ".data",
+                                "handler_ptr_ea": "0x180900010",
+                                "handler_va": "0x180123450",
+                                "handler_seg_name": ".text",
+                            },
+                            {
+                                "string_ea": "0x180800000",
+                                "xref_from": "0x180910000",
+                                "xref_seg_name": ".data",
+                                "handler_ptr_ea": "0x180910010",
+                                "handler_va": "0x180223450",
+                                "handler_seg_name": ".text",
+                            },
+                        ],
+                    }
+                ),
             ),
-        ), patch.object(define_inputfunc, "write_func_yaml") as mock_write:
+            patch.object(define_inputfunc, "write_func_yaml") as mock_write,
+        ):
             result = await define_inputfunc.preprocess_define_inputfunc_skill(
                 session=AsyncMock(),
                 expected_outputs=["/tmp/ShowHudHint.windows.yaml"],

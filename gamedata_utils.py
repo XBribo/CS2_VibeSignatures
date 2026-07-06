@@ -15,6 +15,7 @@ from dataclasses import dataclass
 # Signature Format Converters
 # =============================================================================
 
+
 def convert_sig_to_css(sig):
     """
     Convert YAML signature to CounterStrikeSharp format.
@@ -74,6 +75,7 @@ def convert_sig_to_swiftly(sig):
 # Name Normalization
 # =============================================================================
 
+
 def normalize_func_name_colons_to_underscore(name, alias_to_name_map=None):
     """
     Convert function name from double-colon format to underscore format.
@@ -101,6 +103,7 @@ def normalize_func_name_colons_to_underscore(name, alias_to_name_map=None):
 # =============================================================================
 # JSONC File Handling
 # =============================================================================
+
 
 @dataclass(frozen=True)
 class _JsoncValueSpan:
@@ -130,7 +133,7 @@ def _skip_jsonc_ws_and_comments(content, index):
 
 
 def _scan_json_string(content, index):
-    if index >= len(content) or content[index] != "\"":
+    if index >= len(content) or content[index] != '"':
         raise ValueError("expected JSON string")
     index += 1
     escape_next = False
@@ -140,7 +143,7 @@ def _scan_json_string(content, index):
             escape_next = False
         elif char == "\\":
             escape_next = True
-        elif char == "\"":
+        elif char == '"':
             return index + 1
         index += 1
     raise ValueError("unterminated JSON string")
@@ -172,7 +175,7 @@ def _scan_jsonc_value_spans(content, index, path, spans):
         value_end = _scan_jsonc_object(content, value_start, path, spans)
     elif char == "[":
         value_end = _scan_jsonc_array(content, value_start, path, spans)
-    elif char == "\"":
+    elif char == '"':
         value_end = _scan_json_string(content, value_start)
     elif char in "-0123456789":
         value_end = _scan_json_number(content, value_start)
@@ -202,9 +205,7 @@ def _scan_jsonc_object(content, index, path, spans):
         colon_index = _skip_jsonc_ws_and_comments(content, key_end)
         if colon_index >= len(content) or content[colon_index] != ":":
             raise ValueError("expected ':' after JSON object key")
-        index = _scan_jsonc_value_spans(
-            content, colon_index + 1, path + (key,), spans
-        )
+        index = _scan_jsonc_value_spans(content, colon_index + 1, path + (key,), spans)
         index = _skip_jsonc_ws_and_comments(content, index)
         if index < len(content) and content[index] == ",":
             index += 1
@@ -241,10 +242,7 @@ def _jsonc_values_equal(left, right):
     if isinstance(left, list) and isinstance(right, list):
         if len(left) != len(right):
             return False
-        return all(
-            _jsonc_values_equal(left_item, right_item)
-            for left_item, right_item in zip(left, right)
-        )
+        return all(_jsonc_values_equal(left_item, right_item) for left_item, right_item in zip(left, right))
     return type(left) is type(right) and left == right
 
 
@@ -254,9 +252,7 @@ def _collect_jsonc_leaf_changes(old_value, new_value, path=()):
             return None
         changes = []
         for key in old_value:
-            child_changes = _collect_jsonc_leaf_changes(
-                old_value[key], new_value[key], path + (key,)
-            )
+            child_changes = _collect_jsonc_leaf_changes(old_value[key], new_value[key], path + (key,))
             if child_changes is None:
                 return None
             changes.extend(child_changes)
@@ -267,9 +263,7 @@ def _collect_jsonc_leaf_changes(old_value, new_value, path=()):
             return None
         changes = []
         for index, old_item in enumerate(old_value):
-            child_changes = _collect_jsonc_leaf_changes(
-                old_item, new_value[index], path + (index,)
-            )
+            child_changes = _collect_jsonc_leaf_changes(old_item, new_value[index], path + (index,))
             if child_changes is None:
                 return None
             changes.extend(child_changes)
@@ -320,9 +314,7 @@ def _dump_jsonc_preserving_values(original_content, data):
         span = spans.get(path)
         if span is None:
             raise ValueError(f"missing JSONC value span for path {path}")
-        replacements.append(
-            (span.start, span.end, _format_jsonc_replacement_value(value))
-        )
+        replacements.append((span.start, span.end, _format_jsonc_replacement_value(value)))
 
     updated = _apply_jsonc_replacements(original_content, replacements)
     if not _jsonc_values_equal(json.loads(strip_jsonc_comments(updated)), data):
@@ -357,7 +349,7 @@ def strip_jsonc_comments(content):
             i += 1
             continue
 
-        if char == '\\' and in_string:
+        if char == "\\" and in_string:
             result.append(char)
             escape_next = True
             i += 1
@@ -371,18 +363,18 @@ def strip_jsonc_comments(content):
 
         if not in_string:
             # Check for single-line comment
-            if char == '/' and i + 1 < len(content) and content[i + 1] == '/':
+            if char == "/" and i + 1 < len(content) and content[i + 1] == "/":
                 # Skip until end of line
-                while i < len(content) and content[i] != '\n':
+                while i < len(content) and content[i] != "\n":
                     i += 1
                 continue
 
             # Check for multi-line comment
-            if char == '/' and i + 1 < len(content) and content[i + 1] == '*':
+            if char == "/" and i + 1 < len(content) and content[i + 1] == "*":
                 i += 2
                 # Skip until */
                 while i + 1 < len(content):
-                    if content[i] == '*' and content[i + 1] == '/':
+                    if content[i] == "*" and content[i + 1] == "/":
                         i += 2
                         break
                     i += 1
@@ -391,7 +383,7 @@ def strip_jsonc_comments(content):
         result.append(char)
         i += 1
 
-    return ''.join(result)
+    return "".join(result)
 
 
 def load_jsonc(file_path):

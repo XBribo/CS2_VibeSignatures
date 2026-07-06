@@ -32,9 +32,7 @@ class ConfigError(Exception):
 
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Download declared depot manifests for a specific tag."
-    )
+    parser = argparse.ArgumentParser(description="Download declared depot manifests for a specific tag.")
     parser.add_argument("-tag", required=True, help="Exact tag to match in download.yaml")
     parser.add_argument(
         "-config",
@@ -145,15 +143,11 @@ def load_module_filelist(configyaml_path: str) -> list[str]:
             if value is None:
                 continue
             if not isinstance(value, str) or not value.strip():
-                raise ConfigError(
-                    f"Modules config 'modules[{index}].{key}' must be a non-empty string"
-                )
+                raise ConfigError(f"Modules config 'modules[{index}].{key}' must be a non-empty string")
             paths.add(value.strip())
 
     if not paths:
-        raise ConfigError(
-            f"Modules config did not yield any path_windows/path_linux entries: {configyaml_path}"
-        )
+        raise ConfigError(f"Modules config did not yield any path_windows/path_linux entries: {configyaml_path}")
     return sorted(paths)
 
 
@@ -174,9 +168,7 @@ def download_manifests(
     if not filelist:
         raise ConfigError("Filelist must contain at least one path")
 
-    with tempfile.NamedTemporaryFile(
-        "w", encoding="utf-8", delete=False, suffix=".txt"
-    ) as handle:
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False, suffix=".txt") as handle:
         handle.write("\n".join(filelist) + "\n")
         filelist_path = Path(handle.name)
     try:

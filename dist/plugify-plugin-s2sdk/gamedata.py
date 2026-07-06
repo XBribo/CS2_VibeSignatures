@@ -10,12 +10,7 @@ import sys
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from gamedata_utils import (
-    convert_sig_to_swiftly,
-    normalize_func_name_colons_to_underscore,
-    load_jsonc,
-    save_jsonc
-)
+from gamedata_utils import convert_sig_to_swiftly, normalize_func_name_colons_to_underscore, load_jsonc, save_jsonc
 
 # Module metadata
 MODULE_NAME = "Plugify"
@@ -26,15 +21,14 @@ GAMEDATA_PATH = "assets/gamedata.jsonc"
 
 # Upstream download sources: (raw_url, relative_dest_path)
 DOWNLOAD_SOURCES = [
-    ("https://raw.githubusercontent.com/untrustedmodders/plugify-plugin-s2sdk/main/assets/gamedata.jsonc",
-     GAMEDATA_PATH),
+    (
+        "https://raw.githubusercontent.com/untrustedmodders/plugify-plugin-s2sdk/main/assets/gamedata.jsonc",
+        GAMEDATA_PATH,
+    ),
 ]
 
 # Platform key mapping: windows -> win64, linux -> linuxsteamrt64
-PLATFORM_MAP = {
-    "windows": "win64",
-    "linux": "linuxsteamrt64"
-}
+PLATFORM_MAP = {"windows": "win64", "linux": "linuxsteamrt64"}
 
 
 def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debug=False):
@@ -82,10 +76,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "unknown library"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "unknown library"})
             continue
 
         # Find matching YAML data
@@ -93,10 +84,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry or yaml_entry.get("library") != library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data"})
             continue
 
         # Update platform signatures
@@ -109,11 +97,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                 entry[plugify_platform] = sig
                 updated_count += 1
                 if debug:
-                    updated_symbols.append({
-                        "name": func_name,
-                        "type": "signature",
-                        "platform": platform
-                    })
+                    updated_symbols.append({"name": func_name, "type": "signature", "platform": platform})
 
     # Update Offsets
     offsets = csgo.get("Offsets", {})
@@ -126,10 +110,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data (offset)"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data (offset)"})
             continue
 
         # Update platform offsets
@@ -143,21 +124,13 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                     entry[plugify_platform] = yaml_entry[platform]["vfunc_index"]
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "offset", "platform": platform})
                 # Check for struct_member_offset (struct member offset)
                 elif "struct_member_offset" in yaml_entry[platform]:
                     entry[plugify_platform] = yaml_entry[platform]["struct_member_offset"]
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "struct_offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "struct_offset", "platform": platform})
 
     # Write back
     save_jsonc(gamedata_path, gamedata)

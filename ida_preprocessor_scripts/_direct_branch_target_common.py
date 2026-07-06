@@ -141,9 +141,7 @@ def _normalize_requested_fields(generate_yaml_desired_fields, target_name, debug
 
 def _resolve_output_path(expected_outputs, target_name, platform, debug=False):
     filename = f"{target_name}.{platform}.yaml"
-    matches = [
-        path for path in expected_outputs if os.path.basename(path) == filename
-    ]
+    matches = [path for path in expected_outputs if os.path.basename(path) == filename]
     if len(matches) != 1:
         _debug(debug, f"expected exactly one output for {filename}")
         return None
@@ -180,10 +178,8 @@ async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
 
 def _build_direct_branch_target_py_eval(func_va, allowed_mnemonics):
     normalized = [str(item).lower() for item in allowed_mnemonics]
-    return (
-        _DIRECT_BRANCH_TARGET_PY_EVAL
-        .replace("__FUNC_ADDR__", str(func_va))
-        .replace("__ALLOWED_MNEMONICS__", json.dumps(normalized))
+    return _DIRECT_BRANCH_TARGET_PY_EVAL.replace("__FUNC_ADDR__", str(func_va)).replace(
+        "__ALLOWED_MNEMONICS__", json.dumps(normalized)
     )
 
 
@@ -193,11 +189,7 @@ async def _rename_func_best_effort(session, func_va, func_name, debug=False):
     try:
         await session.call_tool(
             name="rename",
-            arguments={
-                "batch": {
-                    "func": {"addr": str(func_va), "name": str(func_name)}
-                }
-            },
+            arguments={"batch": {"func": {"addr": str(func_va), "name": str(func_name)}}},
         )
     except Exception:
         _debug(debug, f"failed to rename {func_name} (non-fatal)")
@@ -429,9 +421,6 @@ async def preprocess_direct_branch_target_skill(
     )
 
     if debug:
-        print(
-            "    Preprocess: "
-            f"written {os.path.basename(output_path)} from direct branch target {target_va}"
-        )
+        print(f"    Preprocess: written {os.path.basename(output_path)} from direct branch target {target_va}")
 
     return True

@@ -14,11 +14,7 @@ VFUNC_OFFSET = "0x0"
 
 def _match_output(expected_outputs, platform):
     expected_filename = f"{TARGET_FUNCTION_NAME}.{platform}.yaml"
-    matches = [
-        output_path
-        for output_path in expected_outputs
-        if Path(output_path).name == expected_filename
-    ]
+    matches = [output_path for output_path in expected_outputs if Path(output_path).name == expected_filename]
     return matches[0] if len(matches) == 1 else None
 
 

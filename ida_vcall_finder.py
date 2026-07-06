@@ -126,6 +126,7 @@ def build_vcall_detail_path(
         / f"{func_component}.yaml"
     )
 
+
 # `vcall_finder/14141b/g_pNetworkMessages.txt` for example
 def build_vcall_summary_path(base_dir: str | Path, gamever: str, object_name: str) -> Path:
     gamever_component = _normalize_safe_path_component(gamever, "gamever")
@@ -465,8 +466,7 @@ def aggregate_vcall_results_for_object(
     )
 
     _print_vcall_debug(
-        "OpenAI aggregation summary "
-        f"object='{object_name}', processed={processed}, failed={failed}",
+        f"OpenAI aggregation summary object='{object_name}', processed={processed}, failed={failed}",
         debug,
     )
 
@@ -637,17 +637,11 @@ def _has_nonempty_error_marker(value: Any) -> bool:
 def _is_error_payload_mapping(payload: Mapping[str, Any], expected_keys: Sequence[str] | None) -> bool:
     del expected_keys
     error_keys = ("error", "errors", "isError", "message", "stderr", "traceback", "exception")
-    return any(
-        key in payload and _has_nonempty_error_marker(payload.get(key))
-        for key in error_keys
-    )
+    return any(key in payload and _has_nonempty_error_marker(payload.get(key)) for key in error_keys)
 
 
 def _format_object_scope(gamever: str, module_name: str, platform: str, object_name: str) -> str:
-    return (
-        f"gamever='{gamever}', module='{module_name}', "
-        f"platform='{platform}', object='{object_name}'"
-    )
+    return f"gamever='{gamever}', module='{module_name}', platform='{platform}', object='{object_name}'"
 
 
 def _format_function_scope(
@@ -659,8 +653,7 @@ def _format_function_scope(
     func_va: str,
 ) -> str:
     return (
-        f"{_format_object_scope(gamever, module_name, platform, object_name)}, "
-        f"func='{func_name}', func_va='{func_va}'"
+        f"{_format_object_scope(gamever, module_name, platform, object_name)}, func='{func_name}', func_va='{func_va}'"
     )
 
 
@@ -843,7 +836,7 @@ def build_function_dump_export_py_eval(
         "        seg_name = ida_segment.get_segm_name(seg) if seg else ''\n"
         "        address_text = f'{seg_name}:{ea:016X}' if seg_name else f'{ea:016X}'\n"
         "        disasm_line = idc.generate_disasm_line(ea, 0) or ''\n"
-        "        lines.append(f\"{address_text}                 {ida_lines.tag_remove(disasm_line)}\")\n"
+        '        lines.append(f"{address_text}                 {ida_lines.tag_remove(disasm_line)}")\n'
         "    return '\\n'.join(lines)\n"
         "def get_pseudocode(start_ea):\n"
         "    if ida_hexrays is None:\n"
@@ -974,9 +967,7 @@ async def export_object_xref_details_via_mcp(
         func_va_text = str(function.get("func_va", "")).strip()
         if not func_name or not func_va_text:
             if debug:
-                print(
-                    f"    vcall_finder: missing func_name/func_va in xref entry for '{object_name}': {function!r}"
-                )
+                print(f"    vcall_finder: missing func_name/func_va in xref entry for '{object_name}': {function!r}")
             failed_functions += 1
             continue
 
@@ -996,9 +987,7 @@ async def export_object_xref_details_via_mcp(
             func_va_int = int(func_va_text, 0)
         except ValueError:
             if debug:
-                print(
-                    f"    vcall_finder: invalid func_va '{func_va_text}' in object '{object_name}'"
-                )
+                print(f"    vcall_finder: invalid func_va '{func_va_text}' in object '{object_name}'")
             failed_functions += 1
             continue
 
@@ -1027,10 +1016,7 @@ async def export_object_xref_details_via_mcp(
             )
         except Exception as exc:
             if debug:
-                print(
-                    "    vcall_finder: py_eval failed at function-export step "
-                    f"with {function_scope}: {exc!r}"
-                )
+                print(f"    vcall_finder: py_eval failed at function-export step with {function_scope}: {exc!r}")
             failed_functions += 1
             continue
 

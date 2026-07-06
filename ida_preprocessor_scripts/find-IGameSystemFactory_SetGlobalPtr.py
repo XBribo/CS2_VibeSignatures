@@ -39,9 +39,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Reuse previous gamever vfunc_sig; fallback to LLM_DECOMPILE of CGameSystemReallocatingFactory_CSource2EntitySystem_CreateGameSystem."""
     return await preprocess_common_skill(

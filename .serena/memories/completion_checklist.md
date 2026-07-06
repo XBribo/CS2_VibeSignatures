@@ -1,5 +1,6 @@
 # Completion checklist
 
 - If changing scripts/config, ensure CLI usage in README and docstrings stays accurate.
-- No dedicated lint/test config is present; run the relevant script(s) manually if validation is needed.
+- Before completion, run `uv run python format_repo_files.py --check` to verify formatting for tracked Python/YAML files. Use `uv run python format_repo_files.py` to apply formatting when needed.
+- Formatting uses Ruff for `*.py` and yamlfix for tracked `*.yaml`; generated YAML under `ida_preprocessor_scripts/references/` is intentionally skipped.
 - If outputs are expected, verify YAML in bin/<gamever>/... and gamedata outputs in dist/...

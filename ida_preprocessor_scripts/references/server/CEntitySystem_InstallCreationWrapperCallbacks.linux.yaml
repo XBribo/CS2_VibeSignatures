@@ -9,7 +9,7 @@ disasm_code: |-
   .text:0000000001E5F3CB                 push    r14
   .text:0000000001E5F3CD                 mov     r14d, esi
   .text:0000000001E5F3D0                 push    r13
-  .text:0000000001E5F3D2                 lea     r13, [rdi+0CA0h]  ; 0CA0h = CEntitySystem::m_EntityPostSpawnCallback (structmember, struct=CEntitySystem, member=m_EntityPostSpawnCallback)
+  .text:0000000001E5F3D2                 lea     r13, [rdi+0CA0h]  ; 0CA0h = CEntitySystem::m_DataDescKeyUnserializers (structmember, struct=CEntitySystem, member=m_DataDescKeyUnserializers)
   .text:0000000001E5F3D9                 push    r12
   .text:0000000001E5F3DB                 mov     rdi, r13
   .text:0000000001E5F3DE                 mov     r12d, esi
@@ -236,7 +236,7 @@ procedure: |-
     int v33[13]; // [rsp+2Ch] [rbp-34h] BYREF
 
     v4 = a2;
-    v5 = a1 + 3232;  // 3232 = 0xCA0 = CEntitySystem::m_EntityPostSpawnCallback (structmember, struct=CEntitySystem, member=m_EntityPostSpawnCallback)
+    v5 = a1 + 3232;  // 3232 = 0xCA0 = CEntitySystem::m_DataDescKeyUnserializers (structmember, struct=CEntitySystem, member=m_DataDescKeyUnserializers)
     v6 = a2;
     v7 = ((1540483477
          * ((1540483477 * ((1540483477 * (unsigned __int8)a2) ^ ((1540483477 * (unsigned int)(unsigned __int8)a2) >> 24)))

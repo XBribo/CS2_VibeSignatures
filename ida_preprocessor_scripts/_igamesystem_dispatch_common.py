@@ -290,17 +290,11 @@ async def preprocess_igamesystem_dispatch_skill(
             expected_dispatch_count = _parse_int(expected_dispatch_count)
         except Exception:
             if debug:
-                print(
-                    f"    Preprocess: invalid expected_dispatch_count: "
-                    f"{expected_dispatch_count}"
-                )
+                print(f"    Preprocess: invalid expected_dispatch_count: {expected_dispatch_count}")
             return False
         if expected_dispatch_count <= 0:
             if debug:
-                print(
-                    f"    Preprocess: expected_dispatch_count must be > 0, got "
-                    f"{expected_dispatch_count}"
-                )
+                print(f"    Preprocess: expected_dispatch_count must be > 0, got {expected_dispatch_count}")
             return False
     else:
         if has_dispatch_rank:
@@ -317,10 +311,7 @@ async def preprocess_igamesystem_dispatch_skill(
         max_rank = max(ranks)
         if expected_dispatch_count <= max_rank:
             if debug:
-                print(
-                    "    Preprocess: expected_dispatch_count is too small for the "
-                    "largest dispatch_rank"
-                )
+                print("    Preprocess: expected_dispatch_count is too small for the largest dispatch_rank")
             return False
     elif expected_dispatch_count != target_count:
         if debug:
@@ -337,10 +328,7 @@ async def preprocess_igamesystem_dispatch_skill(
         matched = [path for path in expected_outputs if os.path.basename(path) == filename]
         if len(matched) != 1:
             if debug:
-                print(
-                    f"    Preprocess: expected exactly one output named {filename}, "
-                    f"got {len(matched)}"
-                )
+                print(f"    Preprocess: expected exactly one output named {filename}, got {len(matched)}")
             return False
         matched_outputs[target_name] = matched[0]
 
@@ -403,10 +391,7 @@ async def preprocess_igamesystem_dispatch_skill(
         return False
 
     if debug:
-        print(
-            f"    Preprocess: collected {len(entries)} dispatch entries from "
-            f"{source_yaml_stem}"
-        )
+        print(f"    Preprocess: collected {len(entries)} dispatch entries from {source_yaml_stem}")
 
     internal_addr = parsed.get("internal_addr")
     should_sort_by_index = has_dispatch_rank or (target_count > 1 and multi_order == "index")

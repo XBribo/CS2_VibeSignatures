@@ -6,7 +6,7 @@ disasm_code: |-
   .text:00000001811F30DA                 mov     [rsp+arg_8], dl
   .text:00000001811F30DE                 push    rdi
   .text:00000001811F30DF                 sub     rsp, 30h
-  .text:00000001811F30E3                 lea     rbx, [rcx+0C98h]  ; 0C98h = CEntitySystem::m_EntityPostSpawnCallback (structmember, struct=CEntitySystem, member=m_EntityPostSpawnCallback)
+  .text:00000001811F30E3                 lea     rbx, [rcx+0C98h]  ; 0C98h = CEntitySystem::m_DataDescKeyUnserializers (structmember, struct=CEntitySystem, member=m_DataDescKeyUnserializers)
   .text:00000001811F30EA                 movzx   edi, dl
   .text:00000001811F30ED                 mov     rcx, rbx
   .text:00000001811F30F0                 lea     rdx, [rsp+38h+arg_8]
@@ -65,7 +65,7 @@ procedure: |-
     unsigned __int8 v12; // [rsp+48h] [rbp+10h] BYREF
 
     v12 = a2;
-    v3 = a1 + 3224;  // 3224 = 0xC98 = CEntitySystem::m_EntityPostSpawnCallback (structmember, struct=CEntitySystem, member=m_EntityPostSpawnCallback)
+    v3 = a1 + 3224;  // 3224 = 0xC98 = CEntitySystem::m_DataDescKeyUnserializers (structmember, struct=CEntitySystem, member=m_DataDescKeyUnserializers)
     v4 = a2;
     v6 = sub_1811E24F0(a1 + 3224, &v12);
     if ( v6 != -1 )

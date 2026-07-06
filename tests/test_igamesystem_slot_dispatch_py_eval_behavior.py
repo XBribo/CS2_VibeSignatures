@@ -6,9 +6,7 @@ from unittest.mock import patch
 
 
 def _import_slot_dispatch_module():
-    return importlib.import_module(
-        "ida_preprocessor_scripts._igamesystem_slot_dispatch_common"
-    )
+    return importlib.import_module("ida_preprocessor_scripts._igamesystem_slot_dispatch_common")
 
 
 def _slot_op(kind: int, *, addr: int = -1, reg: int | None = None) -> dict[str, object]:
@@ -57,14 +55,10 @@ def _run_slot_dispatch_py_eval(
         insn_t=_FakeInsn,
         decode_insn=fake_decode_insn,
     )
-    fake_idautils = types.SimpleNamespace(
-        Heads=lambda start, end: [ea for ea in heads if start <= ea < end]
-    )
+    fake_idautils = types.SimpleNamespace(Heads=lambda start, end: [ea for ea in heads if start <= ea < end])
     fake_idc = types.SimpleNamespace(
         print_insn_mnem=lambda ea: instructions.get(ea, {}).get("mnem", ""),
-        get_operand_value=lambda ea, index: instructions.get(ea, {}).get(
-            "operand_values", (0, 0)
-        )[index],
+        get_operand_value=lambda ea, index: instructions.get(ea, {}).get("operand_values", (0, 0))[index],
         prev_head=lambda ea, minimum: next(
             (head for head in reversed(heads) if minimum <= head < ea),
             -1,

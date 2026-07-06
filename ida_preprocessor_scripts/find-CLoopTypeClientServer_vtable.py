@@ -22,9 +22,16 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Generate CLoopTypeClientServer vtable YAML by class-name lookup via MCP."""
     return await preprocess_common_skill(

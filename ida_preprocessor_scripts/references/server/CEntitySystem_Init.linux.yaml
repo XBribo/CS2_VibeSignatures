@@ -212,7 +212,7 @@ disasm_code: |-
   .text:0000000001E7C76D                 jnz     loc_1E7CCB7
   .text:0000000001E7C773                 call    sub_1E98AF0
   .text:0000000001E7C778                 mov     rdi, rbx
-  .text:0000000001E7C77B                 call    CEntitySystem_ProcessEntityRegistrars
+  .text:0000000001E7C77B                 call    CEntitySystem_ProcessEntityRegistration
   .text:0000000001E7C780                 jmp     loc_1E7C659
   .text:0000000001E7C788                 ; _QWORD
   .text:0000000001E7C788                 mov     edi, 58h ; 'X'; _QWORD
@@ -994,7 +994,7 @@ procedure: |-
     }
   LABEL_45:
     sub_1E98AF0();
-    CEntitySystem_ProcessEntityRegistrars(a1);
+    CEntitySystem_ProcessEntityRegistration(a1);
   LABEL_31:
     byte_27C42C0 = 1;
   }

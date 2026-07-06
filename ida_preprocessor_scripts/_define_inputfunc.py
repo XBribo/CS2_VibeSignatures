@@ -32,9 +32,7 @@ def _normalize_requested_fields(generate_yaml_desired_fields, target_name, debug
 
 def _resolve_output_path(expected_outputs, target_name, platform, debug=False):
     filename = f"{target_name}.{platform}.yaml"
-    matches = [
-        path for path in expected_outputs if os.path.basename(path) == filename
-    ]
+    matches = [path for path in expected_outputs if os.path.basename(path) == filename]
     if len(matches) != 1:
         if debug:
             print(f"    Preprocess: expected exactly one output for {filename}")
@@ -111,9 +109,7 @@ def _build_define_inputfunc_py_eval(
         "        return None",
         "    return idc.get_segm_name(seg.start_ea)",
     ]
-    body_lines.extend(
-        _build_ida_strings_enumerator_py_lines(strings_var_name="strings")
-    )
+    body_lines.extend(_build_ida_strings_enumerator_py_lines(strings_var_name="strings"))
     body_lines.extend(
         [
             "for item in strings:",
@@ -359,15 +355,12 @@ async def preprocess_define_inputfunc_skill(
     filtered_items = [
         item
         for item in items
-        if item.get("xref_seg_name") in allowed_segment_names
-        and item.get("handler_seg_name") == ".text"
+        if item.get("xref_seg_name") in allowed_segment_names and item.get("handler_seg_name") == ".text"
     ]
     handler_values = sorted({item.get("handler_va") for item in filtered_items})
     if len(handler_values) != 1:
         if debug:
-            print(
-                f"    Preprocess: expected exactly one .text handler for {input_name}, got {len(handler_values)}"
-            )
+            print(f"    Preprocess: expected exactly one .text handler for {input_name}, got {len(handler_values)}")
         return False
 
     handler_va = handler_values[0]

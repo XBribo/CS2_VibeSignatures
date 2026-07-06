@@ -9,7 +9,7 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 TARGET_FUNCTION_NAMES_LINUX = [
-    "CEntitySystem_ProcessEntityRegistrars",
+    "CEntitySystem_ProcessEntityRegistration",
 ]
 
 TARGET_STRUCT_MEMBER_NAMES = [
@@ -109,7 +109,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
         ],
@@ -120,7 +120,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
         ],
@@ -131,7 +131,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
         ],
@@ -142,10 +142,10 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
-            #"offset_sig_max_match:2",
+            # "offset_sig_max_match:2",
             "offset_sig_allow_across_function_boundary:true",
         ],
     ),
@@ -155,10 +155,10 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
-            #"offset_sig_max_match:2",
+            # "offset_sig_max_match:2",
             "offset_sig_allow_across_function_boundary:true",
         ],
     ),
@@ -168,10 +168,10 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
-            #"offset_sig_max_match:2",
+            # "offset_sig_max_match:2",
             "offset_sig_allow_across_function_boundary:true",
         ],
     ),
@@ -181,10 +181,26 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
         ],
+    ),
+]
+
+LLM_DECOMPILE_LINUX = [
+    (
+        "CEntitySystem_ProcessEntityRegistration",
+        "prompt/call_llm_decompile.md",
+        "references/server/CEntitySystem_Init.{platform}.yaml",
+    ),
+]
+
+LLM_DECOMPILE_WINDOWS = [
+    (
+        "CEntitySystem_m_EntityMaterialAttributes",
+        "prompt/call_llm_decompile.md",
+        "references/server/CEntitySystem_Init.{platform}.yaml",
     ),
 ]
 
@@ -195,7 +211,7 @@ GENERATE_YAML_DESIRED_FIELDS_WINDOWS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
         ],
@@ -204,7 +220,7 @@ GENERATE_YAML_DESIRED_FIELDS_WINDOWS = [
 
 GENERATE_YAML_DESIRED_FIELDS_LINUX = [
     (
-        "CEntitySystem_ProcessEntityRegistrars",
+        "CEntitySystem_ProcessEntityRegistration",
         [
             "func_name",
             "func_sig",
@@ -217,8 +233,15 @@ GENERATE_YAML_DESIRED_FIELDS_LINUX = [
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Locate vfuncs and struct member offsets from CEntitySystem_Init via LLM decompile."""
     func_names = list(TARGET_FUNCTION_NAMES)
@@ -229,20 +252,12 @@ async def preprocess_skill(
     if platform == "linux":
         func_names += TARGET_FUNCTION_NAMES_LINUX
         generate_yaml_desired_fields += GENERATE_YAML_DESIRED_FIELDS_LINUX
-        llm_decompile.append((
-            "CEntitySystem_ProcessEntityRegistrars",
-            "prompt/call_llm_decompile.md",
-            "references/server/CEntitySystem_Init.{platform}.yaml",
-        ))
+        llm_decompile += LLM_DECOMPILE_LINUX
 
     if platform == "windows":
         struct_member_names += TARGET_STRUCT_MEMBER_NAMES_WINDOWS
         generate_yaml_desired_fields += GENERATE_YAML_DESIRED_FIELDS_WINDOWS
-        llm_decompile.append((
-            "CEntitySystem_m_EntityMaterialAttributes",
-            "prompt/call_llm_decompile.md",
-            "references/server/CEntitySystem_Init.{platform}.yaml",
-        ))
+        llm_decompile += LLM_DECOMPILE_WINDOWS
 
     return await preprocess_common_skill(
         session=session,

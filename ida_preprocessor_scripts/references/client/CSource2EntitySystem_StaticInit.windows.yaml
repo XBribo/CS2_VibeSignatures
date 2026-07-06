@@ -478,15 +478,15 @@ procedure: |-
     v27 = (const char *)sub_1809485C0;
     v28 = (__int64)sub_180964BA0;
     LOBYTE(v22) = 40;
-    sub_1814BBE30(g_pEntitySystem, v22, &v27);
+    CEntitySystem_InstallCreationWrapperCallbacks(g_pEntitySystem, v22, &v27);
     v27 = (const char *)sub_180948530;
     LOBYTE(v23) = 54;
     v28 = (__int64)sub_180964BA0;
-    sub_1814BBE30(g_pEntitySystem, v23, &v27);
+    CEntitySystem_InstallCreationWrapperCallbacks(g_pEntitySystem, v23, &v27);
     v27 = (const char *)sub_1809484E0;
     LOBYTE(v24) = 67;
     v28 = (__int64)sub_180964BA0;
-    sub_1814BBE30(g_pEntitySystem, v24, &v27);
+    CEntitySystem_InstallCreationWrapperCallbacks(g_pEntitySystem, v24, &v27);
     v25 = *(_QWORD *)g_pFlattenedSerializers;
     v28 = (__int64)sub_180964B70;
     v27 = (const char *)unknown_libname_194;

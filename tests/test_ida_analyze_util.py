@@ -340,9 +340,7 @@ class TestPreprocessIndexBasedVfuncViaMcp(unittest.IsolatedAsyncioTestCase):
         assert result is not None
         self.assertEqual("48 89 ??", result["func_sig"])
         mock_gen_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_gen_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertTrue(mock_gen_sig.await_args.kwargs["allow_across_function_boundary"])
 
 
 class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
@@ -401,17 +399,12 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             class_name="CEntityComponentHelperT_CBodyComponent",
             symbol_aliases=[
                 rtti_symbol,
-                "_ZTV23CEntityComponentHelperTI14CBodyComponent32"
-                "CEntityComponentHelperReferencedIS0_EE",
+                "_ZTV23CEntityComponentHelperTI14CBodyComponent32CEntityComponentHelperReferencedIS0_EE",
             ],
             name_to_ea={rtti_symbol: 0x181917500},
             name_by_ea={0x1815A1618: "CEntityComponentHelperT_CBodyComponent_vtable"},
             data_refs={0x181917500: [0x1815A1610]},
-            ptr_values={
-                0x1815A1618 + idx * 8: vfunc
-                for idx, vfunc in enumerate(vfuncs)
-            }
-            | {0x1815A1648: 0},
+            ptr_values={0x1815A1618 + idx * 8: vfunc for idx, vfunc in enumerate(vfuncs)} | {0x1815A1648: 0},
             func_addrs=set(vfuncs),
         )
 
@@ -473,11 +466,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
         idaapi = types.ModuleType("idaapi")
         idaapi.BADADDR = -1
         idaapi.inf_is_64bit = lambda: True
-        idaapi.get_func = lambda ea: (
-            types.SimpleNamespace(start_ea=ea, end_ea=ea + 1)
-            if ea in func_addrs
-            else None
-        )
+        idaapi.get_func = lambda ea: types.SimpleNamespace(start_ea=ea, end_ea=ea + 1) if ea in func_addrs else None
         idaapi.add_func = lambda ea: None
 
         ida_bytes = types.ModuleType("ida_bytes")
@@ -522,13 +511,13 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             end_ea=0x181000000,
             perm=1,
         )
-        ida_segment.get_segm_by_name = (
-            lambda name: rdata_seg if name == ".rdata" else None
-        )
+        ida_segment.get_segm_by_name = lambda name: rdata_seg if name == ".rdata" else None
         ida_segment.getseg = lambda ea: (
-            rdata_seg if rdata_seg.start_ea <= ea < rdata_seg.end_ea else
-            text_seg if text_seg.start_ea <= ea < text_seg.end_ea else
-            None
+            rdata_seg
+            if rdata_seg.start_ea <= ea < rdata_seg.end_ea
+            else text_seg
+            if text_seg.start_ea <= ea < text_seg.end_ea
+            else None
         )
         return ida_segment
 
@@ -549,22 +538,21 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             "vtable_entries": {0: "0x180020000"},
         }
 
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_vtable_via_mcp",
-            AsyncMock(return_value=fake_vtable_data),
-        ) as mock_preprocess_vtable, patch.object(
-            ida_analyze_util,
-            "write_vtable_yaml",
-        ) as mock_write_vtable_yaml:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_vtable_via_mcp",
+                AsyncMock(return_value=fake_vtable_data),
+            ) as mock_preprocess_vtable,
+            patch.object(
+                ida_analyze_util,
+                "write_vtable_yaml",
+            ) as mock_write_vtable_yaml,
+        ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
-                expected_outputs=[
-                    "/tmp/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.windows.yaml"
-                ],
-                vtable_class_names=[
-                    "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"
-                ],
+                expected_outputs=["/tmp/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.windows.yaml"],
+                vtable_class_names=["CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"],
                 mangled_class_names=alias_map,
                 platform="windows",
                 image_base=0x180000000,
@@ -592,9 +580,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             image_base=0x180000000,
             platform="windows",
             debug=True,
-            symbol_aliases=alias_map[
-                "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"
-            ],
+            symbol_aliases=alias_map["CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"],
         )
         mock_write_vtable_yaml.assert_called_once()
 
@@ -675,9 +661,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             0x180000000,
             "windows",
             True,
-            alias_map[
-                "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"
-            ],
+            alias_map["CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"],
         )
 
     async def test_func_vtable_relations_use_aliases_for_index_enrichment(self) -> None:
@@ -688,55 +672,56 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             ]
         }
 
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Think",
-                    "func_va": "0x180004000",
-                    "func_rva": "0x4000",
-                    "func_size": "0x40",
-                    "func_sig": "AA BB",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Think",
+                        "func_va": "0x180004000",
+                        "func_rva": "0x4000",
+                        "func_size": "0x40",
+                        "func_sig": "AA BB",
+                    }
+                ),
+            ) as mock_preprocess_func,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_vtable_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "vtable_class": "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem",
+                        "vtable_symbol": "??_7?$CGameSystemReallocatingFactory@VCSpawnGroupMgrGameSystem@@V1@@@6B@",
+                        "vtable_va": "0x180001000",
+                        "vtable_rva": "0x1000",
+                        "vtable_size": "0x20",
+                        "vtable_numvfunc": 4,
+                        "vtable_entries": {
+                            0: "0x180003000",
+                            1: "0x180004000",
+                        },
+                    }
+                ),
+            ) as mock_preprocess_vtable,
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
             ),
-        ) as mock_preprocess_func, patch.object(
-            ida_analyze_util,
-            "preprocess_vtable_via_mcp",
-            AsyncMock(
-                return_value={
-                    "vtable_class": "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem",
-                    "vtable_symbol": "??_7?$CGameSystemReallocatingFactory@VCSpawnGroupMgrGameSystem@@V1@@@6B@",
-                    "vtable_va": "0x180001000",
-                    "vtable_rva": "0x1000",
-                    "vtable_size": "0x20",
-                    "vtable_numvfunc": 4,
-                    "vtable_entries": {
-                        0: "0x180003000",
-                        1: "0x180004000",
-                    },
-                }
-            ),
-        ) as mock_preprocess_vtable, patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
-                expected_outputs=[
-                    "/tmp/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Think.windows.yaml"
-                ],
+                expected_outputs=["/tmp/CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Think.windows.yaml"],
                 old_yaml_map={},
                 new_binary_dir="/tmp",
                 platform="windows",
                 image_base=0x180000000,
-                func_names=[
-                    "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Think"
-                ],
+                func_names=["CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Think"],
                 func_vtable_relations=[
                     (
                         "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_Think",
@@ -761,9 +746,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             image_base=0x180000000,
             platform="windows",
             debug=True,
-            symbol_aliases=alias_map[
-                "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"
-            ],
+            symbol_aliases=alias_map["CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"],
         )
         written_payload = mock_write_func_yaml.call_args.args[1]
         self.assertEqual(1, written_payload["vfunc_index"])
@@ -884,25 +867,19 @@ class TestVtableArtifactStemSupport(unittest.IsolatedAsyncioTestCase):
     def test_normalizes_plain_class_name_to_primary_vtable_artifact(self) -> None:
         self.assertEqual(
             "CSpawnGroupMgrGameSystem_vtable",
-            ida_analyze_util._normalize_vtable_artifact_stem(
-                "CSpawnGroupMgrGameSystem"
-            ),
+            ida_analyze_util._normalize_vtable_artifact_stem("CSpawnGroupMgrGameSystem"),
         )
 
     def test_preserves_primary_vtable_artifact_stem(self) -> None:
         self.assertEqual(
             "CSpawnGroupMgrGameSystem_vtable",
-            ida_analyze_util._normalize_vtable_artifact_stem(
-                "CSpawnGroupMgrGameSystem_vtable"
-            ),
+            ida_analyze_util._normalize_vtable_artifact_stem("CSpawnGroupMgrGameSystem_vtable"),
         )
 
     def test_preserves_numbered_vtable_artifact_stem(self) -> None:
         self.assertEqual(
             "CSpawnGroupMgrGameSystem_vtable2",
-            ida_analyze_util._normalize_vtable_artifact_stem(
-                "CSpawnGroupMgrGameSystem_vtable2"
-            ),
+            ida_analyze_util._normalize_vtable_artifact_stem("CSpawnGroupMgrGameSystem_vtable2"),
         )
 
     def test_builds_vtable_yaml_path_without_double_suffix(self) -> None:
@@ -934,28 +911,33 @@ class TestVtableArtifactStemSupport(unittest.IsolatedAsyncioTestCase):
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "func_name": func_name,
-                        "func_va": "0x1803a75c0",
-                        "func_rva": "0x3a75c0",
-                        "func_size": "0x40",
-                    }
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "func_name": func_name,
+                            "func_va": "0x1803a75c0",
+                            "func_rva": "0x3a75c0",
+                            "func_size": "0x40",
+                        }
+                    ),
+                ) as mock_preprocess_func,
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_vtable_via_mcp",
+                    AsyncMock(return_value=None),
+                ) as mock_preprocess_vtable,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
                 ),
-            ) as mock_preprocess_func, patch.object(
-                ida_analyze_util,
-                "preprocess_vtable_via_mcp",
-                AsyncMock(return_value=None),
-            ) as mock_preprocess_vtable, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -1176,15 +1158,18 @@ class TestVtableArtifactStemSupport(unittest.IsolatedAsyncioTestCase):
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_func_basic_info_via_mcp",
-                AsyncMock(return_value={"func_size": "0x40"}),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_vtable_via_mcp",
-                AsyncMock(return_value=None),
-            ) as mock_preprocess_vtable:
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_func_basic_info_via_mcp",
+                    AsyncMock(return_value={"func_size": "0x40"}),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_vtable_via_mcp",
+                    AsyncMock(return_value=None),
+                ) as mock_preprocess_vtable,
+            ):
                 result = await ida_analyze_util._preprocess_direct_func_sig_via_mcp(
                     session=AsyncMock(),
                     new_path=str(Path(temp_dir) / "Foo.windows.yaml"),
@@ -1204,35 +1189,40 @@ class TestVtableArtifactStemSupport(unittest.IsolatedAsyncioTestCase):
         mock_preprocess_vtable.assert_not_awaited()
 
     async def test_preprocess_func_xrefs_reads_artifact_stem_vtable_yaml(self) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x180200000,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_ea",
-            AsyncMock(return_value=set()),
-        ) as mock_collect_ea, patch.object(
-            ida_analyze_util,
-            "_read_yaml_file",
-            return_value={
-                "vtable_entries": {
-                    0: "0x180200000",
-                    1: "0x180300000",
-                }
-            },
-        ) as mock_read_yaml, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x180200000,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_ea",
+                AsyncMock(return_value=set()),
+            ) as mock_collect_ea,
+            patch.object(
+                ida_analyze_util,
+                "_read_yaml_file",
                 return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+                    "vtable_entries": {
+                        0: "0x180200000",
+                        1: "0x180300000",
+                    }
+                },
+            ) as mock_read_yaml,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="CLoopModeGame_LoopInit",
@@ -1257,9 +1247,7 @@ class TestVtableArtifactStemSupport(unittest.IsolatedAsyncioTestCase):
             target_ea=0x180200000,
             debug=True,
         )
-        mock_read_yaml.assert_called_once_with(
-            str(Path("bin_dir") / "CLoopModeGame_vtable2.linux.yaml")
-        )
+        mock_read_yaml.assert_called_once_with(str(Path("bin_dir") / "CLoopModeGame_vtable2.linux.yaml"))
         self.assertEqual(0x180200000, mock_gen_sig.await_args.kwargs["func_va"])
         mock_load_symbol.assert_called_once()
 
@@ -1268,25 +1256,29 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_rejects_missing_generate_yaml_desired_fields(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "Foo",
-                    "func_va": "0x180004000",
-                    "func_rva": "0x4000",
-                    "func_size": "0x40",
-                    "func_sig": "AA BB",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "Foo",
+                        "func_va": "0x180004000",
+                        "func_rva": "0x4000",
+                        "func_size": "0x40",
+                        "func_sig": "AA BB",
+                    }
+                ),
+            ) as mock_preprocess_func_sig,
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
             ),
-        ) as mock_preprocess_func_sig, patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
@@ -1617,24 +1609,28 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_writes_func_and_vfunc_boundary_flags(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "Foo",
-                    "func_sig": "AA BB",
-                    "vfunc_sig": "48 89 5C 24 ? ? 57",
-                    "vfunc_sig_max_match": 10,
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "Foo",
+                        "func_sig": "AA BB",
+                        "vfunc_sig": "48 89 5C 24 ? ? 57",
+                        "vfunc_sig_max_match": 10,
+                    }
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
+            ),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
@@ -1691,23 +1687,26 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     ) -> None:
         struct_member_name = "CActor_m_iHealth"
 
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_struct_offset_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "struct_name": "CActor",
-                    "member_name": "m_iHealth",
-                    "offset": "0x10",
-                    "size": 4,
-                    "offset_sig": "49 8B 4E ??",
-                    "offset_sig_disp": 0,
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_struct_offset_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "struct_name": "CActor",
+                        "member_name": "m_iHealth",
+                        "offset": "0x10",
+                        "size": 4,
+                        "offset_sig": "49 8B 4E ??",
+                        "offset_sig_disp": 0,
+                    }
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "write_struct_offset_yaml",
-        ) as mock_write_struct_offset_yaml:
+            patch.object(
+                ida_analyze_util,
+                "write_struct_offset_yaml",
+            ) as mock_write_struct_offset_yaml,
+        ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
                 expected_outputs=[f"/tmp/{struct_member_name}.windows.yaml"],
@@ -1764,39 +1763,44 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_rejects_missing_desired_fields_before_any_write(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "Foo",
-                    "func_va": "0x180004000",
-                    "func_rva": "0x4000",
-                    "func_size": "0x40",
-                    "func_sig": "AA BB",
-                }
-            ),
-        ) as mock_preprocess_func_sig, patch.object(
-            ida_analyze_util,
-            "preprocess_vtable_via_mcp",
-            AsyncMock(
-                return_value={
-                    "vtable_class": "Bar",
-                    "vtable_symbol": "??_7Bar@@6B@",
-                    "vtable_va": "0x180001000",
-                    "vtable_rva": "0x1000",
-                    "vtable_size": "0x20",
-                    "vtable_numvfunc": 2,
-                    "vtable_entries": {0: "0x180003000", 1: "0x180004000"},
-                }
-            ),
-        ) as mock_preprocess_vtable, patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "write_vtable_yaml",
-        ) as mock_write_vtable_yaml:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "Foo",
+                        "func_va": "0x180004000",
+                        "func_rva": "0x4000",
+                        "func_size": "0x40",
+                        "func_sig": "AA BB",
+                    }
+                ),
+            ) as mock_preprocess_func_sig,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_vtable_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "vtable_class": "Bar",
+                        "vtable_symbol": "??_7Bar@@6B@",
+                        "vtable_va": "0x180001000",
+                        "vtable_rva": "0x1000",
+                        "vtable_size": "0x20",
+                        "vtable_numvfunc": 2,
+                        "vtable_entries": {0: "0x180003000", 1: "0x180004000"},
+                    }
+                ),
+            ) as mock_preprocess_vtable,
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "write_vtable_yaml",
+            ) as mock_write_vtable_yaml,
+        ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
                 expected_outputs=[
@@ -1822,42 +1826,47 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_filters_func_payload_by_desired_fields(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "Foo",
-                    "func_va": "0x180004000",
-                    "func_rva": "0x4000",
-                    "func_size": "0x40",
-                    "func_sig": "AA BB",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "Foo",
+                        "func_va": "0x180004000",
+                        "func_rva": "0x4000",
+                        "func_size": "0x40",
+                        "func_sig": "AA BB",
+                    }
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "preprocess_vtable_via_mcp",
-            AsyncMock(
-                return_value={
-                    "vtable_class": "Bar",
-                    "vtable_symbol": "??_7Bar@@6B@",
-                    "vtable_va": "0x180001000",
-                    "vtable_rva": "0x1000",
-                    "vtable_size": "0x20",
-                    "vtable_numvfunc": 2,
-                    "vtable_entries": {
-                        0: "0x180003000",
-                        1: "0x180004000",
-                    },
-                }
+            patch.object(
+                ida_analyze_util,
+                "preprocess_vtable_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "vtable_class": "Bar",
+                        "vtable_symbol": "??_7Bar@@6B@",
+                        "vtable_va": "0x180001000",
+                        "vtable_rva": "0x1000",
+                        "vtable_size": "0x20",
+                        "vtable_numvfunc": 2,
+                        "vtable_entries": {
+                            0: "0x180003000",
+                            1: "0x180004000",
+                        },
+                    }
+                ),
+            ) as mock_preprocess_vtable,
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
             ),
-        ) as mock_preprocess_vtable, patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
@@ -1868,9 +1877,7 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
                 image_base=0x180000000,
                 func_names=["Foo"],
                 func_vtable_relations=[("Foo", "Bar")],
-                generate_yaml_desired_fields=[
-                    ("Foo", ["func_name", "vtable_name", "vfunc_offset", "vfunc_index"])
-                ],
+                generate_yaml_desired_fields=[("Foo", ["func_name", "vtable_name", "vfunc_offset", "vfunc_index"])],
                 debug=True,
             )
 
@@ -1897,26 +1904,30 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_writes_vfunc_sig_max_match_field(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "Foo",
-                    "func_va": "0x180004000",
-                    "func_sig": "AA BB",
-                    "vfunc_sig": "48 89 5C 24 ? ? 57",
-                    "vfunc_sig_max_match": 10,
-                    "vtable_name": "Bar",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "Foo",
+                        "func_va": "0x180004000",
+                        "func_sig": "AA BB",
+                        "vfunc_sig": "48 89 5C 24 ? ? 57",
+                        "vfunc_sig_max_match": 10,
+                        "vtable_name": "Bar",
+                    }
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
+            ),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
@@ -1958,24 +1969,28 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_rejects_missing_requested_func_field(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "Foo",
-                    "func_va": "0x180004000",
-                    "func_sig": "AA BB",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "Foo",
+                        "func_va": "0x180004000",
+                        "func_sig": "AA BB",
+                    }
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
-        ) as mock_rename_func:
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
+            ) as mock_rename_func,
+        ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
                 expected_outputs=["/tmp/Foo.windows.yaml"],
@@ -1995,25 +2010,29 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_does_not_rename_when_write_fails(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "Foo",
-                    "func_va": "0x180004000",
-                    "func_sig": "AA BB",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "Foo",
+                        "func_va": "0x180004000",
+                        "func_sig": "AA BB",
+                    }
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-            side_effect=OSError("boom"),
-        ), patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
-        ) as mock_rename_func:
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+                side_effect=OSError("boom"),
+            ),
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
+            ) as mock_rename_func,
+        ):
             with self.assertRaises(OSError):
                 await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -2046,18 +2065,22 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
                 }
             return None
 
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(side_effect=_preprocess_func_side_effect),
-        ), patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
-        ) as mock_rename_func:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(side_effect=_preprocess_func_side_effect),
+            ),
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
+            ) as mock_rename_func,
+        ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
                 expected_outputs=[
@@ -2091,26 +2114,28 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
         async def _rename_side_effect(_session, _func_va_hex, func_name, _debug):
             events.append(("rename", func_name))
 
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(
-                side_effect=[
-                    {"func_name": "Foo", "func_va": "0x180001000", "func_sig": "AA"},
-                    {"func_name": "Bar", "func_va": "0x180002000", "func_sig": "BB"},
-                ]
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(
+                    side_effect=[
+                        {"func_name": "Foo", "func_va": "0x180001000", "func_sig": "AA"},
+                        {"func_name": "Bar", "func_va": "0x180002000", "func_sig": "BB"},
+                    ]
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(side_effect=_rename_side_effect),
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(side_effect=_rename_side_effect),
+            ),
         ):
-            mock_write_func_yaml.side_effect = (
-                lambda path, _data: events.append(("write", path))
-            )
+            mock_write_func_yaml.side_effect = lambda path, _data: events.append(("write", path))
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
                 expected_outputs=[
@@ -2143,33 +2168,34 @@ class TestGenerateYamlDesiredFieldsContract(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_filters_vtable_payload_by_desired_fields(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_vtable_via_mcp",
-            AsyncMock(
-                return_value={
-                    "vtable_class": "Foo",
-                    "vtable_symbol": "??_7Foo@@6B@",
-                    "vtable_va": "0x180001000",
-                    "vtable_rva": "0x1000",
-                    "vtable_size": "0x20",
-                    "vtable_numvfunc": 4,
-                    "vtable_entries": {0: "0x180010000"},
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_vtable_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "vtable_class": "Foo",
+                        "vtable_symbol": "??_7Foo@@6B@",
+                        "vtable_va": "0x180001000",
+                        "vtable_rva": "0x1000",
+                        "vtable_size": "0x20",
+                        "vtable_numvfunc": 4,
+                        "vtable_entries": {0: "0x180010000"},
+                    }
+                ),
             ),
-        ), patch.object(
-            ida_analyze_util,
-            "write_vtable_yaml",
-        ) as mock_write_vtable_yaml:
+            patch.object(
+                ida_analyze_util,
+                "write_vtable_yaml",
+            ) as mock_write_vtable_yaml,
+        ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
                 expected_outputs=["/tmp/Foo_vtable.windows.yaml"],
                 vtable_class_names=["Foo"],
                 platform="windows",
                 image_base=0x180000000,
-                generate_yaml_desired_fields=[
-                    ("Foo", ["vtable_class", "vtable_entries"])
-                ],
+                generate_yaml_desired_fields=[("Foo", ["vtable_class", "vtable_entries"])],
                 debug=True,
             )
 
@@ -2188,27 +2214,21 @@ class TestIdaStringEnumerationSupport(unittest.TestCase):
         self,
     ) -> None:
         with patch.dict(os.environ, {}, clear=True):
-            self.assertIsNone(
-                ida_analyze_util._resolve_ida_string_min_length_config()
-            )
+            self.assertIsNone(ida_analyze_util._resolve_ida_string_min_length_config())
 
         with patch.dict(
             os.environ,
             {"CS2VIBE_STRING_MIN_LENGTH": ""},
             clear=True,
         ):
-            self.assertIsNone(
-                ida_analyze_util._resolve_ida_string_min_length_config()
-            )
+            self.assertIsNone(ida_analyze_util._resolve_ida_string_min_length_config())
 
         with patch.dict(
             os.environ,
             {"CS2VIBE_STRING_MIN_LENGTH": "   "},
             clear=True,
         ):
-            self.assertIsNone(
-                ida_analyze_util._resolve_ida_string_min_length_config()
-            )
+            self.assertIsNone(ida_analyze_util._resolve_ida_string_min_length_config())
 
     def test_resolve_ida_string_min_length_config_handles_invalid_zero_and_valid_value(
         self,
@@ -2305,9 +2325,7 @@ class TestIdaStringEnumerationSupport(unittest.TestCase):
     def test_build_ida_strings_enumerator_py_lines_exec_with_split_globals_and_locals(
         self,
     ) -> None:
-        py_code = "\n".join(
-            ida_analyze_util._build_ida_strings_enumerator_py_lines(min_length=6)
-        )
+        py_code = "\n".join(ida_analyze_util._build_ida_strings_enumerator_py_lines(min_length=6))
         state_store = {"payload": None}
         strings_instances = []
 
@@ -2579,9 +2597,7 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
         self,
     ) -> None:
         session = AsyncMock()
-        session.call_tool.return_value = _py_eval_payload(
-            ["0x180001123", "0x180001456", "invalid", "0x180001123"]
-        )
+        session.call_tool.return_value = _py_eval_payload(["0x180001123", "0x180001456", "invalid", "0x180001123"])
 
         with patch.object(
             ida_analyze_util,
@@ -2609,9 +2625,7 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
         self,
     ) -> None:
         session = AsyncMock()
-        session.call_tool.return_value = _py_eval_payload(
-            ["0x180010123", "0x180010456", "bad-value", "0x180010123"]
-        )
+        session.call_tool.return_value = _py_eval_payload(["0x180010123", "0x180010456", "bad-value", "0x180010123"])
 
         with patch.object(
             ida_analyze_util,
@@ -2688,9 +2702,7 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
 
     async def test_normalize_func_start_returns_existing_function(self) -> None:
         session = AsyncMock()
-        session.call_tool.return_value = _py_eval_payload(
-            {"status": "resolved", "func_start": "0x180001000"}
-        )
+        session.call_tool.return_value = _py_eval_payload({"status": "resolved", "func_start": "0x180001000"})
 
         result = await ida_analyze_util._normalize_func_start_for_code_addr(
             session=session,
@@ -2730,15 +2742,18 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     ) -> None:
         session = AsyncMock()
 
-        with patch.object(
-            ida_analyze_util,
-            "_probe_func_start_or_entry_candidate",
-            AsyncMock(return_value={"status": "needs_define", "entry": "0x180001000"}),
-        ), patch.object(
-            ida_analyze_util,
-            "_read_covering_func_start_via_mcp",
-            AsyncMock(return_value=None),
-        ) as mock_read_covering:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_probe_func_start_or_entry_candidate",
+                AsyncMock(return_value={"status": "needs_define", "entry": "0x180001000"}),
+            ),
+            patch.object(
+                ida_analyze_util,
+                "_read_covering_func_start_via_mcp",
+                AsyncMock(return_value=None),
+            ) as mock_read_covering,
+        ):
             result = await ida_analyze_util._normalize_func_start_for_code_addr(
                 session=session,
                 code_addr=0x180001050,
@@ -3034,30 +3049,35 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_intersects_string_and_signature_sets(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ) as mock_collect_string, patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_signature",
-            AsyncMock(return_value={0x180100000}),
-        ) as mock_collect_signature, patch.object(
-            ida_analyze_util,
-            "_func_contains_signature_via_mcp",
-            AsyncMock(side_effect=[False, True]),
-        ) as mock_func_contains_signature, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ) as mock_collect_string,
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_signature",
+                AsyncMock(return_value={0x180100000}),
+            ) as mock_collect_signature,
+            patch.object(
+                ida_analyze_util,
+                "_func_contains_signature_via_mcp",
+                AsyncMock(side_effect=[False, True]),
+            ) as mock_func_contains_signature,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3112,30 +3132,35 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_intersects_string_and_gv_sets(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ) as mock_collect_string, patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x18000F000,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_ea",
-            AsyncMock(return_value={0x180200000}),
-        ) as mock_collect_ea, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ) as mock_collect_string,
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x18000F000,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_ea",
+                AsyncMock(return_value={0x180200000}),
+            ) as mock_collect_ea,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3177,26 +3202,30 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_accepts_literal_xref_gv_address(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x18000F000,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_ea",
-            AsyncMock(return_value={0x180200000}),
-        ) as mock_collect_ea, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x18000F000,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_ea",
+                AsyncMock(return_value={0x180200000}),
+            ) as mock_collect_ea,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3226,30 +3255,35 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_exclude_gvs_subtracts_candidate_set(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ) as mock_collect_string, patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x18000F100,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_ea",
-            AsyncMock(return_value={0x180100000}),
-        ) as mock_collect_ea, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ) as mock_collect_string,
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x18000F100,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_ea",
+                AsyncMock(return_value={0x180100000}),
+            ) as mock_collect_ea,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3291,30 +3325,35 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_accepts_literal_exclude_gv_address(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ) as mock_collect_string, patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x18000F100,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_ea",
-            AsyncMock(return_value={0x180100000}),
-        ) as mock_collect_ea, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ) as mock_collect_string,
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x18000F100,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_ea",
+                AsyncMock(return_value={0x180100000}),
+            ) as mock_collect_ea,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3349,30 +3388,35 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_exclude_signatures_only_checks_remaining_candidates(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ) as mock_collect_string, patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x180100000,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_func_contains_signature_via_mcp",
-            AsyncMock(return_value=False),
-        ) as mock_func_contains_signature, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ) as mock_collect_string,
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x180100000,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_func_contains_signature_via_mcp",
+                AsyncMock(return_value=False),
+            ) as mock_func_contains_signature,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3415,23 +3459,28 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_exclude_signatures_fails_closed_on_probe_failure(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ), patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x180100000,
-        ), patch.object(
-            ida_analyze_util,
-            "_func_contains_signature_via_mcp",
-            AsyncMock(return_value=None),
-        ) as mock_func_contains_signature, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(return_value=None),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ),
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x180100000,
+            ),
+            patch.object(
+                ida_analyze_util,
+                "_func_contains_signature_via_mcp",
+                AsyncMock(return_value=None),
+            ) as mock_func_contains_signature,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(return_value=None),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3461,30 +3510,35 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_applies_float_filters_after_excludes(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ) as mock_collect_string, patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x180100000,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_filter_func_addrs_by_float_xrefs_via_mcp",
-            AsyncMock(return_value={0x180200000}),
-        ) as mock_float_filter, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ) as mock_collect_string,
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x180100000,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_filter_func_addrs_by_float_xrefs_via_mcp",
+                AsyncMock(return_value={0x180200000}),
+            ) as mock_float_filter,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3530,19 +3584,23 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_fails_closed_on_float_filter_failure(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180100000, 0x180200000}),
-        ), patch.object(
-            ida_analyze_util,
-            "_filter_func_addrs_by_float_xrefs_via_mcp",
-            AsyncMock(return_value=None),
-        ) as mock_float_filter, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(return_value=None),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180100000, 0x180200000}),
+            ),
+            patch.object(
+                ida_analyze_util,
+                "_filter_func_addrs_by_float_xrefs_via_mcp",
+                AsyncMock(return_value=None),
+            ) as mock_float_filter,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(return_value=None),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3569,26 +3627,30 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_forwards_boundary_flag_to_generator(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_string",
-            AsyncMock(return_value={0x180200000}),
-        ), patch.object(
-            ida_analyze_util,
-            "_func_contains_signature_via_mcp",
-            AsyncMock(return_value=True),
-        ) as mock_func_contains_signature, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_string",
+                AsyncMock(return_value={0x180200000}),
             ),
-        ) as mock_gen_sig:
+            patch.object(
+                ida_analyze_util,
+                "_func_contains_signature_via_mcp",
+                AsyncMock(return_value=True),
+            ) as mock_func_contains_signature,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3615,42 +3677,45 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
             debug=False,
         )
         mock_gen_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_gen_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertTrue(mock_gen_sig.await_args.kwargs["allow_across_function_boundary"])
 
     async def test_preprocess_func_xrefs_uses_vtable_entry_when_dep_func_has_no_callers(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x180200000,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_ea",
-            AsyncMock(return_value=set()),
-        ) as mock_collect_ea, patch.object(
-            ida_analyze_util,
-            "_read_yaml_file",
-            return_value={
-                "vtable_entries": {
-                    0: "0x180200000",
-                    1: "0x180300000",
-                }
-            },
-        ) as mock_read_yaml, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x180200000,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_ea",
+                AsyncMock(return_value=set()),
+            ) as mock_collect_ea,
+            patch.object(
+                ida_analyze_util,
+                "_read_yaml_file",
                 return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
-            ),
-        ) as mock_gen_sig:
+                    "vtable_entries": {
+                        0: "0x180200000",
+                        1: "0x180300000",
+                    }
+                },
+            ) as mock_read_yaml,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="CLoopModeGame_LoopInit",
@@ -3676,38 +3741,38 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
             target_ea=0x180200000,
             debug=True,
         )
-        mock_read_yaml.assert_called_once_with(
-            str(Path("bin_dir") / "CLoopModeGame_vtable.linux.yaml")
-        )
+        mock_read_yaml.assert_called_once_with(str(Path("bin_dir") / "CLoopModeGame_vtable.linux.yaml"))
         self.assertEqual(0x180200000, mock_gen_sig.await_args.kwargs["func_va"])
-        self.assertFalse(
-            mock_gen_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertFalse(mock_gen_sig.await_args.kwargs["allow_across_function_boundary"])
         mock_load_symbol.assert_called_once()
 
     async def test_preprocess_func_xrefs_uses_inline_alias_single_caller(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x180200000,
-        ) as mock_load_symbol, patch.object(
-            ida_analyze_util,
-            "_collect_single_call_or_jump_xref_func_starts_for_ea",
-            AsyncMock(return_value={0x180300000}),
-        ) as mock_collect_callers, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180300000",
-                    "func_rva": "0x300000",
-                    "func_size": "0x20",
-                    "func_sig": "55 48 89 E5",
-                }
-            ),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x180200000,
+            ) as mock_load_symbol,
+            patch.object(
+                ida_analyze_util,
+                "_collect_single_call_or_jump_xref_func_starts_for_ea",
+                AsyncMock(return_value={0x180300000}),
+            ) as mock_collect_callers,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180300000",
+                        "func_rva": "0x300000",
+                        "func_size": "0x20",
+                        "func_sig": "55 48 89 E5",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="CLoopModeFactory_CLoopModeGame_Init",
@@ -3746,26 +3811,30 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_uses_inline_alias_self_without_callers(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_load_symbol_addr_from_current_yaml",
-            return_value=0x180200000,
-        ), patch.object(
-            ida_analyze_util,
-            "_collect_single_call_or_jump_xref_func_starts_for_ea",
-            AsyncMock(return_value=set()),
-        ) as mock_collect_callers, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x80",
-                    "func_sig": "48 89 5C 24 08",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_load_symbol_addr_from_current_yaml",
+                return_value=0x180200000,
             ),
-        ) as mock_gen_sig:
+            patch.object(
+                ida_analyze_util,
+                "_collect_single_call_or_jump_xref_func_starts_for_ea",
+                AsyncMock(return_value=set()),
+            ) as mock_collect_callers,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x80",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="CLoopModeFactory_CLoopModeGame_Init",
@@ -3793,11 +3862,7 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
         self,
     ) -> None:
         session = AsyncMock()
-        session.call_tool = AsyncMock(
-            return_value=_py_eval_payload(
-                ["0x180101000", "0x180101020", "0x180202000"]
-            )
-        )
+        session.call_tool = AsyncMock(return_value=_py_eval_payload(["0x180101000", "0x180101020", "0x180202000"]))
 
         with patch.object(
             ida_analyze_util,
@@ -3830,15 +3895,18 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_func_xrefs_fails_when_signature_set_is_empty(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "_collect_xref_func_starts_for_signature",
-            AsyncMock(return_value=set()),
-        ) as mock_collect_signature, patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(return_value=None),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_collect_xref_func_starts_for_signature",
+                AsyncMock(return_value=set()),
+            ) as mock_collect_signature,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(return_value=None),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util.preprocess_func_xrefs_via_mcp(
                 session="session",
                 func_name="LoggingChannel_Init",
@@ -3867,29 +3935,34 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_forwards_dict_func_xrefs_fields(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(return_value=None),
-        ), patch.object(
-            ida_analyze_util,
-            "preprocess_func_xrefs_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "LoggingChannel_Init",
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x40",
-                    "func_sig": "48 89 5C 24 08",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(return_value=None),
             ),
-        ) as mock_func_xrefs, patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_xrefs_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "LoggingChannel_Init",
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x40",
+                        "func_sig": "48 89 5C 24 08",
+                    }
+                ),
+            ) as mock_func_xrefs,
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
+            ),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
@@ -4080,34 +4153,37 @@ class TestFuncXrefsSignatureSupport(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_common_skill_allows_inline_alias_positive_source(
         self,
     ) -> None:
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(return_value=None),
-        ), patch.object(
-            ida_analyze_util,
-            "preprocess_func_xrefs_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "CLoopModeFactory_CLoopModeGame_Init",
-                    "func_va": "0x180200000",
-                    "func_rva": "0x200000",
-                    "func_size": "0x80",
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(return_value=None),
             ),
-        ) as mock_func_xrefs, patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_xrefs_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "CLoopModeFactory_CLoopModeGame_Init",
+                        "func_va": "0x180200000",
+                        "func_rva": "0x200000",
+                        "func_size": "0x80",
+                    }
+                ),
+            ) as mock_func_xrefs,
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
+            ),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
-                expected_outputs=[
-                    "/tmp/CLoopModeFactory_CLoopModeGame_Init.windows.yaml"
-                ],
+                expected_outputs=["/tmp/CLoopModeFactory_CLoopModeGame_Init.windows.yaml"],
                 old_yaml_map={},
                 new_binary_dir="/tmp",
                 platform="windows",
@@ -4366,9 +4442,7 @@ class TestFunctionDetailExportPyEvalBuilder(unittest.IsolatedAsyncioTestCase):
         tail_iterator_no_arg_fallback = py_code.find("ida_funcs.func_tail_iterator_t()")
         tail_iterator_set_ea = py_code.find("tail_iterator.set_ea(func.start_ea)")
         final_single_range_guard = py_code.rfind("if not chunk_ranges:")
-        final_single_range_fallback = py_code.rfind(
-            "chunk_ranges = [(int(func.start_ea), int(func.end_ea))]"
-        )
+        final_single_range_fallback = py_code.rfind("chunk_ranges = [(int(func.start_ea), int(func.end_ea))]")
 
         self.assertIn("for start_ea, end_ea in idautils.Chunks(func.start_ea):", py_code)
         self.assertIn("initial_chunk_ranges = []", py_code)
@@ -4424,9 +4498,7 @@ class TestFunctionDetailExportPyEvalBuilder(unittest.IsolatedAsyncioTestCase):
         idautils.CodeRefsFrom = lambda ea, flow: []
         idc.BADADDR = -1
         idc.generate_disasm_line = lambda ea, flags: "retn" if ea == 0x1002 else "nop"
-        idc.get_cmt = (
-            lambda ea, repeatable: "entry comment" if ea == 0x1000 and repeatable == 0 else None
-        )
+        idc.get_cmt = lambda ea, repeatable: "entry comment" if ea == 0x1000 and repeatable == 0 else None
         idc.get_extra_cmt = lambda ea, index: None
         idc.next_head = lambda ea, end_ea: ea + 1 if ea + 1 < end_ea else idc.BADADDR
         idc.print_insn_mnem = lambda ea: "ret" if ea == 0x1002 else "nop"
@@ -4772,6 +4844,41 @@ found_struct_offset:
             parsed,
         )
 
+    def test_parse_llm_decompile_response_keeps_smaller_duplicate_struct_offset(self) -> None:
+        response_text = """
+```yaml
+found_struct_offset:
+  - insn_va: '0x1811FA994'
+    insn_disasm: mov     [rcx+0C78h], rax
+    offset: '0xC78'
+    size: 8
+    struct_name: CEntitySystem
+    member_name: m_EntityPostSpawnCallback
+  - insn_va: '0x1811FA99E'
+    insn_disasm: mov     [rcx+0C70h], rax
+    offset: '0C70h'
+    size: 8
+    struct_name: CEntitySystem
+    member_name: m_EntityPostSpawnCallback
+```
+""".strip()
+
+        parsed = ida_analyze_util.parse_llm_decompile_response(response_text)
+
+        self.assertEqual(
+            [
+                {
+                    "insn_va": "0x1811FA99E",
+                    "insn_disasm": "mov     [rcx+0C70h], rax",
+                    "offset": "0C70h",
+                    "size": "8",
+                    "struct_name": "CEntitySystem",
+                    "member_name": "m_EntityPostSpawnCallback",
+                }
+            ],
+            parsed["found_struct_offset"],
+        )
+
     async def test_call_llm_decompile_uses_shared_llm_helper_and_parses_yaml(
         self,
     ) -> None:
@@ -4822,6 +4929,46 @@ found_struct_offset: []
         mock_call_llm_text.assert_called_once()
         self.assertEqual("gpt-4.1-mini", mock_call_llm_text.call_args.kwargs["model"])
         self.assertNotIn("temperature", mock_call_llm_text.call_args.kwargs)
+
+    async def test_call_llm_decompile_omits_comments_from_target_blocks(
+        self,
+    ) -> None:
+        response_text = """
+```yaml
+found_vcall: []
+found_call: []
+found_gv: []
+found_struct_offset: []
+```
+""".strip()
+
+        with patch.object(
+            ida_analyze_util,
+            "call_llm_text",
+            return_value=response_text,
+            create=True,
+        ) as mock_call_llm_text:
+            await ida_analyze_util.call_llm_decompile(
+                client=object(),
+                model="gpt-4.1-mini",
+                symbol_name_list=["ILoopMode_OnLoopActivate"],
+                disasm_code=(
+                    ".text:0000000180777700                 ; misleading IDA comment\n"
+                    ".text:0000000180777704                 call    [rax+68h] ; inline comment"
+                ),
+                procedure=(
+                    'int result = call_target("// not a comment"); // misleading IDA comment\n'
+                    "/* misleading block comment */\n"
+                    "return result;"
+                ),
+            )
+
+        prompt = mock_call_llm_text.call_args.kwargs["messages"][1]["content"]
+        self.assertIn("call    [rax+68h]", prompt)
+        self.assertIn('"// not a comment"', prompt)
+        self.assertNotIn("misleading IDA comment", prompt)
+        self.assertNotIn("misleading block comment", prompt)
+        self.assertNotIn("; inline comment", prompt)
 
     async def test_call_llm_decompile_forwards_explicit_temperature(
         self,
@@ -5079,9 +5226,7 @@ found_struct_offset: []
         self.assertTrue(ida_analyze_util._is_transient_llm_error(FakeError()))
 
     def test_is_transient_llm_error_rejects_client_configuration_error(self) -> None:
-        self.assertFalse(
-            ida_analyze_util._is_transient_llm_error(RuntimeError("invalid api key"))
-        )
+        self.assertFalse(ida_analyze_util._is_transient_llm_error(RuntimeError("invalid api key")))
 
     def test_build_llm_decompile_specs_map_groups_duplicate_symbol_names(
         self,
@@ -5178,15 +5323,18 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                side_effect=AssertionError("should not be called in codex mode"),
-                create=True,
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    side_effect=AssertionError("should not be called in codex mode"),
+                    create=True,
+                ),
             ):
                 request = ida_analyze_util._prepare_llm_decompile_request(
                     "ILoopMode_OnLoopActivate",
@@ -5316,9 +5464,7 @@ found_struct_offset: []
                         "TargetFunc": [
                             {
                                 "prompt_path": "prompt/call_llm_decompile.md",
-                                "reference_yaml_path": (
-                                    "references/server/Reference.{platform}.yaml"
-                                ),
+                                "reference_yaml_path": ("references/server/Reference.{platform}.yaml"),
                             }
                         ]
                     },
@@ -5358,15 +5504,18 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                side_effect=AssertionError("should not be called in codex mode"),
-                create=True,
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    side_effect=AssertionError("should not be called in codex mode"),
+                    create=True,
+                ),
             ):
                 request = ida_analyze_util._prepare_llm_decompile_request(
                     "ILoopMode_OnLoopActivate",
@@ -5414,15 +5563,18 @@ found_struct_offset: []
             }
             session = AsyncMock()
 
-            with patch.object(
-                ida_analyze_util,
-                "_export_function_detail_via_mcp",
-                AsyncMock(return_value=expected_payload),
-            ) as mock_export, patch.object(
-                ida_analyze_util,
-                "_find_function_addr_by_names_via_mcp",
-                AsyncMock(return_value="0x180000000"),
-            ) as mock_find:
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_export_function_detail_via_mcp",
+                    AsyncMock(return_value=expected_payload),
+                ) as mock_export,
+                patch.object(
+                    ida_analyze_util,
+                    "_find_function_addr_by_names_via_mcp",
+                    AsyncMock(return_value="0x180000000"),
+                ) as mock_find,
+            ):
                 result = await ida_analyze_util._load_llm_decompile_target_detail_via_mcp(
                     session=session,
                     target_func_name="BotAdd_CommandHandler",
@@ -5459,15 +5611,18 @@ found_struct_offset: []
             }
             session = AsyncMock()
 
-            with patch.object(
-                ida_analyze_util,
-                "_find_function_addr_by_names_via_mcp",
-                AsyncMock(return_value="0x1802da7b0"),
-            ) as mock_find, patch.object(
-                ida_analyze_util,
-                "_export_function_detail_via_mcp",
-                AsyncMock(return_value=expected_payload),
-            ) as mock_export:
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_find_function_addr_by_names_via_mcp",
+                    AsyncMock(return_value="0x1802da7b0"),
+                ) as mock_find,
+                patch.object(
+                    ida_analyze_util,
+                    "_export_function_detail_via_mcp",
+                    AsyncMock(return_value=expected_payload),
+                ) as mock_export,
+            ):
                 result = await ida_analyze_util._load_llm_decompile_target_detail_via_mcp(
                     session=session,
                     target_func_name="BotAdd_CommandHandler",
@@ -5497,30 +5652,33 @@ found_struct_offset: []
                 }
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "preprocess_vtable_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "vtable_class": "CLoopModeGame",
-                        "vtable_symbol": "??_7CLoopModeGame@@6B@",
-                        "vtable_va": "0x180001000",
-                        "vtable_rva": "0x1000",
-                        "vtable_size": "0x90",
-                        "vtable_numvfunc": 32,
-                        "vtable_entries": {13: "0x180123450"},
-                    }
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_vtable_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "vtable_class": "CLoopModeGame",
+                            "vtable_symbol": "??_7CLoopModeGame@@6B@",
+                            "vtable_va": "0x180001000",
+                            "vtable_rva": "0x1000",
+                            "vtable_size": "0x90",
+                            "vtable_numvfunc": 32,
+                            "vtable_entries": {13: "0x180123450"},
+                        }
+                    ),
                 ),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_gen_func_sig_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "func_va": "0x180123450",
-                        "func_rva": "0x123450",
-                        "func_size": "0x40",
-                        "func_sig": "48 89 ??",
-                    }
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gen_func_sig_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "func_va": "0x180123450",
+                            "func_rva": "0x123450",
+                            "func_size": "0x40",
+                            "func_sig": "48 89 ??",
+                        }
+                    ),
                 ),
             ):
                 result = await ida_analyze_util.preprocess_func_sig_via_mcp(
@@ -5581,9 +5739,7 @@ found_struct_offset: []
                 if name == "py_eval":
                     code = arguments["code"]
                     self.assertIn("offset_sig_disp = 0", code)
-                    self.assertIn(
-                        "inst_addr = sig_addr + offset_sig_disp", code
-                    )
+                    self.assertIn("inst_addr = sig_addr + offset_sig_disp", code)
                     return _py_eval_payload(
                         {
                             "offset": 0x58,
@@ -5707,8 +5863,7 @@ found_struct_offset: []
                 self.assertIn("def _is_same_exec_segment", code)
                 self.assertIn("def _consume_padding", code)
                 self.assertIn(
-                    "cursor >= func.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= func.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 self.assertIn(
@@ -5788,8 +5943,7 @@ found_struct_offset: []
                 self.assertIn("allow_across_boundary = True", code)
                 self.assertIn("def _consume_padding", code)
                 self.assertIn(
-                    "cursor >= func.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= func.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 return _py_eval_payload(
@@ -5942,8 +6096,7 @@ found_struct_offset: []
                 self.assertIn("def _try_decode_padding_nop", code)
                 self.assertIn("if mnem == 'nop':", code)
                 self.assertIn(
-                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 self.assertIn(
@@ -6026,8 +6179,7 @@ found_struct_offset: []
                 self.assertIn("def _try_decode_padding_nop", code)
                 self.assertIn("if mnem == 'nop':", code)
                 self.assertIn(
-                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 return _py_eval_payload(
@@ -6171,8 +6323,7 @@ found_struct_offset: []
                 self.assertIn("def _try_decode_padding_nop", code)
                 self.assertIn("if mnem == 'nop':", code)
                 self.assertIn(
-                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 self.assertIn(
@@ -6243,8 +6394,7 @@ found_struct_offset: []
                 self.assertIn("def _try_decode_padding_nop", code)
                 self.assertIn("if mnem == 'nop':", code)
                 self.assertIn(
-                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 return _py_eval_payload(
@@ -6313,8 +6463,7 @@ found_struct_offset: []
             helper_code,
         )
         self.assertIn(
-            "if ida_bytes.is_code(flags) and ida_bytes.is_head(flags):\n"
-            "            return cursor, padding, True",
+            "if ida_bytes.is_code(flags) and ida_bytes.is_head(flags):\n            return cursor, padding, True",
             helper_code,
         )
         self.assertNotIn(
@@ -6323,8 +6472,7 @@ found_struct_offset: []
         )
         self.assertLess(
             helper_code.index(
-                "if ida_bytes.is_code(flags) and ida_bytes.is_head(flags):\n"
-                "            return cursor, padding, True"
+                "if ida_bytes.is_code(flags) and ida_bytes.is_head(flags):\n            return cursor, padding, True"
             ),
             helper_code.index("b = ida_bytes.get_byte(cursor)"),
         )
@@ -6750,9 +6898,7 @@ found_struct_offset: []
             )
 
         self.assertIsNone(result)
-        printed = "\n".join(
-            str(args[0]) for args, _ in mock_print.call_args_list if args
-        )
+        printed = "\n".join(str(args[0]) for args, _ in mock_print.call_args_list if args)
         self.assertIn(
             "no candidate instruction stream from py_eval",
             printed,
@@ -6786,9 +6932,7 @@ found_struct_offset: []
             )
 
         self.assertIsNone(result)
-        printed = "\n".join(
-            str(args[0]) for args, _ in mock_print.call_args_list if args
-        )
+        printed = "\n".join(str(args[0]) for args, _ in mock_print.call_args_list if args)
         self.assertIn("struct offset py_eval stderr", printed)
         self.assertIn("Traceback: simulated IDA warning", printed)
         self.assertIn("struct offset py_eval result shape", printed)
@@ -6860,9 +7004,7 @@ found_struct_offset: []
             )
 
         self.assertIsNone(result)
-        printed = "\n".join(
-            str(args[0]) for args, _ in mock_print.call_args_list if args
-        )
+        printed = "\n".join(str(args[0]) for args, _ in mock_print.call_args_list if args)
         self.assertIn("candidate rejected with zero find_bytes matches", printed)
         self.assertIn("candidate rejected with 2 find_bytes matches", printed)
         self.assertIn("sig=49 8B 4E ??", printed)
@@ -6900,47 +7042,53 @@ found_struct_offset: []
                 "procedure_for_reference": "",
             }
 
-            with patch.object(
-                ida_analyze_util,
-                "preprocess_struct_offset_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_prepare_llm_decompile_request",
-                return_value=llm_request,
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(
-                    return_value=[
-                        {
-                            "disasm_code": "mov rcx, [rcx+278h]",
-                            "procedure": "return this->m_skeletonInstance;",
-                        }
-                    ]
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_struct_offset_sig_via_mcp",
+                    AsyncMock(return_value=None),
                 ),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                AsyncMock(
-                    return_value={
-                        "found_vcall": [],
-                        "found_call": [],
-                        "found_funcptr": [],
-                        "found_gv": [],
-                        "found_struct_offset": [
+                patch.object(
+                    ida_analyze_util,
+                    "_prepare_llm_decompile_request",
+                    return_value=llm_request,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(
+                        return_value=[
                             {
-                                "insn_va": "0x180A76B04",
-                                "insn_disasm": "mov rcx, [rcx+278h]",
-                                "offset": "0x278",
-                                "struct_name": "CSomeOtherStruct",
-                                "member_name": "m_wrongField",
-                                "size": "8",
+                                "disasm_code": "mov rcx, [rcx+278h]",
+                                "procedure": "return this->m_skeletonInstance;",
                             }
-                        ],
-                    }
+                        ]
+                    ),
                 ),
-            ), patch("builtins.print") as mock_print:
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    AsyncMock(
+                        return_value={
+                            "found_vcall": [],
+                            "found_call": [],
+                            "found_funcptr": [],
+                            "found_gv": [],
+                            "found_struct_offset": [
+                                {
+                                    "insn_va": "0x180A76B04",
+                                    "insn_disasm": "mov rcx, [rcx+278h]",
+                                    "offset": "0x278",
+                                    "struct_name": "CSomeOtherStruct",
+                                    "member_name": "m_wrongField",
+                                    "size": "8",
+                                }
+                            ],
+                        }
+                    ),
+                ),
+                patch("builtins.print") as mock_print,
+            ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session=session,
                     expected_outputs=[str(target_output)],
@@ -6974,9 +7122,7 @@ found_struct_offset: []
                 )
 
         self.assertFalse(result)
-        printed = "\n".join(
-            str(args[0]) for args, _ in mock_print.call_args_list if args
-        )
+        printed = "\n".join(str(args[0]) for args, _ in mock_print.call_args_list if args)
         self.assertIn(
             "struct-member name mismatch for CBaseAnimGraph_m_skeletonInstance",
             printed,
@@ -7006,8 +7152,7 @@ found_struct_offset: []
                 self.assertIn("def _try_decode_padding_nop", code)
                 self.assertIn("if mnem == 'nop':", code)
                 self.assertIn(
-                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 self.assertIn(
@@ -7089,8 +7234,7 @@ found_struct_offset: []
                 self.assertIn("def _try_decode_padding_nop", code)
                 self.assertIn("if mnem == 'nop':", code)
                 self.assertIn(
-                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) "
-                    "or not ida_bytes.is_head(flags)",
+                    "cursor >= f.end_ea or not ida_bytes.is_code(flags) or not ida_bytes.is_head(flags)",
                     code,
                 )
                 return _py_eval_payload(
@@ -7198,6 +7342,7 @@ found_struct_offset: []
                     "procedure": "return this->vfptr[13](this);",
                 },
             )
+
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -7219,59 +7364,69 @@ found_struct_offset: []
 
             session.call_tool.side_effect = _session_call_tool
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_get_func_basic_info_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "func_va": "0x180123450",
-                        "func_rva": "0x123450",
-                        "func_size": "0x40",
-                    }
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
                 ),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_gen_func_sig_via_mcp",
-                AsyncMock(return_value={"func_sig": "40 53"}),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "preprocess_vtable_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "vtable_class": "CLoopModeGame",
-                        "vtable_symbol": "??_7CLoopModeGame@@6B@",
-                        "vtable_va": "0x180001000",
-                        "vtable_rva": "0x1000",
-                        "vtable_size": "0x90",
-                        "vtable_numvfunc": 32,
-                        "vtable_entries": {13: "0x180123450"},
-                    }
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
                 ),
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_get_func_basic_info_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "func_va": "0x180123450",
+                            "func_rva": "0x123450",
+                            "func_size": "0x40",
+                        }
+                    ),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gen_func_sig_via_mcp",
+                    AsyncMock(return_value={"func_sig": "40 53"}),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_vtable_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "vtable_class": "CLoopModeGame",
+                            "vtable_symbol": "??_7CLoopModeGame@@6B@",
+                            "vtable_va": "0x180001000",
+                            "vtable_rva": "0x1000",
+                            "vtable_size": "0x90",
+                            "vtable_numvfunc": 32,
+                            "vtable_entries": {13: "0x180123450"},
+                        }
+                    ),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session=session,
@@ -7411,44 +7566,54 @@ found_struct_offset: []
                     "func_va": str(kwargs["direct_func_va"]).strip().lower(),
                 }
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=fake_client,
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(side_effect=["0x180123450", "0x180223450"]),
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=fake_client,
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(side_effect=["0x180123450", "0x180223450"]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -7545,44 +7710,54 @@ found_struct_offset: []
                     "func_va": str(kwargs["direct_func_va"]).strip().lower(),
                 }
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -7685,65 +7860,80 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_gv_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_gv_target_via_mcp",
-                AsyncMock(return_value="0x180223450"),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_gv_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_gv_sig_via_mcp),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "write_gv_yaml",
-            ) as mock_write_gv_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_rename_gv_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gv_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_gv_target_via_mcp",
+                    AsyncMock(return_value="0x180223450"),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_gv_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_gv_sig_via_mcp),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "write_gv_yaml",
+                ) as mock_write_gv_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_gv_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -7799,14 +7989,8 @@ found_struct_offset: []
         target_detail_payload = {
             "func_name": "CGameResourceService_BuildResourceManifest",
             "func_va": "0x180555500",
-            "disasm_code": (
-                "call    sub_180222200\n"
-                "mov     rcx, [r14+58h]"
-            ),
-            "procedure": (
-                "CGameResourceService_BuildResourceManifest(...);\n"
-                "return this->m_pEntitySystem;"
-            ),
+            "disasm_code": ("call    sub_180222200\nmov     rcx, [r14+58h]"),
+            "procedure": ("CGameResourceService_BuildResourceManifest(...);\nreturn this->m_pEntitySystem;"),
         }
         normalized_payload = {
             "found_vcall": [],
@@ -7864,65 +8048,78 @@ found_struct_offset: []
                     },
                 )
 
-                with patch.object(
-                    ida_analyze_util,
-                    "_get_preprocessor_scripts_dir",
-                    return_value=preprocessor_dir,
-                ), patch.object(
-                    ida_analyze_util,
-                    "create_openai_client",
-                    return_value=object(),
-                    create=True,
-                ), patch.object(
-                    ida_analyze_util,
-                    "preprocess_func_sig_via_mcp",
-                    AsyncMock(return_value=None),
-                ), patch.object(
-                    ida_analyze_util,
-                    "preprocess_struct_offset_sig_via_mcp",
-                    AsyncMock(return_value=None),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_load_llm_decompile_target_details_via_mcp",
-                    AsyncMock(return_value=[target_detail_payload]),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_resolve_direct_call_target_via_mcp",
-                    AsyncMock(return_value="0x180123450"),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_preprocess_direct_func_sig_via_mcp",
-                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_preprocess_direct_struct_offset_sig_via_mcp",
-                    AsyncMock(
-                        return_value={
-                            "struct_name": "CGameResourceService",
-                            "member_name": "m_pEntitySystem",
-                            "offset": "0x58",
-                            "size": 8,
-                            "offset_sig": "49 8B 4E ??",
-                            "offset_sig_disp": 0,
-                        }
+                with (
+                    patch.object(
+                        ida_analyze_util,
+                        "_get_preprocessor_scripts_dir",
+                        return_value=preprocessor_dir,
                     ),
-                    create=True,
-                ) as mock_preprocess_direct_struct_offset_sig, patch.object(
-                    ida_analyze_util,
-                    "call_llm_decompile",
-                    create=True,
-                    new_callable=AsyncMock,
-                    return_value=normalized_payload,
-                ) as mock_call_llm_decompile, patch.object(
-                    ida_analyze_util,
-                    "write_func_yaml",
-                ) as mock_write_func_yaml, patch.object(
-                    ida_analyze_util,
-                    "write_struct_offset_yaml",
-                ) as mock_write_struct_offset_yaml, patch.object(
-                    ida_analyze_util,
-                    "_rename_func_in_ida",
-                    AsyncMock(return_value=None),
+                    patch.object(
+                        ida_analyze_util,
+                        "create_openai_client",
+                        return_value=object(),
+                        create=True,
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "preprocess_func_sig_via_mcp",
+                        AsyncMock(return_value=None),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "preprocess_struct_offset_sig_via_mcp",
+                        AsyncMock(return_value=None),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_load_llm_decompile_target_details_via_mcp",
+                        AsyncMock(return_value=[target_detail_payload]),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_resolve_direct_call_target_via_mcp",
+                        AsyncMock(return_value="0x180123450"),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_preprocess_direct_func_sig_via_mcp",
+                        AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_preprocess_direct_struct_offset_sig_via_mcp",
+                        AsyncMock(
+                            return_value={
+                                "struct_name": "CGameResourceService",
+                                "member_name": "m_pEntitySystem",
+                                "offset": "0x58",
+                                "size": 8,
+                                "offset_sig": "49 8B 4E ??",
+                                "offset_sig_disp": 0,
+                            }
+                        ),
+                        create=True,
+                    ) as mock_preprocess_direct_struct_offset_sig,
+                    patch.object(
+                        ida_analyze_util,
+                        "call_llm_decompile",
+                        create=True,
+                        new_callable=AsyncMock,
+                        return_value=normalized_payload,
+                    ) as mock_call_llm_decompile,
+                    patch.object(
+                        ida_analyze_util,
+                        "write_func_yaml",
+                    ) as mock_write_func_yaml,
+                    patch.object(
+                        ida_analyze_util,
+                        "write_struct_offset_yaml",
+                    ) as mock_write_struct_offset_yaml,
+                    patch.object(
+                        ida_analyze_util,
+                        "_rename_func_in_ida",
+                        AsyncMock(return_value=None),
+                    ),
                 ):
                     result = await ida_analyze_util.preprocess_common_skill(
                         session="session",
@@ -8010,9 +8207,7 @@ found_struct_offset: []
             f"/tmp/{func_name}.windows.yaml",
             f"/tmp/{struct_member_name}.windows.yaml",
         ]
-        old_struct_yaml_path = Path(tempfile.gettempdir()) / (
-            f"{struct_member_name}.{id(self)}.windows.yaml"
-        )
+        old_struct_yaml_path = Path(tempfile.gettempdir()) / (f"{struct_member_name}.{id(self)}.windows.yaml")
         target_detail_payload = {
             "func_name": "CNetworkGameClient_RecordEntityBandwidth",
             "func_va": "0x180555500",
@@ -8075,65 +8270,78 @@ found_struct_offset: []
                     },
                 )
 
-                with patch.object(
-                    ida_analyze_util,
-                    "_get_preprocessor_scripts_dir",
-                    return_value=preprocessor_dir,
-                ), patch.object(
-                    ida_analyze_util,
-                    "create_openai_client",
-                    return_value=object(),
-                    create=True,
-                ), patch.object(
-                    ida_analyze_util,
-                    "preprocess_func_sig_via_mcp",
-                    AsyncMock(return_value=None),
-                ), patch.object(
-                    ida_analyze_util,
-                    "preprocess_struct_offset_sig_via_mcp",
-                    AsyncMock(return_value=None),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_load_llm_decompile_target_details_via_mcp",
-                    AsyncMock(return_value=[target_detail_payload]),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_resolve_direct_call_target_via_mcp",
-                    AsyncMock(return_value="0x180123450"),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_preprocess_direct_func_sig_via_mcp",
-                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-                ), patch.object(
-                    ida_analyze_util,
-                    "_preprocess_direct_struct_offset_sig_via_mcp",
-                    AsyncMock(
-                        return_value={
-                            "struct_name": "CGameResourceService",
-                            "member_name": "m_pEntitySystem",
-                            "offset": "0x58",
-                            "size": 8,
-                            "offset_sig": "49 8B 4E ??",
-                            "offset_sig_disp": 0,
-                        }
+                with (
+                    patch.object(
+                        ida_analyze_util,
+                        "_get_preprocessor_scripts_dir",
+                        return_value=preprocessor_dir,
                     ),
-                    create=True,
-                ) as mock_preprocess_direct_struct_offset_sig, patch.object(
-                    ida_analyze_util,
-                    "call_llm_decompile",
-                    create=True,
-                    new_callable=AsyncMock,
-                    return_value=normalized_payload,
-                ), patch.object(
-                    ida_analyze_util,
-                    "write_func_yaml",
-                ), patch.object(
-                    ida_analyze_util,
-                    "write_struct_offset_yaml",
-                ) as mock_write_struct_offset_yaml, patch.object(
-                    ida_analyze_util,
-                    "_rename_func_in_ida",
-                    AsyncMock(return_value=None),
+                    patch.object(
+                        ida_analyze_util,
+                        "create_openai_client",
+                        return_value=object(),
+                        create=True,
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "preprocess_func_sig_via_mcp",
+                        AsyncMock(return_value=None),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "preprocess_struct_offset_sig_via_mcp",
+                        AsyncMock(return_value=None),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_load_llm_decompile_target_details_via_mcp",
+                        AsyncMock(return_value=[target_detail_payload]),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_resolve_direct_call_target_via_mcp",
+                        AsyncMock(return_value="0x180123450"),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_preprocess_direct_func_sig_via_mcp",
+                        AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "_preprocess_direct_struct_offset_sig_via_mcp",
+                        AsyncMock(
+                            return_value={
+                                "struct_name": "CGameResourceService",
+                                "member_name": "m_pEntitySystem",
+                                "offset": "0x58",
+                                "size": 8,
+                                "offset_sig": "49 8B 4E ??",
+                                "offset_sig_disp": 0,
+                            }
+                        ),
+                        create=True,
+                    ) as mock_preprocess_direct_struct_offset_sig,
+                    patch.object(
+                        ida_analyze_util,
+                        "call_llm_decompile",
+                        create=True,
+                        new_callable=AsyncMock,
+                        return_value=normalized_payload,
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "write_func_yaml",
+                    ),
+                    patch.object(
+                        ida_analyze_util,
+                        "write_struct_offset_yaml",
+                    ) as mock_write_struct_offset_yaml,
+                    patch.object(
+                        ida_analyze_util,
+                        "_rename_func_in_ida",
+                        AsyncMock(return_value=None),
+                    ),
                 ):
                     result = await ida_analyze_util.preprocess_common_skill(
                         session="session",
@@ -8213,9 +8421,7 @@ found_struct_offset: []
             ],
             list(written_payload.keys()),
         )
-        self.assertTrue(
-            written_payload["offset_sig_allow_across_function_boundary"]
-        )
+        self.assertTrue(written_payload["offset_sig_allow_across_function_boundary"])
 
     async def test_preprocess_common_skill_llm_batch_uses_xref_resolved_symbol_to_shrink_request(
         self,
@@ -8288,49 +8494,60 @@ found_struct_offset: []
                     encoding="utf-8",
                 )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_xrefs_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_func_xrefs_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=llm_payload,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-                side_effect=_fake_write_func_yaml,
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_xrefs_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_func_xrefs_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=llm_payload,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                    side_effect=_fake_write_func_yaml,
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -8464,49 +8681,60 @@ found_struct_offset: []
                     encoding="utf-8",
                 )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_xrefs_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_func_xrefs_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(side_effect=["0x180123450", "0x180223450"]),
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                side_effect=[first_llm_payload, second_llm_payload],
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-                side_effect=_fake_write_func_yaml,
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_xrefs_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_func_xrefs_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(side_effect=["0x180123450", "0x180223450"]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    side_effect=[first_llm_payload, second_llm_payload],
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                    side_effect=_fake_write_func_yaml,
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -8578,27 +8806,33 @@ found_struct_offset: []
                 encoding="utf-8",
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                create=True,
-            ) as mock_create_openai_client, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml:
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    create=True,
+                ) as mock_create_openai_client,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+            ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
                     expected_outputs=[output_path],
@@ -8688,45 +8922,55 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-                create=True,
-            ) as mock_load_target_details, patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                    create=True,
+                ) as mock_load_target_details,
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -8819,33 +9063,40 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[]),
-                create=True,
-            ) as mock_load_target_details, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml:
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[]),
+                    create=True,
+                ) as mock_load_target_details,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+            ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
                     expected_outputs=[output_path],
@@ -8921,6 +9172,7 @@ found_struct_offset: []
                     "procedure": target_detail_payload["procedure"],
                 },
             )
+
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -8942,50 +9194,60 @@ found_struct_offset: []
 
             session.call_tool.side_effect = _session_call_tool
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-            ) as mock_resolve_direct_call_target, patch.object(
-                ida_analyze_util,
-                "_get_func_basic_info_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "func_va": "0x180123450",
-                        "func_rva": "0x123450",
-                        "func_size": "0x40",
-                    }
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
                 ),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_gen_func_sig_via_mcp",
-                AsyncMock(return_value={"func_sig": "40 53"}),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ) as mock_call_llm_decompile, patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                ) as mock_resolve_direct_call_target,
+                patch.object(
+                    ida_analyze_util,
+                    "_get_func_basic_info_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "func_va": "0x180123450",
+                            "func_rva": "0x123450",
+                            "func_size": "0x40",
+                        }
+                    ),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gen_func_sig_via_mcp",
+                    AsyncMock(return_value={"func_sig": "40 53"}),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ) as mock_call_llm_decompile,
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session=session,
@@ -9070,45 +9332,55 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_funcptr_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-                create=True,
-            ) as mock_resolve_direct_funcptr_target, patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_funcptr_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                    create=True,
+                ) as mock_resolve_direct_funcptr_target,
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -9196,50 +9468,61 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180111111"),
-                create=True,
-            ) as mock_resolve_direct_call_target, patch.object(
-                ida_analyze_util,
-                "_resolve_direct_funcptr_target_via_mcp",
-                AsyncMock(return_value="0x180222222"),
-                create=True,
-            ) as mock_resolve_direct_funcptr_target, patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180111111"),
+                    create=True,
+                ) as mock_resolve_direct_call_target,
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_funcptr_target_via_mcp",
+                    AsyncMock(return_value="0x180222222"),
+                    create=True,
+                ) as mock_resolve_direct_funcptr_target,
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -9317,45 +9600,55 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_funcptr_target_via_mcp",
-                AsyncMock(return_value=None),
-                create=True,
-            ) as mock_resolve_direct_funcptr_target, patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(),
-            ) as mock_preprocess_direct_func_sig_via_mcp, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_funcptr_target_via_mcp",
+                    AsyncMock(return_value=None),
+                    create=True,
+                ) as mock_resolve_direct_funcptr_target,
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(),
+                ) as mock_preprocess_direct_func_sig_via_mcp,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -9456,45 +9749,55 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_funcptr_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-                create=True,
-            ) as mock_resolve_direct_funcptr_target, patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ) as mock_preprocess_direct_func_sig_via_mcp, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_funcptr_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                    create=True,
+                ) as mock_resolve_direct_funcptr_target,
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ) as mock_preprocess_direct_func_sig_via_mcp,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -9612,45 +9915,55 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180111111"),
-                create=True,
-            ) as mock_resolve_direct_call_target, patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
-            ) as mock_preprocess_direct_func_sig_via_mcp, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180111111"),
+                    create=True,
+                ) as mock_resolve_direct_call_target,
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(side_effect=_fake_preprocess_direct_func_sig_via_mcp),
+                ) as mock_preprocess_direct_func_sig_via_mcp,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -9745,73 +10058,85 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_vtable_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "vtable_class": "CBaseEntity",
-                        "vtable_symbol": "_ZTV11CBaseEntity + 0x10",
-                        "vtable_va": "0x18021862e0",
-                        "vtable_rva": "0x21862e0",
-                        "vtable_size": "0x778",
-                        "vtable_numvfunc": 239,
-                        "vtable_entries": {110: "0x1809b8db0"},
-                    }
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
                 ),
-            ), patch.object(
-                ida_analyze_util,
-                "_get_func_basic_info_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "func_va": "0x1809b8db0",
-                        "func_rva": "0x9b8db0",
-                        "func_size": "0x3",
-                    }
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
                 ),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_gen_vfunc_sig_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "vfunc_sig": "FF 90 70 03 00 00",
-                        "vfunc_sig_max_match": 10,
-                    }
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
                 ),
-            ) as mock_preprocess_gen_vfunc_sig, patch.object(
-                ida_analyze_util,
-                "preprocess_gen_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ) as mock_preprocess_gen_func_sig, patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_vtable_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "vtable_class": "CBaseEntity",
+                            "vtable_symbol": "_ZTV11CBaseEntity + 0x10",
+                            "vtable_va": "0x18021862e0",
+                            "vtable_rva": "0x21862e0",
+                            "vtable_size": "0x778",
+                            "vtable_numvfunc": 239,
+                            "vtable_entries": {110: "0x1809b8db0"},
+                        }
+                    ),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_get_func_basic_info_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "func_va": "0x1809b8db0",
+                            "func_rva": "0x9b8db0",
+                            "func_size": "0x3",
+                        }
+                    ),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gen_vfunc_sig_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "vfunc_sig": "FF 90 70 03 00 00",
+                            "vfunc_sig_max_match": 10,
+                        }
+                    ),
+                ) as mock_preprocess_gen_vfunc_sig,
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gen_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ) as mock_preprocess_gen_func_sig,
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session=session,
@@ -9915,6 +10240,7 @@ found_struct_offset: []
                     "procedure": target_detail_payload["procedure"],
                 },
             )
+
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -9936,42 +10262,51 @@ found_struct_offset: []
 
             session.call_tool.side_effect = _session_call_tool
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_vtable_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_gen_vfunc_sig_via_mcp",
-                create=True,
-                new_callable=AsyncMock,
-                return_value={"vfunc_sig": "FF 90 78 00 00 00 48 8B C8"},
-            ) as mock_preprocess_gen_vfunc_sig, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_vtable_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gen_vfunc_sig_via_mcp",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value={"vfunc_sig": "FF 90 78 00 00 00 48 8B C8"},
+                ) as mock_preprocess_gen_vfunc_sig,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session=session,
@@ -10074,6 +10409,7 @@ found_struct_offset: []
                     "procedure": target_detail_payload["procedure"],
                 },
             )
+
             async def _session_call_tool(*, name, arguments):
                 self.assertEqual("py_eval", name)
                 code = arguments["code"]
@@ -10095,42 +10431,51 @@ found_struct_offset: []
 
             session.call_tool.side_effect = _session_call_tool
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_vtable_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_gen_vfunc_sig_via_mcp",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=None,
-            ) as mock_preprocess_gen_vfunc_sig, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_vtable_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_gen_vfunc_sig_via_mcp",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=None,
+                ) as mock_preprocess_gen_vfunc_sig,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session=session,
@@ -10194,15 +10539,18 @@ found_struct_offset: []
     ) -> None:
         session = AsyncMock()
 
-        with patch.object(
-            ida_analyze_util,
-            "_get_func_basic_info_via_mcp",
-            AsyncMock(return_value={"func_size": "0x40"}),
-        ), patch.object(
-            ida_analyze_util,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(return_value={"func_sig": "AA BB"}),
-        ) as mock_gen_sig:
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_get_func_basic_info_via_mcp",
+                AsyncMock(return_value={"func_size": "0x40"}),
+            ),
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(return_value={"func_sig": "AA BB"}),
+            ) as mock_gen_sig,
+        ):
             result = await ida_analyze_util._preprocess_direct_func_sig_via_mcp(
                 session=session,
                 new_path="/tmp/Foo.windows.yaml",
@@ -10219,29 +10567,30 @@ found_struct_offset: []
         assert result is not None
         self.assertEqual("AA BB", result["func_sig"])
         mock_gen_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_gen_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertTrue(mock_gen_sig.await_args.kwargs["allow_across_function_boundary"])
 
     async def test_preprocess_direct_func_sig_forwards_vfunc_boundary_flag(
         self,
     ) -> None:
         session = AsyncMock()
 
-        with patch.object(
-            ida_analyze_util,
-            "_get_func_basic_info_via_mcp",
-            AsyncMock(return_value={"func_size": "0x40"}),
-        ), patch.object(
-            ida_analyze_util,
-            "preprocess_gen_vfunc_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "vfunc_sig": "FF 90 78 00 00 00",
-                    "vfunc_sig_max_match": 10,
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "_get_func_basic_info_via_mcp",
+                AsyncMock(return_value={"func_size": "0x40"}),
             ),
-        ) as mock_gen_vfunc_sig:
+            patch.object(
+                ida_analyze_util,
+                "preprocess_gen_vfunc_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "vfunc_sig": "FF 90 78 00 00 00",
+                        "vfunc_sig_max_match": 10,
+                    }
+                ),
+            ) as mock_gen_vfunc_sig,
+        ):
             result = await ida_analyze_util._preprocess_direct_func_sig_via_mcp(
                 session=session,
                 new_path="/tmp/Foo.windows.yaml",
@@ -10261,9 +10610,7 @@ found_struct_offset: []
         assert result is not None
         self.assertEqual("FF 90 78 00 00 00", result["vfunc_sig"])
         mock_gen_vfunc_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_gen_vfunc_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertTrue(mock_gen_vfunc_sig.await_args.kwargs["allow_across_function_boundary"])
 
     async def test_preprocess_direct_struct_offset_forwards_boundary_flag(
         self,
@@ -10302,9 +10649,7 @@ found_struct_offset: []
         assert result is not None
         self.assertEqual("49 8B 4E ??", result["offset_sig"])
         mock_gen_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_gen_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertTrue(mock_gen_sig.await_args.kwargs["allow_across_function_boundary"])
 
     async def test_slot_only_vfunc_payload_forwards_boundary_flag(
         self,
@@ -10355,9 +10700,7 @@ found_struct_offset: []
         assert result is not None
         self.assertEqual("FF 90 78 00 00 00 48 8B C8", result["vfunc_sig"])
         mock_gen_vfunc_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_gen_vfunc_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertTrue(mock_gen_vfunc_sig.await_args.kwargs["allow_across_function_boundary"])
 
     async def test_preprocess_common_skill_forwards_func_sig_boundary_flag_to_direct_helper(
         self,
@@ -10400,51 +10743,61 @@ found_struct_offset: []
                 },
             )
 
-            with patch.object(
-                ida_analyze_util,
-                "_get_preprocessor_scripts_dir",
-                return_value=preprocessor_dir,
-            ), patch.object(
-                ida_analyze_util,
-                "create_openai_client",
-                return_value=object(),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "preprocess_func_sig_via_mcp",
-                AsyncMock(return_value=None),
-            ), patch.object(
-                ida_analyze_util,
-                "_load_llm_decompile_target_details_via_mcp",
-                AsyncMock(return_value=[target_detail_payload]),
-            ), patch.object(
-                ida_analyze_util,
-                "_resolve_direct_call_target_via_mcp",
-                AsyncMock(return_value="0x180123450"),
-                create=True,
-            ), patch.object(
-                ida_analyze_util,
-                "_preprocess_direct_func_sig_via_mcp",
-                AsyncMock(
-                    return_value={
-                        "func_name": func_name,
-                        "func_va": "0x180123450",
-                        "func_sig": "AA BB",
-                    }
+            with (
+                patch.object(
+                    ida_analyze_util,
+                    "_get_preprocessor_scripts_dir",
+                    return_value=preprocessor_dir,
                 ),
-            ) as mock_preprocess_direct_func_sig, patch.object(
-                ida_analyze_util,
-                "call_llm_decompile",
-                create=True,
-                new_callable=AsyncMock,
-                return_value=normalized_payload,
-            ), patch.object(
-                ida_analyze_util,
-                "write_func_yaml",
-            ) as mock_write_func_yaml, patch.object(
-                ida_analyze_util,
-                "_rename_func_in_ida",
-                AsyncMock(return_value=None),
+                patch.object(
+                    ida_analyze_util,
+                    "create_openai_client",
+                    return_value=object(),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "preprocess_func_sig_via_mcp",
+                    AsyncMock(return_value=None),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_load_llm_decompile_target_details_via_mcp",
+                    AsyncMock(return_value=[target_detail_payload]),
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_resolve_direct_call_target_via_mcp",
+                    AsyncMock(return_value="0x180123450"),
+                    create=True,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "_preprocess_direct_func_sig_via_mcp",
+                    AsyncMock(
+                        return_value={
+                            "func_name": func_name,
+                            "func_va": "0x180123450",
+                            "func_sig": "AA BB",
+                        }
+                    ),
+                ) as mock_preprocess_direct_func_sig,
+                patch.object(
+                    ida_analyze_util,
+                    "call_llm_decompile",
+                    create=True,
+                    new_callable=AsyncMock,
+                    return_value=normalized_payload,
+                ),
+                patch.object(
+                    ida_analyze_util,
+                    "write_func_yaml",
+                ) as mock_write_func_yaml,
+                patch.object(
+                    ida_analyze_util,
+                    "_rename_func_in_ida",
+                    AsyncMock(return_value=None),
+                ),
             ):
                 result = await ida_analyze_util.preprocess_common_skill(
                     session="session",
@@ -10480,11 +10833,7 @@ found_struct_offset: []
 
         self.assertTrue(result)
         mock_preprocess_direct_func_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_preprocess_direct_func_sig.await_args.kwargs[
-                "allow_func_sig_across_function_boundary"
-            ]
-        )
+        self.assertTrue(mock_preprocess_direct_func_sig.await_args.kwargs["allow_func_sig_across_function_boundary"])
         mock_write_func_yaml.assert_called_once()
         written_payload = mock_write_func_yaml.call_args.args[1]
         self.assertEqual(
@@ -10571,47 +10920,59 @@ found_struct_offset: []
                         helper_payload if expected_helper_name == "_preprocess_direct_func_sig_via_mcp" else None
                     )
                     slot_only_return = (
-                        helper_payload if expected_helper_name == "_build_enriched_slot_only_vfunc_payload_via_mcp" else None
+                        helper_payload
+                        if expected_helper_name == "_build_enriched_slot_only_vfunc_payload_via_mcp"
+                        else None
                     )
 
-                    with patch.object(
-                        ida_analyze_util,
-                        "_get_preprocessor_scripts_dir",
-                        return_value=preprocessor_dir,
-                    ), patch.object(
-                        ida_analyze_util,
-                        "create_openai_client",
-                        return_value=object(),
-                        create=True,
-                    ), patch.object(
-                        ida_analyze_util,
-                        "preprocess_func_sig_via_mcp",
-                        AsyncMock(return_value=None),
-                    ), patch.object(
-                        ida_analyze_util,
-                        "_load_llm_decompile_target_details_via_mcp",
-                        AsyncMock(return_value=[target_detail_payload]),
-                    ), patch.object(
-                        ida_analyze_util,
-                        "_preprocess_direct_func_sig_via_mcp",
-                        AsyncMock(return_value=direct_helper_return),
-                    ) as mock_preprocess_direct_func_sig, patch.object(
-                        ida_analyze_util,
-                        "_build_enriched_slot_only_vfunc_payload_via_mcp",
-                        AsyncMock(return_value=slot_only_return),
-                    ) as mock_slot_only_helper, patch.object(
-                        ida_analyze_util,
-                        "call_llm_decompile",
-                        create=True,
-                        new_callable=AsyncMock,
-                        return_value=normalized_payload,
-                    ), patch.object(
-                        ida_analyze_util,
-                        "write_func_yaml",
-                    ) as mock_write_func_yaml, patch.object(
-                        ida_analyze_util,
-                        "_rename_func_in_ida",
-                        AsyncMock(return_value=None),
+                    with (
+                        patch.object(
+                            ida_analyze_util,
+                            "_get_preprocessor_scripts_dir",
+                            return_value=preprocessor_dir,
+                        ),
+                        patch.object(
+                            ida_analyze_util,
+                            "create_openai_client",
+                            return_value=object(),
+                            create=True,
+                        ),
+                        patch.object(
+                            ida_analyze_util,
+                            "preprocess_func_sig_via_mcp",
+                            AsyncMock(return_value=None),
+                        ),
+                        patch.object(
+                            ida_analyze_util,
+                            "_load_llm_decompile_target_details_via_mcp",
+                            AsyncMock(return_value=[target_detail_payload]),
+                        ),
+                        patch.object(
+                            ida_analyze_util,
+                            "_preprocess_direct_func_sig_via_mcp",
+                            AsyncMock(return_value=direct_helper_return),
+                        ) as mock_preprocess_direct_func_sig,
+                        patch.object(
+                            ida_analyze_util,
+                            "_build_enriched_slot_only_vfunc_payload_via_mcp",
+                            AsyncMock(return_value=slot_only_return),
+                        ) as mock_slot_only_helper,
+                        patch.object(
+                            ida_analyze_util,
+                            "call_llm_decompile",
+                            create=True,
+                            new_callable=AsyncMock,
+                            return_value=normalized_payload,
+                        ),
+                        patch.object(
+                            ida_analyze_util,
+                            "write_func_yaml",
+                        ) as mock_write_func_yaml,
+                        patch.object(
+                            ida_analyze_util,
+                            "_rename_func_in_ida",
+                            AsyncMock(return_value=None),
+                        ),
                     ):
                         result = await ida_analyze_util.preprocess_common_skill(
                             session="session",
@@ -10654,24 +11015,16 @@ found_struct_offset: []
                 if expected_helper_name == "_preprocess_direct_func_sig_via_mcp":
                     mock_preprocess_direct_func_sig.assert_awaited_once()
                     self.assertTrue(
-                        mock_preprocess_direct_func_sig.await_args.kwargs[
-                            "allow_vfunc_sig_across_function_boundary"
-                        ]
+                        mock_preprocess_direct_func_sig.await_args.kwargs["allow_vfunc_sig_across_function_boundary"]
                     )
                     mock_slot_only_helper.assert_not_awaited()
                 else:
                     mock_preprocess_direct_func_sig.assert_awaited_once()
                     self.assertTrue(
-                        mock_preprocess_direct_func_sig.await_args.kwargs[
-                            "allow_vfunc_sig_across_function_boundary"
-                        ]
+                        mock_preprocess_direct_func_sig.await_args.kwargs["allow_vfunc_sig_across_function_boundary"]
                     )
                     mock_slot_only_helper.assert_awaited_once()
-                    self.assertTrue(
-                        mock_slot_only_helper.await_args.kwargs[
-                            "allow_vfunc_sig_across_function_boundary"
-                        ]
-                    )
+                    self.assertTrue(mock_slot_only_helper.await_args.kwargs["allow_vfunc_sig_across_function_boundary"])
                 mock_write_func_yaml.assert_called_once()
                 written_payload = mock_write_func_yaml.call_args.args[1]
                 self.assertEqual(
@@ -10685,32 +11038,37 @@ found_struct_offset: []
         func_name = "CDerived_Touch"
         output_path = f"/tmp/{func_name}.windows.yaml"
 
-        with patch.object(
-            ida_analyze_util,
-            "preprocess_func_sig_via_mcp",
-            AsyncMock(return_value=None),
-        ) as mock_preprocess_func_sig, patch.object(
-            ida_analyze_util,
-            "preprocess_index_based_vfunc_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": func_name,
-                    "func_va": "0x180123450",
-                    "func_rva": "0x123450",
-                    "func_size": "0x40",
-                    "func_sig": "AA BB",
-                    "vtable_name": "CDerived",
-                    "vfunc_offset": "0x118",
-                    "vfunc_index": 35,
-                }
+        with (
+            patch.object(
+                ida_analyze_util,
+                "preprocess_func_sig_via_mcp",
+                AsyncMock(return_value=None),
+            ) as mock_preprocess_func_sig,
+            patch.object(
+                ida_analyze_util,
+                "preprocess_index_based_vfunc_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": func_name,
+                        "func_va": "0x180123450",
+                        "func_rva": "0x123450",
+                        "func_size": "0x40",
+                        "func_sig": "AA BB",
+                        "vtable_name": "CDerived",
+                        "vfunc_offset": "0x118",
+                        "vfunc_index": 35,
+                    }
+                ),
+            ) as mock_preprocess_index_vfunc,
+            patch.object(
+                ida_analyze_util,
+                "write_func_yaml",
+            ) as mock_write_func_yaml,
+            patch.object(
+                ida_analyze_util,
+                "_rename_func_in_ida",
+                AsyncMock(return_value=None),
             ),
-        ) as mock_preprocess_index_vfunc, patch.object(
-            ida_analyze_util,
-            "write_func_yaml",
-        ) as mock_write_func_yaml, patch.object(
-            ida_analyze_util,
-            "_rename_func_in_ida",
-            AsyncMock(return_value=None),
         ):
             result = await ida_analyze_util.preprocess_common_skill(
                 session="session",
@@ -10740,17 +11098,9 @@ found_struct_offset: []
 
         self.assertTrue(result)
         mock_preprocess_func_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_preprocess_func_sig.await_args.kwargs[
-                "allow_func_sig_across_function_boundary"
-            ]
-        )
+        self.assertTrue(mock_preprocess_func_sig.await_args.kwargs["allow_func_sig_across_function_boundary"])
         mock_preprocess_index_vfunc.assert_awaited_once()
-        self.assertTrue(
-            mock_preprocess_index_vfunc.await_args.kwargs[
-                "allow_func_sig_across_function_boundary"
-            ]
-        )
+        self.assertTrue(mock_preprocess_index_vfunc.await_args.kwargs["allow_func_sig_across_function_boundary"])
         mock_write_func_yaml.assert_called_once()
         written_payload = mock_write_func_yaml.call_args.args[1]
         self.assertEqual(True, written_payload["func_sig_allow_across_function_boundary"])
@@ -10975,9 +11325,7 @@ class TestPreprocessFuncSigViaMcpVfuncSigMaxMatch(unittest.IsolatedAsyncioTestCa
         self.assertEqual("40 53", result["func_sig"])
         self.assertEqual("FF 90 20 01 00 00", result["vfunc_sig"])
         mock_gen_sig.assert_awaited_once()
-        self.assertTrue(
-            mock_gen_sig.await_args.kwargs["allow_across_function_boundary"]
-        )
+        self.assertTrue(mock_gen_sig.await_args.kwargs["allow_across_function_boundary"])
 
 
 if __name__ == "__main__":

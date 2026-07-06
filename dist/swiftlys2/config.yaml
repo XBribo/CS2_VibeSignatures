@@ -1,6 +1,5 @@
 modules:
   - name: server
-
     symbols:
       - name: CSource2Server_Init
         category: vfunc

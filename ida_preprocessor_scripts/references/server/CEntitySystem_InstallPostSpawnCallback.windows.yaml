@@ -1,0 +1,18 @@
+func_name: CEntitySystem_InstallPostSpawnCallback
+func_va: '0x1811fa840'
+disasm_code: |-
+  .text:00000001811FA840                 mov     rax, [rdx+8]
+  .text:00000001811FA844                 mov     [rcx+0C78h], rax
+  .text:00000001811FA84B                 mov     rax, [rdx]
+  .text:00000001811FA84E                 mov     [rcx+0C70h], rax  ; 0C70h = CEntitySystem::m_EntityPostSpawnCallback (structmember, struct=CEntitySystem, member=m_EntityPostSpawnCallback)
+  .text:00000001811FA855                 retn
+procedure: |-
+  __int64 __fastcall CEntitySystem_InstallPostSpawnCallback(__int64 a1, __int64 *a2)
+  {
+    __int64 result; // rax
+
+    *(_QWORD *)(a1 + 3192) = a2[1];
+    result = *a2;
+    *(_QWORD *)(a1 + 3184) = *a2;  // 3184 = 0xC70 = CEntitySystem::m_EntityPostSpawnCallback (structmember, struct=CEntitySystem, member=m_EntityPostSpawnCallback)
+    return result;
+  }

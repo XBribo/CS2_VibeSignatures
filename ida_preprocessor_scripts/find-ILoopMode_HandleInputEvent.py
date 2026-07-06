@@ -139,16 +139,16 @@ async def preprocess_skill(
     )
     if vfunc_offset is not None:
         if debug:
-            print(
-                "    Preprocess: reusing old "
-                f"vfunc_offset={hex(vfunc_offset)} for {TARGET_FUNC_NAME}"
-            )
-        write_func_yaml(output_path, {
-            "func_name": TARGET_FUNC_NAME,
-            "vtable_name": VTABLE_CLASS,
-            "vfunc_offset": hex(vfunc_offset),
-            "vfunc_index": vfunc_offset // 8,
-        })
+            print(f"    Preprocess: reusing old vfunc_offset={hex(vfunc_offset)} for {TARGET_FUNC_NAME}")
+        write_func_yaml(
+            output_path,
+            {
+                "func_name": TARGET_FUNC_NAME,
+                "vtable_name": VTABLE_CLASS,
+                "vfunc_offset": hex(vfunc_offset),
+                "vfunc_index": vfunc_offset // 8,
+            },
+        )
         return True
 
     # Read predecessor func_va from its output YAML
@@ -208,10 +208,13 @@ async def preprocess_skill(
     if debug:
         print(f"    Preprocess: resolved vfunc_offset={hex(vfunc_offset)} vfunc_index={vfunc_index}")
 
-    write_func_yaml(output_path, {
-        "func_name": TARGET_FUNC_NAME,
-        "vtable_name": VTABLE_CLASS,
-        "vfunc_offset": hex(vfunc_offset),
-        "vfunc_index": vfunc_index,
-    })
+    write_func_yaml(
+        output_path,
+        {
+            "func_name": TARGET_FUNC_NAME,
+            "vtable_name": VTABLE_CLASS,
+            "vfunc_offset": hex(vfunc_offset),
+            "vfunc_index": vfunc_index,
+        },
+    )
     return True

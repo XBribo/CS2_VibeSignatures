@@ -11,10 +11,7 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 COMMAND_NAME = "bot_add"
-HELP_STRING = (
-    "bot_add <t|ct> <type> <difficulty> <name> - "
-    "Adds a bot matching the given criteria."
-)
+HELP_STRING = "bot_add <t|ct> <type> <difficulty> <name> - Adds a bot matching the given criteria."
 SEARCH_WINDOW_BEFORE_CALL = 96
 SEARCH_WINDOW_AFTER_XREF = 96
 

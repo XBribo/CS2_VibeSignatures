@@ -26,8 +26,7 @@ GAMEDATA_PATH = "gamedata/cs2fixes.jsonc"
 
 # Upstream download sources: (raw_url, relative_dest_path)
 DOWNLOAD_SOURCES = [
-    ("https://raw.githubusercontent.com/Source2ZE/CS2Fixes/refs/heads/main/gamedata/cs2fixes.jsonc",
-     GAMEDATA_PATH),
+    ("https://raw.githubusercontent.com/Source2ZE/CS2Fixes/refs/heads/main/gamedata/cs2fixes.jsonc", GAMEDATA_PATH),
 ]
 
 
@@ -85,10 +84,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "unknown library"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "unknown library"})
             continue
 
         # Find matching YAML data
@@ -96,25 +92,17 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry or yaml_entry.get("library") != library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data"})
             continue
 
         # Update platform signatures
         for platform in platforms:
-            if (platform in entry and platform in yaml_entry
-                    and "func_sig" in yaml_entry[platform]):
+            if platform in entry and platform in yaml_entry and "func_sig" in yaml_entry[platform]:
                 sig = convert_sig_to_css(yaml_entry[platform]["func_sig"])
                 entry[platform] = sig
                 updated_count += 1
                 if debug:
-                    updated_symbols.append({
-                        "name": func_name,
-                        "type": "signature",
-                        "platform": platform
-                    })
+                    updated_symbols.append({"name": func_name, "type": "signature", "platform": platform})
 
     # Update Offsets
     offsets = csgo.get("Offsets", {})
@@ -127,10 +115,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data (offset)"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data (offset)"})
             continue
 
         # Update platform offsets
@@ -143,11 +128,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                     entry[platform] = yaml_entry[platform]["vfunc_index"]
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "offset", "platform": platform})
                 # Check for struct_member_offset (struct member offset)
                 elif "struct_member_offset" in yaml_entry[platform]:
                     offset_val = yaml_entry[platform]["struct_member_offset"]
@@ -157,11 +138,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                     entry[platform] = offset_val
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "struct_offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "struct_offset", "platform": platform})
 
     # Build patch-only alias map from yaml_data metadata to avoid collisions
     # with non-patch symbols (e.g. CPhysBox_Use offset/signature entries).
@@ -185,9 +162,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         # normalization logic.
         yaml_patch_name = patch_alias_to_name_map.get(patch_name)
         if not yaml_patch_name:
-            yaml_patch_name = normalize_func_name_colons_to_underscore(
-                patch_name, alias_to_name_map
-            )
+            yaml_patch_name = normalize_func_name_colons_to_underscore(patch_name, alias_to_name_map)
 
         # Find matching YAML data
         yaml_entry = yaml_data.get(yaml_patch_name)
@@ -197,27 +172,17 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": patch_name,
-                    "reason": "no matching YAML data (patch)"
-                })
+                skipped_symbols.append({"name": patch_name, "reason": "no matching YAML data (patch)"})
             continue
 
         # Update platform patch bytes
         for platform in platforms:
-            if (platform in entry and platform in yaml_entry
-                    and "patch_bytes" in yaml_entry[platform]):
-                patch_bytes = convert_sig_to_css(
-                    yaml_entry[platform]["patch_bytes"]
-                )
+            if platform in entry and platform in yaml_entry and "patch_bytes" in yaml_entry[platform]:
+                patch_bytes = convert_sig_to_css(yaml_entry[platform]["patch_bytes"])
                 entry[platform] = patch_bytes
                 updated_count += 1
                 if debug:
-                    updated_symbols.append({
-                        "name": patch_name,
-                        "type": "patch",
-                        "platform": platform
-                    })
+                    updated_symbols.append({"name": patch_name, "type": "patch", "platform": platform})
 
     save_jsonc(gamedata_path, gamedata)
 

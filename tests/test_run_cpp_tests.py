@@ -1,5 +1,6 @@
-import unittest
+import argparse
 import tempfile
+import unittest
 from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import patch
@@ -11,8 +12,7 @@ import run_cpp_tests
 class TestParseVftableLayouts(unittest.TestCase):
     def test_parses_single_entry_vftable_indices_header(self) -> None:
         compiler_output = (
-            "VFTable indices for 'ILoopType' (1 entry).\n"
-            "   0 | void ILoopType::AddEngineService(const char *) [pure]\n"
+            "VFTable indices for 'ILoopType' (1 entry).\n   0 | void ILoopType::AddEngineService(const char *) [pure]\n"
         )
 
         parsed = cpp_tests_util.parse_vftable_layouts(compiler_output)
@@ -83,15 +83,11 @@ class TestCompareVtableWithYaml(unittest.TestCase):
             module_dir = Path(temp_dir) / "14167" / "server"
             module_dir.mkdir(parents=True)
             (module_dir / "CDerived_vtable.windows.yaml").write_text(
-                "vtable_class: CDerived\n"
-                "vtable_size: '0x18'\n"
-                "vtable_numvfunc: 3\n",
+                "vtable_class: CDerived\nvtable_size: '0x18'\nvtable_numvfunc: 3\n",
                 encoding="utf-8",
             )
             (module_dir / "CDerived_ParentOverload_Int.windows.yaml").write_text(
-                "func_name: CDerived_ParentOverload_Int\n"
-                "vtable_name: CDerived\n"
-                "vfunc_index: 1\n",
+                "func_name: CDerived_ParentOverload_Int\nvtable_name: CDerived\nvfunc_index: 1\n",
                 encoding="utf-8",
             )
 
@@ -151,15 +147,11 @@ class TestCompareRecordLayoutWithYaml(unittest.TestCase):
             module_dir = Path(temp_dir) / "14158" / "SDL3"
             module_dir.mkdir(parents=True)
             (module_dir / "SDL_Mouse_WarpMouse.windows.yaml").write_text(
-                "struct_name: SDL_Mouse\n"
-                "member_name: WarpMouse\n"
-                "offset: '0x30'\n",
+                "struct_name: SDL_Mouse\nmember_name: WarpMouse\noffset: '0x30'\n",
                 encoding="utf-8",
             )
             (module_dir / "SDL_Mouse_focus.windows.yaml").write_text(
-                "struct_name: SDL_Mouse\n"
-                "member_name: focus\n"
-                "offset: '0x90'\n",
+                "struct_name: SDL_Mouse\nmember_name: focus\noffset: '0x90'\n",
                 encoding="utf-8",
             )
 
@@ -222,15 +214,12 @@ class TestRunFixHeaderAgent(unittest.TestCase):
         self.assertTrue(first_call.kwargs["text"])
         self.assertTrue(second_call.kwargs["text"])
 
-
     @patch("run_cpp_tests.subprocess.run")
     def test_run_fix_header_agent_passes_claude_prompt_via_stdin(
         self,
         mock_run,
     ) -> None:
-        mock_run.return_value = CompletedProcess(
-            args=["claude"], returncode=0, stdout="", stderr=""
-        )
+        mock_run.return_value = CompletedProcess(args=["claude"], returncode=0, stdout="", stderr="")
 
         result = run_cpp_tests.run_fix_header_agent(
             fix_prompt="fix the vtable diff",
@@ -295,15 +284,12 @@ class TestRunFixHeaderAgent(unittest.TestCase):
         resume_index = second_cmd.index("--resume") + 1
         self.assertEqual(first_cmd[sid_index], second_cmd[resume_index])
 
-
     @patch("run_cpp_tests.subprocess.run")
     def test_run_fix_header_agent_external_session_id(
         self,
         mock_run,
     ) -> None:
-        mock_run.return_value = CompletedProcess(
-            args=["claude"], returncode=0, stdout="", stderr=""
-        )
+        mock_run.return_value = CompletedProcess(args=["claude"], returncode=0, stdout="", stderr="")
 
         result = run_cpp_tests.run_fix_header_agent(
             fix_prompt="fix it",
@@ -323,9 +309,7 @@ class TestRunFixHeaderAgent(unittest.TestCase):
         self,
         mock_run,
     ) -> None:
-        mock_run.return_value = CompletedProcess(
-            args=["claude"], returncode=0, stdout="", stderr=""
-        )
+        mock_run.return_value = CompletedProcess(args=["claude"], returncode=0, stdout="", stderr="")
 
         result = run_cpp_tests.run_fix_header_agent(
             fix_prompt="fix it",
@@ -354,9 +338,7 @@ class TestRunFixHeaderAgent(unittest.TestCase):
         mock_run,
         _mock_load,
     ) -> None:
-        mock_run.return_value = CompletedProcess(
-            args=["codex"], returncode=0, stdout="", stderr=""
-        )
+        mock_run.return_value = CompletedProcess(args=["codex"], returncode=0, stdout="", stderr="")
 
         result = run_cpp_tests.run_fix_header_agent(
             fix_prompt="fix it",
@@ -443,9 +425,7 @@ class TestRunFixHeaderWithVerification(unittest.TestCase):
                 "status": "ok",
                 "command": [],
                 "output": "",
-                "compare_reports": [
-                    {"differences": [{"type": "x", "message": "still wrong"}]}
-                ],
+                "compare_reports": [{"differences": [{"type": "x", "message": "still wrong"}]}],
             },
             # Second verify: resolved
             {
@@ -492,9 +472,7 @@ class TestRunFixHeaderWithVerification(unittest.TestCase):
             "status": "ok",
             "command": [],
             "output": "",
-            "compare_reports": [
-                {"differences": [{"type": "x", "message": "persistent"}]}
-            ],
+            "compare_reports": [{"differences": [{"type": "x", "message": "persistent"}]}],
         }
 
         result = run_cpp_tests.run_fix_header_with_verification(
@@ -569,6 +547,79 @@ class TestRunFixHeaderWithVerification(unittest.TestCase):
         self.assertFalse(result)
         self.assertEqual(1, mock_agent.call_count)
         self.assertEqual(1, mock_compile.call_count)
+
+
+class TestMainExitStatus(unittest.TestCase):
+    @patch.object(run_cpp_tests, "run_one_test")
+    @patch.object(run_cpp_tests, "probe_target_support")
+    @patch.object(run_cpp_tests, "get_default_target_triple")
+    @patch.object(run_cpp_tests, "parse_config")
+    @patch.object(run_cpp_tests, "parse_args")
+    def test_returns_failure_when_record_or_vtable_compare_has_differences(
+        self,
+        mock_parse_args,
+        mock_parse_config,
+        mock_get_default_target_triple,
+        mock_probe_target_support,
+        mock_run_one_test,
+    ) -> None:
+        mock_parse_args.return_value = argparse.Namespace(
+            configyaml="config.yaml",
+            bindir="bin",
+            gamever="14132",
+            clang="clang++",
+            std="c++20",
+            debug=False,
+            fixheader=False,
+        )
+        mock_parse_config.return_value = [
+            {
+                "name": "TestLayout",
+                "symbol": "ITestLayout",
+                "cpp": "test.cpp",
+                "target": "x86_64-pc-windows-msvc",
+            }
+        ]
+        mock_get_default_target_triple.return_value = "x86_64-pc-windows-msvc"
+        mock_probe_target_support.return_value = {"supported": True, "output": ""}
+        compare_reports = [
+            (
+                "record layout",
+                {
+                    "comparison_kind": "record_layout",
+                    "struct_name": "SDL_Mouse",
+                    "differences": [
+                        {
+                            "type": "structmember_offset_mismatch",
+                            "message": "SDL_Mouse::focus mismatch",
+                        }
+                    ],
+                },
+            ),
+            (
+                "vtable layout",
+                {
+                    "class_name": "ITestLayout",
+                    "differences": [
+                        {
+                            "type": "vtable_size_mismatch",
+                            "message": "ITestLayout vtable size mismatch",
+                        }
+                    ],
+                },
+            ),
+        ]
+
+        for _case_name, compare_report in compare_reports:
+            with self.subTest(compare_kind=_case_name):
+                mock_run_one_test.return_value = {
+                    "status": "ok",
+                    "command": [],
+                    "output": "",
+                    "compare_reports": [compare_report],
+                }
+
+                self.assertEqual(1, run_cpp_tests.main())
 
 
 if __name__ == "__main__":

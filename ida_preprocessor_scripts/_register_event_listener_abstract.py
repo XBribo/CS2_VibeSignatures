@@ -316,12 +316,14 @@ except Exception:
     result = json.dumps({'ok': False, 'traceback': traceback.format_exc()})
 """
 
+
 def _read_yaml(path):
     try:
         with open(path, "r", encoding="utf-8") as handle:
             return yaml.safe_load(handle)
     except Exception:
         return None
+
 
 def _normalize_requested_fields(generate_yaml_desired_fields, target_name, debug=False):
     if not generate_yaml_desired_fields:
@@ -339,6 +341,7 @@ def _normalize_requested_fields(generate_yaml_desired_fields, target_name, debug
         return None
     return fields
 
+
 def _resolve_output_path(expected_outputs, target_name, platform, debug=False):
     filename = f"{target_name}.{platform}.yaml"
     matches = [path for path in expected_outputs if os.path.basename(path) == filename]
@@ -347,6 +350,7 @@ def _resolve_output_path(expected_outputs, target_name, platform, debug=False):
             print(f"    Preprocess: expected exactly one output for {filename}")
         return None
     return matches[0]
+
 
 async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
     try:
@@ -371,6 +375,7 @@ async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
             print(f"    Preprocess: invalid JSON result from {error_label}")
         return None
 
+
 def _build_register_event_listener_py_eval(
     platform,
     source_func_va,
@@ -394,11 +399,12 @@ def _build_register_event_listener_py_eval(
             result_var_name="string_hits",
         )
     )
-    return _REGISTER_EVENT_LISTENER_PY_EVAL_TEMPLATE.replace(
-        "__PARAMS_JSON__", repr(params)
-    ).replace(
-        "__EXACT_STRING_INDEX_LINES__", exact_string_index_lines
-    ).lstrip()
+    return (
+        _REGISTER_EVENT_LISTENER_PY_EVAL_TEMPLATE.replace("__PARAMS_JSON__", repr(params))
+        .replace("__EXACT_STRING_INDEX_LINES__", exact_string_index_lines)
+        .lstrip()
+    )
+
 
 async def _collect_register_event_listener_candidates(
     session,
@@ -455,6 +461,7 @@ async def _collect_register_event_listener_candidates(
             if not isinstance(value, str) or not value:
                 return None
     return {"register_func_va": register_func_va, "items": items}
+
 
 async def _query_func_info(session, func_va, debug=False):
     code = (
@@ -532,12 +539,8 @@ async def preprocess_register_event_listener_abstract_skill(
     except (TypeError, ValueError):
         return False
 
-    source_yaml = _read_yaml(
-        os.path.join(new_binary_dir, f"{source_yaml_stem}.{platform}.yaml")
-    )
-    source_func_entry_va = (
-        source_yaml.get("func_va") if isinstance(source_yaml, dict) else None
-    )
+    source_yaml = _read_yaml(os.path.join(new_binary_dir, f"{source_yaml_stem}.{platform}.yaml"))
+    source_func_entry_va = source_yaml.get("func_va") if isinstance(source_yaml, dict) else None
     try:
         source_func_va = hex(int(str(source_func_entry_va), 0))
     except (TypeError, ValueError):
@@ -545,12 +548,8 @@ async def preprocess_register_event_listener_abstract_skill(
             print(f"    Preprocess: invalid source func_va in {source_yaml_stem}.{platform}.yaml")
         return False
 
-    register_fields = _normalize_requested_fields(
-        generate_yaml_desired_fields, register_func_target_name, debug=debug
-    )
-    register_output = _resolve_output_path(
-        expected_outputs, register_func_target_name, platform, debug=debug
-    )
+    register_fields = _normalize_requested_fields(generate_yaml_desired_fields, register_func_target_name, debug=debug)
+    register_output = _resolve_output_path(expected_outputs, register_func_target_name, platform, debug=debug)
     if register_fields is None or register_output is None:
         return False
 
@@ -563,20 +562,12 @@ async def preprocess_register_event_listener_abstract_skill(
         target_name = spec.get("target_name")
         event_name = spec.get("event_name")
         rename_to = spec.get("rename_to")
-        if (
-            not isinstance(target_name, str)
-            or not target_name
-            or target_name in declared_targets
-        ):
+        if not isinstance(target_name, str) or not target_name or target_name in declared_targets:
             return False
         if not isinstance(event_name, str) or not event_name or event_name in declared_events:
             return False
-        requested_fields = _normalize_requested_fields(
-            generate_yaml_desired_fields, target_name, debug=debug
-        )
-        output_path = _resolve_output_path(
-            expected_outputs, target_name, platform, debug=debug
-        )
+        requested_fields = _normalize_requested_fields(generate_yaml_desired_fields, target_name, debug=debug)
+        output_path = _resolve_output_path(expected_outputs, target_name, platform, debug=debug)
         if requested_fields is None or output_path is None:
             return False
         normalized_specs.append(
@@ -623,9 +614,7 @@ async def preprocess_register_event_listener_abstract_skill(
         matches = items_by_event.get(spec["event_name"], [])
         if len(matches) != 1:
             if debug:
-                print(
-                    f"    Preprocess: expected exactly one match for {spec['event_name']}, got {len(matches)}"
-                )
+                print(f"    Preprocess: expected exactly one match for {spec['event_name']}, got {len(matches)}")
             return False
         spec["callback_va"] = matches[0].get("callback_va")
 
@@ -656,9 +645,7 @@ async def preprocess_register_event_listener_abstract_skill(
         except KeyError:
             return None
 
-    register_payload = await _build_payload_for(
-        register_func_target_name, register_fields, register_func_va
-    )
+    register_payload = await _build_payload_for(register_func_target_name, register_fields, register_func_va)
     if register_payload is None:
         return False
 
@@ -666,9 +653,7 @@ async def preprocess_register_event_listener_abstract_skill(
     pending_renames = [(register_func_va, register_func_rename_to)]
 
     for spec in normalized_specs:
-        payload = await _build_payload_for(
-            spec["target_name"], spec["requested_fields"], spec["callback_va"]
-        )
+        payload = await _build_payload_for(spec["target_name"], spec["requested_fields"], spec["callback_va"])
         if payload is None:
             return False
         pending_writes.append((spec["output_path"], payload))

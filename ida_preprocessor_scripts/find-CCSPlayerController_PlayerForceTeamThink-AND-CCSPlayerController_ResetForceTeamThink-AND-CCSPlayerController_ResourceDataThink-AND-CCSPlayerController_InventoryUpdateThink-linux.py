@@ -34,7 +34,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
     (
         "CCSPlayerController_ResetForceTeamThink",
-        ["func_name", "func_va", "func_rva", "func_size"],# too short to have an unique signature
+        ["func_name", "func_va", "func_rva", "func_size"],  # too short to have an unique signature
     ),
     (
         "CCSPlayerController_ResourceDataThink",
@@ -42,7 +42,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
     (
         "CCSPlayerController_InventoryUpdateThink",
-        ["func_name", "func_va", "func_rva", "func_size"],# too short to have an unique signature
+        ["func_name", "func_va", "func_rva", "func_size"],  # too short to have an unique signature
     ),
 ]
 
@@ -76,9 +76,7 @@ async def _rename_func(session, func_va, func_name, debug=False):
     try:
         await session.call_tool(
             name="rename",
-            arguments={
-                "batch": {"func": {"addr": hex(func_va), "name": func_name}}
-            },
+            arguments={"batch": {"func": {"addr": hex(func_va), "name": func_name}}},
         )
     except Exception:
         if debug:
@@ -123,8 +121,14 @@ async def _resolve_func_from_global(session, gv_va, func_name, image_base, debug
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Resolve think function addresses from schema globals + 0x28 offset."""
     _ = skill_name
@@ -187,9 +191,7 @@ async def preprocess_skill(
             continue
 
         gv_va = int(str(gv_va_str), 16)
-        payload = await _resolve_func_from_global(
-            session, gv_va, func_name, image_base, debug=debug
-        )
+        payload = await _resolve_func_from_global(session, gv_va, func_name, image_base, debug=debug)
         if not payload:
             if debug:
                 print(f"    Preprocess: failed to resolve {func_name} from global {hex(gv_va)}")

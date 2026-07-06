@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Shared preprocess helpers for slot-only IGameSystem dispatcher skills."""
+
 import json
 import os
 
@@ -61,15 +62,21 @@ elif func:
     result_obj['entries'] = call_entries
 result = json.dumps(result_obj)
 """
+
+
 def _debug(debug, message):
     if debug:
         print(f"    Preprocess: {message}")
+
+
 def _read_yaml(path):
     try:
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except Exception:
         return None
+
+
 def _parse_int(value):
     if isinstance(value, int):
         return value
@@ -79,6 +86,8 @@ def _parse_int(value):
             raise ValueError("empty integer string")
         return int(raw, 0)
     return int(value)
+
+
 async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
     try:
         result = await session.call_tool(name="py_eval", arguments={"code": code})
@@ -96,10 +105,14 @@ async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
     except (TypeError, json.JSONDecodeError):
         _debug(debug, f"invalid JSON result from {error_label}")
         return None
+
+
 def _build_slot_dispatch_py_eval(source_func_va, platform):
     return _SLOT_DISPATCH_PY_EVAL.replace("__FUNC_ADDR__", str(source_func_va)).replace(
         "__IS_WINDOWS__", "1" if platform == "windows" else "0"
     )
+
+
 def _normalize_rank(raw_rank, target_name, debug=False):
     if raw_rank is None:
         return None
@@ -112,6 +125,8 @@ def _normalize_rank(raw_rank, target_name, debug=False):
         _debug(debug, f"dispatch_rank must be >= 0 for {target_name}")
         raise ValueError("negative dispatch_rank")
     return rank
+
+
 def _normalize_one_spec(item, debug=False):
     if not isinstance(item, dict):
         _debug(debug, "invalid target spec")
@@ -256,7 +271,12 @@ def _write_slot_outputs(specs, selected_entries, matched_outputs):
     for spec, entry in zip(specs, selected_entries):
         write_func_yaml(
             matched_outputs[spec["target_name"]],
-            {"func_name": spec["target_name"], "vtable_name": spec["vtable_name"], "vfunc_offset": hex(entry["vfunc_offset"]), "vfunc_index": entry["vfunc_index"]},
+            {
+                "func_name": spec["target_name"],
+                "vtable_name": spec["vtable_name"],
+                "vfunc_offset": hex(entry["vfunc_offset"]),
+                "vfunc_index": entry["vfunc_index"],
+            },
         )
 
 

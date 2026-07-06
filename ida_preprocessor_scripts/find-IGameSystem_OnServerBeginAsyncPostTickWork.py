@@ -7,7 +7,10 @@ from ida_preprocessor_scripts._igamesystem_dispatch_common import (
 
 SOURCE_YAML_STEM = "CLoopModeGame_OnServerBeginAsyncPostTickWork"
 TARGET_SPECS = [
-    {"target_name": "IGameSystem_OnServerBeginAsyncPostTickWork", "rename_to": "GameSystem_OnServerBeginAsyncPostTickWork"},
+    {
+        "target_name": "IGameSystem_OnServerBeginAsyncPostTickWork",
+        "rename_to": "GameSystem_OnServerBeginAsyncPostTickWork",
+    },
 ]
 VIA_INTERNAL_WRAPPER = False
 INTERNAL_RENAME_TO = None

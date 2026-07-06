@@ -330,11 +330,11 @@ procedure: |-
     v28 = sub_152AE70;
     v29 = 0;
     v27 = sub_156A6F0;
-    ((void (__fastcall *)(_QWORD, __int64, __int64 (__fastcall **)()))sub_2B05A40)(g_pEntitySystem, 40, &v27);
+    ((void (__fastcall *)(_QWORD, __int64, __int64 (__fastcall **)()))CEntitySystem_InstallCreationWrapperCallbacks)(g_pEntitySystem, 40, &v27);
     v28 = sub_152AE70;
     v29 = 0;
     v27 = sub_156A940;
-    ((void (__fastcall *)(_QWORD, __int64, __int64 (__fastcall **)(), __int64, __int64, __int64))sub_2B05A40)(
+    ((void (__fastcall *)(_QWORD, __int64, __int64 (__fastcall **)(), __int64, __int64, __int64))CEntitySystem_InstallCreationWrapperCallbacks)(
       g_pEntitySystem,
       54,
       &v27,
@@ -344,7 +344,7 @@ procedure: |-
     v28 = sub_152AE70;
     v29 = 0;
     v27 = sub_152D070;
-    ((void (__fastcall *)(_QWORD, __int64, __int64 (__fastcall **)(), __int64, __int64, __int64))sub_2B05A40)(
+    ((void (__fastcall *)(_QWORD, __int64, __int64 (__fastcall **)(), __int64, __int64, __int64))CEntitySystem_InstallCreationWrapperCallbacks)(
       g_pEntitySystem,
       67,
       &v27,

@@ -13,9 +13,7 @@ except ImportError:
     yaml = None
 
 
-VFTABLE_HEADER_RE = re.compile(
-    r"^\s*(?:VFTable|VTable) indices for '([^']+)' \((\d+) (?:entry|entries)\)\.\s*$"
-)
+VFTABLE_HEADER_RE = re.compile(r"^\s*(?:VFTable|VTable) indices for '([^']+)' \((\d+) (?:entry|entries)\)\.\s*$")
 VFTABLE_LAYOUT_HEADER_RE = re.compile(
     r"^\s*(?:VFTable|VTable) for '([^']+)'(?: in '([^']+)')? "
     r"\((\d+) (?:entry|entries)\)\.\s*$"
@@ -133,11 +131,7 @@ def parse_vftable_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
 
         entry = VFTABLE_ENTRY_RE.match(raw_line)
         if not entry:
-            if (
-                current_class is not None
-                and current_raw_entries
-                and not raw_line.strip()
-            ):
+            if current_class is not None and current_raw_entries and not raw_line.strip():
                 current_class = None
                 current_declared_entries = 0
                 current_raw_declared_entries = 0
@@ -182,10 +176,7 @@ def parse_vftable_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
         if current_section_kind == "complete":
             section_done = current_raw_entries >= current_raw_declared_entries
         else:
-            section_done = (
-                len(parsed[current_class]["methods_by_index"])
-                >= current_declared_entries
-            )
+            section_done = len(parsed[current_class]["methods_by_index"]) >= current_declared_entries
         if section_done:
             current_class = None
             current_declared_entries = 0
@@ -341,9 +332,7 @@ def parse_record_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
             stack.append((depth, parent_prefix))
             continue
 
-        qualified_name = (
-            f"{parent_prefix}.{member_name}" if parent_prefix else member_name
-        )
+        qualified_name = f"{parent_prefix}.{member_name}" if parent_prefix else member_name
 
         parsed[current_record]["members_by_name"][qualified_name] = {
             "offset": offset,
@@ -351,12 +340,8 @@ def parse_record_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
             "short_name": member_name,
             "depth": depth,
         }
-        parsed[current_record]["members_by_offset"].setdefault(offset, []).append(
-            qualified_name
-        )
-        parsed[current_record]["members_by_short_name"].setdefault(
-            member_name, []
-        ).append(qualified_name)
+        parsed[current_record]["members_by_offset"].setdefault(offset, []).append(qualified_name)
+        parsed[current_record]["members_by_short_name"].setdefault(member_name, []).append(qualified_name)
 
         stack.append((depth, qualified_name))
 
@@ -579,9 +564,7 @@ def load_merged_reference_vtable_data(
                 parsed_numvfunc = _parse_int_maybe(payload.get("vtable_numvfunc"))
                 parsed_index = _parse_int_maybe(payload.get("vfunc_index"))
                 has_reference_metadata = (
-                    parsed_size is not None
-                    or parsed_numvfunc is not None
-                    or parsed_index is not None
+                    parsed_size is not None or parsed_numvfunc is not None or parsed_index is not None
                 )
                 if not has_reference_metadata:
                     continue
@@ -655,9 +638,7 @@ def load_merged_reference_vtable_data(
                 source = {
                     "module": module,
                     "path": str(path),
-                    "func_name": (
-                        str(func_name) if func_name is not None else path.stem
-                    ),
+                    "func_name": (str(func_name) if func_name is not None else path.stem),
                     "member_name": _normalize_reference_member_name(
                         class_name=effective_class_name,
                         func_name=str(func_name) if func_name is not None else None,
@@ -840,8 +821,7 @@ def load_merged_reference_structmember_data(
                 continue
 
             member_name = str(
-                payload.get("member_name")
-                or _normalize_reference_member_name(struct_name, None, path.stem)
+                payload.get("member_name") or _normalize_reference_member_name(struct_name, None, path.stem)
             ).strip()
             if not member_name:
                 continue
@@ -920,9 +900,7 @@ def compare_compiler_record_layout_with_yaml(
         "compiler_found": compiler_record is not None,
         "reference_found": reference is not None,
         "reference_mode": "merged",
-        "reference_modules_merged": (
-            list(reference.get("modules", [])) if reference else []
-        ),
+        "reference_modules_merged": (list(reference.get("modules", [])) if reference else []),
         "reference_files_merged": list(reference.get("files", [])) if reference else [],
         "reference_conflicts": reference_conflicts,
         "differences": [],
@@ -933,18 +911,14 @@ def compare_compiler_record_layout_with_yaml(
         report["differences"].extend(reference_conflicts)
 
     if compiler_record is None:
-        report["notes"].append(
-            f"No record layout section for struct '{struct_name}' found in compiler output."
-        )
+        report["notes"].append(f"No record layout section for struct '{struct_name}' found in compiler output.")
     else:
         report["compiler_sizeof"] = compiler_record.get("sizeof")
         report["compiler_member_count"] = compiler_record.get("member_count", 0)
         report["compiler_members_by_name"] = compiler_record.get("members_by_name", {})
 
     if reference is None:
-        report["notes"].append(
-            f"No matching structmember YAML found for modules: {', '.join(reference_modules)}"
-        )
+        report["notes"].append(f"No matching structmember YAML found for modules: {', '.join(reference_modules)}")
         return report
 
     reference_members = reference.get("members_by_name", {})
@@ -965,9 +939,7 @@ def compare_compiler_record_layout_with_yaml(
             # by offset; otherwise accept the only candidate if there is one.
             candidates = compiler_short_index.get(member_name, [])
             matching = [
-                compiler_members[c]
-                for c in candidates
-                if compiler_members.get(c, {}).get("offset") == expected_offset
+                compiler_members[c] for c in candidates if compiler_members.get(c, {}).get("offset") == expected_offset
             ]
             if matching:
                 compiled = matching[0]
@@ -1053,21 +1025,9 @@ def compare_compiler_vtable_with_yaml(
 
     alias_used = reference.get("alias_class_name") if reference else None
     reference_mode = "merged" if merge_reference_modules else "single"
-    reference_modules_merged = (
-        list(reference.get("modules", []))
-        if merge_reference_modules and reference
-        else []
-    )
-    reference_files_merged = (
-        list(reference.get("files", []))
-        if merge_reference_modules and reference
-        else []
-    )
-    reference_conflicts = (
-        list(reference.get("conflicts", []))
-        if merge_reference_modules and reference
-        else []
-    )
+    reference_modules_merged = list(reference.get("modules", [])) if merge_reference_modules and reference else []
+    reference_files_merged = list(reference.get("files", [])) if merge_reference_modules and reference else []
+    reference_conflicts = list(reference.get("conflicts", [])) if merge_reference_modules and reference else []
 
     report: Dict[str, Any] = {
         "class_name": class_name,
@@ -1087,8 +1047,7 @@ def compare_compiler_vtable_with_yaml(
     if alias_used:
         report["alias_class_name"] = alias_used
         report["notes"].append(
-            f"Reference YAML matched via alias symbol '{alias_used}' "
-            f"(primary symbol '{class_name}' not found)."
+            f"Reference YAML matched via alias symbol '{alias_used}' (primary symbol '{class_name}' not found)."
         )
 
     if reference_conflicts:
@@ -1096,9 +1055,7 @@ def compare_compiler_vtable_with_yaml(
 
     compiler_missing = compiler_section is None
     if compiler_missing:
-        report["notes"].append(
-            f"No vtable section for class '{class_name}' found in compiler output."
-        )
+        report["notes"].append(f"No vtable section for class '{class_name}' found in compiler output.")
     else:
         compiler_entry_count = compiler_section["entry_count"]
         declared_entries = compiler_section["declared_entries"]
@@ -1119,9 +1076,7 @@ def compare_compiler_vtable_with_yaml(
             )
 
     if reference is None:
-        report["notes"].append(
-            f"No matching reference YAML found for modules: {', '.join(reference_modules)}"
-        )
+        report["notes"].append(f"No matching reference YAML found for modules: {', '.join(reference_modules)}")
         return report
 
     expected_size = reference.get("vtable_size")
@@ -1154,10 +1109,7 @@ def compare_compiler_vtable_with_yaml(
         report["differences"].append(
             {
                 "type": "vtable_numvfunc_mismatch",
-                "message": (
-                    f"vtable_numvfunc mismatch: YAML={expected_numvfunc} "
-                    f"vs compiler={compiler_entry_count}."
-                ),
+                "message": (f"vtable_numvfunc mismatch: YAML={expected_numvfunc} vs compiler={compiler_entry_count}."),
             }
         )
 
@@ -1178,11 +1130,7 @@ def compare_compiler_vtable_with_yaml(
 
         expected_member = ref_item.get("member_name", "")
         actual_member = compiled.get("member_name", "")
-        if (
-            expected_member
-            and actual_member
-            and not _reference_member_matches(expected_member, actual_member)
-        ):
+        if expected_member and actual_member and not _reference_member_matches(expected_member, actual_member):
             report["differences"].append(
                 {
                     "type": "vfunc_name_mismatch",
@@ -1194,29 +1142,21 @@ def compare_compiler_vtable_with_yaml(
             )
 
     if not report["differences"]:
-        report["notes"].append(
-            "No differences detected for vtable_size/vtable_numvfunc/vfunc_index mapping."
-        )
+        report["notes"].append("No differences detected for vtable_size/vtable_numvfunc/vfunc_index mapping.")
 
     return report
 
 
-def format_vtable_compare_report(
-    report: Dict[str, Any], *, include_differences: bool = True
-) -> List[str]:
+def format_vtable_compare_report(report: Dict[str, Any], *, include_differences: bool = True) -> List[str]:
     """Format a comparison report into human-readable lines."""
     lines: List[str] = []
-    lines.append(
-        f"Class '{report['class_name']}' compare target platform: {report.get('platform', 'unknown')}"
-    )
+    lines.append(f"Class '{report['class_name']}' compare target platform: {report.get('platform', 'unknown')}")
 
     compiler_found = report.get("compiler_found")
     if compiler_found:
         compiler_count = report.get("compiler_entry_count")
         compiler_declared = report.get("compiler_declared_entries")
-        lines.append(
-            f"Compiler vtable entries: parsed={compiler_count}, declared={compiler_declared}"
-        )
+        lines.append(f"Compiler vtable entries: parsed={compiler_count}, declared={compiler_declared}")
     elif report.get("reference_mode") != "merged":
         lines.extend(report.get("notes", []))
         return lines
@@ -1228,16 +1168,9 @@ def format_vtable_compare_report(
             lines.append(f"Reference modules: {', '.join(merged_modules)}")
         else:
             lines.append("Reference modules:")
-        lines.append(
-            f"Reference files merged: {len(report.get('reference_files_merged', []))}"
-        )
-        lines.append(
-            f"Reference functions: {report.get('reference_functions_count', 0)}"
-        )
-        lines.append(
-            "Reference conflicts found: "
-            f"{len(report.get('reference_conflicts', []))}"
-        )
+        lines.append(f"Reference files merged: {len(report.get('reference_files_merged', []))}")
+        lines.append(f"Reference functions: {report.get('reference_functions_count', 0)}")
+        lines.append(f"Reference conflicts found: {len(report.get('reference_conflicts', []))}")
     elif report.get("reference_found"):
         lines.append(
             f"Reference module: {report.get('reference_module')}, "
@@ -1246,9 +1179,7 @@ def format_vtable_compare_report(
     else:
         requested_modules = report.get("requested_modules", [])
         if requested_modules:
-            lines.append(
-                f"Reference module (requested): {', '.join(requested_modules)}; not found"
-            )
+            lines.append(f"Reference module (requested): {', '.join(requested_modules)}; not found")
         else:
             lines.append("Reference module: not found")
 
@@ -1276,15 +1207,11 @@ def format_vtable_compare_differences(report: Dict[str, Any]) -> List[str]:
     return lines
 
 
-def format_record_compare_report(
-    report: Dict[str, Any], *, include_differences: bool = True
-) -> List[str]:
+def format_record_compare_report(report: Dict[str, Any], *, include_differences: bool = True) -> List[str]:
     """Format a record layout comparison report into human-readable lines."""
     lines: List[str] = []
     struct_name = report.get("struct_name", report.get("class_name", "unknown"))
-    lines.append(
-        f"Struct '{struct_name}' compare target platform: {report.get('platform', 'unknown')}"
-    )
+    lines.append(f"Struct '{struct_name}' compare target platform: {report.get('platform', 'unknown')}")
 
     if report.get("compiler_found"):
         lines.append(
@@ -1304,10 +1231,7 @@ def format_record_compare_report(
         lines.append("Reference modules:")
     lines.append(f"Reference files merged: {len(report.get('reference_files_merged', []))}")
     lines.append(f"Reference struct members: {report.get('reference_members_count', 0)}")
-    lines.append(
-        "Reference conflicts found: "
-        f"{len(report.get('reference_conflicts', []))}"
-    )
+    lines.append(f"Reference conflicts found: {len(report.get('reference_conflicts', []))}")
 
     if include_differences:
         lines.extend(format_record_compare_differences(report))

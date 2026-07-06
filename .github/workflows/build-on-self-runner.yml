@@ -54,6 +54,11 @@ jobs:
           fetch-depth: 0
           submodules: true
 
+      - name: Check formatting
+        shell: pwsh
+        run: |
+          uv run python format_repo_files.py --check
+
       - name: Create persisted workspace links
         shell: cmd
         run: |
@@ -128,12 +133,11 @@ jobs:
       - name: Run C++ tests
         shell: pwsh
         run: |
-          $latestTag = uv run python -c "import yaml; d=yaml.safe_load(open('download.yaml')); print(d['downloads'][-1]['tag'])"
           $args = @('-gamever', $env:GAMEVER, '-debug')
-          if ($env:GAMEVER -eq $latestTag) {
-            $args += '-fixheader'
-          }
           uv run run_cpp_tests.py @args
+          if ($LASTEXITCODE -ne 0) {
+            throw "run_cpp_tests.py failed with exit code $LASTEXITCODE"
+          }
 
       - name: Archive release payload
         shell: pwsh

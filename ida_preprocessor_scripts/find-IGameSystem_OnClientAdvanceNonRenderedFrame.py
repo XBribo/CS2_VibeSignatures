@@ -7,7 +7,10 @@ from ida_preprocessor_scripts._igamesystem_dispatch_common import (
 
 SOURCE_YAML_STEM = "CLoopModeGame_OnClientAdvanceNonRenderedFrame"
 TARGET_SPECS = [
-    {"target_name": "IGameSystem_OnClientAdvanceNonRenderedFrame", "rename_to": "GameSystem_OnClientAdvanceNonRenderedFrame"},
+    {
+        "target_name": "IGameSystem_OnClientAdvanceNonRenderedFrame",
+        "rename_to": "GameSystem_OnClientAdvanceNonRenderedFrame",
+    },
 ]
 VIA_INTERNAL_WRAPPER = False
 INTERNAL_RENAME_TO = None

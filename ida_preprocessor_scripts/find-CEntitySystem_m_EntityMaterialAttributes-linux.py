@@ -12,7 +12,7 @@ LLM_DECOMPILE = [
     (
         "CEntitySystem_m_EntityMaterialAttributes",
         "prompt/call_llm_decompile.md",
-        "references/server/CEntitySystem_ProcessEntityRegistrars.{platform}.yaml",
+        "references/server/CEntitySystem_ProcessEntityRegistration.{platform}.yaml",
     ),
 ]
 
@@ -24,7 +24,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
         ],
@@ -33,8 +33,15 @@ GENERATE_YAML_DESIRED_FIELDS = [
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Reuse previous gamever offset_sig to locate struct member and write YAML."""
     return await preprocess_common_skill(

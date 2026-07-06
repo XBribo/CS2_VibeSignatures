@@ -10,16 +10,12 @@ import yaml
 
 
 def _import_common_module():
-    return importlib.import_module(
-        "ida_preprocessor_scripts._script_desc_internal_common"
-    )
+    return importlib.import_module("ida_preprocessor_scripts._script_desc_internal_common")
 
 
 def _write_source_yaml(tmpdir: str, platform: str) -> Path:
     new_binary_dir = Path(tmpdir)
-    source_yaml = (
-        new_binary_dir / f"CBaseModelEntity_GetScriptDescInternal.{platform}.yaml"
-    )
+    source_yaml = new_binary_dir / f"CBaseModelEntity_GetScriptDescInternal.{platform}.yaml"
     source_yaml.write_text(
         yaml.safe_dump(
             {
@@ -409,19 +405,24 @@ class TestPreprocessScriptDescInternalSkill(unittest.IsolatedAsyncioTestCase):
 
         with TemporaryDirectory() as tmpdir:
             new_binary_dir = _write_source_yaml(tmpdir, "windows")
-            with patch.object(
-                module,
-                "_collect_script_func_entries",
-                AsyncMock(return_value=entries),
-            ), patch.object(
-                module,
-                "_query_func_info",
-                fake_query_func_info,
-            ), patch.object(
-                module,
-                "preprocess_gen_func_sig_via_mcp",
-                fake_gen_func_sig_via_mcp,
-            ), patch.object(module, "write_func_yaml") as mock_write:
+            with (
+                patch.object(
+                    module,
+                    "_collect_script_func_entries",
+                    AsyncMock(return_value=entries),
+                ),
+                patch.object(
+                    module,
+                    "_query_func_info",
+                    fake_query_func_info,
+                ),
+                patch.object(
+                    module,
+                    "preprocess_gen_func_sig_via_mcp",
+                    fake_gen_func_sig_via_mcp,
+                ),
+                patch.object(module, "write_func_yaml") as mock_write,
+            ):
                 result = await module.preprocess_script_desc_internal_skill(
                     session=session,
                     expected_outputs=[
@@ -470,16 +471,19 @@ class TestPreprocessScriptDescInternalSkill(unittest.IsolatedAsyncioTestCase):
 
         with TemporaryDirectory() as tmpdir:
             new_binary_dir = _write_source_yaml(tmpdir, "windows")
-            with patch.object(
-                module,
-                "_collect_script_func_entries",
-                AsyncMock(
-                    return_value=[
-                        {"script_name": "Dup", "func_va": "0x180100000"},
-                        {"script_name": "Dup", "func_va": "0x180200000"},
-                    ]
+            with (
+                patch.object(
+                    module,
+                    "_collect_script_func_entries",
+                    AsyncMock(
+                        return_value=[
+                            {"script_name": "Dup", "func_va": "0x180100000"},
+                            {"script_name": "Dup", "func_va": "0x180200000"},
+                        ]
+                    ),
                 ),
-            ), patch.object(module, "write_func_yaml") as mock_write:
+                patch.object(module, "write_func_yaml") as mock_write,
+            ):
                 result = await module.preprocess_script_desc_internal_skill(
                     session=session,
                     expected_outputs=["/tmp/Target.windows.yaml"],
@@ -502,9 +506,7 @@ class TestPreprocessScriptDescInternalSkill(unittest.IsolatedAsyncioTestCase):
 
 class TestCBaseModelEntityRegisteredScriptFuncs(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_delegates_to_script_desc_helper(self) -> None:
-        module = importlib.import_module(
-            "ida_preprocessor_scripts.find-CBaseModelEntity_RegisteredScriptFuncs"
-        )
+        module = importlib.import_module("ida_preprocessor_scripts.find-CBaseModelEntity_RegisteredScriptFuncs")
         session = AsyncMock()
 
         with patch.object(

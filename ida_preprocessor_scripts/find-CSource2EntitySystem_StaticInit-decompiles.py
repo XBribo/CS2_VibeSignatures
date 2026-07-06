@@ -32,6 +32,71 @@ TARGET_STRUCT_MEMBER_NAMES_WINDOWS = [
     "CGameEntitySystem_m_pEntity2Networkables",
 ]
 
+LLM_DECOMPILE = [
+    # (symbol_name, path_to_prompt, path_to_reference)
+    (
+        "IGameResourceService_SetEntityResourceManifestHandler",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "g_pGameResourceService",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "g_pGameEntitySystem",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "CEntitySystem_m_entityIONotifiers",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "CGameEntitySystem_m_pEntity2SaveRestore",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "CEntitySystem_EnableAutoDeletionExecution",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "CEntitySystem_InstallPostSpawnCallback",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "CEntitySystem_InstallCreationWrapperCallbacks",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+]
+
+LLM_DECOMPILE_LINUX = [
+    (
+        "CEntity2NetworkClasses_ServerClass_InitEntity2NetworkClasses",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+]
+
+LLM_DECOMPILE_WINDOWS = [
+    (
+        "CSpawnGroupEntityFilterRegistrar_RegisterSpawnGroupEntityFilters",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+    (
+        "CGameEntitySystem_m_pEntity2Networkables",
+        "prompt/call_llm_decompile.md",
+        "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
+    ),
+]
+
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
     ("IGameResourceService_SetEntityResourceManifestHandler", "IGameResourceService"),
@@ -166,82 +231,34 @@ GENERATE_YAML_DESIRED_FIELDS_WINDOWS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Reuse previous gamever vfunc_sig/gv_sig/offset_sig to locate targets and write YAML."""
-    llm_decompile = [
-        (
-            "IGameResourceService_SetEntityResourceManifestHandler",
-            "prompt/call_llm_decompile.md",
-            "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-        ),
-        (
-            "g_pGameResourceService",
-            "prompt/call_llm_decompile.md",
-            "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-        ),
-        (
-            "g_pGameEntitySystem",
-            "prompt/call_llm_decompile.md",
-            "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-        ),
-        (
-            "CEntitySystem_m_entityIONotifiers",
-            "prompt/call_llm_decompile.md",
-            "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-        ),
-        (
-            "CGameEntitySystem_m_pEntity2SaveRestore",
-            "prompt/call_llm_decompile.md",
-            "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-        ),
-        (
-            "CEntitySystem_EnableAutoDeletionExecution",
-            "prompt/call_llm_decompile.md",
-            "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-        ),
-        (
-            "CEntitySystem_InstallPostSpawnCallback",
-            "prompt/call_llm_decompile.md",
-            "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-        ),
-    ]
-
     func_names = list(TARGET_FUNCTION_NAMES)
     struct_member_names = list(TARGET_STRUCT_MEMBER_NAMES)
+    llm_decompile = list(LLM_DECOMPILE)
     generate_yaml_desired_fields = list(GENERATE_YAML_DESIRED_FIELDS)
 
     if platform == "linux":
         func_names += TARGET_FUNCTION_NAMES_LINUX
         generate_yaml_desired_fields += GENERATE_YAML_DESIRED_FIELDS_LINUX
-        llm_decompile.append(
-            (
-                "CEntity2NetworkClasses_ServerClass_InitEntity2NetworkClasses",
-                "prompt/call_llm_decompile.md",
-                "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-            ),
-        )
+        llm_decompile += LLM_DECOMPILE_LINUX
 
     if platform == "windows":
         func_names += TARGET_FUNCTION_NAMES_WINDOWS
         struct_member_names += TARGET_STRUCT_MEMBER_NAMES_WINDOWS
         generate_yaml_desired_fields += GENERATE_YAML_DESIRED_FIELDS_WINDOWS
-        llm_decompile.append(
-            (
-                "CSpawnGroupEntityFilterRegistrar_RegisterSpawnGroupEntityFilters",
-                "prompt/call_llm_decompile.md",
-                "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-            ),
-        )
-        llm_decompile.append(
-            (
-                "CGameEntitySystem_m_pEntity2Networkables",
-                "prompt/call_llm_decompile.md",
-                "references/{module_name}/CSource2EntitySystem_StaticInit.{platform}.yaml",
-            ),
-        )
+        llm_decompile += LLM_DECOMPILE_WINDOWS
 
     return await preprocess_common_skill(
         session=session,

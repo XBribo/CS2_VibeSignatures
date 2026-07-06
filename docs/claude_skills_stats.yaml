@@ -1,64 +1,63 @@
 generated_from: .claude/skills/find-*
 generated_at: '2026-04-11'
-owner_name_convention: Concrete parent function names are used when the SKILL names
-  them directly. When the SKILL only exposes an unnamed helper or wrapper, a concise
-  semantic alias is used. null means the skill locates the symbol via data/vtable/schema
+owner_name_convention: Concrete parent function names are used when the SKILL names them directly. When the SKILL only exposes
+  an unnamed helper or wrapper, a concise semantic alias is used. null means the skill locates the symbol via data/vtable/schema
   scanning instead of a concrete parent function.
-coverage_note: Patch-only find-* skills are kept under misc for completeness, even
-  though the primary symbol set requested is func/vfunc/gv/struct_offset.
+coverage_note: Patch-only find-* skills are kept under misc for completeness, even though the primary symbol set requested
+  is func/vfunc/gv/struct_offset.
 items:
-- symbol_name: CBaseEntity_EmitSoundParams
-  skill_name: find-CBaseEntity_EmitSoundParams
-  classicy: by_decompile
-  owner_func_name: named_sound_stop_handler
-  owner_module: server
-- symbol_name: CCSBotManager_AddBot_BotNavIgnore
-  skill_name: find-CCSBotManager_AddBot_BotNavIgnore
-  classicy: misc
-  owner_func_name: CCSBotManager_AddBot
-  owner_module: server
-- symbol_name: CCSGameRules__sm_mapGcBanInformation
-  skill_name: find-CCSGameRules__sm_mapGcBanInformation
-  classicy: by_decompile
-  owner_func_name: ResourceDataThink_penalty_notification_handler
-  owner_module: server
-- symbol_name: CCSPlayer_MovementServices_CheckJumpButton_WaterPatch
-  skill_name: find-CCSPlayer_MovementServices_CheckJumpButton_WaterPatch
-  classicy: misc
-  owner_func_name: CCSPlayer_MovementServices_CheckJumpButton
-  owner_module: server
-- symbol_name: CCSPlayer_MovementServices_FullWalkMove_SpeedClamp
-  skill_name: find-CCSPlayer_MovementServices_FullWalkMove_SpeedClamp
-  classicy: misc
-  owner_func_name: CCSPlayer_MovementServices_FullWalkMove
-  owner_module: server
-- symbol_name: CNetworkMessages_AllowAdditionalMessageRegistration
-  skill_name: find-CNetworkMessages_AllowAdditionalMessageRegistration-AND-CNetworkMessages_IsAdditionalMessageRegistrationAllowed
-  classicy: misc
-  owner_func_name: null
-  owner_module: networksystem
-- symbol_name: CNetworkMessages_IsAdditionalMessageRegistrationAllowed
-  skill_name: find-CNetworkMessages_AllowAdditionalMessageRegistration-AND-CNetworkMessages_IsAdditionalMessageRegistrationAllowed
-  classicy: misc
-  owner_func_name: null
-  owner_module: networksystem
-- symbol_name: CNetworkMessages_GetIsForServer
-  skill_name: find-CNetworkMessages_GetIsForServer
-  classicy: misc
-  owner_func_name: null
-  owner_module: networksystem
-- symbol_name: CNetworkMessages_GetNetworkSerializationContextData
-  skill_name: find-CNetworkMessages_GetNetworkSerializationContextData
-  classicy: misc
-  owner_func_name: null
-  owner_module: networksystem
-- symbol_name: CNetworkMessages_dtor
-  skill_name: find-CNetworkMessages_dtor
-  classicy: misc
-  owner_func_name: null
-  owner_module: networksystem
-- symbol_name: CPhysBox_Use_PatchCaller
-  skill_name: find-CPhysBox_Use_PatchCaller
-  classicy: misc
-  owner_func_name: CPhysBox_Use
-  owner_module: server
+  - symbol_name: CBaseEntity_EmitSoundParams
+    skill_name: find-CBaseEntity_EmitSoundParams
+    classicy: by_decompile
+    owner_func_name: named_sound_stop_handler
+    owner_module: server
+  - symbol_name: CCSBotManager_AddBot_BotNavIgnore
+    skill_name: find-CCSBotManager_AddBot_BotNavIgnore
+    classicy: misc
+    owner_func_name: CCSBotManager_AddBot
+    owner_module: server
+  - symbol_name: CCSGameRules__sm_mapGcBanInformation
+    skill_name: find-CCSGameRules__sm_mapGcBanInformation
+    classicy: by_decompile
+    owner_func_name: ResourceDataThink_penalty_notification_handler
+    owner_module: server
+  - symbol_name: CCSPlayer_MovementServices_CheckJumpButton_WaterPatch
+    skill_name: find-CCSPlayer_MovementServices_CheckJumpButton_WaterPatch
+    classicy: misc
+    owner_func_name: CCSPlayer_MovementServices_CheckJumpButton
+    owner_module: server
+  - symbol_name: CCSPlayer_MovementServices_FullWalkMove_SpeedClamp
+    skill_name: find-CCSPlayer_MovementServices_FullWalkMove_SpeedClamp
+    classicy: misc
+    owner_func_name: CCSPlayer_MovementServices_FullWalkMove
+    owner_module: server
+  - symbol_name: CNetworkMessages_AllowAdditionalMessageRegistration
+    skill_name: find-CNetworkMessages_AllowAdditionalMessageRegistration-AND-CNetworkMessages_IsAdditionalMessageRegistrationAllowed
+    classicy: misc
+    owner_func_name:
+    owner_module: networksystem
+  - symbol_name: CNetworkMessages_IsAdditionalMessageRegistrationAllowed
+    skill_name: find-CNetworkMessages_AllowAdditionalMessageRegistration-AND-CNetworkMessages_IsAdditionalMessageRegistrationAllowed
+    classicy: misc
+    owner_func_name:
+    owner_module: networksystem
+  - symbol_name: CNetworkMessages_GetIsForServer
+    skill_name: find-CNetworkMessages_GetIsForServer
+    classicy: misc
+    owner_func_name:
+    owner_module: networksystem
+  - symbol_name: CNetworkMessages_GetNetworkSerializationContextData
+    skill_name: find-CNetworkMessages_GetNetworkSerializationContextData
+    classicy: misc
+    owner_func_name:
+    owner_module: networksystem
+  - symbol_name: CNetworkMessages_dtor
+    skill_name: find-CNetworkMessages_dtor
+    classicy: misc
+    owner_func_name:
+    owner_module: networksystem
+  - symbol_name: CPhysBox_Use_PatchCaller
+    skill_name: find-CPhysBox_Use_PatchCaller
+    classicy: misc
+    owner_func_name: CPhysBox_Use
+    owner_module: server

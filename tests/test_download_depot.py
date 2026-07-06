@@ -281,9 +281,7 @@ downloads:
         )
 
         self.assertEqual(2, mock_run.call_count)
-        mock_sleep.assert_called_once_with(
-            depot_util.DEFAULT_DEPOTDOWNLOADER_RETRY_DELAY_SECONDS
-        )
+        mock_sleep.assert_called_once_with(depot_util.DEFAULT_DEPOTDOWNLOADER_RETRY_DELAY_SECONDS)
 
     def test_main_returns_nonzero_when_depotdownloader_missing(self) -> None:
         fake_args = argparse.Namespace(
@@ -302,15 +300,17 @@ downloads:
             "manifests": {"2347771": "111"},
         }
 
-        with patch("download_depot.parse_args", return_value=fake_args), \
-             patch("download_depot.load_downloads", return_value=[fake_entry]), \
-             patch("download_depot.find_download_entry", return_value=fake_entry), \
-             patch(
-                 "download_depot.load_module_filelist",
-                 return_value=["game/bin/win64/SDL3.dll"],
-             ), \
-             patch("depot_util.subprocess.run", side_effect=FileNotFoundError("DepotDownloader")), \
-             patch("builtins.print") as mock_print:
+        with (
+            patch("download_depot.parse_args", return_value=fake_args),
+            patch("download_depot.load_downloads", return_value=[fake_entry]),
+            patch("download_depot.find_download_entry", return_value=fake_entry),
+            patch(
+                "download_depot.load_module_filelist",
+                return_value=["game/bin/win64/SDL3.dll"],
+            ),
+            patch("depot_util.subprocess.run", side_effect=FileNotFoundError("DepotDownloader")),
+            patch("builtins.print") as mock_print,
+        ):
             exit_code = download_depot.main()
 
         self.assertNotEqual(0, exit_code)

@@ -28,11 +28,7 @@ async def preprocess_skill(
     _ = skill_name, old_yaml_map, new_binary_dir
 
     expected_filename = f"{TARGET_OUTPUT_STEM}.{platform}.yaml"
-    matching_outputs = [
-        output_path
-        for output_path in expected_outputs
-        if Path(output_path).name == expected_filename
-    ]
+    matching_outputs = [output_path for output_path in expected_outputs if Path(output_path).name == expected_filename]
     if len(matching_outputs) != 1:
         return False
 

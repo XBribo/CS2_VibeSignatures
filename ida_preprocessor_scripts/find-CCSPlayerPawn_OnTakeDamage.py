@@ -3,7 +3,7 @@
 
 from ida_analyze_util import preprocess_common_skill
 
-INHERIT_VFUNCS=[
+INHERIT_VFUNCS = [
     # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
     ("CCSPlayerPawn_OnTakeDamage", "CCSPlayerPawn", "CBasePlayerPawn_OnTakeDamage", False),
     ("CCSPlayerPawn_OnTakeDamage_Alive", "CCSPlayerPawn", "CBasePlayerPawn_OnTakeDamage_Alive", False),
@@ -62,6 +62,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
 ]
+
 
 async def preprocess_skill(
     session,

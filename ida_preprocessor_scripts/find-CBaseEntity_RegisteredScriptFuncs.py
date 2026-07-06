@@ -32,14 +32,26 @@ TARGET_SCRIPT_FUNCTIONS = [
     {"script_name": "ScriptGetLocalAngles", "target_name": "CBaseEntity_ScriptGetLocalAngles"},
     {"script_name": "ScriptSetLocalOrigin", "target_name": "CBaseEntity_ScriptSetLocalOrigin"},
     {"script_name": "ScriptGetLocalOrigin", "target_name": "CBaseEntity_ScriptGetLocalOrigin"},
-    {"script_name": "ScriptTransformPointEntityToWorld", "target_name": "CBaseEntity_ScriptTransformPointEntityToWorld"},
-    {"script_name": "ScriptTransformPointWorldToEntity", "target_name": "CBaseEntity_ScriptTransformPointWorldToEntity"},
+    {
+        "script_name": "ScriptTransformPointEntityToWorld",
+        "target_name": "CBaseEntity_ScriptTransformPointEntityToWorld",
+    },
+    {
+        "script_name": "ScriptTransformPointWorldToEntity",
+        "target_name": "CBaseEntity_ScriptTransformPointWorldToEntity",
+    },
     {"script_name": "ScriptSetForward", "target_name": "CBaseEntity_ScriptSetForward"},
     {"script_name": "ScriptGetBoundingMins", "target_name": "CBaseEntity_ScriptGetBoundingMins"},
     {"script_name": "ScriptGetBoundingMaxs", "target_name": "CBaseEntity_ScriptGetBoundingMaxs"},
     {"script_name": "ScriptGetBounds", "target_name": "CBaseEntity_ScriptGetBounds"},
-    {"script_name": "ScriptGetLocalAngularVelocity_OBSOLETE", "target_name": "CBaseEntity_ScriptGetLocalAngularVelocity_OBSOLETE"},
-    {"script_name": "ScriptSetLocalAngularVelocity_OBSOLETE", "target_name": "CBaseEntity_ScriptSetLocalAngularVelocity_OBSOLETE"},
+    {
+        "script_name": "ScriptGetLocalAngularVelocity_OBSOLETE",
+        "target_name": "CBaseEntity_ScriptGetLocalAngularVelocity_OBSOLETE",
+    },
+    {
+        "script_name": "ScriptSetLocalAngularVelocity_OBSOLETE",
+        "target_name": "CBaseEntity_ScriptSetLocalAngularVelocity_OBSOLETE",
+    },
     {"script_name": "ScriptAddEffects", "target_name": "CBaseEntity_ScriptAddEffects"},
     {"script_name": "ScriptRemoveEffects", "target_name": "CBaseEntity_ScriptRemoveEffects"},
     {"script_name": "ScriptSetAttributeFloatValue", "target_name": "CBaseEntity_ScriptSetAttributeFloatValue"},
@@ -68,7 +80,10 @@ TARGET_SCRIPT_FUNCTIONS = [
     {"script_name": "SetGravityScale", "target_name": "CBaseEntity_SetGravityScale"},
     {"script_name": "SetAbsVelocity", "target_name": "CBaseEntity_SetAbsVelocity"},
     {"script_name": "GetAbsVelocity", "target_name": "CBaseEntity_GetAbsVelocity"},
-    {"script_name": "Script_ApplyLocalAngularVelocityImpulse", "target_name": "CBaseEntity_Script_ApplyLocalAngularVelocityImpulse"},
+    {
+        "script_name": "Script_ApplyLocalAngularVelocityImpulse",
+        "target_name": "CBaseEntity_Script_ApplyLocalAngularVelocityImpulse",
+    },
     {"script_name": "GetLocalAngularVelocity_OBSOLETE", "target_name": "CBaseEntity_GetLocalAngularVelocity_OBSOLETE"},
     {"script_name": "ScriptEmitSoundParams", "target_name": "CBaseEntity_ScriptEmitSoundParams"},
     {"script_name": "ScriptStopSound", "target_name": "CBaseEntity_ScriptStopSound"},
@@ -94,9 +109,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     for name in TARGET_FUNCTION_NAMES
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Extract registered script functions from GetScriptDescInternal."""
     return await preprocess_script_desc_internal_skill(

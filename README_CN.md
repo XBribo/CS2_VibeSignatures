@@ -26,6 +26,24 @@
 
 8. Clang-LLVM（运行 `run_cpp_tests.py` 的必需项，需要将clang.exe所在目录添加到PATH中）
 
+## 代码格式化
+
+本仓库使用 `ruff format` 格式化由 git 管理的 `*.py` 文件，并使用 `yamlfix` 格式化由 git 管理的 `*.yaml` 文件。
+
+提交前可在本地运行格式化：
+
+```bash
+uv run python format_repo_files.py
+```
+
+运行与 GitHub Actions 相同的格式化检查：
+
+```bash
+uv run python format_repo_files.py --check
+```
+
+格式化脚本只处理 `git ls-files --cached -- '*.py' '*.yaml'` 返回的文件，因此会跳过已被 ignore 的文件和未跟踪的临时文件。`ida_preprocessor_scripts/references/` 下的 YAML 也会被跳过，因为这些文件由脚本自动生成。
+
 ## 整体工作流
 
 ### 1. 下载 CS2 二进制文件并复制dll/so到工作目录

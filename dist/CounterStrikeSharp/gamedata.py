@@ -11,10 +11,7 @@ import sys
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from gamedata_utils import (
-    convert_sig_to_css,
-    normalize_func_name_colons_to_underscore
-)
+from gamedata_utils import convert_sig_to_css, normalize_func_name_colons_to_underscore
 
 # Module metadata
 MODULE_NAME = "CounterStrikeSharp"
@@ -25,8 +22,10 @@ GAMEDATA_PATH = "config/addons/counterstrikesharp/gamedata/gamedata.json"
 
 # Upstream download sources: (raw_url, relative_dest_path)
 DOWNLOAD_SOURCES = [
-    ("https://raw.githubusercontent.com/roflmuffin/CounterStrikeSharp/main/configs/addons/counterstrikesharp/gamedata/gamedata.json",
-     GAMEDATA_PATH),
+    (
+        "https://raw.githubusercontent.com/roflmuffin/CounterStrikeSharp/main/configs/addons/counterstrikesharp/gamedata/gamedata.json",
+        GAMEDATA_PATH,
+    ),
 ]
 
 
@@ -75,10 +74,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
             print(f"  Warning: Unknown library for {func_name}, skipping")
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "unknown library"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "unknown library"})
             continue
 
         # Find matching YAML data
@@ -86,10 +82,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry or yaml_entry.get("library") != library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data"})
             continue
 
         # Update signatures
@@ -100,11 +93,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                     entry["signatures"][platform] = sig
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "signature",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "signature", "platform": platform})
 
         # Update offsets (vfunc_index or struct_member_offset)
         if "offsets" in entry:
@@ -115,21 +104,13 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                         entry["offsets"][platform] = yaml_entry[platform]["vfunc_index"]
                         updated_count += 1
                         if debug:
-                            updated_symbols.append({
-                                "name": func_name,
-                                "type": "offset",
-                                "platform": platform
-                            })
+                            updated_symbols.append({"name": func_name, "type": "offset", "platform": platform})
                     # Check for struct_member_offset (struct member offset)
                     elif "struct_member_offset" in yaml_entry[platform]:
                         entry["offsets"][platform] = yaml_entry[platform]["struct_member_offset"]
                         updated_count += 1
                         if debug:
-                            updated_symbols.append({
-                                "name": func_name,
-                                "type": "struct_offset",
-                                "platform": platform
-                            })
+                            updated_symbols.append({"name": func_name, "type": "struct_offset", "platform": platform})
 
     # Write back
     with open(gamedata_path, "w", encoding="utf-8") as f:

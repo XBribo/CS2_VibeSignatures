@@ -63,43 +63,29 @@ PATCH_COMPAT_ALIASES = {
 
 def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Update gamedata files from YAML signatures"
+    parser = argparse.ArgumentParser(description="Update gamedata files from YAML signatures")
+    parser.add_argument("-gamever", required=True, help="Game version for YAML path (required)")
+    parser.add_argument(
+        "-configyaml", default=DEFAULT_CONFIG_FILE, help=f"Path to config.yaml file (default: {DEFAULT_CONFIG_FILE})"
     )
     parser.add_argument(
-        "-gamever",
-        required=True,
-        help="Game version for YAML path (required)"
-    )
-    parser.add_argument(
-        "-configyaml",
-        default=DEFAULT_CONFIG_FILE,
-        help=f"Path to config.yaml file (default: {DEFAULT_CONFIG_FILE})"
-    )
-    parser.add_argument(
-        "-bindir",
-        default=DEFAULT_BIN_DIR,
-        help=f"Directory containing YAML files (default: {DEFAULT_BIN_DIR})"
+        "-bindir", default=DEFAULT_BIN_DIR, help=f"Directory containing YAML files (default: {DEFAULT_BIN_DIR})"
     )
     parser.add_argument(
         "-distdir",
         default=DEFAULT_DIST_DIR,
-        help=f"Directory containing gamedata modules (default: {DEFAULT_DIST_DIR})"
+        help=f"Directory containing gamedata modules (default: {DEFAULT_DIST_DIR})",
     )
     parser.add_argument(
-        "-platform",
-        default=DEFAULT_PLATFORMS,
-        help=f"Comma-separated platforms (default: {DEFAULT_PLATFORMS})"
+        "-platform", default=DEFAULT_PLATFORMS, help=f"Comma-separated platforms (default: {DEFAULT_PLATFORMS})"
     )
     parser.add_argument(
-        "-debug",
-        action="store_true",
-        help="Print detailed information about missing and updated symbols"
+        "-debug", action="store_true", help="Print detailed information about missing and updated symbols"
     )
     parser.add_argument(
         "-download_latest",
         action="store_true",
-        help="Download latest gamedata files from upstream repos before updating"
+        help="Download latest gamedata files from upstream repos before updating",
     )
 
     return parser.parse_args()
@@ -386,11 +372,7 @@ def load_all_yaml_data(config, bin_dir, gamever, platforms, debug=False):
                 compat_aliases = PATCH_COMPAT_ALIASES.get(func_name, [])
                 aliases = list(dict.fromkeys([*aliases, *compat_aliases]))
 
-            yaml_data[func_name] = {
-                "library": module_name,
-                "category": category,
-                "aliases": aliases
-            }
+            yaml_data[func_name] = {"library": module_name, "category": category, "aliases": aliases}
 
             # Handle structmember type differently
             if category == "structmember":
@@ -402,9 +384,7 @@ def load_all_yaml_data(config, bin_dir, gamever, platforms, debug=False):
                     continue
 
                 for platform in target_platforms:
-                    member_yaml_path = os.path.join(
-                        bin_dir, gamever, module_name, f"{func_name}.{platform}.yaml"
-                    )
+                    member_yaml_path = os.path.join(bin_dir, gamever, module_name, f"{func_name}.{platform}.yaml")
                     member_yaml_data = load_yaml_data(member_yaml_path)
 
                     resolved_offset = None
@@ -415,9 +395,7 @@ def load_all_yaml_data(config, bin_dir, gamever, platforms, debug=False):
 
                     # Backward compatibility: fallback to legacy {struct}.{platform}.yaml.
                     legacy_members = None
-                    legacy_yaml_path = os.path.join(
-                        bin_dir, gamever, module_name, f"{struct_name}.{platform}.yaml"
-                    )
+                    legacy_yaml_path = os.path.join(bin_dir, gamever, module_name, f"{struct_name}.{platform}.yaml")
                     if resolved_offset is None:
                         cache_key = (module_name, struct_name, platform)
                         if cache_key not in legacy_struct_cache:
@@ -432,18 +410,13 @@ def load_all_yaml_data(config, bin_dir, gamever, platforms, debug=False):
                             resolved_offset = legacy_members[member_name]
 
                     if resolved_offset is not None:
-                        yaml_data[func_name][platform] = {
-                            "struct_member_offset": resolved_offset
-                        }
+                        yaml_data[func_name][platform] = {"struct_member_offset": resolved_offset}
                         continue
 
                     if debug:
-                        missing_symbols.append({
-                            "name": func_name,
-                            "library": module_name,
-                            "platform": platform,
-                            "path": member_yaml_path
-                        })
+                        missing_symbols.append(
+                            {"name": func_name, "library": module_name, "platform": platform, "path": member_yaml_path}
+                        )
 
                     if member_yaml_data is not None:
                         print(f"  Warning: Member {member_name} not found in {member_yaml_path}")
@@ -459,15 +432,11 @@ def load_all_yaml_data(config, bin_dir, gamever, platforms, debug=False):
                         candidate_names.extend(aliases)
 
                     loaded_data = None
-                    missing_path = os.path.join(
-                        bin_dir, gamever, module_name, f"{func_name}.{platform}.yaml"
-                    )
+                    missing_path = os.path.join(bin_dir, gamever, module_name, f"{func_name}.{platform}.yaml")
                     alias_paths = []
 
                     for candidate_name in candidate_names:
-                        yaml_path = os.path.join(
-                            bin_dir, gamever, module_name, f"{candidate_name}.{platform}.yaml"
-                        )
+                        yaml_path = os.path.join(bin_dir, gamever, module_name, f"{candidate_name}.{platform}.yaml")
                         data = load_yaml_data(yaml_path)
                         if not data:
                             if candidate_name != func_name:
@@ -486,12 +455,9 @@ def load_all_yaml_data(config, bin_dir, gamever, platforms, debug=False):
                         yaml_data[func_name][platform] = loaded_data
                     else:
                         if debug:
-                            missing_symbols.append({
-                                "name": func_name,
-                                "library": module_name,
-                                "platform": platform,
-                                "path": missing_path
-                            })
+                            missing_symbols.append(
+                                {"name": func_name, "library": module_name, "platform": platform, "path": missing_path}
+                            )
 
                         if category == "patch" and alias_paths:
                             print(
@@ -499,10 +465,7 @@ def load_all_yaml_data(config, bin_dir, gamever, platforms, debug=False):
                                 f"{missing_path} (tried aliases: {', '.join(alias_paths)})"
                             )
                         elif category == "patch":
-                            print(
-                                f"  Warning: Patch YAML not found or missing patch_bytes: "
-                                f"{missing_path}"
-                            )
+                            print(f"  Warning: Patch YAML not found or missing patch_bytes: {missing_path}")
                         else:
                             print(f"  Warning: YAML not found: {missing_path}")
 
@@ -536,14 +499,12 @@ def discover_gamedata_modules(dist_dir):
 
         try:
             # Dynamically load the module
-            spec = importlib.util.spec_from_file_location(
-                f"gamedata_{subdir}", module_path
-            )
+            spec = importlib.util.spec_from_file_location(f"gamedata_{subdir}", module_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
             # Check if module is enabled
-            if getattr(module, 'MODULE_ENABLED', True):
+            if getattr(module, "MODULE_ENABLED", True):
                 modules.append((subdir, module))
             else:
                 print(f"  Skipping disabled module: {subdir}")
@@ -579,8 +540,8 @@ def download_latest_gamedata(modules, dist_dir):
         timeout=httpx.Timeout(10.0, read=30.0),
     ) as client:
         for subdir, module in modules:
-            module_name = getattr(module, 'MODULE_NAME', subdir)
-            sources = getattr(module, 'DOWNLOAD_SOURCES', None)
+            module_name = getattr(module, "MODULE_NAME", subdir)
+            sources = getattr(module, "DOWNLOAD_SOURCES", None)
 
             if not sources:
                 continue
@@ -692,13 +653,7 @@ def main():
 
     # Load base YAML data
     print("\nLoading base YAML data...")
-    base_yaml_data, base_missing_symbols = load_all_yaml_data(
-        base_config,
-        bin_dir,
-        gamever,
-        platforms,
-        debug
-    )
+    base_yaml_data, base_missing_symbols = load_all_yaml_data(base_config, bin_dir, gamever, platforms, debug)
     print(f"Loaded base data for {len(base_yaml_data)} functions")
 
     # Discover gamedata modules
@@ -722,7 +677,7 @@ def main():
     total_skipped = 0
 
     for subdir, module in modules:
-        module_name = getattr(module, 'MODULE_NAME', subdir)
+        module_name = getattr(module, "MODULE_NAME", subdir)
         module_dist_dir = os.path.join(dist_dir, subdir)
 
         # Default to base config-derived data.
@@ -745,15 +700,9 @@ def main():
                 module_func_lib_map = build_function_library_map(merged_config)
                 module_alias_to_name_map = build_alias_to_name_map(merged_config)
                 module_yaml_data, module_missing_symbols = load_all_yaml_data(
-                    merged_config,
-                    bin_dir,
-                    gamever,
-                    platforms,
-                    debug
+                    merged_config, bin_dir, gamever, platforms, debug
                 )
-                print(
-                    f"  Using merged config with {len(module_func_lib_map)} function mappings"
-                )
+                print(f"  Using merged config with {len(module_func_lib_map)} function mappings")
                 if debug:
                     all_missing_symbols.extend(module_missing_symbols)
             except Exception as e:
@@ -765,12 +714,7 @@ def main():
 
         try:
             updated, skipped, updated_syms, skipped_syms = module.update(
-                module_yaml_data,
-                module_func_lib_map,
-                platforms,
-                module_dist_dir,
-                module_alias_to_name_map,
-                debug
+                module_yaml_data, module_func_lib_map, platforms, module_dist_dir, module_alias_to_name_map, debug
             )
             print(f"  Updated: {updated}, Skipped: {skipped}")
             total_updated += updated

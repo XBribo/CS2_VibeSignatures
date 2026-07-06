@@ -10,10 +10,7 @@ import sys
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from gamedata_utils import (
-    convert_sig_to_cs2fixes,
-    normalize_func_name_colons_to_underscore
-)
+from gamedata_utils import convert_sig_to_cs2fixes, normalize_func_name_colons_to_underscore
 
 try:
     import vdf
@@ -31,8 +28,10 @@ GAMEDATA_PATH = "gamedata/cs2kz-core.games.txt"
 
 # Upstream download sources: (raw_url, relative_dest_path)
 DOWNLOAD_SOURCES = [
-    ("https://raw.githubusercontent.com/KZGlobalTeam/cs2kz-metamod/master/gamedata/cs2kz-core.games.txt",
-     GAMEDATA_PATH),
+    (
+        "https://raw.githubusercontent.com/KZGlobalTeam/cs2kz-metamod/master/gamedata/cs2kz-core.games.txt",
+        GAMEDATA_PATH,
+    ),
 ]
 
 
@@ -90,10 +89,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "unknown library"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "unknown library"})
             continue
 
         # Find matching YAML data
@@ -101,10 +97,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry or yaml_entry.get("library") != library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data"})
             continue
 
         # Update platform signatures
@@ -114,11 +107,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                 entry[platform] = sig
                 updated_count += 1
                 if debug:
-                    updated_symbols.append({
-                        "name": func_name,
-                        "type": "signature",
-                        "platform": platform
-                    })
+                    updated_symbols.append({"name": func_name, "type": "signature", "platform": platform})
 
     # Update Offsets
     offsets = csgo.get("Offsets", {})
@@ -131,10 +120,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         if not yaml_entry:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data (offset)"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data (offset)"})
             continue
 
         # Update platform offsets
@@ -146,21 +132,13 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
                     entry[platform] = str(yaml_entry[platform]["vfunc_index"])
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "offset", "platform": platform})
                 # Check for struct_member_offset (struct member offset)
                 elif "struct_member_offset" in yaml_entry[platform]:
                     entry[platform] = str(yaml_entry[platform]["struct_member_offset"])
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "struct_offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "struct_offset", "platform": platform})
 
     # Write back with BOM
     # Use vdf.dumps() to get string, then manually fix escaped backslashes

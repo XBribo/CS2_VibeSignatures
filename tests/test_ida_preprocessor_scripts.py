@@ -11,24 +11,15 @@ import ida_skill_preprocessor
 
 
 FLATTENED_SERIALIZERS_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CFlattenedSerializers_CreateFieldChangedEventQueue.py"
+    "ida_preprocessor_scripts/find-CFlattenedSerializers_CreateFieldChangedEventQueue.py"
 )
-SET_IS_FOR_SERVER_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CNetworkMessages_SetIsForServer.py"
-)
-I_SET_IS_FOR_SERVER_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-INetworkMessages_SetIsForServer.py"
-)
+SET_IS_FOR_SERVER_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CNetworkMessages_SetIsForServer.py")
+I_SET_IS_FOR_SERVER_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-INetworkMessages_SetIsForServer.py")
 I_GET_LOGGING_CHANNEL_WINDOWS_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-INetworkMessages_GetLoggingChannel-windows.py"
+    "ida_preprocessor_scripts/find-INetworkMessages_GetLoggingChannel-windows.py"
 )
 I_GET_LOGGING_CHANNEL_LINUX_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-INetworkMessages_GetLoggingChannel-linux.py"
+    "ida_preprocessor_scripts/find-INetworkMessages_GetLoggingChannel-linux.py"
 )
 NETWORK_GROUP_STATS_SCRIPT_PATH = Path(
     "ida_preprocessor_scripts/"
@@ -37,63 +28,29 @@ NETWORK_GROUP_STATS_SCRIPT_PATH = Path(
     "INetworkMessages_GetNetworkGroupColor.py"
 )
 REALLOCATING_FACTORY_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.py"
+    "ida_preprocessor_scripts/find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable.py"
 )
 REALLOCATING_FACTORY_DEALLOCATE_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem-impl.py"
+    "ida_preprocessor_scripts/find-CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_DestroyGameSystem-impl.py"
 )
-CSPAWNGROUP_VTABLE2_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CSpawnGroupMgrGameSystem_vtable2.py"
-)
+CSPAWNGROUP_VTABLE2_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CSpawnGroupMgrGameSystem_vtable2.py")
 CSPAWNGROUP_DOES_REALLOCATE_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CSpawnGroupMgrGameSystem_DoesGameSystemReallocate.py"
+    "ida_preprocessor_scripts/find-CSpawnGroupMgrGameSystem_DoesGameSystemReallocate.py"
 )
-ORDINAL_VTABLE_COMMON_PATH = Path(
-    "ida_preprocessor_scripts/_ordinal_vtable_common.py"
-)
-FIND_NETWORK_GROUP_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CNetworkMessages_FindNetworkGroup.py"
-)
-CNETWORK_SERVER_SERVICE_INIT_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CNetworkServerService_Init.py"
-)
-CLOOPMODE_FACTORY_GAME_INIT_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CLoopModeFactory_CLoopModeGame_Init.py"
-)
-PROCESS_MOVEMENT_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CCSPlayer_MovementServices_ProcessMovement.py"
-)
-BOT_ADD_COMMAND_HANDLER_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-BotAdd_CommandHandler.py"
-)
-SHOW_HUD_HINT_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-ShowHudHint.py"
-)
-CBASEFILTER_INPUTTESTACTIVATOR_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CBaseFilter_InputTestActivator.py"
-)
-ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-ILoopMode_HandleInputEvent.py"
-)
+ORDINAL_VTABLE_COMMON_PATH = Path("ida_preprocessor_scripts/_ordinal_vtable_common.py")
+FIND_NETWORK_GROUP_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CNetworkMessages_FindNetworkGroup.py")
+CNETWORK_SERVER_SERVICE_INIT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CNetworkServerService_Init.py")
+CLOOPMODE_FACTORY_GAME_INIT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CLoopModeFactory_CLoopModeGame_Init.py")
+PROCESS_MOVEMENT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CCSPlayer_MovementServices_ProcessMovement.py")
+BOT_ADD_COMMAND_HANDLER_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-BotAdd_CommandHandler.py")
+SHOW_HUD_HINT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ShowHudHint.py")
+CBASEFILTER_INPUTTESTACTIVATOR_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CBaseFilter_InputTestActivator.py")
+ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ILoopMode_HandleInputEvent.py")
 ON_EVENT_MAP_CALLBACKS_CLIENT_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/"
-    "find-CLoopModeGame_OnEventMapCallbacks-client.py"
+    "ida_preprocessor_scripts/find-CLoopModeGame_OnEventMapCallbacks-client.py"
 )
-INTERFACE_GLOBALS_PPGLOBAL_SCRIPT_PATH = Path(
-    "ida_preprocessor_scripts/find-g_pInterfaceGlobals_ppGlobal.py"
-)
+INTERFACE_GLOBALS_PPGLOBAL_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-g_pInterfaceGlobals_ppGlobal.py")
+
 
 class _FakeStreamableHttpClient:
     async def __aenter__(self):
@@ -197,10 +154,7 @@ def _run_ordinal_vtable_py_eval(
 
     name_to_ea = dict(name_to_ea or {})
     name_by_ea = dict(name_by_ea or {})
-    data_refs = {
-        int(target): list(refs)
-        for target, refs in dict(data_refs or {}).items()
-    }
+    data_refs = {int(target): list(refs) for target, refs in dict(data_refs or {}).items()}
     ptr_values = dict(ptr_values or {})
     func_addrs = set(func_addrs or [])
     code_addrs = set(code_addrs or [])
@@ -215,10 +169,7 @@ def _run_ordinal_vtable_py_eval(
     idaapi = types.ModuleType("idaapi")
     idaapi.BADADDR = -1
     idaapi.inf_is_64bit = lambda: True
-    idaapi.get_func = (
-        lambda ea: types.SimpleNamespace(start_ea=ea, end_ea=ea + 1)
-        if ea in func_addrs else None
-    )
+    idaapi.get_func = lambda ea: types.SimpleNamespace(start_ea=ea, end_ea=ea + 1) if ea in func_addrs else None
 
     ida_bytes = types.ModuleType("ida_bytes")
     ida_bytes.get_qword = lambda ea: ptr_values.get(ea, 0)
@@ -232,10 +183,7 @@ def _run_ordinal_vtable_py_eval(
 
     idautils = types.ModuleType("idautils")
     idautils.DataRefsTo = lambda ea: list(data_refs.get(ea, []))
-    idautils.Names = lambda: [
-        (ea, name)
-        for name, ea in name_to_ea.items()
-    ]
+    idautils.Names = lambda: [(ea, name) for name, ea in name_to_ea.items()]
 
     ida_segment = types.ModuleType("ida_segment")
     ida_segment.SEGPERM_EXEC = 1
@@ -295,10 +243,7 @@ class TestOrdinalVtableCommon(unittest.IsolatedAsyncioTestCase):
         idaapi = types.ModuleType("idaapi")
         idaapi.BADADDR = -1
         idaapi.inf_is_64bit = lambda: True
-        idaapi.get_func = (
-            lambda ea: types.SimpleNamespace(start_ea=ea, end_ea=ea + 1)
-            if ea == 0x9000 else None
-        )
+        idaapi.get_func = lambda ea: types.SimpleNamespace(start_ea=ea, end_ea=ea + 1) if ea == 0x9000 else None
 
         ida_bytes = types.ModuleType("ida_bytes")
         ida_bytes.get_qword = lambda ea: {
@@ -323,10 +268,10 @@ class TestOrdinalVtableCommon(unittest.IsolatedAsyncioTestCase):
         ida_segment.SEGPERM_EXEC = 1
         ida_segment.getseg = lambda ea: (
             _FakeSegment(0x2000, 0x3000, 0)
-            if 0x2000 <= ea < 0x3000 else
-            _FakeSegment(0x9000, 0xA000, 1)
-            if 0x9000 <= ea < 0xA000 else
-            None
+            if 0x2000 <= ea < 0x3000
+            else _FakeSegment(0x9000, 0xA000, 1)
+            if 0x9000 <= ea < 0xA000
+            else None
         )
 
         fake_modules = {
@@ -427,18 +372,14 @@ class TestOrdinalVtableCommon(unittest.IsolatedAsyncioTestCase):
 
         self.assertIsNone(result)
         mock_print.assert_any_call(
-            "    Preprocess ordinal vtable trace: "
-            "[direct-miss] symbol=??_7CSpawnGroupMgrGameSystem@@6B@_0"
+            "    Preprocess ordinal vtable trace: [direct-miss] symbol=??_7CSpawnGroupMgrGameSystem@@6B@_0"
         )
         mock_print.assert_any_call(
             "    Preprocess ordinal vtable trace: "
             "[result-none] reason=no_alias_candidate_matched "
             "aliases=['??_7CSpawnGroupMgrGameSystem@@6B@_0']"
         )
-        mock_print.assert_any_call(
-            "    Preprocess ordinal vtable: no result for "
-            "CSpawnGroupMgrGameSystem[0]"
-        )
+        mock_print.assert_any_call("    Preprocess ordinal vtable: no result for CSpawnGroupMgrGameSystem[0]")
 
     async def test_preprocess_ordinal_vtable_prints_py_eval_stderr_when_result_empty(self) -> None:
         module = _load_module(
@@ -467,17 +408,12 @@ class TestOrdinalVtableCommon(unittest.IsolatedAsyncioTestCase):
             )
 
         self.assertIsNone(result)
-        mock_print.assert_any_call(
-            "    Preprocess ordinal vtable py_eval stderr:"
-        )
+        mock_print.assert_any_call("    Preprocess ordinal vtable py_eval stderr:")
         mock_print.assert_any_call("Traceback: boom")
-        mock_print.assert_any_call(
-            "    Preprocess ordinal vtable py_eval stdout:"
-        )
+        mock_print.assert_any_call("    Preprocess ordinal vtable py_eval stdout:")
         mock_print.assert_any_call("debug stdout")
         mock_print.assert_any_call(
-            "    Preprocess ordinal vtable: empty py_eval result for "
-            "CSpawnGroupMgrGameSystem[0]"
+            "    Preprocess ordinal vtable: empty py_eval result for CSpawnGroupMgrGameSystem[0]"
         )
 
     async def test_preprocess_ordinal_vtable_forwards_constraints_into_py_eval(self) -> None:
@@ -773,24 +709,23 @@ class TestFindCBaseFilterInputTestActivator(unittest.IsolatedAsyncioTestCase):
             {"name": "rename"},
         ]
 
-        with tempfile.TemporaryDirectory() as tmpdir, patch.object(
-            module,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_sig": "48 89 5C 24 ? 57 48 83 EC ?",
-                    "func_size": "0x90",
-                }
+        with (
+            tempfile.TemporaryDirectory() as tmpdir,
+            patch.object(
+                module,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_sig": "48 89 5C 24 ? 57 48 83 EC ?",
+                        "func_size": "0x90",
+                    }
+                ),
             ),
-        ), patch.object(module, "write_func_yaml"):
+            patch.object(module, "write_func_yaml"),
+        ):
             result = await module._linux_resolve_via_string_xref(
                 session=session,
-                expected_outputs=[
-                    str(
-                        Path(tmpdir)
-                        / "CBaseFilter_InputTestActivator.linux.yaml"
-                    )
-                ],
+                expected_outputs=[str(Path(tmpdir) / "CBaseFilter_InputTestActivator.linux.yaml")],
                 platform="linux",
                 image_base=0x180000000,
                 debug=True,
@@ -807,12 +742,7 @@ class TestFindCBaseFilterInputTestActivator(unittest.IsolatedAsyncioTestCase):
         self.assertIn("for s in strings:", py_code)
         self.assertNotIn("for s in idautils.Strings():", py_code)
         self.assertIn("for xref in idautils.XrefsTo(s.ea, 0):", py_code)
-        self.assertTrue(
-            (
-                "ptr_addr = xref.frm + 0x10" in py_code
-                or "ptr_addr = xref.frm + 16" in py_code
-            )
-        )
+        self.assertTrue(("ptr_addr = xref.frm + 0x10" in py_code or "ptr_addr = xref.frm + 16" in py_code))
         self.assertIn(
             "func_start = idc.get_func_attr(candidate, idc.FUNCATTR_START)",
             py_code,
@@ -829,14 +759,16 @@ class TestFindCBaseFilterInputTestActivator(unittest.IsolatedAsyncioTestCase):
         fallback = AsyncMock(return_value=True)
         reuse = AsyncMock()
 
-        with tempfile.TemporaryDirectory() as tmpdir, patch.object(
-            module,
-            "_linux_resolve_via_string_xref",
-            fallback,
-        ), patch.object(module, "preprocess_func_sig_via_mcp", reuse):
-            output_path = str(
-                Path(tmpdir) / "CBaseFilter_InputTestActivator.linux.yaml"
-            )
+        with (
+            tempfile.TemporaryDirectory() as tmpdir,
+            patch.object(
+                module,
+                "_linux_resolve_via_string_xref",
+                fallback,
+            ),
+            patch.object(module, "preprocess_func_sig_via_mcp", reuse),
+        ):
+            output_path = str(Path(tmpdir) / "CBaseFilter_InputTestActivator.linux.yaml")
             result = await module.preprocess_skill(
                 session="session",
                 skill_name="skill",
@@ -875,20 +807,22 @@ class TestFindCBaseFilterInputTestActivator(unittest.IsolatedAsyncioTestCase):
         reuse = AsyncMock(return_value=reuse_result)
         fallback = AsyncMock(return_value=False)
 
-        with tempfile.TemporaryDirectory() as tmpdir, patch.object(
-            module,
-            "preprocess_func_sig_via_mcp",
-            reuse,
-        ), patch.object(module, "_linux_resolve_via_string_xref", fallback), patch.object(
-            module,
-            "write_func_yaml",
-        ) as write_func_yaml, patch.object(module.os.path, "exists", return_value=True):
-            output_path = str(
-                Path(tmpdir) / "CBaseFilter_InputTestActivator.linux.yaml"
-            )
-            old_path = str(
-                Path(tmpdir) / "old.CBaseFilter_InputTestActivator.linux.yaml"
-            )
+        with (
+            tempfile.TemporaryDirectory() as tmpdir,
+            patch.object(
+                module,
+                "preprocess_func_sig_via_mcp",
+                reuse,
+            ),
+            patch.object(module, "_linux_resolve_via_string_xref", fallback),
+            patch.object(
+                module,
+                "write_func_yaml",
+            ) as write_func_yaml,
+            patch.object(module.os.path, "exists", return_value=True),
+        ):
+            output_path = str(Path(tmpdir) / "CBaseFilter_InputTestActivator.linux.yaml")
+            old_path = str(Path(tmpdir) / "old.CBaseFilter_InputTestActivator.linux.yaml")
             result = await module.preprocess_skill(
                 session="session",
                 skill_name="skill",
@@ -926,14 +860,14 @@ class TestFindILoopModeHandleInputEvent(unittest.IsolatedAsyncioTestCase):
         session = AsyncMock()
         session.call_tool.return_value = _py_eval_payload({"vfunc_offset": 0x28})
 
-        with tempfile.TemporaryDirectory() as tmpdir, patch.object(
-            module,
-            "write_func_yaml",
-        ) as write_func_yaml:
-            predecessor_yaml = (
-                Path(tmpdir)
-                / "CLoopTypeClientServerService_HandleInputEvent.linux.yaml"
-            )
+        with (
+            tempfile.TemporaryDirectory() as tmpdir,
+            patch.object(
+                module,
+                "write_func_yaml",
+            ) as write_func_yaml,
+        ):
+            predecessor_yaml = Path(tmpdir) / "CLoopTypeClientServerService_HandleInputEvent.linux.yaml"
             predecessor_yaml.write_text("func_va: 0x180123450\n", encoding="utf-8")
             output_path = str(Path(tmpdir) / "ILoopMode_HandleInputEvent.linux.yaml")
 
@@ -969,14 +903,15 @@ class TestFindILoopModeHandleInputEvent(unittest.IsolatedAsyncioTestCase):
         )
         session = AsyncMock()
 
-        with tempfile.TemporaryDirectory() as tmpdir, patch.object(
-            module,
-            "write_func_yaml",
-        ) as write_func_yaml:
+        with (
+            tempfile.TemporaryDirectory() as tmpdir,
+            patch.object(
+                module,
+                "write_func_yaml",
+            ) as write_func_yaml,
+        ):
             output_path = str(Path(tmpdir) / "ILoopMode_HandleInputEvent.linux.yaml")
-            old_yaml_path = str(
-                Path(tmpdir) / "old.ILoopMode_HandleInputEvent.linux.yaml"
-            )
+            old_yaml_path = str(Path(tmpdir) / "old.ILoopMode_HandleInputEvent.linux.yaml")
             Path(old_yaml_path).write_text(
                 "vfunc_offset: 0x30\n",
                 encoding="utf-8",
@@ -1006,9 +941,7 @@ class TestFindILoopModeHandleInputEvent(unittest.IsolatedAsyncioTestCase):
         )
 
 
-class TestFindCLoopModeGameOnEventMapCallbacksClient(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindCLoopModeGameOnEventMapCallbacksClient(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_forwards_register_event_listener_contract(
         self,
     ) -> None:
@@ -1053,9 +986,7 @@ class TestFindCLoopModeGameOnEventMapCallbacksClient(
         )
 
 
-class TestFindCFlattenedSerializersCreateFieldChangedEventQueueImpl(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindCFlattenedSerializersCreateFieldChangedEventQueueImpl(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_forwards_expected_inherit_vfuncs(self) -> None:
         module = _load_module(
             FLATTENED_SERIALIZERS_SCRIPT_PATH,
@@ -1190,9 +1121,7 @@ class TestFindINetworkMessagesSetIsForServer(unittest.IsolatedAsyncioTestCase):
                 "references/engine/CNetworkServerService_Init.{platform}.yaml",
             )
         ]
-        expected_func_vtable_relations = [
-            ("INetworkMessages_SetIsForServer", "INetworkMessages")
-        ]
+        expected_func_vtable_relations = [("INetworkMessages_SetIsForServer", "INetworkMessages")]
         expected_generate_yaml_desired_fields = [
             (
                 "INetworkMessages_SetIsForServer",
@@ -1245,9 +1174,7 @@ class TestFindINetworkMessagesSetIsForServer(unittest.IsolatedAsyncioTestCase):
         )
 
 
-class TestFindCNetworkMessagesGetNetworkGroupStats(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindCNetworkMessagesGetNetworkGroupStats(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_forwards_llm_and_vtable_wiring(self) -> None:
         module = _load_module(
             NETWORK_GROUP_STATS_SCRIPT_PATH,
@@ -1352,18 +1279,14 @@ class TestFindCNetworkMessagesGetNetworkGroupStats(
         )
 
 
-class TestFindCGameSystemReallocatingFactoryCSpawnGroupMgrGameSystemVtable(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindCGameSystemReallocatingFactoryCSpawnGroupMgrGameSystemVtable(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_forwards_expected_vtable_and_aliases(self) -> None:
         module = _load_module(
             REALLOCATING_FACTORY_SCRIPT_PATH,
             "find_CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem_vtable",
         )
         mock_preprocess_common_skill = AsyncMock(return_value=True)
-        expected_vtable_class_names = [
-            "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"
-        ]
+        expected_vtable_class_names = ["CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem"]
         expected_mangled_class_names = {
             "CGameSystemReallocatingFactory_CSpawnGroupMgrGameSystem": [
                 "??_7?$CGameSystemReallocatingFactory@VCSpawnGroupMgrGameSystem@@V1@@@6B@",
@@ -1414,9 +1337,7 @@ class TestFindCGameSystemReallocatingFactoryCSpawnGroupMgrGameSystemVtable(
         )
 
 
-class TestFindCGameSystemReallocatingFactoryCSpawnGroupMgrGameSystemDeallocateImpl(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindCGameSystemReallocatingFactoryCSpawnGroupMgrGameSystemDeallocateImpl(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_forwards_expected_inherit_vfuncs(self) -> None:
         module = _load_module(
             REALLOCATING_FACTORY_DEALLOCATE_SCRIPT_PATH,
@@ -1495,11 +1416,14 @@ class TestFindCSpawnGroupMgrGameSystemVtable2(unittest.IsolatedAsyncioTestCase):
             }
         )
 
-        with patch.object(
-            module,
-            "preprocess_ordinal_vtable_via_mcp",
-            mock_preprocess_ordinal_vtable,
-        ), patch.object(module, "write_vtable_yaml") as mock_write_vtable_yaml:
+        with (
+            patch.object(
+                module,
+                "preprocess_ordinal_vtable_via_mcp",
+                mock_preprocess_ordinal_vtable,
+            ),
+            patch.object(module, "write_vtable_yaml") as mock_write_vtable_yaml,
+        ):
             result = await module.preprocess_skill(
                 session="session",
                 skill_name="skill",
@@ -1544,11 +1468,14 @@ class TestFindCSpawnGroupMgrGameSystemVtable2(unittest.IsolatedAsyncioTestCase):
             }
         )
 
-        with patch.object(
-            module,
-            "preprocess_ordinal_vtable_via_mcp",
-            mock_preprocess_ordinal_vtable,
-        ), patch.object(module, "write_vtable_yaml") as mock_write_vtable_yaml:
+        with (
+            patch.object(
+                module,
+                "preprocess_ordinal_vtable_via_mcp",
+                mock_preprocess_ordinal_vtable,
+            ),
+            patch.object(module, "write_vtable_yaml") as mock_write_vtable_yaml,
+        ):
             result = await module.preprocess_skill(
                 session="session",
                 skill_name="skill",
@@ -1577,9 +1504,7 @@ class TestFindCSpawnGroupMgrGameSystemVtable2(unittest.IsolatedAsyncioTestCase):
         )
 
 
-class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(unittest.IsolatedAsyncioTestCase):
     def test_build_factory_yaml_paths_prefers_local_then_sibling_client(self) -> None:
         module = _load_module(
             CSPAWNGROUP_DOES_REALLOCATE_SCRIPT_PATH,
@@ -1591,20 +1516,8 @@ class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(
 
         self.assertEqual(
             [
-                str(
-                    Path(temp_dir)
-                    / "bin"
-                    / "14141"
-                    / "server"
-                    / "IGameSystemFactory_IsReallocating.linux.yaml"
-                ),
-                str(
-                    Path(temp_dir)
-                    / "bin"
-                    / "14141"
-                    / "client"
-                    / "IGameSystemFactory_IsReallocating.linux.yaml"
-                ),
+                str(Path(temp_dir) / "bin" / "14141" / "server" / "IGameSystemFactory_IsReallocating.linux.yaml"),
+                str(Path(temp_dir) / "bin" / "14141" / "client" / "IGameSystemFactory_IsReallocating.linux.yaml"),
             ],
             paths,
         )
@@ -1616,14 +1529,17 @@ class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(
         )
         mock_preprocess_common_skill = AsyncMock(return_value=True)
 
-        with patch.object(
-            module,
-            "preprocess_common_skill",
-            mock_preprocess_common_skill,
-        ), patch.object(
-            module,
-            "_read_vfunc_offset",
-            return_value=0x18,
+        with (
+            patch.object(
+                module,
+                "preprocess_common_skill",
+                mock_preprocess_common_skill,
+            ),
+            patch.object(
+                module,
+                "_read_vfunc_offset",
+                return_value=0x18,
+            ),
         ):
             result = await module.preprocess_skill(
                 session="session",
@@ -1644,15 +1560,11 @@ class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(
                     "CSpawnGroupMgrGameSystem_vtable2",
                 )
             ],
-            mock_preprocess_common_skill.await_args.kwargs[
-                "func_vtable_relations"
-            ],
+            mock_preprocess_common_skill.await_args.kwargs["func_vtable_relations"],
         )
         self.assertEqual(
             "48 8B 0D ?? ?? ?? ?? 48 8B 01 48 FF 60 18",
-            mock_preprocess_common_skill.await_args.kwargs["func_xrefs"][0][
-                "xref_signatures"
-            ][0],
+            mock_preprocess_common_skill.await_args.kwargs["func_xrefs"][0]["xref_signatures"][0],
         )
 
     async def test_preprocess_skill_reads_factory_yaml_from_sibling_client(self) -> None:
@@ -1668,9 +1580,9 @@ class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(
             client_dir = module_dir / "client"
             server_dir.mkdir(parents=True, exist_ok=True)
             client_dir.mkdir(parents=True, exist_ok=True)
-            (
-                client_dir / "IGameSystemFactory_IsReallocating.linux.yaml"
-            ).write_text("vfunc_offset: 0x20\n", encoding="utf-8")
+            (client_dir / "IGameSystemFactory_IsReallocating.linux.yaml").write_text(
+                "vfunc_offset: 0x20\n", encoding="utf-8"
+            )
 
             with patch.object(
                 module,
@@ -1691,9 +1603,7 @@ class TestFindCSpawnGroupMgrGameSystemDoesGameSystemReallocate(
         self.assertTrue(result)
         self.assertEqual(
             "48 8B 3D ?? ?? ?? ?? 48 8B 07 FF 60 20",
-            mock_preprocess_common_skill.await_args.kwargs["func_xrefs"][0][
-                "xref_signatures"
-            ][0],
+            mock_preprocess_common_skill.await_args.kwargs["func_xrefs"][0]["xref_signatures"][0],
         )
 
 
@@ -1721,8 +1631,15 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
         received = {}
 
         async def fake_preprocess_skill(
-            session, skill_name, expected_outputs, old_yaml_map,
-            new_binary_dir, platform, image_base, llm_config, debug=False,
+            session,
+            skill_name,
+            expected_outputs,
+            old_yaml_map,
+            new_binary_dir,
+            platform,
+            image_base,
+            llm_config,
+            debug=False,
         ):
             received["args"] = {
                 "session": session,
@@ -1737,26 +1654,32 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
             }
             return True
 
-        with patch.object(
-            ida_skill_preprocessor,
-            "_get_preprocess_entry",
-            return_value=fake_preprocess_skill,
-        ), patch.object(
-            ida_skill_preprocessor.httpx,
-            "AsyncClient",
-            _FakeAsyncClient,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "streamable_http_client",
-            return_value=_FakeStreamableHttpClient(),
-        ), patch.object(
-            ida_skill_preprocessor,
-            "ClientSession",
-            _FakeClientSession,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "parse_mcp_result",
-            return_value={"result": "0x180000000"},
+        with (
+            patch.object(
+                ida_skill_preprocessor,
+                "_get_preprocess_entry",
+                return_value=fake_preprocess_skill,
+            ),
+            patch.object(
+                ida_skill_preprocessor.httpx,
+                "AsyncClient",
+                _FakeAsyncClient,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "streamable_http_client",
+                return_value=_FakeStreamableHttpClient(),
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "ClientSession",
+                _FakeClientSession,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "parse_mcp_result",
+                return_value={"result": "0x180000000"},
+            ),
         ):
             result = await ida_skill_preprocessor.preprocess_single_skill_via_mcp(
                 host="127.0.0.1",
@@ -1791,8 +1714,15 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
         received = {}
 
         async def fake_preprocess_skill(
-            session, skill_name, expected_outputs, old_yaml_map,
-            new_binary_dir, platform, image_base, llm_config, debug=False,
+            session,
+            skill_name,
+            expected_outputs,
+            old_yaml_map,
+            new_binary_dir,
+            platform,
+            image_base,
+            llm_config,
+            debug=False,
         ):
             received["args"] = {
                 "session": session,
@@ -1807,26 +1737,32 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
             }
             return True
 
-        with patch.object(
-            ida_skill_preprocessor,
-            "_get_preprocess_entry",
-            return_value=fake_preprocess_skill,
-        ), patch.object(
-            ida_skill_preprocessor.httpx,
-            "AsyncClient",
-            _FakeAsyncClient,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "streamable_http_client",
-            return_value=_FakeStreamableHttpClient(),
-        ), patch.object(
-            ida_skill_preprocessor,
-            "ClientSession",
-            _FakeClientSession,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "parse_mcp_result",
-            return_value={"result": "0x180000000"},
+        with (
+            patch.object(
+                ida_skill_preprocessor,
+                "_get_preprocess_entry",
+                return_value=fake_preprocess_skill,
+            ),
+            patch.object(
+                ida_skill_preprocessor.httpx,
+                "AsyncClient",
+                _FakeAsyncClient,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "streamable_http_client",
+                return_value=_FakeStreamableHttpClient(),
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "ClientSession",
+                _FakeClientSession,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "parse_mcp_result",
+                return_value={"result": "0x180000000"},
+            ),
         ):
             result = await ida_skill_preprocessor.preprocess_single_skill_via_mcp(
                 host="127.0.0.1",
@@ -1864,32 +1800,45 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
         received = {}
 
         async def fake_preprocess_skill(
-            session, skill_name, expected_outputs, old_yaml_map,
-            new_binary_dir, platform, image_base, llm_config, debug=False,
+            session,
+            skill_name,
+            expected_outputs,
+            old_yaml_map,
+            new_binary_dir,
+            platform,
+            image_base,
+            llm_config,
+            debug=False,
         ):
             received["llm_config"] = llm_config
             return True
 
-        with patch.object(
-            ida_skill_preprocessor,
-            "_get_preprocess_entry",
-            return_value=fake_preprocess_skill,
-        ), patch.object(
-            ida_skill_preprocessor.httpx,
-            "AsyncClient",
-            _FakeAsyncClient,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "streamable_http_client",
-            return_value=_FakeStreamableHttpClient(),
-        ), patch.object(
-            ida_skill_preprocessor,
-            "ClientSession",
-            _FakeClientSession,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "parse_mcp_result",
-            return_value={"result": "0x180000000"},
+        with (
+            patch.object(
+                ida_skill_preprocessor,
+                "_get_preprocess_entry",
+                return_value=fake_preprocess_skill,
+            ),
+            patch.object(
+                ida_skill_preprocessor.httpx,
+                "AsyncClient",
+                _FakeAsyncClient,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "streamable_http_client",
+                return_value=_FakeStreamableHttpClient(),
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "ClientSession",
+                _FakeClientSession,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "parse_mcp_result",
+                return_value={"result": "0x180000000"},
+            ),
         ):
             result = await ida_skill_preprocessor.preprocess_single_skill_via_mcp(
                 host="127.0.0.1",
@@ -1912,8 +1861,14 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
         received = {}
 
         async def fake_preprocess_skill(
-            session, skill_name, expected_outputs, old_yaml_map,
-            new_binary_dir, platform, image_base, debug=False,
+            session,
+            skill_name,
+            expected_outputs,
+            old_yaml_map,
+            new_binary_dir,
+            platform,
+            image_base,
+            debug=False,
         ):
             received["args"] = {
                 "session": session,
@@ -1927,26 +1882,32 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
             }
             return True
 
-        with patch.object(
-            ida_skill_preprocessor,
-            "_get_preprocess_entry",
-            return_value=fake_preprocess_skill,
-        ), patch.object(
-            ida_skill_preprocessor.httpx,
-            "AsyncClient",
-            _FakeAsyncClient,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "streamable_http_client",
-            return_value=_FakeStreamableHttpClient(),
-        ), patch.object(
-            ida_skill_preprocessor,
-            "ClientSession",
-            _FakeClientSession,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "parse_mcp_result",
-            return_value={"result": "0x180000000"},
+        with (
+            patch.object(
+                ida_skill_preprocessor,
+                "_get_preprocess_entry",
+                return_value=fake_preprocess_skill,
+            ),
+            patch.object(
+                ida_skill_preprocessor.httpx,
+                "AsyncClient",
+                _FakeAsyncClient,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "streamable_http_client",
+                return_value=_FakeStreamableHttpClient(),
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "ClientSession",
+                _FakeClientSession,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "parse_mcp_result",
+                return_value={"result": "0x180000000"},
+            ),
         ):
             result = await ida_skill_preprocessor.preprocess_single_skill_via_mcp(
                 host="127.0.0.1",
@@ -1968,31 +1929,44 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
 
     async def test_normalizes_absent_ok_status(self) -> None:
         async def fake_preprocess_skill(
-            session, skill_name, expected_outputs, old_yaml_map,
-            new_binary_dir, platform, image_base, llm_config, debug=False,
+            session,
+            skill_name,
+            expected_outputs,
+            old_yaml_map,
+            new_binary_dir,
+            platform,
+            image_base,
+            llm_config,
+            debug=False,
         ):
             return "absent_ok"
 
-        with patch.object(
-            ida_skill_preprocessor,
-            "_get_preprocess_entry",
-            return_value=fake_preprocess_skill,
-        ), patch.object(
-            ida_skill_preprocessor.httpx,
-            "AsyncClient",
-            _FakeAsyncClient,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "streamable_http_client",
-            return_value=_FakeStreamableHttpClient(),
-        ), patch.object(
-            ida_skill_preprocessor,
-            "ClientSession",
-            _FakeClientSession,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "parse_mcp_result",
-            return_value={"result": "0x180000000"},
+        with (
+            patch.object(
+                ida_skill_preprocessor,
+                "_get_preprocess_entry",
+                return_value=fake_preprocess_skill,
+            ),
+            patch.object(
+                ida_skill_preprocessor.httpx,
+                "AsyncClient",
+                _FakeAsyncClient,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "streamable_http_client",
+                return_value=_FakeStreamableHttpClient(),
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "ClientSession",
+                _FakeClientSession,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "parse_mcp_result",
+                return_value={"result": "0x180000000"},
+            ),
         ):
             result = await ida_skill_preprocessor.preprocess_single_skill_via_mcp(
                 host="127.0.0.1",
@@ -2013,31 +1987,44 @@ class TestPreprocessSingleSkillViaMcp(unittest.IsolatedAsyncioTestCase):
 
     async def test_normalizes_failed_status_as_falsey(self) -> None:
         async def fake_preprocess_skill(
-            session, skill_name, expected_outputs, old_yaml_map,
-            new_binary_dir, platform, image_base, llm_config, debug=False,
+            session,
+            skill_name,
+            expected_outputs,
+            old_yaml_map,
+            new_binary_dir,
+            platform,
+            image_base,
+            llm_config,
+            debug=False,
         ):
             return False
 
-        with patch.object(
-            ida_skill_preprocessor,
-            "_get_preprocess_entry",
-            return_value=fake_preprocess_skill,
-        ), patch.object(
-            ida_skill_preprocessor.httpx,
-            "AsyncClient",
-            _FakeAsyncClient,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "streamable_http_client",
-            return_value=_FakeStreamableHttpClient(),
-        ), patch.object(
-            ida_skill_preprocessor,
-            "ClientSession",
-            _FakeClientSession,
-        ), patch.object(
-            ida_skill_preprocessor,
-            "parse_mcp_result",
-            return_value={"result": "0x180000000"},
+        with (
+            patch.object(
+                ida_skill_preprocessor,
+                "_get_preprocess_entry",
+                return_value=fake_preprocess_skill,
+            ),
+            patch.object(
+                ida_skill_preprocessor.httpx,
+                "AsyncClient",
+                _FakeAsyncClient,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "streamable_http_client",
+                return_value=_FakeStreamableHttpClient(),
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "ClientSession",
+                _FakeClientSession,
+            ),
+            patch.object(
+                ida_skill_preprocessor,
+                "parse_mcp_result",
+                return_value={"result": "0x180000000"},
+            ),
         ):
             result = await ida_skill_preprocessor.preprocess_single_skill_via_mcp(
                 host="127.0.0.1",
@@ -2072,9 +2059,7 @@ class TestFindCNetworkMessagesFindNetworkGroup(unittest.IsolatedAsyncioTestCase)
                 True,
             )
         ]
-        expected_func_vtable_relations = [
-            ("CNetworkMessages_FindNetworkGroup", "CNetworkMessages")
-        ]
+        expected_func_vtable_relations = [("CNetworkMessages_FindNetworkGroup", "CNetworkMessages")]
         expected_generate_yaml_desired_fields = [
             (
                 "CNetworkMessages_FindNetworkGroup",
@@ -2144,9 +2129,7 @@ class TestFindINetworkMessagesFindNetworkGroup(unittest.IsolatedAsyncioTestCase)
                 "references/engine/CNetworkGameClient_RecordEntityBandwidth.{platform}.yaml",
             )
         ]
-        expected_func_vtable_relations = [
-            ("INetworkMessages_FindNetworkGroup", "INetworkMessages")
-        ]
+        expected_func_vtable_relations = [("INetworkMessages_FindNetworkGroup", "INetworkMessages")]
         expected_generate_yaml_desired_fields = [
             (
                 "INetworkMessages_FindNetworkGroup",
@@ -2333,9 +2316,7 @@ class TestFindCBaseEntityCollisionRulesChanged(unittest.IsolatedAsyncioTestCase)
                 "references/server/PhysEnableEntityCollisions.{platform}.yaml",
             )
         ]
-        expected_func_vtable_relations = [
-            ("CBaseEntity_CollisionRulesChanged", "CBaseEntity")
-        ]
+        expected_func_vtable_relations = [("CBaseEntity_CollisionRulesChanged", "CBaseEntity")]
         expected_generate_yaml_desired_fields = [
             (
                 "CBaseEntity_CollisionRulesChanged",
@@ -2383,9 +2364,7 @@ class TestFindCBaseEntityCollisionRulesChanged(unittest.IsolatedAsyncioTestCase)
         )
 
 
-class TestFindINetworkMessagesGetLoggingChannelWindows(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindINetworkMessagesGetLoggingChannelWindows(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_forwards_vfunc_sig_max_match_directive(
         self,
     ) -> None:
@@ -2399,16 +2378,10 @@ class TestFindINetworkMessagesGetLoggingChannelWindows(
             (
                 "INetworkMessages_GetLoggingChannel",
                 "prompt/call_llm_decompile.md",
-                (
-                    "references/server/"
-                    "CNetworkUtlVectorEmbedded_TryLateResolve_m_vecRenderAttributes."
-                    "{platform}.yaml"
-                ),
+                ("references/server/CNetworkUtlVectorEmbedded_TryLateResolve_m_vecRenderAttributes.{platform}.yaml"),
             )
         ]
-        expected_func_vtable_relations = [
-            ("INetworkMessages_GetLoggingChannel", "INetworkMessages")
-        ]
+        expected_func_vtable_relations = [("INetworkMessages_GetLoggingChannel", "INetworkMessages")]
         expected_generate_yaml_desired_fields = [
             (
                 "INetworkMessages_GetLoggingChannel",
@@ -2457,9 +2430,7 @@ class TestFindINetworkMessagesGetLoggingChannelWindows(
         )
 
 
-class TestFindINetworkMessagesGetLoggingChannelLinux(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindINetworkMessagesGetLoggingChannelLinux(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_forwards_linux_llm_decompile_spec(
         self,
     ) -> None:
@@ -2480,9 +2451,7 @@ class TestFindINetworkMessagesGetLoggingChannelLinux(
                 ),
             )
         ]
-        expected_func_vtable_relations = [
-            ("INetworkMessages_GetLoggingChannel", "INetworkMessages")
-        ]
+        expected_func_vtable_relations = [("INetworkMessages_GetLoggingChannel", "INetworkMessages")]
         expected_generate_yaml_desired_fields = [
             (
                 "INetworkMessages_GetLoggingChannel",
@@ -2556,9 +2525,7 @@ class TestFindCNetworkServerServiceInit(unittest.IsolatedAsyncioTestCase):
                 "exclude_signatures": [],
             }
         ]
-        expected_func_vtable_relations = [
-            ("CNetworkServerService_Init", "CNetworkServerService")
-        ]
+        expected_func_vtable_relations = [("CNetworkServerService_Init", "CNetworkServerService")]
         expected_generate_yaml_desired_fields = [
             (
                 "CNetworkServerService_Init",
@@ -2681,9 +2648,7 @@ class TestFindCLoopModeFactoryCLoopModeGameInit(unittest.IsolatedAsyncioTestCase
         )
 
 
-class TestFindCcsPlayerMovementServicesProcessMovement(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestFindCcsPlayerMovementServicesProcessMovement(unittest.IsolatedAsyncioTestCase):
     async def test_script_forwards_gv_backed_func_xrefs(self) -> None:
         module = _load_module(
             PROCESS_MOVEMENT_SCRIPT_PATH,
@@ -2826,28 +2791,25 @@ class TestFindCEngineServiceMgrDeactivateLoop(unittest.IsolatedAsyncioTestCase):
             "find_CEngineServiceMgr_DeactivateLoop",
         )
 
-        with patch.object(
-            module,
-            "preprocess_common_skill",
-            AsyncMock(return_value=False),
-        ), patch.object(
-            module,
-            "_load_llm_decompile_target_detail_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "CEngineServiceMgr__MainLoop",
-                    "func_va": "0x180555500",
-                    "disasm_code": (
-                        "call    qword ptr [rax+40h]\n"
-                        "call    qword ptr [rax+30h]"
-                    ),
-                    "procedure": (
-                        "loop_type->LoopDeactivate(loop_state);\n"
-                        "loop_type->DeallocateLoopMode();"
-                    ),
-                }
+        with (
+            patch.object(
+                module,
+                "preprocess_common_skill",
+                AsyncMock(return_value=False),
             ),
-        ) as mock_load_detail:
+            patch.object(
+                module,
+                "_load_llm_decompile_target_detail_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "CEngineServiceMgr__MainLoop",
+                        "func_va": "0x180555500",
+                        "disasm_code": ("call    qword ptr [rax+40h]\ncall    qword ptr [rax+30h]"),
+                        "procedure": ("loop_type->LoopDeactivate(loop_state);\nloop_type->DeallocateLoopMode();"),
+                    }
+                ),
+            ) as mock_load_detail,
+        ):
             result = await module.preprocess_skill(
                 session="session",
                 skill_name="skill",
@@ -2877,20 +2839,23 @@ class TestFindCEngineServiceMgrDeactivateLoop(unittest.IsolatedAsyncioTestCase):
             "find_CEngineServiceMgr_DeactivateLoop",
         )
 
-        with patch.object(
-            module,
-            "preprocess_common_skill",
-            AsyncMock(return_value=False),
-        ), patch.object(
-            module,
-            "_load_llm_decompile_target_detail_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_name": "CEngineServiceMgr__MainLoop",
-                    "func_va": "0x180555500",
-                    "disasm_code": "call    qword ptr [rax+40h]",
-                    "procedure": "loop_type->LoopDeactivate(loop_state);",
-                }
+        with (
+            patch.object(
+                module,
+                "preprocess_common_skill",
+                AsyncMock(return_value=False),
+            ),
+            patch.object(
+                module,
+                "_load_llm_decompile_target_detail_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_name": "CEngineServiceMgr__MainLoop",
+                        "func_va": "0x180555500",
+                        "disasm_code": "call    qword ptr [rax+40h]",
+                        "procedure": "loop_type->LoopDeactivate(loop_state);",
+                    }
+                ),
             ),
         ):
             result = await module.preprocess_skill(
@@ -2918,9 +2883,7 @@ class TestFindGInterfaceGlobalsPpGlobal(unittest.IsolatedAsyncioTestCase):
                 "interface_name_va": hex(0x180500000 + index * 0x20),
                 "pp_global_va": hex(0x180600000 + index * 0x8),
             }
-            for index, (interface_name, _) in enumerate(
-                module._expected_entries_for_platform(platform)
-            )
+            for index, (interface_name, _) in enumerate(module._expected_entries_for_platform(platform))
         ]
 
     async def _run_with_entries(
@@ -2933,9 +2896,7 @@ class TestFindGInterfaceGlobalsPpGlobal(unittest.IsolatedAsyncioTestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_path = Path(temp_dir) / f"g_pInterfaceGlobals.{platform}.yaml"
             input_path.write_text(
-                "gv_name: g_pInterfaceGlobals\n"
-                "gv_va: '0x1804cd5c0'\n"
-                "gv_rva: '0x4cd5c0'\n",
+                "gv_name: g_pInterfaceGlobals\ngv_va: '0x1804cd5c0'\ngv_rva: '0x4cd5c0'\n",
                 encoding="utf-8",
             )
             expected_outputs = [
@@ -3005,12 +2966,8 @@ class TestFindGInterfaceGlobalsPpGlobal(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result)
         self.assertEqual(len(module.LINUX_EXPECTED_ENTRIES), mock_write.call_count)
         written_paths = [call_args.args[0] for call_args in mock_write.call_args_list]
-        self.assertFalse(
-            any(path.endswith("g_pNavGameTest.linux.yaml") for path in written_paths)
-        )
-        self.assertFalse(
-            any(path.endswith("g_pNavSystem.linux.yaml") for path in written_paths)
-        )
+        self.assertFalse(any(path.endswith("g_pNavGameTest.linux.yaml") for path in written_paths))
+        self.assertFalse(any(path.endswith("g_pNavSystem.linux.yaml") for path in written_paths))
         self.assertEqual(
             ("Vrad3_001", "g_pRAD3"),
             module.LINUX_EXPECTED_ENTRIES[-1],
@@ -3065,10 +3022,7 @@ class TestFindGInterfaceGlobalsPpGlobal(unittest.IsolatedAsyncioTestCase):
         result, mock_write = await self._run_with_entries(module, actual_entries)
 
         self.assertTrue(result)
-        payloads = {
-            call_args.args[1]["gv_name"]: call_args.args[1]
-            for call_args in mock_write.call_args_list
-        }
+        payloads = {call_args.args[1]["gv_name"]: call_args.args[1] for call_args in mock_write.call_args_list}
         self.assertEqual("0x180600370", payloads["g_pNavSystem"]["gv_va"])
         self.assertEqual("0x180600378", payloads["g_pNavGameTest"]["gv_va"])
 

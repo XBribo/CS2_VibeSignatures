@@ -8,18 +8,20 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 FUNC_XREFS = [
-                 {
-                     "func_name": 'CPhysicsEntitySolver_PhysEnableEntityCollisions',
-                     "xref_strings": ['PhysEnableEntityCollisions called on entities in two different scene worlds (%s - %u vs %s - %u)'],
-                     "xref_gvs": [],
-                     "xref_signatures": [],
-                     "xref_funcs": [],
-                     "exclude_funcs": [],
-                     "exclude_strings": [],
-                     "exclude_gvs": [],
-                     "exclude_signatures": [],
-                 },
-             ]
+    {
+        "func_name": "CPhysicsEntitySolver_PhysEnableEntityCollisions",
+        "xref_strings": [
+            "PhysEnableEntityCollisions called on entities in two different scene worlds (%s - %u vs %s - %u)"
+        ],
+        "xref_gvs": [],
+        "xref_signatures": [],
+        "xref_funcs": [],
+        "exclude_funcs": [],
+        "exclude_strings": [],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
+    },
+]
 
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
@@ -43,9 +45,16 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target virtual function and write YAML."""
     return await preprocess_common_skill(

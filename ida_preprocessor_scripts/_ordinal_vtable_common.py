@@ -6,7 +6,7 @@ import json
 from ida_analyze_util import parse_mcp_result
 
 
-_ORDINAL_VTABLE_PY_EVAL_TEMPLATE = r'''
+_ORDINAL_VTABLE_PY_EVAL_TEMPLATE = r"""
 import ida_bytes, ida_name, idaapi, idautils, ida_segment, json
 
 class_name = CLASS_NAME_PLACEHOLDER
@@ -279,7 +279,7 @@ if debug_trace_enabled:
     })
 else:
     result = json.dumps(selected)
-'''
+"""
 
 
 def _build_ordinal_vtable_py_eval(
@@ -292,8 +292,7 @@ def _build_ordinal_vtable_py_eval(
 ):
     """Build the py_eval script for locating an ordinal vtable candidate."""
     return (
-        _ORDINAL_VTABLE_PY_EVAL_TEMPLATE
-        .replace("CLASS_NAME_PLACEHOLDER", json.dumps(str(class_name)))
+        _ORDINAL_VTABLE_PY_EVAL_TEMPLATE.replace("CLASS_NAME_PLACEHOLDER", json.dumps(str(class_name)))
         .replace(
             "CANDIDATE_SYMBOLS_PLACEHOLDER",
             json.dumps(list(symbol_aliases or [])),
@@ -338,10 +337,7 @@ async def preprocess_ordinal_vtable_via_mcp(
         result_data = parse_mcp_result(result)
     except Exception as exc:
         if debug:
-            print(
-                f"    Preprocess ordinal vtable: py_eval error for "
-                f"{class_name}[{ordinal}]: {exc}"
-            )
+            print(f"    Preprocess ordinal vtable: py_eval error for {class_name}[{ordinal}]: {exc}")
         return None
 
     vtable_info = None
@@ -357,10 +353,7 @@ async def preprocess_ordinal_vtable_via_mcp(
             print(stdout_text.strip())
         result_str = result_data.get("result", "")
         if debug and not result_str:
-            print(
-                f"    Preprocess ordinal vtable: empty py_eval result for "
-                f"{class_name}[{ordinal}]"
-            )
+            print(f"    Preprocess ordinal vtable: empty py_eval result for {class_name}[{ordinal}]")
         if result_str:
             try:
                 vtable_info = json.loads(result_str)
@@ -379,9 +372,7 @@ async def preprocess_ordinal_vtable_via_mcp(
         if result_data is not None:
             print(f"    Preprocess ordinal vtable raw payload: {result_data}")
 
-    if isinstance(vtable_info, dict) and (
-        "selected" in vtable_info or "debug_trace" in vtable_info
-    ):
+    if isinstance(vtable_info, dict) and ("selected" in vtable_info or "debug_trace" in vtable_info):
         raw_debug_trace = vtable_info.get("debug_trace", [])
         if isinstance(raw_debug_trace, list):
             debug_trace = [str(line) for line in raw_debug_trace]
@@ -393,10 +384,7 @@ async def preprocess_ordinal_vtable_via_mcp(
 
     if not isinstance(vtable_info, dict):
         if debug:
-            print(
-                f"    Preprocess ordinal vtable: no result for "
-                f"{class_name}[{ordinal}]"
-            )
+            print(f"    Preprocess ordinal vtable: no result for {class_name}[{ordinal}]")
         return None
 
     try:
@@ -412,10 +400,7 @@ async def preprocess_ordinal_vtable_via_mcp(
         entries = {int(index): value for index, value in raw_entries.items()}
     except (KeyError, TypeError, ValueError):
         if debug:
-            print(
-                f"    Preprocess ordinal vtable: invalid result for "
-                f"{class_name}[{ordinal}]"
-            )
+            print(f"    Preprocess ordinal vtable: invalid result for {class_name}[{ordinal}]")
         return None
 
     return {

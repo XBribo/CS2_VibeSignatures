@@ -17,13 +17,14 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "func_va",
             "func_rva",
             "func_size",
-            #"func_sig",// unable to generate unique sig because there is CBaseEntity_GetChangeAccessorPathInfo_1
+            # "func_sig",// unable to generate unique sig because there is CBaseEntity_GetChangeAccessorPathInfo_1
             "vtable_name",
             "vfunc_offset",
             "vfunc_index",
         ],
     ),
 ]
+
 
 async def preprocess_skill(
     session,

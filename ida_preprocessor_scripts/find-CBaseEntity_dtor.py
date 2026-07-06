@@ -44,20 +44,21 @@ def _read_vtable_va(yaml_path):
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
-    vtable_yaml_path = os.path.join(
-        new_binary_dir, f"CBaseEntity_vtable.{platform}.yaml"
-    )
+    vtable_yaml_path = os.path.join(new_binary_dir, f"CBaseEntity_vtable.{platform}.yaml")
     vtable_va = _read_vtable_va(vtable_yaml_path)
     if not vtable_va:
         if debug:
-            print(
-                "    Preprocess: CBaseEntity_vtable vtable_va not found, "
-                "cannot resolve xref_gvs"
-            )
+            print("    Preprocess: CBaseEntity_vtable vtable_va not found, cannot resolve xref_gvs")
         return False
 
     # On Linux, the dtor references _ZTV* = vtable_va - 0x10 via `lea rax, _ZTV...`

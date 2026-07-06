@@ -137,10 +137,7 @@ class TestReferenceYamlPureHelpers(unittest.TestCase):
         )
 
         self.assertEqual(
-            Path(
-                "/repo/ida_preprocessor_scripts/references/engine/"
-                "CNetworkMessages_FindNetworkGroup.windows.yaml"
-            ),
+            Path("/repo/ida_preprocessor_scripts/references/engine/CNetworkMessages_FindNetworkGroup.windows.yaml"),
             output_path,
         )
 
@@ -189,13 +186,7 @@ class TestReferenceYamlPureHelpers(unittest.TestCase):
     def test_load_existing_func_va_reads_from_bin_path(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
-            yaml_path = (
-                repo_root
-                / "bin"
-                / "14141"
-                / "engine"
-                / "CNetworkMessages_FindNetworkGroup.windows.yaml"
-            )
+            yaml_path = repo_root / "bin" / "14141" / "engine" / "CNetworkMessages_FindNetworkGroup.windows.yaml"
             _write_yaml(yaml_path, {"func_va": "0x180123456"})
 
             func_va = generate_reference_yaml.load_existing_func_va(
@@ -211,13 +202,7 @@ class TestReferenceYamlPureHelpers(unittest.TestCase):
     def test_load_existing_func_va_accepts_unquoted_yaml_integer_value(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
-            yaml_path = (
-                repo_root
-                / "bin"
-                / "14141"
-                / "engine"
-                / "CNetworkMessages_FindNetworkGroup.windows.yaml"
-            )
+            yaml_path = repo_root / "bin" / "14141" / "engine" / "CNetworkMessages_FindNetworkGroup.windows.yaml"
             _write_yaml(yaml_path, {"func_va": 0x180123450})
 
             func_va = generate_reference_yaml.load_existing_func_va(
@@ -245,13 +230,7 @@ class TestReferenceYamlPureHelpers(unittest.TestCase):
     def test_load_existing_func_va_returns_none_for_unparseable_value(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
-            yaml_path = (
-                repo_root
-                / "bin"
-                / "14141"
-                / "engine"
-                / "CNetworkMessages_FindNetworkGroup.windows.yaml"
-            )
+            yaml_path = repo_root / "bin" / "14141" / "engine" / "CNetworkMessages_FindNetworkGroup.windows.yaml"
             _write_yaml(yaml_path, {"func_va": "not-an-address"})
 
             func_va = generate_reference_yaml.load_existing_func_va(
@@ -475,11 +454,7 @@ class TestResolveFuncVa(unittest.IsolatedAsyncioTestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
             _write_yaml(
-                repo_root
-                / "bin"
-                / "14141"
-                / "engine"
-                / "CNetworkMessages_FindNetworkGroup.windows.yaml",
+                repo_root / "bin" / "14141" / "engine" / "CNetworkMessages_FindNetworkGroup.windows.yaml",
                 {"func_va": "0x180123450"},
             )
             session = AsyncMock()
@@ -587,8 +562,7 @@ class TestResolveFuncVa(unittest.IsolatedAsyncioTestCase):
                 )
 
             self.assertEqual(
-                "ambiguous function address matches returned via IDA: "
-                "['0x180123450', '0x180123456']",
+                "ambiguous function address matches returned via IDA: ['0x180123450', '0x180123456']",
                 str(ctx.exception),
             )
 
@@ -622,8 +596,7 @@ class TestFindFunctionAddrByNames(unittest.IsolatedAsyncioTestCase):
             )
 
         self.assertEqual(
-            "ambiguous function address matches returned via IDA: "
-            "['0x180123450', '0x180123456']",
+            "ambiguous function address matches returned via IDA: ['0x180123450', '0x180123456']",
             str(ctx.exception),
         )
 
@@ -1245,9 +1218,7 @@ class TestMcpSessionModes(unittest.IsolatedAsyncioTestCase):
 
         @asynccontextmanager
         async def _failing_open_mcp_session(host: str, port: int):
-            raise generate_reference_yaml.ReferenceGenerationError(
-                f"unable to open MCP session at {host}:{port}"
-            )
+            raise generate_reference_yaml.ReferenceGenerationError(f"unable to open MCP session at {host}:{port}")
             yield None
 
         with (
@@ -1527,11 +1498,7 @@ class TestRunReferenceGeneration(unittest.IsolatedAsyncioTestCase):
                 _FakeCallToolResult(
                     {
                         "result": json.dumps(
-                            {
-                                "metadata": {
-                                    "path": r"D:\CS2_VibeSignatures\bin\14141c\engine\engine2.dll.i64"
-                                }
-                            }
+                            {"metadata": {"path": r"D:\CS2_VibeSignatures\bin\14141c\engine\engine2.dll.i64"}}
                         ),
                         "stdout": "",
                         "stderr": "",

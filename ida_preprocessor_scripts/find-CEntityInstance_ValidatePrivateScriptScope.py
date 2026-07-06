@@ -13,8 +13,13 @@ FUNC_XREFS = [
         "xref_strings": [
             "thisEntity",
         ],
-        "xref_gvs": [], "xref_signatures": [], "xref_funcs": [],
-        "exclude_funcs": [], "exclude_strings": ["InputRunPrivateScript"], "exclude_gvs": [], "exclude_signatures": [],
+        "xref_gvs": [],
+        "xref_signatures": [],
+        "xref_funcs": [],
+        "exclude_funcs": [],
+        "exclude_strings": ["InputRunPrivateScript"],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
     },
 ]
 
@@ -31,9 +36,16 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(
