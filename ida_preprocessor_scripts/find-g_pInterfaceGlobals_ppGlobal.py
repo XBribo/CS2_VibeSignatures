@@ -13,44 +13,118 @@ ENTRY_SIZE = 0x10
 MAX_SCAN_ENTRIES = 256
 
 EXPECTED_ENTRIES = [
-    ('VApplication001', 'g_pVApplication'), ('VEngineCvar007', 'g_pVEngineCvar'), ('VStringTokenSystem001', 'g_pVStringTokenSystem'),
-    ('TestScriptMgr001', 'g_pTestScriptMgr'), ('VProcessUtils002', 'g_pProcessUtils'), ('VFileSystem017', 'g_pFileSystem'),
-    ('VAsyncFileSystem2_001', 'g_pAsyncFileSystem'), ('ResourceSystem013', 'g_pResourceSystem'), ('ResourceManifestRegistry001', 'g_pResourceManifestRegistry'),
-    ('ResourceHandleUtils001', 'g_pResourceHandleUtils'), ('SchemaSystem_001', 'g_pSchemaSystem'), ('ResourceCompilerSystem001', 'g_pResourceCompilerSystem'),
-    ('VMaterialSystem2_001', 'g_pMaterialSystem2'), ('PostProcessingSystem_001', 'g_pPostProcessingSystem'), ('InputSystemVersion001', 'g_pInputSystem'),
-    ('InputStackSystemVersion001', 'g_pInputStackSystem'), ('RenderDeviceMgr001', 'g_pRenderDeviceMgr'), ('RenderUtils_001', 'g_pRenderUtils'),
-    ('SoundSystem001', 'g_pSoundSystem'), ('SoundOpSystemEdit001', 'g_pSoundOpSystemEdit'), ('SoundOpSystem001', 'g_pSoundOpSystem'),
-    ('SteamAudio001', 'g_pSteamAudio'), ('VP4003', 'g_pVP4'), ('Localize_001', 'g_pLocalize'),
-    ('VMediaFoundation001', 'g_pMediaFoundation'), ('VAvi001', 'g_pAVI'), ('VWebm001', 'g_pWEBM'),
-    ('VBik001', 'g_pBIK'), ('MeshSystem001', 'g_pMeshSystem'), ('MeshUtils001', 'g_pMeshUtils'),
-    ('RenderDevice003', 'g_pRenderDevice'), ('VRenderDeviceSetupV001', 'g_pRenderDeviceSetup'), ('RenderHardwareConfig002', 'g_pRenderHardwareConfig'),
-    ('SceneSystem_002', 'g_pSceneSystem'), ('IPulseSystem_001', 'g_pIPulseSystem'), ('SceneUtils_001', 'g_pSceneUtils'),
-    ('WorldRendererMgr001', 'g_pWorldRendererMgr'), ('AssetSystem001', 'g_pAssetSystem'), ('AssetSystemTest001', 'g_pAssetSystemTest'),
-    ('ParticleSystemMgr003', 'g_pParticleSystemMgr'), ('VScriptManager010', 'g_pScriptManager'), ('PropertyEditorSystem_001', 'g_pPropertyEditorSystem'),
-    ('MATCHFRAMEWORK_001', 'g_pMatchFramework'), ('Source2V8System001', 'g_pSource2V8System'), ('PanoramaUIEngine001', 'g_pPanoramaUIEngine'),
-    ('PanoramaUIClient001', 'g_pPanoramaUIClient'), ('PanoramaTextServices001', 'g_pPanoramaTextServices'), ('ToolFramework2_002', 'g_pToolFramework2'),
-    ('PhysicsBuilderMgr001', 'g_pPhysicsBuilderMgr'), ('VisBuilder_001', 'g_pVisBuilder'), ('BakedLODBuilderMgr001', 'g_pBakedLODBuilderMgr'),
-    ('HelpSystem_001', 'g_pHelpSystem'), ('ToolSceneNodeFactory_001', 'g_pToolSceneNodeFactory'), ('EconItemToolModel_001', 'g_pEconItemToolModel'),
-    ('SchemaTestExternal_Two_001', 'g_pSchemaTestExternalTwo'), ('SchemaTestExternal_One_001', 'g_pSchemaTestExternalOne'), ('AnimationSystem_001', 'g_pAnimationSystem'),
-    ('AnimationSystemUtils_001', 'g_pAnimationSystemUtils'), ('HammerMapLoader001', 'g_pHammerMapLoader'), ('MaterialUtils_001', 'g_pMaterialUtils'),
-    ('FontManager_001', 'g_pFontManager'), ('TextLayout_001', 'g_pTextLayout'), ('AssetPreviewSystem_001', 'g_pAssetPreviewSystem'),
-    ('AssetBrowserSystem_001', 'g_pAssetBrowserSystem'), ('AssetRenameSystem_001', 'g_pAssetRenameSystem'), ('VConComm001', 'g_pVConComm'),
-    ('MODEL_PROCESSING_SERVICES_INTERFACE_001', 'g_pModelProcessingServices'), ('NetworkSystemVersion001', 'g_pNetworkSystem'), ('NetworkMessagesVersion001', 'g_pNetworkMessages'),
-    ('FlattenedSerializersVersion001', 'g_pFlattenedSerializers'), ('SerializedEntitiesVersion001', 'g_pSerializedEntities'), ('DemoUpconverterVersion001', 'g_pDemoUpconverter'),
-    ('Source2Client002', 'g_pSource2Client'), ('Source2ClientUI001', 'g_pSource2ClientUI'), ('Source2ClientPrediction001', 'g_pSource2ClientPrediction'),
-    ('Source2Server001', 'g_pSource2Server'), ('Source2Host001', 'g_pSource2Host'), ('Source2ModTools001', 'g_pSource2ModTools'),
-    ('Source2GameClients001', 'g_pSource2GameClients'), ('Source2GameEntities001', 'g_pSource2GameEntities'), ('EngineServiceMgr001', 'g_pEngineServiceMgr'),
-    ('HostStateMgr001', 'g_pHostStateMgr'), ('NetworkService_001', 'g_pNetworkService'), ('NetworkClientService_001', 'g_pNetworkClientService'),
-    ('NetworkP2PService_001', 'g_pNetworkP2PService'), ('NetworkServerService_001', 'g_pNetworkServerService'), ('ToolService_001', 'g_pToolService'),
-    ('RenderService_001', 'g_pRenderService'), ('StatsService_001', 'g_pStatsService'), ('VProfService_001', 'g_pVProfService'),
-    ('InputService_001', 'g_pInputService'), ('MapListService_001', 'g_pMapListService'), ('GameUIService_001', 'g_pGameUIService'),
-    ('SoundService_001', 'g_pSoundService'), ('BenchmarkService001', 'g_pBenchmarkService'), ('KeyValueCache001', 'g_pKeyValueCache'),
-    ('ClientServerSharedHandleSystem001', 'g_pClientServerSharedHandleSystem'), ('GameResourceServiceClientV001', 'g_pGameResourceServiceClient'), ('GameResourceServiceServerV001', 'g_pGameResourceServiceServer'),
-    ('Source2EngineToClient001', 'g_pSource2EngineToClient'), ('Source2EngineToServer001', 'g_pSource2EngineToServer'), ('Source2EngineToServerStringTable001', 'g_pSource2EngineToServerStringTable'),
-    ('Source2EngineToClientStringTable001', 'g_pSource2EngineToClientStringTable'), ('VPhysics2_Interface_001', 'g_pVPhysics2'), ('ModelDocUtils001', 'g_pModelDocUtils'),
-    ('AnimGraphEditorUtils001', 'g_pAnimGraphEditorUtils'), ('EXPORTSYSTEM_INTERFACE_VERSION_001', 'g_pExportSystem'), ('ServerToolsInfo_001', 'g_pServerToolsInfo'),
-    ('ClientToolsInfo_001', 'g_pClientToolsInfo'), ('Vrad3_001', 'g_pRAD3'), ('NavSystem001', 'g_pNavSystem'),
-    ('NavGameTest001', 'g_pNavGameTest'),
+    ("VApplication001", "g_pVApplication"),
+    ("VEngineCvar007", "g_pVEngineCvar"),
+    ("VStringTokenSystem001", "g_pVStringTokenSystem"),
+    ("TestScriptMgr001", "g_pTestScriptMgr"),
+    ("VProcessUtils002", "g_pProcessUtils"),
+    ("VFileSystem017", "g_pFileSystem"),
+    ("VAsyncFileSystem2_001", "g_pAsyncFileSystem"),
+    ("ResourceSystem013", "g_pResourceSystem"),
+    ("ResourceManifestRegistry001", "g_pResourceManifestRegistry"),
+    ("ResourceHandleUtils001", "g_pResourceHandleUtils"),
+    ("SchemaSystem_001", "g_pSchemaSystem"),
+    ("ResourceCompilerSystem001", "g_pResourceCompilerSystem"),
+    ("VMaterialSystem2_001", "g_pMaterialSystem2"),
+    ("PostProcessingSystem_001", "g_pPostProcessingSystem"),
+    ("InputSystemVersion001", "g_pInputSystem"),
+    ("InputStackSystemVersion001", "g_pInputStackSystem"),
+    ("RenderDeviceMgr001", "g_pRenderDeviceMgr"),
+    ("RenderUtils_001", "g_pRenderUtils"),
+    ("SoundSystem001", "g_pSoundSystem"),
+    ("SoundOpSystemEdit001", "g_pSoundOpSystemEdit"),
+    ("SoundOpSystem001", "g_pSoundOpSystem"),
+    ("SteamAudio001", "g_pSteamAudio"),
+    ("VP4003", "g_pVP4"),
+    ("Localize_001", "g_pLocalize"),
+    ("VMediaFoundation001", "g_pMediaFoundation"),
+    ("VAvi001", "g_pAVI"),
+    ("VWebm001", "g_pWEBM"),
+    ("VBik001", "g_pBIK"),
+    ("MeshSystem001", "g_pMeshSystem"),
+    ("MeshUtils001", "g_pMeshUtils"),
+    ("RenderDevice003", "g_pRenderDevice"),
+    ("VRenderDeviceSetupV001", "g_pRenderDeviceSetup"),
+    ("RenderHardwareConfig002", "g_pRenderHardwareConfig"),
+    ("SceneSystem_002", "g_pSceneSystem"),
+    ("IPulseSystem_001", "g_pIPulseSystem"),
+    ("SceneUtils_001", "g_pSceneUtils"),
+    ("WorldRendererMgr001", "g_pWorldRendererMgr"),
+    ("AssetSystem001", "g_pAssetSystem"),
+    ("AssetSystemTest001", "g_pAssetSystemTest"),
+    ("ParticleSystemMgr003", "g_pParticleSystemMgr"),
+    ("VScriptManager010", "g_pScriptManager"),
+    ("PropertyEditorSystem_001", "g_pPropertyEditorSystem"),
+    ("MATCHFRAMEWORK_001", "g_pMatchFramework"),
+    ("Source2V8System001", "g_pSource2V8System"),
+    ("PanoramaUIEngine001", "g_pPanoramaUIEngine"),
+    ("PanoramaUIClient001", "g_pPanoramaUIClient"),
+    ("PanoramaTextServices001", "g_pPanoramaTextServices"),
+    ("ToolFramework2_002", "g_pToolFramework2"),
+    ("PhysicsBuilderMgr001", "g_pPhysicsBuilderMgr"),
+    ("VisBuilder_001", "g_pVisBuilder"),
+    ("BakedLODBuilderMgr001", "g_pBakedLODBuilderMgr"),
+    ("HelpSystem_001", "g_pHelpSystem"),
+    ("ToolSceneNodeFactory_001", "g_pToolSceneNodeFactory"),
+    ("EconItemToolModel_001", "g_pEconItemToolModel"),
+    ("SchemaTestExternal_Two_001", "g_pSchemaTestExternalTwo"),
+    ("SchemaTestExternal_One_001", "g_pSchemaTestExternalOne"),
+    ("AnimationSystem_001", "g_pAnimationSystem"),
+    ("AnimationSystemUtils_001", "g_pAnimationSystemUtils"),
+    ("HammerMapLoader001", "g_pHammerMapLoader"),
+    ("MaterialUtils_001", "g_pMaterialUtils"),
+    ("FontManager_001", "g_pFontManager"),
+    ("TextLayout_001", "g_pTextLayout"),
+    ("AssetPreviewSystem_001", "g_pAssetPreviewSystem"),
+    ("AssetBrowserSystem_001", "g_pAssetBrowserSystem"),
+    ("AssetRenameSystem_001", "g_pAssetRenameSystem"),
+    ("VConComm001", "g_pVConComm"),
+    ("MODEL_PROCESSING_SERVICES_INTERFACE_001", "g_pModelProcessingServices"),
+    ("NetworkSystemVersion001", "g_pNetworkSystem"),
+    ("NetworkMessagesVersion001", "g_pNetworkMessages"),
+    ("FlattenedSerializersVersion001", "g_pFlattenedSerializers"),
+    ("SerializedEntitiesVersion001", "g_pSerializedEntities"),
+    ("DemoUpconverterVersion001", "g_pDemoUpconverter"),
+    ("Source2Client002", "g_pSource2Client"),
+    ("Source2ClientUI001", "g_pSource2ClientUI"),
+    ("Source2ClientPrediction001", "g_pSource2ClientPrediction"),
+    ("Source2Server001", "g_pSource2Server"),
+    ("Source2Host001", "g_pSource2Host"),
+    ("Source2ModTools001", "g_pSource2ModTools"),
+    ("Source2GameClients001", "g_pSource2GameClients"),
+    ("Source2GameEntities001", "g_pSource2GameEntities"),
+    ("EngineServiceMgr001", "g_pEngineServiceMgr"),
+    ("HostStateMgr001", "g_pHostStateMgr"),
+    ("NetworkService_001", "g_pNetworkService"),
+    ("NetworkClientService_001", "g_pNetworkClientService"),
+    ("NetworkP2PService_001", "g_pNetworkP2PService"),
+    ("NetworkServerService_001", "g_pNetworkServerService"),
+    ("ToolService_001", "g_pToolService"),
+    ("RenderService_001", "g_pRenderService"),
+    ("StatsService_001", "g_pStatsService"),
+    ("VProfService_001", "g_pVProfService"),
+    ("InputService_001", "g_pInputService"),
+    ("MapListService_001", "g_pMapListService"),
+    ("GameUIService_001", "g_pGameUIService"),
+    ("SoundService_001", "g_pSoundService"),
+    ("BenchmarkService001", "g_pBenchmarkService"),
+    ("KeyValueCache001", "g_pKeyValueCache"),
+    ("ClientServerSharedHandleSystem001", "g_pClientServerSharedHandleSystem"),
+    ("GameResourceServiceClientV001", "g_pGameResourceServiceClient"),
+    ("GameResourceServiceServerV001", "g_pGameResourceServiceServer"),
+    ("Source2EngineToClient001", "g_pSource2EngineToClient"),
+    ("Source2EngineToServer001", "g_pSource2EngineToServer"),
+    ("Source2EngineToServerStringTable001", "g_pSource2EngineToServerStringTable"),
+    ("Source2EngineToClientStringTable001", "g_pSource2EngineToClientStringTable"),
+    ("VPhysics2_Interface_001", "g_pVPhysics2"),
+    ("ModelDocUtils001", "g_pModelDocUtils"),
+    ("AnimGraphEditorUtils001", "g_pAnimGraphEditorUtils"),
+    ("EXPORTSYSTEM_INTERFACE_VERSION_001", "g_pExportSystem"),
+    ("ServerToolsInfo_001", "g_pServerToolsInfo"),
+    ("ClientToolsInfo_001", "g_pClientToolsInfo"),
+    ("Vrad3_001", "g_pRAD3"),
+    ("NavSystem001", "g_pNavSystem"),
+    ("NavGameTest001", "g_pNavGameTest"),
 ]
 
 WINDOWS_EXPECTED_ENTRIES = EXPECTED_ENTRIES
@@ -178,15 +252,10 @@ def _match_expected_entries(actual_entries, expected_entries, debug=False):
         actual_by_interface[actual_interface] = actual
 
     if len(actual_by_interface) < len(expected_entries):
-        missing = [
-            interface
-            for interface, _ in expected_entries
-            if interface not in actual_by_interface
-        ]
+        missing = [interface for interface, _ in expected_entries if interface not in actual_by_interface]
         _debug(
             debug,
-            "missing expected interface entries: "
-            f"{', '.join(missing)}",
+            f"missing expected interface entries: {', '.join(missing)}",
         )
         return None
 
@@ -196,8 +265,7 @@ def _match_expected_entries(actual_entries, expected_entries, debug=False):
         if pp_global_va is None or pp_global_va == 0:
             _debug(
                 debug,
-                f"invalid pp_global_va for {expected_interface} -> "
-                f"{expected_gv}: {actual}",
+                f"invalid pp_global_va for {expected_interface} -> {expected_gv}: {actual}",
             )
             return None
 
@@ -205,10 +273,7 @@ def _match_expected_entries(actual_entries, expected_entries, debug=False):
 
 
 def _build_output_map(expected_outputs, platform, expected_entries, debug=False):
-    output_map = {
-        os.path.basename(path): path
-        for path in (expected_outputs or [])
-    }
+    output_map = {os.path.basename(path): path for path in (expected_outputs or [])}
     resolved = {}
     for _, gv_name in expected_entries:
         filename = f"{gv_name}.{platform}.yaml"
@@ -234,10 +299,7 @@ def _build_gv_payloads(actual_by_interface, image_base, expected_entries):
 
 
 def _build_rename_py_eval(payloads):
-    rename_items = [
-        {"addr": payload["gv_va"], "name": gv_name}
-        for gv_name, payload in payloads.items()
-    ]
+    rename_items = [{"addr": payload["gv_va"], "name": gv_name} for gv_name, payload in payloads.items()]
     rename_items_json = json.dumps(rename_items)
     return f"""
 import idc
@@ -266,8 +328,15 @@ async def _rename_globals_best_effort(session, payloads, debug=False):
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     _ = skill_name, old_yaml_map, llm_config
     expected_entries = _expected_entries_for_platform(platform)

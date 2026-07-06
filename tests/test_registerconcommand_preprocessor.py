@@ -34,10 +34,7 @@ class TestBuildRegisterConCommandPyEval(unittest.TestCase):
             code = registerconcommand._build_registerconcommand_py_eval(
                 platform="linux",
                 command_name="bot_add",
-                help_string=(
-                    "bot_add <t|ct> <type> <difficulty> <name> - "
-                    "Adds a bot matching the given criteria."
-                ),
+                help_string=("bot_add <t|ct> <type> <difficulty> <name> - Adds a bot matching the given criteria."),
                 search_window_before_call=48,
                 search_window_after_xref=24,
             )
@@ -67,9 +64,7 @@ class TestBuildRegisterConCommandPyEval(unittest.TestCase):
         self.assertNotIn("for item in idautils.Strings():", code)
         self.assertIn("def _collect_candidates(params):", code)
         self.assertIn(
-            "    def _analyze_call(call_ea):\n"
-            "        handler_slot_addr = None\n"
-            "        slot_value_addr = None\n",
+            "    def _analyze_call(call_ea):\n        handler_slot_addr = None\n        slot_value_addr = None\n",
             code,
         )
         self.assertIn("return candidates", code)
@@ -196,30 +191,24 @@ class TestCollectRegisterConCommandCandidates(unittest.IsolatedAsyncioTestCase):
             {
                 "ok": False,
                 "traceback": (
-                    "Traceback (most recent call last):\n"
-                    "  File \"<string>\", line 1, in <module>\n"
-                    "RuntimeError: boom"
+                    'Traceback (most recent call last):\n  File "<string>", line 1, in <module>\nRuntimeError: boom'
                 ),
             }
         )
 
         with patch("builtins.print") as mock_print:
-            candidates = (
-                await registerconcommand._collect_registerconcommand_candidates(
-                    session=session,
-                    platform="windows",
-                    command_name="bot_add",
-                    help_string=None,
-                    search_window_before_call=48,
-                    search_window_after_xref=24,
-                    debug=True,
-                )
+            candidates = await registerconcommand._collect_registerconcommand_candidates(
+                session=session,
+                platform="windows",
+                command_name="bot_add",
+                help_string=None,
+                search_window_before_call=48,
+                search_window_after_xref=24,
+                debug=True,
             )
 
         self.assertEqual([], candidates)
-        printed = "\n".join(
-            call.args[0] for call in mock_print.call_args_list if call.args
-        )
+        printed = "\n".join(call.args[0] for call in mock_print.call_args_list if call.args)
         self.assertIn("RegisterConCommand py_eval traceback follows", printed)
         self.assertIn("RuntimeError: boom", printed)
 
@@ -375,34 +364,39 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
             )
         ]
 
-        with patch.object(
-            registerconcommand,
-            "_collect_registerconcommand_candidates",
-            AsyncMock(
-                return_value=[
-                    {
-                        "command_name": "bot_add",
-                        "help_string": "bot_add <t|ct> <type> <difficulty> <name> - Adds a bot matching the given criteria.",
-                        "handler_va": "0x180055000",
+        with (
+            patch.object(
+                registerconcommand,
+                "_collect_registerconcommand_candidates",
+                AsyncMock(
+                    return_value=[
+                        {
+                            "command_name": "bot_add",
+                            "help_string": "bot_add <t|ct> <type> <difficulty> <name> - Adds a bot matching the given criteria.",
+                            "handler_va": "0x180055000",
+                        }
+                    ]
+                ),
+            ),
+            patch.object(
+                registerconcommand,
+                "_query_func_info",
+                AsyncMock(return_value={"func_va": "0x180055000", "func_size": "0x90"}),
+            ),
+            patch.object(
+                registerconcommand,
+                "preprocess_gen_func_sig_via_mcp",
+                AsyncMock(
+                    return_value={
+                        "func_va": "0x180055000",
+                        "func_rva": "0x55000",
+                        "func_size": "0x90",
+                        "func_sig": "48 89 5C 24 ?? 57",
                     }
-                ]
+                ),
             ),
-        ), patch.object(
-            registerconcommand,
-            "_query_func_info",
-            AsyncMock(return_value={"func_va": "0x180055000", "func_size": "0x90"}),
-        ), patch.object(
-            registerconcommand,
-            "preprocess_gen_func_sig_via_mcp",
-            AsyncMock(
-                return_value={
-                    "func_va": "0x180055000",
-                    "func_rva": "0x55000",
-                    "func_size": "0x90",
-                    "func_sig": "48 89 5C 24 ?? 57",
-                }
-            ),
-        ), patch.object(registerconcommand, "write_func_yaml") as mock_write:
+            patch.object(registerconcommand, "write_func_yaml") as mock_write,
+        ):
             result = await registerconcommand.preprocess_registerconcommand_skill(
                 session=session,
                 expected_outputs=["/tmp/BotAdd_CommandHandler.windows.yaml"],
@@ -433,23 +427,27 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
     ) -> None:
         session = AsyncMock()
 
-        with patch.object(
-            registerconcommand,
-            "_collect_registerconcommand_candidates",
-            AsyncMock(
-                return_value=[
-                    {
-                        "command_name": "bot_add",
-                        "help_string": "a",
-                        "handler_va": "0x180055000",
-                    }
-                ]
+        with (
+            patch.object(
+                registerconcommand,
+                "_collect_registerconcommand_candidates",
+                AsyncMock(
+                    return_value=[
+                        {
+                            "command_name": "bot_add",
+                            "help_string": "a",
+                            "handler_va": "0x180055000",
+                        }
+                    ]
+                ),
             ),
-        ), patch.object(
-            registerconcommand,
-            "_query_func_info",
-            AsyncMock(return_value={"func_va": "0x180055000", "func_size": "0x90"}),
-        ), patch.object(registerconcommand, "write_func_yaml"):
+            patch.object(
+                registerconcommand,
+                "_query_func_info",
+                AsyncMock(return_value={"func_va": "0x180055000", "func_size": "0x90"}),
+            ),
+            patch.object(registerconcommand, "write_func_yaml"),
+        ):
             result = await registerconcommand.preprocess_registerconcommand_skill(
                 session=session,
                 expected_outputs=["/tmp/BotAdd_CommandHandler.windows.yaml"],
@@ -457,9 +455,7 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
                 platform="windows",
                 image_base=0x180000000,
                 target_name="BotAdd_CommandHandler",
-                generate_yaml_desired_fields=[
-                    ("BotAdd_CommandHandler", ["func_name", "func_va"])
-                ],
+                generate_yaml_desired_fields=[("BotAdd_CommandHandler", ["func_name", "func_va"])],
                 command_name="bot_add",
                 help_string=None,
                 rename_to="BotAdd_CommandHandler",
@@ -502,9 +498,7 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
                 platform="windows",
                 image_base=0x180000000,
                 target_name="BotAdd_CommandHandler",
-                generate_yaml_desired_fields=[
-                    ("BotAdd_CommandHandler", ["func_name", "func_va"])
-                ],
+                generate_yaml_desired_fields=[("BotAdd_CommandHandler", ["func_name", "func_va"])],
                 command_name="bot_add",
                 help_string=None,
                 debug=True,
@@ -540,9 +534,7 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
                 platform="windows",
                 image_base=0x180000000,
                 target_name="BotAdd_CommandHandler",
-                generate_yaml_desired_fields=[
-                    ("BotAdd_CommandHandler", ["func_name", "func_va"])
-                ],
+                generate_yaml_desired_fields=[("BotAdd_CommandHandler", ["func_name", "func_va"])],
                 command_name="bot_add",
                 help_string=None,
                 debug=True,
@@ -573,9 +565,7 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
                 platform="windows",
                 image_base=0x180000000,
                 target_name="BotAdd_CommandHandler",
-                generate_yaml_desired_fields=[
-                    ("BotAdd_CommandHandler", ["func_name", "func_va"])
-                ],
+                generate_yaml_desired_fields=[("BotAdd_CommandHandler", ["func_name", "func_va"])],
                 command_name="bot_add",
                 help_string="bot_add expected help",
                 debug=True,
@@ -623,23 +613,27 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_registerconcommand_skill_returns_false_when_requested_field_missing(
         self,
     ) -> None:
-        with patch.object(
-            registerconcommand,
-            "_collect_registerconcommand_candidates",
-            AsyncMock(
-                return_value=[
-                    {
-                        "command_name": "bot_add",
-                        "help_string": "a",
-                        "handler_va": "0x180055000",
-                    }
-                ]
+        with (
+            patch.object(
+                registerconcommand,
+                "_collect_registerconcommand_candidates",
+                AsyncMock(
+                    return_value=[
+                        {
+                            "command_name": "bot_add",
+                            "help_string": "a",
+                            "handler_va": "0x180055000",
+                        }
+                    ]
+                ),
             ),
-        ), patch.object(
-            registerconcommand,
-            "_query_func_info",
-            AsyncMock(return_value={"func_va": "0x180055000", "func_size": "0x90"}),
-        ), patch.object(registerconcommand, "write_func_yaml") as mock_write:
+            patch.object(
+                registerconcommand,
+                "_query_func_info",
+                AsyncMock(return_value={"func_va": "0x180055000", "func_size": "0x90"}),
+            ),
+            patch.object(registerconcommand, "write_func_yaml") as mock_write,
+        ):
             result = await registerconcommand.preprocess_registerconcommand_skill(
                 session=AsyncMock(),
                 expected_outputs=["/tmp/BotAdd_CommandHandler.windows.yaml"],
@@ -647,9 +641,7 @@ class TestPreprocessRegisterConCommandSkill(unittest.IsolatedAsyncioTestCase):
                 platform="windows",
                 image_base=0x180000000,
                 target_name="BotAdd_CommandHandler",
-                generate_yaml_desired_fields=[
-                    ("BotAdd_CommandHandler", ["func_name", "func_missing"])
-                ],
+                generate_yaml_desired_fields=[("BotAdd_CommandHandler", ["func_name", "func_missing"])],
                 command_name="bot_add",
                 help_string=None,
                 debug=True,

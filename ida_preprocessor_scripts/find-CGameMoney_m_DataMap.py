@@ -41,9 +41,7 @@ def _build_datamap_gv_py_eval(
             "target_segment_names": list(target_segments),
         }
     )
-    string_setup = _indent(
-        _build_ida_strings_enumerator_py_lines(strings_var_name="strings")
-    )
+    string_setup = _indent(_build_ida_strings_enumerator_py_lines(strings_var_name="strings"))
 
     return f"""
 import json, traceback
@@ -187,11 +185,14 @@ async def _collect_datamap_candidates(
             if addr is None:
                 return None
             normalized[key] = addr
-        if not all(isinstance(normalized.get(key), str) for key in (
-            "xref_seg_name",
-            "datamap_ptr_seg_name",
-            "datamap_seg_name",
-        )):
+        if not all(
+            isinstance(normalized.get(key), str)
+            for key in (
+                "xref_seg_name",
+                "datamap_ptr_seg_name",
+                "datamap_seg_name",
+            )
+        ):
             return None
         normalized_items.append(normalized)
 
@@ -211,8 +212,14 @@ def _build_gv_payload(target_name, requested_fields, gv_va, image_base):
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Locate CGameMoney_m_DataMap from the m_OnMoneySpent DataMap descriptor."""
     _ = skill_name, old_yaml_map, new_binary_dir
@@ -269,10 +276,7 @@ async def preprocess_skill(
     ]
     if len(filtered_items) != 1:
         if debug:
-            print(
-                f"    Preprocess: expected one DataMap xref for {FIELD_NAME}, "
-                f"got {len(filtered_items)}"
-            )
+            print(f"    Preprocess: expected one DataMap xref for {FIELD_NAME}, got {len(filtered_items)}")
         return False
 
     try:

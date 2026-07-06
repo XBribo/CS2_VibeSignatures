@@ -20,20 +20,21 @@ GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
         "GetCSWeaponDataFromKey",
-        [
-            "func_name",
-            "func_sig",
-            "func_va",
-            "func_rva",
-            "func_size",
-            "func_sig_allow_across_function_boundary:true"
-        ],
+        ["func_name", "func_sig", "func_va", "func_rva", "func_size", "func_sig_allow_across_function_boundary:true"],
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(

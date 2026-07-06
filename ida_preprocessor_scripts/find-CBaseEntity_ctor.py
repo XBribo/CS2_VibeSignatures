@@ -53,19 +53,19 @@ def _linux_ztv_addr(vtable_va_str):
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
-    cnetwork_vtable_yaml = os.path.join(
-        new_binary_dir, f"CNetworkTransmitComponent_vtable.{platform}.yaml"
-    )
-    cbaseentity_vtable_yaml = os.path.join(
-        new_binary_dir, f"CBaseEntity_vtable.{platform}.yaml"
-    )
-    centityiooutput_vtable_yaml = os.path.join(
-        new_binary_dir, f"CEntityIOOutput_vtable.{platform}.yaml"
-    )
+    cnetwork_vtable_yaml = os.path.join(new_binary_dir, f"CNetworkTransmitComponent_vtable.{platform}.yaml")
+    cbaseentity_vtable_yaml = os.path.join(new_binary_dir, f"CBaseEntity_vtable.{platform}.yaml")
+    centityiooutput_vtable_yaml = os.path.join(new_binary_dir, f"CEntityIOOutput_vtable.{platform}.yaml")
 
     cnetwork_va = _read_vtable_va(cnetwork_vtable_yaml)
     cbaseentity_va = _read_vtable_va(cbaseentity_vtable_yaml)
@@ -73,24 +73,15 @@ async def preprocess_skill(
 
     if not cnetwork_va:
         if debug:
-            print(
-                "    Preprocess: CNetworkTransmitComponent_vtable vtable_va not found, "
-                "cannot resolve xref_gvs"
-            )
+            print("    Preprocess: CNetworkTransmitComponent_vtable vtable_va not found, cannot resolve xref_gvs")
         return False
     if not cbaseentity_va:
         if debug:
-            print(
-                "    Preprocess: CBaseEntity_vtable vtable_va not found, "
-                "cannot resolve xref_gvs"
-            )
+            print("    Preprocess: CBaseEntity_vtable vtable_va not found, cannot resolve xref_gvs")
         return False
     if not centityiooutput_va:
         if debug:
-            print(
-                "    Preprocess: CEntityIOOutput_vtable vtable_va not found, "
-                "cannot resolve xref_gvs"
-            )
+            print("    Preprocess: CEntityIOOutput_vtable vtable_va not found, cannot resolve xref_gvs")
         return False
 
     if platform == "windows":

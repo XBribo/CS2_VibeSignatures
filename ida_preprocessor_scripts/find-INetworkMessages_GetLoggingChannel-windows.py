@@ -28,7 +28,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         [
             "func_name",
             "vfunc_sig",
-            "vfunc_sig_max_match:10", # Allow maximum up to 10 matches instead of 1 unique match. This also stops extending signature bytes when match count reduced down to <= 10. Because we are 100% sure 10 matches points to exact the same template function (but instanced).
+            "vfunc_sig_max_match:10",  # Allow maximum up to 10 matches instead of 1 unique match. This also stops extending signature bytes when match count reduced down to <= 10. Because we are 100% sure 10 matches points to exact the same template function (but instanced).
             "vfunc_offset",
             "vfunc_index",
             "vtable_name",
@@ -36,9 +36,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(

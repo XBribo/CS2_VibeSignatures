@@ -110,6 +110,12 @@ jobs:
           $safeDirectory = $prWorkspace -replace '\\', '/'
           git config --global --add safe.directory "$safeDirectory"
 
+      - name: Check formatting
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          uv run python format_repo_files.py --check
+
       - name: Determine game version from PR download config
         shell: pwsh
         run: |

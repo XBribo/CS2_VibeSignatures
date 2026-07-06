@@ -30,11 +30,11 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "func_va",
             "func_rva",
             "func_size",
-            #"func_sig", # does't really make any sense for a function with sfunc_sizeize = 0xe
+            # "func_sig", # does't really make any sense for a function with sfunc_sizeize = 0xe
             "vtable_name",
             "vfunc_offset",
             "vfunc_index",
-            #"func_sig_allow_across_function_boundary:true",
+            # "func_sig_allow_across_function_boundary:true",
         ],
     ),
 ]
@@ -82,8 +82,14 @@ def _read_factory_vfunc_offset(new_binary_dir, platform):
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Locate CSpawnGroupMgrGameSystem_DoesGameSystemReallocate via factory vfunc thunk signature."""
     if yaml is None:
@@ -98,17 +104,13 @@ async def preprocess_skill(
     )
     if vfunc_offset is None:
         if debug:
-            print(
-                "    Preprocess: failed to read vfunc_offset from "
-                "IGameSystemFactory_IsReallocating YAML"
-            )
+            print("    Preprocess: failed to read vfunc_offset from IGameSystemFactory_IsReallocating YAML")
         return False
 
     if vfunc_offset > 0x7F:
         if debug:
             print(
-                f"    Preprocess: vfunc_offset 0x{vfunc_offset:X} exceeds disp8 range, "
-                "signature template needs update"
+                f"    Preprocess: vfunc_offset 0x{vfunc_offset:X} exceeds disp8 range, signature template needs update"
             )
         return False
 
@@ -121,10 +123,7 @@ async def preprocess_skill(
         return False
 
     if debug:
-        print(
-            "    Preprocess: using xref signature from "
-            f"{os.path.basename(factory_yaml_path)}: {sig}"
-        )
+        print(f"    Preprocess: using xref signature from {os.path.basename(factory_yaml_path)}: {sig}")
 
     func_xrefs = [
         {

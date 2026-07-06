@@ -1,12 +1,10 @@
 modules:
   - name: server
-
     symbols:
       - name: CTakeDamageInfo_ctor
         category: func
         alias:
           - CTakeDamageInfo
-
       - name: CBaseEntity_Teleport
         category: vfunc
         alias:

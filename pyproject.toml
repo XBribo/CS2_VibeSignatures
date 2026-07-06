@@ -15,5 +15,21 @@ dependencies = [
     "vdf",
 ]
 
+[dependency-groups]
+dev = [
+    "ruff>=0.15.20",
+    "yamlfix>=1.19.1",
+]
+
 [tool.uv]
 package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.yamlfix]
+explicit_start = false
+line_length = 120
+preserve_quotes = true
+sequence_style = "keep_style"

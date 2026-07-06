@@ -8,18 +8,24 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 FUNC_XREFS = [
-                 {
-                     "func_name": 'CCSPlayer_ItemServices_GiveDefaultItems',
-                     "xref_strings": ['FULLMATCH:item_assaultsuit', 'FULLMATCH:item_kevlar', 'FULLMATCH:weapon_knife', 'FULLMATCH:weapon_knife_t', 'FULLMATCH:weapon_taser'],
-                     "xref_gvs": [],
-                     "xref_signatures": [],
-                     "xref_funcs": [],
-                     "exclude_funcs": [],
-                     "exclude_strings": ['FULLMATCH:weapon_healthshot'],
-                     "exclude_gvs": [],
-                     "exclude_signatures": [],
-                 },
-             ]
+    {
+        "func_name": "CCSPlayer_ItemServices_GiveDefaultItems",
+        "xref_strings": [
+            "FULLMATCH:item_assaultsuit",
+            "FULLMATCH:item_kevlar",
+            "FULLMATCH:weapon_knife",
+            "FULLMATCH:weapon_knife_t",
+            "FULLMATCH:weapon_taser",
+        ],
+        "xref_gvs": [],
+        "xref_signatures": [],
+        "xref_funcs": [],
+        "exclude_funcs": [],
+        "exclude_strings": ["FULLMATCH:weapon_healthshot"],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
+    },
+]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
@@ -35,9 +41,16 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(

@@ -77,9 +77,7 @@ def _extract_llm_error_status_code(exc):
 
 def _is_transient_llm_error(exc):
     status_code = _extract_llm_error_status_code(exc)
-    if status_code == 429 or (
-        status_code is not None and 500 <= status_code < 600
-    ):
+    if status_code == 429 or (status_code is not None and 500 <= status_code < 600):
         return True
 
     message = str(exc or "").lower()
@@ -386,14 +384,8 @@ def _render_llm_decompile_blocks(reference_items, target_items):
             f"```c\n{procedure}\n```"
         )
 
-    reference_blocks = "\n\n".join(
-        _render_block("Reference", item)
-        for item in _normalize_items(reference_items)
-    )
-    target_blocks = "\n\n".join(
-        _render_block("Target", item)
-        for item in _normalize_items(target_items)
-    )
+    reference_blocks = "\n\n".join(_render_block("Reference", item) for item in _normalize_items(reference_items))
+    target_blocks = "\n\n".join(_render_block("Target", item) for item in _normalize_items(target_items))
     return reference_blocks, target_blocks
 
 
@@ -486,15 +478,9 @@ def _prepare_llm_decompile_request(
     base_url = llm_config.get("base_url")
     fake_as = str(llm_config.get("fake_as") or "").strip().lower() or None
     temperature_normalizer = (
-        normalize_optional_temperature
-        if normalize_temperature_func is _UNSET
-        else normalize_temperature_func
+        normalize_optional_temperature if normalize_temperature_func is _UNSET else normalize_temperature_func
     )
-    effort_normalizer = (
-        normalize_optional_effort
-        if normalize_effort_func is _UNSET
-        else normalize_effort_func
-    )
+    effort_normalizer = normalize_optional_effort if normalize_effort_func is _UNSET else normalize_effort_func
 
     temperature = llm_config.get("temperature")
     if temperature is not None:
@@ -506,20 +492,14 @@ def _prepare_llm_decompile_request(
                 )
             except ValueError as exc:
                 if debug:
-                    print(
-                        f"    Preprocess: invalid llm_decompile temperature for "
-                        f"{func_name}: {exc}"
-                    )
+                    print(f"    Preprocess: invalid llm_decompile temperature for {func_name}: {exc}")
                 return None
         else:
             try:
                 temperature = float(temperature)
             except (TypeError, ValueError):
                 if debug:
-                    print(
-                        f"    Preprocess: invalid llm_decompile temperature for "
-                        f"{func_name}: {temperature!r}"
-                    )
+                    print(f"    Preprocess: invalid llm_decompile temperature for {func_name}: {temperature!r}")
                 return None
 
     if callable(effort_normalizer):
@@ -530,10 +510,7 @@ def _prepare_llm_decompile_request(
             )
         except ValueError as exc:
             if debug:
-                print(
-                    f"    Preprocess: invalid llm_decompile effort for "
-                    f"{func_name}: {exc}"
-                )
+                print(f"    Preprocess: invalid llm_decompile effort for {func_name}: {exc}")
             return None
     else:
         effort = str(llm_config.get("effort") or "").strip().lower() or "medium"
@@ -573,10 +550,7 @@ def _prepare_llm_decompile_request(
     prompt_value = llm_specs[0].get("prompt_path")
     if not isinstance(prompt_value, str) or not prompt_value:
         if debug:
-            print(
-                "    Preprocess: invalid llm_decompile prompt path for "
-                f"{func_name}: {prompt_value!r}"
-            )
+            print(f"    Preprocess: invalid llm_decompile prompt path for {func_name}: {prompt_value!r}")
         return None
 
     for current_spec in llm_specs[1:]:
@@ -603,20 +577,14 @@ def _prepare_llm_decompile_request(
 
     if not prompt_path.is_file():
         if debug:
-            print(
-                f"    Preprocess: llm_decompile prompt missing for {func_name}: "
-                f"{prompt_path}"
-            )
+            print(f"    Preprocess: llm_decompile prompt missing for {func_name}: {prompt_path}")
         return None
 
     try:
         prompt_template = prompt_path.read_text(encoding="utf-8")
     except OSError as exc:
         if debug:
-            print(
-                f"    Preprocess: failed to read llm_decompile prompt for "
-                f"{func_name}: {exc}"
-            )
+            print(f"    Preprocess: failed to read llm_decompile prompt for {func_name}: {exc}")
         return None
 
     reference_items = []
@@ -626,10 +594,7 @@ def _prepare_llm_decompile_request(
         reference_value = current_spec.get("reference_yaml_path")
         if not isinstance(reference_value, str) or not reference_value:
             if debug:
-                print(
-                    "    Preprocess: invalid llm_decompile reference path for "
-                    f"{func_name}: {reference_value!r}"
-                )
+                print(f"    Preprocess: invalid llm_decompile reference path for {func_name}: {reference_value!r}")
             return None
         reference_yaml_path = Path(
             _resolve_llm_decompile_template_value(
@@ -644,10 +609,7 @@ def _prepare_llm_decompile_request(
 
         if not reference_yaml_path.is_file():
             if debug:
-                print(
-                    f"    Preprocess: llm_decompile reference missing for "
-                    f"{func_name}: {reference_yaml_path}"
-                )
+                print(f"    Preprocess: llm_decompile reference missing for {func_name}: {reference_yaml_path}")
             return None
 
         try:
@@ -655,27 +617,18 @@ def _prepare_llm_decompile_request(
                 reference_data = yaml.safe_load(handle) or {}
         except Exception as exc:
             if debug:
-                print(
-                    f"    Preprocess: failed to read llm_decompile reference for "
-                    f"{func_name}: {exc}"
-                )
+                print(f"    Preprocess: failed to read llm_decompile reference for {func_name}: {exc}")
             return None
 
         if not isinstance(reference_data, dict):
             if debug:
-                print(
-                    f"    Preprocess: invalid llm_decompile reference payload for "
-                    f"{func_name}"
-                )
+                print(f"    Preprocess: invalid llm_decompile reference payload for {func_name}")
             return None
 
         target_func_name = str(reference_data.get("func_name", "") or "").strip()
         if not target_func_name:
             if debug:
-                print(
-                    "    Preprocess: llm_decompile reference func_name missing for "
-                    f"{func_name}"
-                )
+                print(f"    Preprocess: llm_decompile reference func_name missing for {func_name}")
             return None
 
         reference_items.append(reference_data)
@@ -776,9 +729,7 @@ async def call_llm_decompile(
     module_name = _derive_module_name(new_binary_dir)
     transport = call_llm_text if call_llm_text_func is _UNSET else call_llm_text_func
     temperature_normalizer = (
-        normalize_optional_temperature
-        if normalize_temperature_func is _UNSET
-        else normalize_temperature_func
+        normalize_optional_temperature if normalize_temperature_func is _UNSET else normalize_temperature_func
     )
     if not callable(transport):
         if debug:
@@ -786,9 +737,7 @@ async def call_llm_decompile(
         return _empty_llm_decompile_result()
 
     if isinstance(symbol_name_list, (list, tuple, set)):
-        symbol_name_text = ", ".join(
-            str(item).strip() for item in symbol_name_list if str(item).strip()
-        )
+        symbol_name_text = ", ".join(str(item).strip() for item in symbol_name_list if str(item).strip())
     else:
         symbol_name_text = str(symbol_name_list or "").strip()
 
@@ -833,17 +782,14 @@ async def call_llm_decompile(
             )
         except Exception as exc:
             if debug:
-                print(
-                    f"    Preprocess: failed to format llm_decompile prompt for "
-                    f"{symbol_name_text}: {exc}"
-                )
+                print(f"    Preprocess: failed to format llm_decompile prompt for {symbol_name_text}: {exc}")
             return _empty_llm_decompile_result()
     else:
         prompt = (
             "You are a reverse engineering expert.\n\n"
             f"Reference functions:\n{reference_blocks}\n\n"
             f"Target functions:\n{target_blocks}\n\n"
-            f"Please collect all references to \"{symbol_name_text}\" and output YAML."
+            f'Please collect all references to "{symbol_name_text}" and output YAML.'
         )
     system_prompt = "You are a reverse engineering expert."
     if debug:
@@ -891,10 +837,7 @@ async def call_llm_decompile(
             request_kwargs["fake_as"] = normalized_fake_as
     except Exception as exc:
         if debug:
-            print(
-                f"    Preprocess: failed to prepare llm_decompile call for "
-                f"{symbol_name_text}: {exc}"
-            )
+            print(f"    Preprocess: failed to prepare llm_decompile call for {symbol_name_text}: {exc}")
         return _empty_llm_decompile_result()
 
     max_attempts = _normalize_llm_retry_attempts(max_retries, default=3)
@@ -916,10 +859,7 @@ async def call_llm_decompile(
             should_retry = _is_transient_llm_error(exc) and not is_last_attempt
             if not should_retry:
                 if debug:
-                    print(
-                        f"    Preprocess: llm_decompile call failed for "
-                        f"{symbol_name_text}: {exc}"
-                    )
+                    print(f"    Preprocess: llm_decompile call failed for {symbol_name_text}: {exc}")
                 return _empty_llm_decompile_result()
             if debug:
                 print(

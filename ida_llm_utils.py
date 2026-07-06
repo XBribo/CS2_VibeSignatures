@@ -153,9 +153,7 @@ def _extract_text_from_response_payload(payload) -> str:
         if not isinstance(output_item, Mapping):
             continue
         content_items = output_item.get("content")
-        if not isinstance(content_items, Sequence) or isinstance(
-            content_items, (str, bytes, bytearray)
-        ):
+        if not isinstance(content_items, Sequence) or isinstance(content_items, (str, bytes, bytearray)):
             continue
         for content_item in content_items:
             if not isinstance(content_item, Mapping):
@@ -238,9 +236,7 @@ def _call_llm_text_via_codex_http(
             response.raise_for_status()
             content_type = response.headers.get("content-type", "")
             if "text/event-stream" not in content_type.lower():
-                raise RuntimeError(
-                    f"codex transport expected text/event-stream, got {content_type!r}"
-                )
+                raise RuntimeError(f"codex transport expected text/event-stream, got {content_type!r}")
             for line in response.iter_lines():
                 if line is None:
                     continue
@@ -298,9 +294,7 @@ def call_llm_text(
         client = create_openai_client(
             api_key,
             base_url,
-            api_key_required_message=(
-                "api_key is required for OpenAI-compatible LLM requests"
-            ),
+            api_key_required_message=("api_key is required for OpenAI-compatible LLM requests"),
         )
 
     request_kwargs = {

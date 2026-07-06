@@ -27,7 +27,7 @@ _SUPPORTED_FIELDS = {
 }
 
 
-_SCRIPT_DESC_INTERNAL_PY_EVAL = r'''import idaapi, idautils, idc, json, re
+_SCRIPT_DESC_INTERNAL_PY_EVAL = r"""import idaapi, idautils, idc, json, re
 try:
     import ida_hexrays
     import ida_lines
@@ -343,7 +343,7 @@ else:
         "disasm_count": len(disasm_entries),
     }
 result = json.dumps(result_obj)
-'''
+"""
 
 
 def _debug(enabled, message):
@@ -567,17 +567,13 @@ async def _build_requested_payload(session, spec, entry, config, image_base, deb
             session=session,
             func_va=func_va,
             image_base=image_base,
-            allow_across_function_boundary=bool(
-                options.get("func_sig_allow_across_function_boundary")
-            ),
+            allow_across_function_boundary=bool(options.get("func_sig_allow_across_function_boundary")),
             debug=debug,
         )
         if not isinstance(sig_info, dict) or not sig_info.get("func_sig"):
             _debug(debug, f"failed to generate func_sig for {spec['target_name']}")
             return None
-        available.update(
-            {key: sig_info[key] for key in ("func_sig", "func_rva", "func_size") if key in sig_info}
-        )
+        available.update({key: sig_info[key] for key in ("func_sig", "func_rva", "func_size") if key in sig_info})
     if options.get("func_sig_allow_across_function_boundary"):
         available["func_sig_allow_across_function_boundary"] = True
     return {field: available[field] for field in requested_fields if field in available}
@@ -603,9 +599,7 @@ async def preprocess_script_desc_internal_skill(
     if not specs or desired_map is None:
         return False
     output_paths = _match_output_paths(expected_outputs, specs, platform, debug=debug)
-    source_func_va = _read_source_func_va(
-        new_binary_dir, source_yaml_stem, platform, debug=debug
-    )
+    source_func_va = _read_source_func_va(new_binary_dir, source_yaml_stem, platform, debug=debug)
     if output_paths is None or source_func_va is None:
         return False
     entries = await _collect_script_func_entries(
@@ -616,9 +610,7 @@ async def preprocess_script_desc_internal_skill(
     )
     if not isinstance(entries, list):
         return False
-    entry_index = _index_entries_by_script_name(
-        entries, expected_count=expected_script_func_count, debug=debug
-    )
+    entry_index = _index_entries_by_script_name(entries, expected_count=expected_script_func_count, debug=debug)
     if entry_index is None:
         return False
     for spec in specs:
@@ -627,9 +619,7 @@ async def preprocess_script_desc_internal_skill(
         if entry is None or config is None:
             _debug(debug, f"missing script entry or desired fields for {spec}")
             return False
-        payload = await _build_requested_payload(
-            session, spec, entry, config, image_base, debug=debug
-        )
+        payload = await _build_requested_payload(session, spec, entry, config, image_base, debug=debug)
         if payload is None or set(payload) != set(config["desired_output_fields"]):
             _debug(debug, f"incomplete payload for {spec['target_name']}")
             return False

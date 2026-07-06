@@ -151,9 +151,7 @@ class TestCallLlmText(unittest.TestCase):
         )
 
     def test_call_llm_text_forwards_reasoning_effort_to_sdk(self) -> None:
-        response = SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content="done"))]
-        )
+        response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="done"))])
         create = MagicMock(return_value=response)
         client = SimpleNamespace(
             chat=SimpleNamespace(
@@ -180,9 +178,7 @@ class TestCallLlmText(unittest.TestCase):
         self,
         mock_create_openai_client,
     ) -> None:
-        response = SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content="done"))]
-        )
+        response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="done"))])
         create = MagicMock(return_value=response)
         client = SimpleNamespace(
             chat=SimpleNamespace(
@@ -203,9 +199,7 @@ class TestCallLlmText(unittest.TestCase):
         mock_create_openai_client.assert_called_once_with(
             "test-api-key",
             "https://example.invalid/v1",
-            api_key_required_message=(
-                "api_key is required for OpenAI-compatible LLM requests"
-            ),
+            api_key_required_message=("api_key is required for OpenAI-compatible LLM requests"),
         )
         create.assert_called_once_with(
             model="gpt-5.4",

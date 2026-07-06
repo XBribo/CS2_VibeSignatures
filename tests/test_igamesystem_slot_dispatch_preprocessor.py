@@ -8,9 +8,7 @@ import yaml
 
 
 def _import_slot_dispatch_module():
-    return importlib.import_module(
-        "ida_preprocessor_scripts._igamesystem_slot_dispatch_common"
-    )
+    return importlib.import_module("ida_preprocessor_scripts._igamesystem_slot_dispatch_common")
 
 
 def _write_dispatcher_yaml(
@@ -19,9 +17,7 @@ def _write_dispatcher_yaml(
     payload: dict[str, object],
 ) -> Path:
     new_binary_dir = Path(tmpdir)
-    dispatcher_yaml = (
-        new_binary_dir / f"IGameSystem_LoopPostInitAllSystems.{platform}.yaml"
-    )
+    dispatcher_yaml = new_binary_dir / f"IGameSystem_LoopPostInitAllSystems.{platform}.yaml"
     dispatcher_yaml.write_text(
         yaml.safe_dump(payload, sort_keys=False),
         encoding="utf-8",
@@ -94,11 +90,14 @@ class TestPreprocessIgameSystemSlotDispatchSkill(unittest.IsolatedAsyncioTestCas
                 {"func_va": "0x1805000C0"},
             )
 
-            with patch.object(
-                module,
-                "_call_py_eval_json",
-                AsyncMock(return_value=_duplicate_slot_payload()),
-            ), patch.object(module, "write_func_yaml") as mock_write:
+            with (
+                patch.object(
+                    module,
+                    "_call_py_eval_json",
+                    AsyncMock(return_value=_duplicate_slot_payload()),
+                ),
+                patch.object(module, "write_func_yaml") as mock_write,
+            ):
                 result = await _run_preprocess(module, session, new_binary_dir)
 
         self.assertTrue(result)
@@ -110,19 +109,20 @@ class TestPreprocessIgameSystemSlotDispatchSkill(unittest.IsolatedAsyncioTestCas
 
         with TemporaryDirectory() as tmpdir:
             new_binary_dir = Path(tmpdir)
-            dispatcher_yaml = (
-                new_binary_dir / "IGameSystem_LoopPostInitAllSystems.windows.yaml"
-            )
+            dispatcher_yaml = new_binary_dir / "IGameSystem_LoopPostInitAllSystems.windows.yaml"
             dispatcher_yaml.write_text(
                 yaml.safe_dump({"func_name": "IGameSystem_LoopPostInitAllSystems"}),
                 encoding="utf-8",
             )
 
-            with patch.object(
-                module,
-                "_call_py_eval_json",
-                AsyncMock(),
-            ) as mock_py_eval, patch.object(module, "write_func_yaml") as mock_write:
+            with (
+                patch.object(
+                    module,
+                    "_call_py_eval_json",
+                    AsyncMock(),
+                ) as mock_py_eval,
+                patch.object(module, "write_func_yaml") as mock_write,
+            ):
                 result = await module.preprocess_igamesystem_slot_dispatch_skill(
                     session=session,
                     expected_outputs=["/tmp/IGameSystem_OnGamePostInit.windows.yaml"],
@@ -147,9 +147,7 @@ class TestPreprocessIgameSystemSlotDispatchSkill(unittest.IsolatedAsyncioTestCas
 
 class TestGamePostInitSkill(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_delegates_to_slot_dispatch_helper(self) -> None:
-        module = importlib.import_module(
-            "ida_preprocessor_scripts.find-IGameSystem_OnGamePostInit"
-        )
+        module = importlib.import_module("ida_preprocessor_scripts.find-IGameSystem_OnGamePostInit")
         session = AsyncMock()
 
         with patch.object(
@@ -191,9 +189,7 @@ class TestGamePostInitSkill(unittest.IsolatedAsyncioTestCase):
 class TestGamePostInitConfig(unittest.TestCase):
     def test_config_registers_gamepostinit_skill_and_symbol(self) -> None:
         config = yaml.safe_load(Path("config.yaml").read_text(encoding="utf-8"))
-        server_modules = [
-            module for module in config["modules"] if module.get("name") == "server"
-        ]
+        server_modules = [module for module in config["modules"] if module.get("name") == "server"]
         matching_modules = []
         for server_module in server_modules:
             skills = [

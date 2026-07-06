@@ -27,8 +27,10 @@ GAMEDATA_PATH = "gamedata/cs2surf-core.games.jsonc"
 
 # Upstream download sources: (raw_url, relative_dest_path)
 DOWNLOAD_SOURCES = [
-    ("https://raw.githubusercontent.com/CS2Surf-CN/Timer/main/game/csgo/addons/cs2surf/gamedata/cs2surf-core.games.jsonc",
-     GAMEDATA_PATH),
+    (
+        "https://raw.githubusercontent.com/CS2Surf-CN/Timer/main/game/csgo/addons/cs2surf/gamedata/cs2surf-core.games.jsonc",
+        GAMEDATA_PATH,
+    ),
 ]
 
 
@@ -105,10 +107,7 @@ def _update_signatures(gamedata, yaml_data, _func_lib_map, platforms, alias_to_n
         if yaml_name not in yaml_data:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": sig_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": sig_name, "reason": "no matching YAML data"})
             continue
 
         yaml_entry = yaml_data[yaml_name]
@@ -127,11 +126,7 @@ def _update_signatures(gamedata, yaml_data, _func_lib_map, platforms, alias_to_n
                     sig_data[platform] = converted_sig
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": sig_name,
-                            "type": "signature",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": sig_name, "type": "signature", "platform": platform})
 
     return updated_count, skipped_count, updated_symbols, skipped_symbols
 
@@ -158,10 +153,7 @@ def _update_offsets(gamedata, yaml_data, platforms, alias_to_name_map, debug):
         if yaml_name not in yaml_data:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": offset_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": offset_name, "reason": "no matching YAML data"})
             continue
 
         yaml_entry = yaml_data[yaml_name]
@@ -180,10 +172,6 @@ def _update_offsets(gamedata, yaml_data, platforms, alias_to_name_map, debug):
                     offset_data[platform] = yaml_index
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": offset_name,
-                            "type": "vfunc_index",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": offset_name, "type": "vfunc_index", "platform": platform})
 
     return updated_count, skipped_count, updated_symbols, skipped_symbols

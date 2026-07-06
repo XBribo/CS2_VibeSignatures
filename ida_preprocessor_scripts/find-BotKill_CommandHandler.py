@@ -12,8 +12,7 @@ TARGET_FUNCTION_NAMES = [
 
 COMMAND_NAME = "bot_kill"
 HELP_STRING = (
-    "bot_kill <all> <t|ct> <type> <difficulty> <name> - "
-    "Kills a specific bot, or all bots, matching the given criteria."
+    "bot_kill <all> <t|ct> <type> <difficulty> <name> - Kills a specific bot, or all bots, matching the given criteria."
 )
 SEARCH_WINDOW_BEFORE_CALL = 96
 SEARCH_WINDOW_AFTER_XREF = 96

@@ -111,9 +111,7 @@ def download_and_parse_steam_inf(
 ) -> str:
     """Download only game\\csgo\\steam.inf from depot 2347770 and parse PatchVersion."""
     depot_dir.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        "w", encoding="utf-8", delete=False, suffix=".txt"
-    ) as handle:
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False, suffix=".txt") as handle:
         handle.write(f"{STEAM_INF_PATH}\n")
         filelist_path = Path(handle.name)
     try:
@@ -249,12 +247,8 @@ def append_download_entry(downloads: list[dict[str, Any]], plan: BumpPlan) -> No
     entry["tag"] = DoubleQuotedScalarString(plan.tag)
     entry["name"] = plan.patch_version
     manifests = CommentedMap()
-    manifests[DoubleQuotedScalarString("2347771")] = DoubleQuotedScalarString(
-        str(plan.manifests["2347771"])
-    )
-    manifests[DoubleQuotedScalarString("2347773")] = DoubleQuotedScalarString(
-        str(plan.manifests["2347773"])
-    )
+    manifests[DoubleQuotedScalarString("2347771")] = DoubleQuotedScalarString(str(plan.manifests["2347771"]))
+    manifests[DoubleQuotedScalarString("2347773")] = DoubleQuotedScalarString(str(plan.manifests["2347773"]))
     entry["manifests"] = manifests
     downloads.append(entry)
 
@@ -356,14 +350,8 @@ def ensure_local_tag_matches_head(tag: str) -> None:
         raise BumpError(f"Local tag {tag} does not point to HEAD")
 
 
-def _default_branch_entries(
-    downloads: list[dict[str, Any]], patch_version: str
-) -> list[dict[str, Any]]:
-    return [
-        entry
-        for entry in downloads
-        if entry.get("name") == patch_version and "branch" not in entry
-    ]
+def _default_branch_entries(downloads: list[dict[str, Any]], patch_version: str) -> list[dict[str, Any]]:
+    return [entry for entry in downloads if entry.get("name") == patch_version and "branch" not in entry]
 
 
 def _extract_manifest_pair(manifests: Any, label: str) -> tuple[str, ...]:

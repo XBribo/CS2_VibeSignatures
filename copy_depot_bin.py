@@ -40,36 +40,24 @@ CHECKONLY_ERROR_EXIT = 2
 
 def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Copy CS2 binary files from a local Steam depot directory"
-    )
+    parser = argparse.ArgumentParser(description="Copy CS2 binary files from a local Steam depot directory")
     parser.add_argument(
-        "-bindir",
-        default=DEFAULT_BIN_DIR,
-        help=f"Directory to save copied binaries (default: {DEFAULT_BIN_DIR})"
+        "-bindir", default=DEFAULT_BIN_DIR, help=f"Directory to save copied binaries (default: {DEFAULT_BIN_DIR})"
     )
-    parser.add_argument(
-        "-gamever",
-        required=True,
-        help="Game version subdirectory name (required)"
-    )
+    parser.add_argument("-gamever", required=True, help="Game version subdirectory name (required)")
     parser.add_argument(
         "-platform",
         choices=["windows", "linux", "all-platform"],
         default=None,
         help="Filter by platform (windows, linux, or all-platform). "
-             "all-platform: depot has mixed binaries without platform subdirectories. "
-             "If not specified, copies both with platform subdirectories."
+        "all-platform: depot has mixed binaries without platform subdirectories. "
+        "If not specified, copies both with platform subdirectories.",
     )
     parser.add_argument(
-        "-depotdir",
-        default=DEFAULT_DEPOT_DIR,
-        help=f"Local depot root directory (default: {DEFAULT_DEPOT_DIR})"
+        "-depotdir", default=DEFAULT_DEPOT_DIR, help=f"Local depot root directory (default: {DEFAULT_DEPOT_DIR})"
     )
     parser.add_argument(
-        "-config",
-        default=DEFAULT_CONFIG_FILE,
-        help=f"Path to config.yaml file (default: {DEFAULT_CONFIG_FILE})"
+        "-config", default=DEFAULT_CONFIG_FILE, help=f"Path to config.yaml file (default: {DEFAULT_CONFIG_FILE})"
     )
     parser.add_argument(
         "-checkonly",
@@ -78,7 +66,7 @@ def parse_args():
             "Only check whether expected target binaries already exist. "
             "Return 0 when all expected targets exist, 1 when any target is missing, "
             "and 2 for configuration or argument errors."
-        )
+        ),
     )
 
     return parser.parse_args()
@@ -116,11 +104,7 @@ def parse_config(config_path):
             print(f"  Warning: Skipping module without name")
             continue
 
-        modules.append({
-            "name": name,
-            "path_windows": path_windows,
-            "path_linux": path_linux
-        })
+        modules.append({"name": name, "path_windows": path_windows, "path_linux": path_linux})
 
     return modules
 
@@ -200,12 +184,14 @@ def iter_module_entries(module, bin_dir, gamever, platform_filter, depot_dir):
             continue
 
         filename = Path(path).name
-        entries.append({
-            "name": name,
-            "platform": platform,
-            "source_path": build_source_path(depot_dir, platform, path, flat=flat),
-            "target_path": os.path.join(bin_dir, gamever, name, filename),
-        })
+        entries.append(
+            {
+                "name": name,
+                "platform": platform,
+                "source_path": build_source_path(depot_dir, platform, path, flat=flat),
+                "target_path": os.path.join(bin_dir, gamever, name, filename),
+            }
+        )
 
     return entries
 
@@ -325,9 +311,7 @@ def main():
         total_missing = 0
 
         for module in modules:
-            ready, missing = check_module_targets(
-                module, bin_dir, gamever, platform_filter, depot_dir
-            )
+            ready, missing = check_module_targets(module, bin_dir, gamever, platform_filter, depot_dir)
             total_ready += ready
             total_missing += missing
 
@@ -351,7 +335,7 @@ def main():
         total_fail += fail
 
     # Summary
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"Completed: {total_success} successful, {total_fail} failed")
 
     if total_fail > 0:

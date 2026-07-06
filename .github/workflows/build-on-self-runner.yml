@@ -54,6 +54,11 @@ jobs:
           fetch-depth: 0
           submodules: true
 
+      - name: Check formatting
+        shell: pwsh
+        run: |
+          uv run python format_repo_files.py --check
+
       - name: Create persisted workspace links
         shell: cmd
         run: |

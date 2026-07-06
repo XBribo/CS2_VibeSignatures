@@ -50,11 +50,7 @@ from ida_llm_decompile import (
 def _is_remote_absolute_path(path):
     """Return True for absolute paths in either host, POSIX, or Windows form."""
     path_str = os.fspath(path)
-    return (
-        os.path.isabs(path_str)
-        or posixpath.isabs(path_str)
-        or ntpath.isabs(path_str)
-    )
+    return os.path.isabs(path_str) or posixpath.isabs(path_str) or ntpath.isabs(path_str)
 
 
 def _absolute_path_preserve_spelling(path):
@@ -66,7 +62,7 @@ def _absolute_path_preserve_spelling(path):
 # Merges logic from get-vtable-address/SKILL.md and write-vtable-as-yaml/SKILL.md.
 # Uses CLASS_NAME_PLACEHOLDER for substitution (avoids brace-escaping issues).
 # Returns JSON via the 'result' variable.
-_VTABLE_PY_EVAL_TEMPLATE = r'''
+_VTABLE_PY_EVAL_TEMPLATE = r"""
 import ida_auto, ida_bytes, ida_name, idaapi, ida_segment, idautils, idc, json
 
 class_name = CLASS_NAME_PLACEHOLDER
@@ -258,7 +254,7 @@ else:
         "vtable_numvfunc": count,
         "vtable_entries": entries
     })
-'''
+"""
 
 DEFAULT_IDA_STRING_MIN_LENGTH = 4
 IDA_STRING_MIN_LENGTH_ENV_VAR = "CS2VIBE_STRING_MIN_LENGTH"
@@ -349,12 +345,7 @@ def _build_ida_strings_enumerator_py_lines(
         f"expected_state = {expected_state!r}",
         "globals().update(locals())",
         "if _cs2vibe_read_string_setup_state() != expected_state:",
-        (
-            f"    {strings_var_name}.setup("
-            "strtypes=[ida_nalt.STRTYPE_C], "
-            f"minlen={resolved_min_length}"
-            ")"
-        ),
+        (f"    {strings_var_name}.setup(strtypes=[ida_nalt.STRTYPE_C], minlen={resolved_min_length})"),
         "    _cs2vibe_write_string_setup_state(expected_state)",
     ]
 
@@ -418,37 +409,25 @@ def _normalize_mangled_class_names(mangled_class_names, debug=False):
         return {}
     if not isinstance(mangled_class_names, dict):
         if debug:
-            print(
-                "    Preprocess: mangled_class_names must be a dict, got "
-                f"{type(mangled_class_names).__name__}"
-            )
+            print(f"    Preprocess: mangled_class_names must be a dict, got {type(mangled_class_names).__name__}")
         return None
 
     normalized = {}
     for class_name, aliases in mangled_class_names.items():
         if not isinstance(class_name, str) or not class_name:
             if debug:
-                print(
-                    "    Preprocess: invalid mangled_class_names key: "
-                    f"{class_name!r}"
-                )
+                print(f"    Preprocess: invalid mangled_class_names key: {class_name!r}")
             return None
         if not isinstance(aliases, (list, tuple)):
             if debug:
-                print(
-                    "    Preprocess: aliases for "
-                    f"{class_name} must be a list/tuple"
-                )
+                print(f"    Preprocess: aliases for {class_name} must be a list/tuple")
             return None
 
         normalized_aliases = []
         for alias in aliases:
             if not isinstance(alias, str) or not alias:
                 if debug:
-                    print(
-                        "    Preprocess: invalid alias for "
-                        f"{class_name}: {alias!r}"
-                    )
+                    print(f"    Preprocess: invalid alias for {class_name}: {alias!r}")
                 return None
             normalized_aliases.append(alias)
 
@@ -498,10 +477,7 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
         def _handle_true_directive(field_name, directive_name):
             if field_name == directive_name:
                 if debug:
-                    print(
-                        f"    Preprocess: bare {directive_name} field is "
-                        f"not allowed for {symbol_name}"
-                    )
+                    print(f"    Preprocess: bare {directive_name} field is not allowed for {symbol_name}")
                 return None
 
             if not field_name.startswith(f"{directive_name}:"):
@@ -509,19 +485,13 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
 
             if directive_name in generation_options:
                 if debug:
-                    print(
-                        f"    Preprocess: duplicated {directive_name} "
-                        f"directive for {symbol_name}"
-                    )
+                    print(f"    Preprocess: duplicated {directive_name} directive for {symbol_name}")
                 return None
 
             value_text = field_name.split(":", 1)[1].strip().lower()
             if value_text != "true":
                 if debug:
-                    print(
-                        f"    Preprocess: invalid {directive_name} value "
-                        f"for {symbol_name}: {value_text}"
-                    )
+                    print(f"    Preprocess: invalid {directive_name} value for {symbol_name}: {value_text}")
                 return None
 
             desired_output_fields.append(directive_name)
@@ -543,36 +513,24 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
 
             if field_name == "vfunc_sig_max_match":
                 if debug:
-                    print(
-                        f"    Preprocess: bare vfunc_sig_max_match field is "
-                        f"not allowed for {symbol_name}"
-                    )
+                    print(f"    Preprocess: bare vfunc_sig_max_match field is not allowed for {symbol_name}")
                 return None
 
             if field_name.startswith("vfunc_sig_max_match:"):
                 if "vfunc_sig_max_match" in generation_options:
                     if debug:
-                        print(
-                            f"    Preprocess: duplicated vfunc_sig_max_match "
-                            f"directive for {symbol_name}"
-                        )
+                        print(f"    Preprocess: duplicated vfunc_sig_max_match directive for {symbol_name}")
                     return None
                 max_match_text = field_name.split(":", 1)[1]
                 try:
                     max_match = int(max_match_text)
                 except ValueError:
                     if debug:
-                        print(
-                            f"    Preprocess: invalid vfunc_sig_max_match "
-                            f"value for {symbol_name}: {max_match_text}"
-                        )
+                        print(f"    Preprocess: invalid vfunc_sig_max_match value for {symbol_name}: {max_match_text}")
                     return None
                 if max_match <= 0:
                     if debug:
-                        print(
-                            f"    Preprocess: invalid vfunc_sig_max_match "
-                            f"value for {symbol_name}: {max_match_text}"
-                        )
+                        print(f"    Preprocess: invalid vfunc_sig_max_match value for {symbol_name}: {max_match_text}")
                     return None
                 desired_output_fields.append("vfunc_sig_max_match")
                 generation_options["vfunc_sig_max_match"] = max_match
@@ -580,36 +538,24 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
 
             if field_name == "offset_sig_max_match":
                 if debug:
-                    print(
-                        f"    Preprocess: bare offset_sig_max_match field is "
-                        f"not allowed for {symbol_name}"
-                    )
+                    print(f"    Preprocess: bare offset_sig_max_match field is not allowed for {symbol_name}")
                 return None
 
             if field_name.startswith("offset_sig_max_match:"):
                 if "offset_sig_max_match" in generation_options:
                     if debug:
-                        print(
-                            f"    Preprocess: duplicated offset_sig_max_match "
-                            f"directive for {symbol_name}"
-                        )
+                        print(f"    Preprocess: duplicated offset_sig_max_match directive for {symbol_name}")
                     return None
                 max_match_text = field_name.split(":", 1)[1]
                 try:
                     max_match = int(max_match_text)
                 except ValueError:
                     if debug:
-                        print(
-                            f"    Preprocess: invalid offset_sig_max_match "
-                            f"value for {symbol_name}: {max_match_text}"
-                        )
+                        print(f"    Preprocess: invalid offset_sig_max_match value for {symbol_name}: {max_match_text}")
                     return None
                 if max_match <= 0:
                     if debug:
-                        print(
-                            f"    Preprocess: invalid offset_sig_max_match "
-                            f"value for {symbol_name}: {max_match_text}"
-                        )
+                        print(f"    Preprocess: invalid offset_sig_max_match value for {symbol_name}: {max_match_text}")
                     return None
                 desired_output_fields.append("offset_sig_max_match")
                 generation_options["offset_sig_max_match"] = max_match
@@ -633,17 +579,11 @@ def _normalize_generate_yaml_desired_fields(generate_yaml_desired_fields, debug=
 
         if "vfunc_sig_max_match" in generation_options and "vfunc_sig" not in desired_output_fields:
             if debug:
-                print(
-                    f"    Preprocess: vfunc_sig_max_match requires vfunc_sig "
-                    f"for {symbol_name}"
-                )
+                print(f"    Preprocess: vfunc_sig_max_match requires vfunc_sig for {symbol_name}")
             return None
         if "offset_sig_max_match" in generation_options and "offset_sig" not in desired_output_fields:
             if debug:
-                print(
-                    f"    Preprocess: offset_sig_max_match requires offset_sig "
-                    f"for {symbol_name}"
-                )
+                print(f"    Preprocess: offset_sig_max_match requires offset_sig for {symbol_name}")
             return None
         normalized[symbol_name] = {
             "desired_output_fields": desired_output_fields,
@@ -670,10 +610,7 @@ def _build_target_kind_map(
         existing_kind = target_kind_map.get(symbol_name)
         if existing_kind is not None and existing_kind != target_kind:
             if debug:
-                print(
-                    f"    Preprocess: symbol kind conflict for {symbol_name}: "
-                    f"{existing_kind} vs {target_kind}"
-                )
+                print(f"    Preprocess: symbol kind conflict for {symbol_name}: {existing_kind} vs {target_kind}")
             return False
         target_kind_map[symbol_name] = target_kind
         return True
@@ -711,9 +648,7 @@ _VTABLE_ARTIFACT_STEM_RE = re.compile(r"_vtable(?:\d+)?$")
 
 
 def _is_vtable_artifact_stem(vtable_name):
-    return isinstance(vtable_name, str) and bool(
-        _VTABLE_ARTIFACT_STEM_RE.search(vtable_name)
-    )
+    return isinstance(vtable_name, str) and bool(_VTABLE_ARTIFACT_STEM_RE.search(vtable_name))
 
 
 def _normalize_vtable_artifact_stem(vtable_name):
@@ -796,8 +731,7 @@ def build_remote_text_export_py_eval(
 def _build_vtable_py_eval(class_name, symbol_aliases=None, debug=False):
     """Build the vtable py_eval script for the given class name."""
     return (
-        _VTABLE_PY_EVAL_TEMPLATE
-        .replace("CLASS_NAME_PLACEHOLDER", json.dumps(class_name))
+        _VTABLE_PY_EVAL_TEMPLATE.replace("CLASS_NAME_PLACEHOLDER", json.dumps(class_name))
         .replace(
             "CANDIDATE_SYMBOLS_PLACEHOLDER",
             json.dumps(list(symbol_aliases or [])),
@@ -858,10 +792,7 @@ TARGET_KIND_TO_FIELD_ORDER = {
     "patch": PATCH_YAML_ORDER,
     "struct_member": STRUCT_MEMBER_YAML_ORDER,
 }
-TARGET_KIND_TO_FIELD_SET = {
-    kind: set(field_order)
-    for kind, field_order in TARGET_KIND_TO_FIELD_ORDER.items()
-}
+TARGET_KIND_TO_FIELD_SET = {kind: set(field_order) for kind, field_order in TARGET_KIND_TO_FIELD_ORDER.items()}
 
 
 def _build_ordered_yaml_payload(data, ordered_keys):
@@ -871,10 +802,7 @@ def _build_ordered_yaml_payload(data, ordered_keys):
             continue
         value = data[key]
         if key == "vtable_entries":
-            normalized_entries = {
-                int(entry_index): str(entry_value)
-                for entry_index, entry_value in value.items()
-            }
+            normalized_entries = {int(entry_index): str(entry_value) for entry_index, entry_value in value.items()}
             payload[key] = dict(sorted(normalized_entries.items()))
             continue
         if key.endswith("_va") or key.endswith("_rva") or key.endswith("_size"):
@@ -898,16 +826,10 @@ def _assemble_symbol_payload(symbol_name, target_kind, candidate_data, desired_f
         if field_name not in candidate_data:
             if field_name in optional_fields:
                 if debug:
-                    print(
-                        f"    Preprocess: skipping missing optional field "
-                        f"{field_name} for {symbol_name}"
-                    )
+                    print(f"    Preprocess: skipping missing optional field {field_name} for {symbol_name}")
                 continue
             if debug:
-                print(
-                    f"    Preprocess: missing desired field {field_name} "
-                    f"for {symbol_name}"
-                )
+                print(f"    Preprocess: missing desired field {field_name} for {symbol_name}")
             return None
         payload[field_name] = candidate_data[field_name]
 
@@ -934,7 +856,7 @@ def _build_inherited_vfunc_name(
     func_name = fallback_name
     base_artifact_stem = Path(str(base_vfunc_name)).name
     if base_vtable_name and base_artifact_stem.startswith(base_vtable_name + "_"):
-        method_suffix = base_artifact_stem[len(base_vtable_name) + 1:]
+        method_suffix = base_artifact_stem[len(base_vtable_name) + 1 :]
         func_name = f"{inherit_vtable_class}_{method_suffix}"
     return func_name
 
@@ -955,6 +877,7 @@ def write_vtable_yaml(path, data):
             allow_unicode=False,
         )
 
+
 def write_func_yaml(path, data):
     """Write function/vfunc YAML with the same key set and key order as write-func-as-yaml; scalar quoting/styling is handled by PyYAML."""
     if yaml is None:
@@ -970,6 +893,7 @@ def write_func_yaml(path, data):
             default_flow_style=False,
             allow_unicode=False,
         )
+
 
 def write_gv_yaml(path, data):
     """Write global-variable YAML with the same key set and key order as write-globalvar-as-yaml; scalar quoting/styling is handled by PyYAML."""
@@ -988,8 +912,6 @@ def write_gv_yaml(path, data):
         )
 
 
-
-
 def write_patch_yaml(path, data):
     """Write patch YAML with stable key order."""
     if yaml is None:
@@ -1005,6 +927,7 @@ def write_patch_yaml(path, data):
             default_flow_style=False,
             allow_unicode=False,
         )
+
 
 def write_struct_offset_yaml(path, data):
     """Write struct-member offset YAML matching write-structoffset-as-yaml key order."""
@@ -1028,9 +951,7 @@ def _get_preprocessor_scripts_dir():
 
 
 def _debug_format_addr_preview(values, limit=4):
-    if isinstance(values, (str, bytes, bytearray)) or not isinstance(
-        values, (list, tuple)
-    ):
+    if isinstance(values, (str, bytes, bytearray)) or not isinstance(values, (list, tuple)):
         return "<invalid>"
 
     preview = []
@@ -1102,17 +1023,11 @@ def _build_llm_decompile_specs_map(llm_decompile_specs, debug=False):
             return None
         if not isinstance(prompt_path, str) or not prompt_path:
             if debug:
-                print(
-                    "    Preprocess: invalid llm_decompile prompt path for "
-                    f"{func_name}: {prompt_path!r}"
-                )
+                print(f"    Preprocess: invalid llm_decompile prompt path for {func_name}: {prompt_path!r}")
             return None
         if not isinstance(reference_yaml_path, str) or not reference_yaml_path:
             if debug:
-                print(
-                    "    Preprocess: invalid llm_decompile reference path for "
-                    f"{func_name}: {reference_yaml_path!r}"
-                )
+                print(f"    Preprocess: invalid llm_decompile reference path for {func_name}: {reference_yaml_path!r}")
             return None
 
         llm_spec = {
@@ -1164,10 +1079,7 @@ def _extract_slot_only_vfunc_candidates_from_llm_result(
 
         if offset_value < 0 or offset_value % 8 != 0:
             if debug:
-                print(
-                    f"    Preprocess: invalid slot-only vfunc offset for "
-                    f"{normalized_func_name}: {raw_offset}"
-                )
+                print(f"    Preprocess: invalid slot-only vfunc offset for {normalized_func_name}: {raw_offset}")
             return None
 
         if offset_value in seen_offsets:
@@ -1192,10 +1104,7 @@ def _extract_slot_only_vfunc_candidates_from_llm_result(
     if len(normalized_offsets) != 1:
         if debug:
             rendered_offsets = ", ".join(hex(value) for value in normalized_offsets)
-            print(
-                f"    Preprocess: ambiguous slot-only vfunc offsets for "
-                f"{normalized_func_name}: {rendered_offsets}"
-            )
+            print(f"    Preprocess: ambiguous slot-only vfunc offsets for {normalized_func_name}: {rendered_offsets}")
         return None
 
     resolved_offset = normalized_offsets[0]
@@ -1270,10 +1179,7 @@ async def _build_enriched_slot_only_vfunc_payload_via_mcp(
         payload["vtable_name"] = normalized_vtable_name
     elif require_vtable_name or require_vfunc_sig:
         if debug:
-            print(
-                f"    Preprocess: slot-only fallback missing vtable_name for "
-                f"{slot_only_info['func_name']}"
-            )
+            print(f"    Preprocess: slot-only fallback missing vtable_name for {slot_only_info['func_name']}")
         return None
 
     if debug:
@@ -1288,10 +1194,7 @@ async def _build_enriched_slot_only_vfunc_payload_via_mcp(
     candidate_inst_vas = slot_only_info.get("candidate_inst_vas", [])
     if not candidate_inst_vas:
         if debug:
-            print(
-                f"    Preprocess: no slot-only instruction candidates for "
-                f"{slot_only_info['func_name']}"
-            )
+            print(f"    Preprocess: no slot-only instruction candidates for {slot_only_info['func_name']}")
         return None
 
     for inst_va in candidate_inst_vas:
@@ -1311,18 +1214,13 @@ async def _build_enriched_slot_only_vfunc_payload_via_mcp(
         if not vfunc_sig:
             continue
         payload["vfunc_sig"] = str(vfunc_sig)
-        payload["vfunc_sig_max_match"] = int(
-            sig_data.get("vfunc_sig_max_match", vfunc_sig_max_match)
-        )
+        payload["vfunc_sig_max_match"] = int(sig_data.get("vfunc_sig_max_match", vfunc_sig_max_match))
         if sig_data.get("vfunc_sig_disp") not in (None, 0, "0", "0x0"):
             payload["vfunc_sig_disp"] = sig_data["vfunc_sig_disp"]
         return payload
 
     if debug:
-        print(
-            f"    Preprocess: failed to generate slot-only vfunc_sig for "
-            f"{slot_only_info['func_name']}"
-        )
+        print(f"    Preprocess: failed to generate slot-only vfunc_sig for {slot_only_info['func_name']}")
     return None
 
 
@@ -1351,10 +1249,7 @@ def _load_symbol_lookup_candidates(symbol_name, debug=False):
         config_data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
     except Exception as exc:
         if debug:
-            print(
-                f"    Preprocess: failed to read config aliases for "
-                f"{normalized_name}: {exc}"
-            )
+            print(f"    Preprocess: failed to read config aliases for {normalized_name}: {exc}")
         return candidates
 
     modules = config_data.get("modules")
@@ -1498,8 +1393,9 @@ async def _find_function_addr_by_names_via_mcp(session, candidate_names, debug=F
 
 
 def build_function_detail_export_py_eval(func_va_int: int) -> str:
-    return textwrap.dedent(
-        fr"""
+    return (
+        textwrap.dedent(
+            rf"""
         import ida_bytes, ida_funcs, ida_lines, ida_segment, idautils, idc, json
         try:
             import ida_hexrays
@@ -1727,7 +1623,9 @@ def build_function_detail_export_py_eval(func_va_int: int) -> str:
             }}
         )
         """
-    ).strip() + "\n"
+        ).strip()
+        + "\n"
+    )
 
 
 def build_function_detail_export_file_py_eval(
@@ -1735,11 +1633,7 @@ def build_function_detail_export_file_py_eval(
     *,
     output_path,
 ) -> str:
-    producer_code = (
-        build_function_detail_export_py_eval(func_va_int).rstrip()
-        + "\n"
-        + "payload_text = result\n"
-    )
+    producer_code = build_function_detail_export_py_eval(func_va_int).rstrip() + "\n" + "payload_text = result\n"
     return build_remote_text_export_py_eval(
         output_path=output_path,
         producer_code=producer_code,
@@ -1779,10 +1673,7 @@ def _is_valid_remote_text_export_ack(
     actual_format = str(export_ack.get("format", "")).strip()
     if actual_format != str(format_name):
         if debug:
-            print(
-                f"    Preprocess: invalid {context} ack: format mismatch "
-                f"({actual_format!r} != {str(format_name)!r})"
-            )
+            print(f"    Preprocess: invalid {context} ack: format mismatch ({actual_format!r} != {str(format_name)!r})")
         return False
 
     try:
@@ -1793,10 +1684,7 @@ def _is_valid_remote_text_export_ack(
         return False
     if bytes_written < 0:
         if debug:
-            print(
-                f"    Preprocess: invalid {context} ack: bytes_written "
-                f"must be non-negative, got {bytes_written}"
-            )
+            print(f"    Preprocess: invalid {context} ack: bytes_written must be non-negative, got {bytes_written}")
         return False
 
     return True
@@ -1825,10 +1713,7 @@ async def _export_function_detail_via_mcp(session, func_name, func_va, debug=Fal
             )
         except Exception as exc:
             if debug:
-                print(
-                    f"    Preprocess: py_eval error while exporting function detail "
-                    f"for {func_name}: {exc}"
-                )
+                print(f"    Preprocess: py_eval error while exporting function detail for {func_name}: {exc}")
             return None
 
         export_ack = _parse_py_eval_json_result(
@@ -1849,10 +1734,7 @@ async def _export_function_detail_via_mcp(session, func_name, func_va, debug=Fal
             detail_payload = json.loads(detail_path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError, TypeError) as exc:
             if debug:
-                print(
-                    f"    Preprocess: failed to read llm_decompile function "
-                    f"export file for {func_name}: {exc}"
-                )
+                print(f"    Preprocess: failed to read llm_decompile function export file for {func_name}: {exc}")
             return None
 
     if not isinstance(detail_payload, dict):
@@ -1912,10 +1794,7 @@ async def _resolve_direct_call_target_via_mcp(session, insn_va, debug=False):
         )
     except Exception as exc:
         if debug:
-            print(
-                "    Preprocess: py_eval error while resolving direct call target: "
-                f"{exc}"
-            )
+            print(f"    Preprocess: py_eval error while resolving direct call target: {exc}")
         return None
 
     match_payload = _parse_py_eval_json_result(
@@ -1983,10 +1862,7 @@ async def _resolve_direct_funcptr_target_via_mcp(session, insn_va, debug=False):
         )
     except Exception as exc:
         if debug:
-            print(
-                "    Preprocess: py_eval error while resolving direct funcptr target: "
-                f"{exc}"
-            )
+            print(f"    Preprocess: py_eval error while resolving direct funcptr target: {exc}")
         return None
 
     match_payload = _parse_py_eval_json_result(
@@ -2050,10 +1926,7 @@ async def _resolve_direct_gv_target_via_mcp(session, insn_va, debug=False):
         )
     except Exception as exc:
         if debug:
-            print(
-                "    Preprocess: py_eval error while resolving direct gv target: "
-                f"{exc}"
-            )
+            print(f"    Preprocess: py_eval error while resolving direct gv target: {exc}")
         return None
 
     match_payload = _parse_py_eval_json_result(
@@ -2098,16 +1971,10 @@ def _load_llm_decompile_target_func_va_from_current_yaml(
 ):
     normalized_target_name = str(target_func_name or "").strip()
     normalized_platform = str(platform or "").strip()
-    if (
-        not normalized_target_name
-        or not normalized_platform
-        or not new_binary_dir
-    ):
+    if not normalized_target_name or not normalized_platform or not new_binary_dir:
         return None
 
-    target_yaml_path = Path(new_binary_dir) / (
-        f"{normalized_target_name}.{normalized_platform}.yaml"
-    )
+    target_yaml_path = Path(new_binary_dir) / (f"{normalized_target_name}.{normalized_platform}.yaml")
     if not target_yaml_path.is_file():
         return None
 
@@ -2115,8 +1982,7 @@ def _load_llm_decompile_target_func_va_from_current_yaml(
     if not isinstance(yaml_payload, dict):
         if debug:
             print(
-                "    Preprocess: invalid llm_decompile current YAML for "
-                f"{normalized_target_name}: {target_yaml_path}"
+                f"    Preprocess: invalid llm_decompile current YAML for {normalized_target_name}: {target_yaml_path}"
             )
         return None
 
@@ -2164,15 +2030,13 @@ async def _load_llm_decompile_target_detail_via_mcp(
         )
     elif debug:
         print(
-            "    Preprocess: using current YAML func_va for llm_decompile "
-            f"target {normalized_target_name}: {func_va}"
+            f"    Preprocess: using current YAML func_va for llm_decompile target {normalized_target_name}: {func_va}"
         )
 
     if func_va is None:
         if debug:
             print(
-                f"    Preprocess: failed to resolve llm_decompile target "
-                f"function address for {normalized_target_name}"
+                f"    Preprocess: failed to resolve llm_decompile target function address for {normalized_target_name}"
             )
         return None
 
@@ -2183,10 +2047,7 @@ async def _load_llm_decompile_target_detail_via_mcp(
         debug=debug,
     )
     if detail_payload is None and debug:
-        print(
-            f"    Preprocess: failed to export llm_decompile target detail "
-            f"for {normalized_target_name}"
-        )
+        print(f"    Preprocess: failed to export llm_decompile target detail for {normalized_target_name}")
     return detail_payload
 
 
@@ -2293,6 +2154,7 @@ async def call_llm_decompile(
         normalize_temperature_func=normalize_optional_temperature,
     )
 
+
 async def preprocess_vtable_via_mcp(
     session,
     class_name,
@@ -2324,10 +2186,7 @@ async def preprocess_vtable_via_mcp(
     )
 
     try:
-        result = await session.call_tool(
-            name="py_eval",
-            arguments={"code": py_code}
-        )
+        result = await session.call_tool(name="py_eval", arguments={"code": py_code})
         result_data = parse_mcp_result(result)
     except Exception as e:
         if debug:
@@ -2421,11 +2280,7 @@ async def preprocess_func_sig_via_mcp(
     if normalized_mangled_class_names is None:
         return None
 
-    if (
-        direct_func_va is not None
-        or direct_vtable_class is not None
-        or direct_vfunc_offset is not None
-    ):
+    if direct_func_va is not None or direct_vtable_class is not None or direct_vfunc_offset is not None:
         return await _preprocess_direct_func_sig_via_mcp(
             session=session,
             new_path=new_path,
@@ -2481,10 +2336,7 @@ async def preprocess_func_sig_via_mcp(
 
     async def _find_unique_match(signature, label):
         try:
-            fb_result = await session.call_tool(
-                name="find_bytes",
-                arguments={"patterns": [signature], "limit": 2}
-            )
+            fb_result = await session.call_tool(name="find_bytes", arguments={"patterns": [signature], "limit": 2})
             fb_data = parse_mcp_result(fb_result)
         except Exception as e:
             if debug:
@@ -2525,7 +2377,7 @@ async def preprocess_func_sig_via_mcp(
                 arguments={
                     "patterns": [signature],
                     "limit": max_match_count + 1,
-                }
+                },
             )
             fb_data = parse_mcp_result(fb_result)
         except Exception as e:
@@ -2544,10 +2396,7 @@ async def preprocess_func_sig_via_mcp(
         match_count = entry.get("n", len(matches))
         if match_count < 1 or match_count > max_match_count:
             if debug:
-                print(
-                    f"    Preprocess: {label} matched {match_count} "
-                    f"(need 1..{max_match_count})"
-                )
+                print(f"    Preprocess: {label} matched {match_count} (need 1..{max_match_count})")
             return None
 
         return matches[0]
@@ -2563,10 +2412,7 @@ async def preprocess_func_sig_via_mcp(
             f"    result = json.dumps(None)\n"
         )
         try:
-            fi_result = await session.call_tool(
-                name="py_eval",
-                arguments={"code": py_code}
-            )
+            fi_result = await session.call_tool(name="py_eval", arguments={"code": py_code})
             fi_data = parse_mcp_result(fi_result)
         except Exception as e:
             if debug:
@@ -2602,10 +2448,7 @@ async def preprocess_func_sig_via_mcp(
         if not os.path.exists(vtable_yaml_path):
             if _is_vtable_artifact_stem(vtable_name):
                 if debug:
-                    print(
-                        "    Preprocess: vtable artifact YAML not found: "
-                        f"{os.path.basename(vtable_yaml_path)}"
-                    )
+                    print(f"    Preprocess: vtable artifact YAML not found: {os.path.basename(vtable_yaml_path)}")
                 return None
 
             # Generate vtable YAML on-the-fly via py_eval
@@ -2652,9 +2495,7 @@ async def preprocess_func_sig_via_mcp(
     vfunc_sig_max_match = 1
 
     if func_sig:
-        match_addr = await _find_unique_match(
-            func_sig, f"{os.path.basename(old_path)} func_sig"
-        )
+        match_addr = await _find_unique_match(func_sig, f"{os.path.basename(old_path)} func_sig")
         if match_addr is None:
             return None
 
@@ -2671,10 +2512,7 @@ async def preprocess_func_sig_via_mcp(
             return None
         if not vtable_name:
             if debug:
-                print(
-                    "    Preprocess: no vtable_name for vfunc fallback in "
-                    f"{os.path.basename(old_path)}"
-                )
+                print(f"    Preprocess: no vtable_name for vfunc fallback in {os.path.basename(old_path)}")
             return None
 
         try:
@@ -2684,27 +2522,18 @@ async def preprocess_func_sig_via_mcp(
             )
         except Exception:
             if debug:
-                print(
-                    "    Preprocess: invalid vfunc_sig_max_match in "
-                    f"{os.path.basename(old_path)}"
-                )
+                print(f"    Preprocess: invalid vfunc_sig_max_match in {os.path.basename(old_path)}")
             return None
         if vfunc_sig_max_match <= 0:
             if debug:
-                print(
-                    "    Preprocess: invalid vfunc_sig_max_match in "
-                    f"{os.path.basename(old_path)}"
-                )
+                print(f"    Preprocess: invalid vfunc_sig_max_match in {os.path.basename(old_path)}")
             return None
 
         has_index = old_data.get("vfunc_index") is not None
         has_offset = old_data.get("vfunc_offset") is not None
         if not has_index and not has_offset:
             if debug:
-                print(
-                    "    Preprocess: missing vfunc_index/vfunc_offset in "
-                    f"{os.path.basename(old_path)}"
-                )
+                print(f"    Preprocess: missing vfunc_index/vfunc_offset in {os.path.basename(old_path)}")
             return None
 
         try:
@@ -2720,10 +2549,7 @@ async def preprocess_func_sig_via_mcp(
         if vfunc_index is None:
             if vfunc_offset % 8 != 0:
                 if debug:
-                    print(
-                        "    Preprocess: vfunc_offset is not 8-byte aligned in "
-                        f"{os.path.basename(old_path)}"
-                    )
+                    print(f"    Preprocess: vfunc_offset is not 8-byte aligned in {os.path.basename(old_path)}")
                 return None
             vfunc_index = vfunc_offset // 8
         if vfunc_offset is None:
@@ -2731,10 +2557,7 @@ async def preprocess_func_sig_via_mcp(
 
         if vfunc_index < 0 or vfunc_offset < 0 or vfunc_offset != vfunc_index * 8:
             if debug:
-                print(
-                    "    Preprocess: inconsistent vfunc_index/vfunc_offset in "
-                    f"{os.path.basename(old_path)}"
-                )
+                print(f"    Preprocess: inconsistent vfunc_index/vfunc_offset in {os.path.basename(old_path)}")
             return None
 
         vfunc_match_addr = await _find_match_with_limit(
@@ -2791,10 +2614,7 @@ async def preprocess_func_sig_via_mcp(
 
         if func_va_from_vtable is None:
             if debug:
-                print(
-                    "    Preprocess: vfunc_index not found in vtable entries: "
-                    f"{vtable_name}[{vfunc_index}]"
-                )
+                print(f"    Preprocess: vfunc_index not found in vtable entries: {vtable_name}[{vfunc_index}]")
             return None
 
         func_info = await _get_func_info(hex(func_va_from_vtable))
@@ -3173,7 +2993,7 @@ async def preprocess_gen_func_sig_via_mcp(
                     print("    Preprocess: malformed instruction bytes from py_eval")
                 return None
 
-            inst_bytes = [int(inst_hex[i:i + 2], 16) for i in range(0, len(inst_hex), 2)]
+            inst_bytes = [int(inst_hex[i : i + 2], 16) for i in range(0, len(inst_hex), 2)]
             inst_wild = set()
             for item in inst.get("wild", []):
                 pos = int(item)
@@ -3302,17 +3122,12 @@ async def preprocess_gen_func_sig_via_mcp(
             if competitor_hex_list:
                 # Identify wildcarded positions where our byte differs from
                 # at least one competitor — un-wildcarding these helps distinguish.
-                wc_positions = [
-                    i for i, t in enumerate(sig_tokens[:full_len]) if t == "??"
-                ]
+                wc_positions = [i for i, t in enumerate(sig_tokens[:full_len]) if t == "??"]
                 differing_wc = []
                 for pos in wc_positions:
                     our_hex = raw_tokens[pos]
                     for comp_hex in competitor_hex_list:
-                        if (
-                            len(comp_hex) >= (pos + 1) * 2
-                            and comp_hex[pos * 2 : pos * 2 + 2] != our_hex
-                        ):
+                        if len(comp_hex) >= (pos + 1) * 2 and comp_hex[pos * 2 : pos * 2 + 2] != our_hex:
                             differing_wc.append(pos)
                             break
 
@@ -3371,10 +3186,7 @@ async def preprocess_gen_func_sig_via_mcp(
 
     if not best_sig:
         if debug:
-            print(
-                "    Preprocess: failed to generate a unique function-head signature "
-                f"for {hex(func_va_int)}"
-            )
+            print(f"    Preprocess: failed to generate a unique function-head signature for {hex(func_va_int)}")
         return None
 
     try:
@@ -3396,8 +3208,7 @@ async def preprocess_gen_func_sig_via_mcp(
 
     if debug:
         print(
-            "    Preprocess: generated shortest unique func_sig "
-            f"({len(best_sig.split())} bytes) for {hex(func_va_int)}"
+            f"    Preprocess: generated shortest unique func_sig ({len(best_sig.split())} bytes) for {hex(func_va_int)}"
         )
 
     return {
@@ -3702,10 +3513,7 @@ async def preprocess_gen_vfunc_sig_via_mcp(
 
     if not isinstance(candidate_info, dict):
         if debug:
-            print(
-                "    Preprocess: target instruction does not expose the expected "
-                f"vfunc offset at {hex(inst_va_int)}"
-            )
+            print(f"    Preprocess: target instruction does not expose the expected vfunc offset at {hex(inst_va_int)}")
         return None
 
     try:
@@ -3744,10 +3552,7 @@ async def preprocess_gen_vfunc_sig_via_mcp(
                     print("    Preprocess: malformed instruction bytes from py_eval")
                 return None
 
-            inst_bytes = [
-                int(inst_hex[i:i + 2], 16)
-                for i in range(0, len(inst_hex), 2)
-            ]
+            inst_bytes = [int(inst_hex[i : i + 2], 16) for i in range(0, len(inst_hex), 2)]
             inst_wild = set()
             for item in inst.get("wild", []):
                 pos = int(item)
@@ -3794,10 +3599,7 @@ async def preprocess_gen_vfunc_sig_via_mcp(
             fb_data = parse_mcp_result(fb_result)
         except Exception as e:
             if debug:
-                print(
-                    f"    Preprocess: find_bytes error while testing generated "
-                    f"vfunc_sig: {e}"
-                )
+                print(f"    Preprocess: find_bytes error while testing generated vfunc_sig: {e}")
             return None
 
         if not isinstance(fb_data, list) or len(fb_data) == 0:
@@ -3826,17 +3628,11 @@ async def preprocess_gen_vfunc_sig_via_mcp(
 
     if not best_sig:
         if debug:
-            print(
-                "    Preprocess: failed to generate a unique vfunc signature "
-                f"for {hex(inst_va_int)}"
-            )
+            print(f"    Preprocess: failed to generate a unique vfunc signature for {hex(inst_va_int)}")
         return None
 
     if debug:
-        print(
-            "    Preprocess: generated shortest unique vfunc_sig "
-            f"({best_sig_len} bytes) for {hex(inst_va_int)}"
-        )
+        print(f"    Preprocess: generated shortest unique vfunc_sig ({best_sig_len} bytes) for {hex(inst_va_int)}")
 
     return {
         "vfunc_sig": best_sig,
@@ -4211,7 +4007,7 @@ async def preprocess_gen_gv_sig_via_mcp(
                     malformed = True
                     break
 
-                inst_bytes = [int(inst_hex[i:i + 2], 16) for i in range(0, len(inst_hex), 2)]
+                inst_bytes = [int(inst_hex[i : i + 2], 16) for i in range(0, len(inst_hex), 2)]
                 inst_wild = set()
                 for item in inst.get("wild", []):
                     pos = int(item)
@@ -4286,10 +4082,7 @@ async def preprocess_gen_gv_sig_via_mcp(
 
     if best is None:
         if debug:
-            print(
-                "    Preprocess: failed to generate a unique gv-access signature "
-                f"for {hex(gv_va_int)}"
-            )
+            print(f"    Preprocess: failed to generate a unique gv-access signature for {hex(gv_va_int)}")
         return None
 
     if debug:
@@ -4308,9 +4101,8 @@ async def preprocess_gen_gv_sig_via_mcp(
         "gv_inst_disp": best["gv_inst_disp"],
     }
 
-async def preprocess_gv_sig_via_mcp(
-    session, new_path, old_path, image_base, new_binary_dir, platform, debug=False
-):
+
+async def preprocess_gv_sig_via_mcp(session, new_path, old_path, image_base, new_binary_dir, platform, debug=False):
     """
     Preprocess a global-variable output by reusing old-version gv_sig signature.
 
@@ -4385,10 +4177,7 @@ async def preprocess_gv_sig_via_mcp(
 
     # Search signature in new binary via MCP find_bytes
     try:
-        fb_result = await session.call_tool(
-            name="find_bytes",
-            arguments={"patterns": [gv_sig], "limit": 2}
-        )
+        fb_result = await session.call_tool(name="find_bytes", arguments={"patterns": [gv_sig], "limit": 2})
         fb_data = parse_mcp_result(fb_result)
     except Exception as e:
         if debug:
@@ -4428,10 +4217,7 @@ async def preprocess_gv_sig_via_mcp(
     )
 
     try:
-        gv_result = await session.call_tool(
-            name="py_eval",
-            arguments={"code": py_code}
-        )
+        gv_result = await session.call_tool(name="py_eval", arguments={"code": py_code})
         gv_data = parse_mcp_result(gv_result)
     except Exception as e:
         if debug:
@@ -4482,11 +4268,7 @@ async def preprocess_gv_sig_via_mcp(
     return result
 
 
-
-
-async def preprocess_patch_via_mcp(
-    session, new_path, old_path, image_base, new_binary_dir, platform, debug=False
-):
+async def preprocess_patch_via_mcp(session, new_path, old_path, image_base, new_binary_dir, platform, debug=False):
     """
     Preprocess a patch output by reusing old-version patch metadata.
 
@@ -4544,10 +4326,7 @@ async def preprocess_patch_via_mcp(
 
     # Verify patch_sig uniquely matches in new binary via MCP find_bytes.
     try:
-        fb_result = await session.call_tool(
-            name="find_bytes",
-            arguments={"patterns": [patch_sig], "limit": 2}
-        )
+        fb_result = await session.call_tool(name="find_bytes", arguments={"patterns": [patch_sig], "limit": 2})
         fb_data = parse_mcp_result(fb_result)
     except Exception as e:
         if debug:
@@ -4570,10 +4349,7 @@ async def preprocess_patch_via_mcp(
 
     if match_count_int != 1:
         if debug:
-            print(
-                "    Preprocess: patch_sig matched "
-                f"{match_count_int} (need 1) in {os.path.basename(old_path)}"
-            )
+            print(f"    Preprocess: patch_sig matched {match_count_int} (need 1) in {os.path.basename(old_path)}")
         return None
 
     return {
@@ -4581,6 +4357,7 @@ async def preprocess_patch_via_mcp(
         "patch_sig": patch_sig,
         "patch_bytes": patch_bytes,
     }
+
 
 async def preprocess_struct_offset_sig_via_mcp(
     session, new_path, old_path, image_base, new_binary_dir, platform, debug=False
@@ -4666,23 +4443,15 @@ async def preprocess_struct_offset_sig_via_mcp(
     try:
         raw_max_match = old_data.get("offset_sig_max_match")
         if raw_max_match is not None:
-            offset_sig_max_match = _parse_int_field(
-                raw_max_match, "offset_sig_max_match"
-            )
+            offset_sig_max_match = _parse_int_field(raw_max_match, "offset_sig_max_match")
     except Exception:
         if debug:
-            print(
-                "    Preprocess: invalid offset_sig_max_match in "
-                f"{os.path.basename(old_path)}"
-            )
+            print(f"    Preprocess: invalid offset_sig_max_match in {os.path.basename(old_path)}")
         return None
 
     if offset_sig_max_match <= 0:
         if debug:
-            print(
-                "    Preprocess: offset_sig_max_match must be > 0 in "
-                f"{os.path.basename(old_path)}"
-            )
+            print(f"    Preprocess: offset_sig_max_match must be > 0 in {os.path.basename(old_path)}")
         return None
 
     old_offset = None
@@ -4717,10 +4486,7 @@ async def preprocess_struct_offset_sig_via_mcp(
 
     if match_count < 1 or not matches:
         if debug:
-            print(
-                f"    Preprocess: {os.path.basename(old_path)} offset sig "
-                f"matched {match_count} (need >= 1)"
-            )
+            print(f"    Preprocess: {os.path.basename(old_path)} offset sig matched {match_count} (need >= 1)")
         return None
     if match_count > offset_sig_max_match:
         if debug:
@@ -4734,9 +4500,7 @@ async def preprocess_struct_offset_sig_via_mcp(
         match_addr_ints = [_parse_int_field(m, "match_addr") for m in matches]
     except Exception:
         if debug:
-            print(
-                f"    Preprocess: invalid match addr in {os.path.basename(old_path)}"
-            )
+            print(f"    Preprocess: invalid match addr in {os.path.basename(old_path)}")
         return None
     expected_offset_expr = "None" if old_offset is None else str(old_offset)
     sig_addrs_literal = "[" + ", ".join(str(a) for a in match_addr_ints) + "]"
@@ -4820,10 +4584,7 @@ async def preprocess_struct_offset_sig_via_mcp(
     )
 
     try:
-        offset_result = await session.call_tool(
-            name="py_eval",
-            arguments={"code": py_code}
-        )
+        offset_result = await session.call_tool(name="py_eval", arguments={"code": py_code})
         offset_data = parse_mcp_result(offset_result)
     except Exception as e:
         if debug:
@@ -4846,19 +4607,14 @@ async def preprocess_struct_offset_sig_via_mcp(
     matches_preview = _debug_format_addr_preview(match_addr_ints)
     if not isinstance(offset_info, dict) or "offset" not in offset_info:
         if debug:
-            print(
-                f"    Preprocess: could not resolve struct offset at "
-                f"{matches_preview}"
-            )
+            print(f"    Preprocess: could not resolve struct offset at {matches_preview}")
         return None
 
     try:
         offset_int = _parse_int_field(offset_info["offset"], "offset")
     except Exception:
         if debug:
-            print(
-                f"    Preprocess: invalid parsed offset at {matches_preview}"
-            )
+            print(f"    Preprocess: invalid parsed offset at {matches_preview}")
         return None
 
     new_data = {
@@ -4883,10 +4639,7 @@ async def preprocess_struct_offset_sig_via_mcp(
 
     if debug:
         resolved_sig_va = offset_info.get("sig_va", matches_preview)
-        print(
-            "    Preprocess: reused offset_sig at "
-            f"{resolved_sig_va} for {os.path.basename(new_path)}"
-        )
+        print(f"    Preprocess: reused offset_sig at {resolved_sig_va} for {os.path.basename(new_path)}")
 
     return new_data
 
@@ -4985,10 +4738,7 @@ async def preprocess_index_based_vfunc_via_mcp(
         real_module_dir = Path(binary_dir).resolve()
         real_gamever_dir = real_module_dir.parent.resolve()
         real_candidate = (real_module_dir / expanded).resolve()
-        if (
-            os.path.commonpath([str(real_candidate), str(real_gamever_dir)])
-            != str(real_gamever_dir)
-        ):
+        if os.path.commonpath([str(real_candidate), str(real_gamever_dir)]) != str(real_gamever_dir):
             raise ValueError(f"artifact path escapes gamever root: {artifact_stem}")
         return str(candidate)
 
@@ -5022,29 +4772,20 @@ async def preprocess_index_based_vfunc_via_mcp(
         )
     except ValueError:
         if debug:
-            print(
-                "    Preprocess: invalid base vfunc artifact path: "
-                f"{base_vfunc_name}"
-            )
+            print(f"    Preprocess: invalid base vfunc artifact path: {base_vfunc_name}")
         return None
 
     base_vfunc_data = _read_yaml(base_vfunc_path)
     if not isinstance(base_vfunc_data, dict):
         if debug:
-            print(
-                "    Preprocess: failed to read base vfunc YAML: "
-                f"{os.path.basename(base_vfunc_path)}"
-            )
+            print(f"    Preprocess: failed to read base vfunc YAML: {os.path.basename(base_vfunc_path)}")
         return None
 
     try:
         base_index = _extract_vfunc_index(base_vfunc_data)
     except Exception:
         if debug:
-            print(
-                "    Preprocess: invalid vfunc slot metadata in "
-                f"{os.path.basename(base_vfunc_path)}"
-            )
+            print(f"    Preprocess: invalid vfunc slot metadata in {os.path.basename(base_vfunc_path)}")
         return None
 
     func_name = _build_inherited_vfunc_name(
@@ -5072,27 +4813,18 @@ async def preprocess_index_based_vfunc_via_mcp(
         )
     except ValueError:
         if debug:
-            print(
-                "    Preprocess: invalid vtable artifact path: "
-                f"{vtable_artifact_stem}"
-            )
+            print(f"    Preprocess: invalid vtable artifact path: {vtable_artifact_stem}")
         return None
     vtable_data = _read_yaml(vtable_path)
     if not isinstance(vtable_data, dict):
         if debug:
-            print(
-                "    Preprocess: failed to read vtable YAML: "
-                f"{os.path.basename(vtable_path)}"
-            )
+            print(f"    Preprocess: failed to read vtable YAML: {os.path.basename(vtable_path)}")
         return None
 
     raw_entries = vtable_data.get("vtable_entries", {})
     if not isinstance(raw_entries, dict):
         if debug:
-            print(
-                "    Preprocess: invalid vtable_entries in "
-                f"{vtable_artifact_stem} YAML"
-            )
+            print(f"    Preprocess: invalid vtable_entries in {vtable_artifact_stem} YAML")
         return None
 
     vtable_entries = {}
@@ -5109,10 +4841,7 @@ async def preprocess_index_based_vfunc_via_mcp(
     target_addr_hex = vtable_entries.get(target_index)
     if not target_addr_hex:
         if debug:
-            print(
-                f"    Preprocess: {vtable_artifact_stem} missing index "
-                f"{target_index} for {target_func_name}"
-            )
+            print(f"    Preprocess: {vtable_artifact_stem} missing index {target_index} for {target_func_name}")
         return None
 
     # 4. Query function info via py_eval
@@ -5200,10 +4929,7 @@ async def preprocess_index_based_vfunc_via_mcp(
         if gen_data and gen_data.get("func_sig"):
             payload["func_sig"] = gen_data["func_sig"]
         elif debug:
-            print(
-                f"    Preprocess: func_sig generation failed for "
-                f"{target_func_name} at {func_va_hex}"
-            )
+            print(f"    Preprocess: func_sig generation failed for {target_func_name} at {func_va_hex}")
 
     return payload
 
@@ -5240,17 +4966,11 @@ def _normalize_float_xref_values(field_name, field_values, func_name, debug=Fals
             parsed_value = float(raw)
         except (TypeError, ValueError):
             if debug:
-                print(
-                    f"    Preprocess: invalid {field_name} float value for "
-                    f"{func_name}: {item}"
-                )
+                print(f"    Preprocess: invalid {field_name} float value for {func_name}: {item}")
             return None
         if not math.isfinite(parsed_value):
             if debug:
-                print(
-                    f"    Preprocess: non-finite {field_name} float value for "
-                    f"{func_name}: {item}"
-                )
+                print(f"    Preprocess: non-finite {field_name} float value for {func_name}: {item}")
             return None
         normalized_values.append(raw)
     return normalized_values
@@ -5278,10 +4998,7 @@ def _load_gv_or_explicit_ea(
             return _parse_int_value(normalized_gv_spec)
         except Exception:
             if debug:
-                print(
-                    f"    Preprocess: invalid explicit address for "
-                    f"{debug_label}: {gv_spec}"
-                )
+                print(f"    Preprocess: invalid explicit address for {debug_label}: {gv_spec}")
             return None
 
     return _load_symbol_addr_from_current_yaml(
@@ -5306,27 +5023,16 @@ def _load_symbol_addr_from_current_yaml(
     normalized_symbol_name = str(symbol_name or "").strip()
     normalized_platform = str(platform or "").strip()
     normalized_field_name = str(field_name or "").strip()
-    if (
-        not new_binary_dir
-        or not normalized_symbol_name
-        or not normalized_platform
-        or not normalized_field_name
-    ):
+    if not new_binary_dir or not normalized_symbol_name or not normalized_platform or not normalized_field_name:
         if debug:
-            print(
-                f"    Preprocess: invalid {debug_label} YAML lookup for "
-                f"{symbol_name}"
-            )
+            print(f"    Preprocess: invalid {debug_label} YAML lookup for {symbol_name}")
         return None
 
     try:
         new_binary_dir_path = os.fspath(new_binary_dir)
     except Exception:
         if debug:
-            print(
-                f"    Preprocess: invalid new_binary_dir for {debug_label} "
-                f"lookup of {normalized_symbol_name}"
-            )
+            print(f"    Preprocess: invalid new_binary_dir for {debug_label} lookup of {normalized_symbol_name}")
         return None
 
     yaml_path = os.path.join(
@@ -5336,10 +5042,7 @@ def _load_symbol_addr_from_current_yaml(
     yaml_payload = _read_yaml_file(yaml_path)
     if not isinstance(yaml_payload, dict):
         if debug:
-            print(
-                f"    Preprocess: {debug_label} YAML missing or invalid: "
-                f"{os.path.basename(yaml_path)}"
-            )
+            print(f"    Preprocess: {debug_label} YAML missing or invalid: {os.path.basename(yaml_path)}")
         return None
 
     try:
@@ -5347,8 +5050,7 @@ def _load_symbol_addr_from_current_yaml(
     except Exception:
         if debug:
             print(
-                f"    Preprocess: invalid {normalized_field_name} in "
-                f"{debug_label} YAML: {os.path.basename(yaml_path)}"
+                f"    Preprocess: invalid {normalized_field_name} in {debug_label} YAML: {os.path.basename(yaml_path)}"
             )
         return None
 
@@ -5549,10 +5251,7 @@ async def _normalize_func_start_for_code_addr(session, code_addr, debug=False):
 
     if status != "needs_define":
         if debug:
-            print(
-                "    Preprocess: undefined func recovery skipped: "
-                f"{status or 'unknown'}"
-            )
+            print(f"    Preprocess: undefined func recovery skipped: {status or 'unknown'}")
         return None
 
     try:
@@ -5576,10 +5275,7 @@ async def _normalize_func_start_for_code_addr(session, code_addr, debug=False):
         debug=debug,
     )
     if func_start is None and debug:
-        print(
-            "    Preprocess: recovered function does not cover "
-            f"{hex(code_addr_int)}"
-        )
+        print(f"    Preprocess: recovered function does not cover {hex(code_addr_int)}")
     return func_start
 
 
@@ -5695,9 +5391,7 @@ async def _collect_xref_func_starts_for_ea(session, target_ea, debug=False):
     )
 
 
-async def _collect_single_call_or_jump_xref_func_starts_for_ea(
-    session, target_ea, debug=False
-):
+async def _collect_single_call_or_jump_xref_func_starts_for_ea(session, target_ea, debug=False):
     """
     Collect function-start addresses that contain exactly one call/jump xref
     to the specified target address.
@@ -5751,20 +5445,12 @@ async def _collect_single_call_or_jump_xref_func_starts_for_ea(
         )
         if func_start is None:
             continue
-        call_counts_by_func[func_start] = (
-            call_counts_by_func.get(func_start, 0) + 1
-        )
+        call_counts_by_func[func_start] = call_counts_by_func.get(func_start, 0) + 1
 
-    return {
-        func_start
-        for func_start, call_count in call_counts_by_func.items()
-        if call_count == 1
-    }
+    return {func_start for func_start, call_count in call_counts_by_func.items() if call_count == 1}
 
 
-async def _collect_xref_func_starts_for_signature(
-    session, xref_signature, debug=False
-):
+async def _collect_xref_func_starts_for_signature(session, xref_signature, debug=False):
     """
     Collect function-start addresses that contain bytes matched by a signature.
 
@@ -5896,10 +5582,7 @@ async def _filter_func_addrs_by_signature_via_mcp(
         )
         if contains_signature is None:
             if debug:
-                print(
-                    "    Preprocess: failed to probe signature for "
-                    f"{hex(candidate_func_va)}"
-                )
+                print(f"    Preprocess: failed to probe signature for {hex(candidate_func_va)}")
             return None
         if contains_signature is keep_matches:
             filtered_funcs.add(candidate_func_va)
@@ -6096,8 +5779,7 @@ async def _preprocess_direct_func_sig_via_mcp(
             if direct_vcall_inst_va is None or direct_vfunc_offset is None:
                 if debug:
                     print(
-                        "    Preprocess: missing vcall instruction metadata while "
-                        f"generating vfunc_sig for {func_name}"
+                        f"    Preprocess: missing vcall instruction metadata while generating vfunc_sig for {func_name}"
                     )
                 return None
             gen_vfunc_kwargs = {
@@ -6112,15 +5794,10 @@ async def _preprocess_direct_func_sig_via_mcp(
             sig_data = await preprocess_gen_vfunc_sig_via_mcp(**gen_vfunc_kwargs)
             if not isinstance(sig_data, dict) or not sig_data.get("vfunc_sig"):
                 if debug:
-                    print(
-                        "    Preprocess: failed to generate direct vfunc_sig for "
-                        f"{func_name}"
-                    )
+                    print(f"    Preprocess: failed to generate direct vfunc_sig for {func_name}")
                 return None
             payload["vfunc_sig"] = str(sig_data["vfunc_sig"])
-            payload["vfunc_sig_max_match"] = int(
-                sig_data.get("vfunc_sig_max_match", vfunc_sig_max_match)
-            )
+            payload["vfunc_sig_max_match"] = int(sig_data.get("vfunc_sig_max_match", vfunc_sig_max_match))
             if sig_data.get("vfunc_sig_disp") not in (None, 0, "0", "0x0"):
                 payload["vfunc_sig_disp"] = sig_data["vfunc_sig_disp"]
 
@@ -6134,10 +5811,7 @@ async def _preprocess_direct_func_sig_via_mcp(
             )
             if not isinstance(gen_data, dict) or not gen_data.get("func_sig"):
                 if debug:
-                    print(
-                        "    Preprocess: failed to generate direct func_sig for "
-                        f"{func_name}"
-                    )
+                    print(f"    Preprocess: failed to generate direct func_sig for {func_name}")
                 return None
             payload["func_sig"] = gen_data["func_sig"]
 
@@ -6200,16 +5874,8 @@ async def _preprocess_direct_struct_offset_sig_via_mcp(
 ):
     metadata = _load_struct_member_metadata_from_yaml(old_path)
 
-    resolved_struct_name = str(
-        struct_name
-        or metadata.get("struct_name", "")
-        or ""
-    ).strip()
-    resolved_member_name = str(
-        member_name
-        or metadata.get("member_name", "")
-        or ""
-    ).strip()
+    resolved_struct_name = str(struct_name or metadata.get("struct_name", "") or "").strip()
+    resolved_member_name = str(member_name or metadata.get("member_name", "") or "").strip()
 
     if not resolved_struct_name or not resolved_member_name:
         if debug:
@@ -6279,10 +5945,7 @@ async def preprocess_gen_struct_offset_sig_via_mcp(
 
     if max_match_count <= 0:
         if debug:
-            print(
-                "    Preprocess: invalid max_match_count for struct offset sig "
-                f"of {struct_name}.{member_name}"
-            )
+            print(f"    Preprocess: invalid max_match_count for struct offset sig of {struct_name}.{member_name}")
         return None
 
     resolved_size = None
@@ -6396,10 +6059,7 @@ async def preprocess_gen_struct_offset_sig_via_mcp(
     if isinstance(result_data, dict):
         stderr_text = str(result_data.get("stderr", "") or "").strip()
         if stderr_text and debug:
-            print(
-                "    Preprocess: struct offset py_eval stderr for "
-                f"{struct_name}.{member_name}:"
-            )
+            print(f"    Preprocess: struct offset py_eval stderr for {struct_name}.{member_name}:")
             print(stderr_text)
 
         result_str = result_data.get("result", "")
@@ -6408,10 +6068,7 @@ async def preprocess_gen_struct_offset_sig_via_mcp(
                 candidate_infos = json.loads(result_str)
             except (json.JSONDecodeError, TypeError) as exc:
                 if debug:
-                    print(
-                        "    Preprocess: invalid struct offset py_eval JSON "
-                        f"for {struct_name}.{member_name}: {exc}"
-                    )
+                    print(f"    Preprocess: invalid struct offset py_eval JSON for {struct_name}.{member_name}: {exc}")
                 candidate_infos = None
 
     if debug:
@@ -6470,10 +6127,7 @@ async def preprocess_gen_struct_offset_sig_via_mcp(
                 malformed = True
                 break
 
-            inst_bytes = [
-                int(inst_hex[idx:idx + 2], 16)
-                for idx in range(0, len(inst_hex), 2)
-            ]
+            inst_bytes = [int(inst_hex[idx : idx + 2], 16) for idx in range(0, len(inst_hex), 2)]
             base_offset = len(sig_tokens)
             for rel_idx, value in enumerate(inst_bytes):
                 abs_offset = base_offset + rel_idx
@@ -6580,10 +6234,7 @@ async def preprocess_gen_struct_offset_sig_via_mcp(
             f"{struct_name}.{member_name}"
         )
     if debug:
-        print(
-            "    Preprocess: failed to generate struct offset sig for "
-            f"{struct_name}.{member_name}"
-        )
+        print(f"    Preprocess: failed to generate struct offset sig for {struct_name}.{member_name}")
     return None
 
 
@@ -6627,31 +6278,31 @@ async def _filter_func_addrs_by_float_xrefs_via_mcp(
         "FLOAT_EPSILON = 1e-6\n"
         "DOUBLE_EPSILON = 1e-12\n"
         "SINGLE_MNEMS = {\n"
-        "    \"addss\", \"subss\", \"mulss\", \"divss\", \"minss\", \"maxss\",\n"
-        "    \"sqrtss\", \"movss\", \"comiss\", \"ucomiss\",\n"
-        "    \"vaddss\", \"vsubss\", \"vmulss\", \"vdivss\", \"vminss\", \"vmaxss\",\n"
-        "    \"vsqrtss\", \"vmovss\", \"vcomiss\", \"vucomiss\",\n"
+        '    "addss", "subss", "mulss", "divss", "minss", "maxss",\n'
+        '    "sqrtss", "movss", "comiss", "ucomiss",\n'
+        '    "vaddss", "vsubss", "vmulss", "vdivss", "vminss", "vmaxss",\n'
+        '    "vsqrtss", "vmovss", "vcomiss", "vucomiss",\n'
         "}\n"
         "DOUBLE_MNEMS = {\n"
-        "    \"addsd\", \"subsd\", \"mulsd\", \"divsd\", \"minsd\", \"maxsd\",\n"
-        "    \"sqrtsd\", \"movsd\", \"comisd\", \"ucomisd\",\n"
-        "    \"vaddsd\", \"vsubsd\", \"vmulsd\", \"vdivsd\", \"vminsd\", \"vmaxsd\",\n"
-        "    \"vsqrtsd\", \"vmovsd\", \"vcomisd\", \"vucomisd\",\n"
+        '    "addsd", "subsd", "mulsd", "divsd", "minsd", "maxsd",\n'
+        '    "sqrtsd", "movsd", "comisd", "ucomisd",\n'
+        '    "vaddsd", "vsubsd", "vmulsd", "vdivsd", "vminsd", "vmaxsd",\n'
+        '    "vsqrtsd", "vmovsd", "vcomisd", "vucomisd",\n'
         "}\n"
         "MEM_OP_TYPES = {idc.o_mem, idc.o_displ, idc.o_phrase}\n"
         "\n"
         "def _scalar_kind(mnem):\n"
-        "    lower = (mnem or \"\").lower()\n"
-        "    if lower in SINGLE_MNEMS and lower.endswith(\"ss\"):\n"
-        "        return \"float\"\n"
-        "    if lower in DOUBLE_MNEMS and lower.endswith(\"sd\"):\n"
-        "        return \"double\"\n"
+        '    lower = (mnem or "").lower()\n'
+        '    if lower in SINGLE_MNEMS and lower.endswith("ss"):\n'
+        '        return "float"\n'
+        '    if lower in DOUBLE_MNEMS and lower.endswith("sd"):\n'
+        '        return "double"\n'
         "    return None\n"
         "\n"
         "def _has_xmm_operand(ea):\n"
         "    for op_idx in range(8):\n"
-        "        text = (idc.print_operand(ea, op_idx) or \"\").lower()\n"
-        "        if \"xmm\" in text:\n"
+        '        text = (idc.print_operand(ea, op_idx) or "").lower()\n'
+        '        if "xmm" in text:\n'
         "            return True\n"
         "    return False\n"
         "\n"
@@ -6659,26 +6310,26 @@ async def _filter_func_addrs_by_float_xrefs_via_mcp(
         "    seg = ida_segment.getseg(ea)\n"
         "    if not seg:\n"
         "        return False\n"
-        "    seg_name = ida_segment.get_segm_name(seg) or \"\"\n"
-        "    return seg_name == \".rdata\" or seg_name.startswith(\".rodata\")\n"
+        '    seg_name = ida_segment.get_segm_name(seg) or ""\n'
+        '    return seg_name == ".rdata" or seg_name.startswith(".rodata")\n'
         "\n"
         "def _matches(value, expected_values, kind):\n"
-        "    epsilon = FLOAT_EPSILON if kind == \"float\" else DOUBLE_EPSILON\n"
+        '    epsilon = FLOAT_EPSILON if kind == "float" else DOUBLE_EPSILON\n'
         "    for expected in expected_values:\n"
         "        if abs(value - expected) < epsilon:\n"
         "            return True\n"
         "    return False\n"
         "\n"
         "def _read_scalar_value(target_ea, kind):\n"
-        "    if kind == \"float\":\n"
+        '    if kind == "float":\n'
         "        raw = ida_bytes.get_bytes(target_ea, 4)\n"
         "        if not raw or len(raw) != 4:\n"
         "            return None\n"
-        "        return struct.unpack(\"<f\", raw)[0]\n"
+        '        return struct.unpack("<f", raw)[0]\n'
         "    raw = ida_bytes.get_bytes(target_ea, 8)\n"
         "    if not raw or len(raw) != 8:\n"
         "        return None\n"
-        "    return struct.unpack(\"<d\", raw)[0]\n"
+        '    return struct.unpack("<d", raw)[0]\n'
         "\n"
         "globals().update(locals())\n"
         "\n"
@@ -6704,19 +6355,19 @@ async def _filter_func_addrs_by_float_xrefs_via_mcp(
         "                if value is None:\n"
         "                    continue\n"
         "                constants.append({\n"
-        "                    \"inst_ea\": hex(insn_ea),\n"
-        "                    \"const_ea\": hex(target_ea),\n"
-        "                    \"kind\": kind,\n"
-        "                    \"value\": value,\n"
+        '                    "inst_ea": hex(insn_ea),\n'
+        '                    "const_ea": hex(target_ea),\n'
+        '                    "kind": kind,\n'
+        '                    "value": value,\n'
         "                })\n"
         "                if _matches(value, xref_values, kind):\n"
         "                    xref_hit = True\n"
         "                if _matches(value, exclude_values, kind):\n"
         "                    exclude_hit = True\n"
         "    out[hex(func_ea)] = {\n"
-        "        \"constants\": constants,\n"
-        "        \"xref_hit\": xref_hit,\n"
-        "        \"exclude_hit\": exclude_hit,\n"
+        '        "constants": constants,\n'
+        '        "xref_hit": xref_hit,\n'
+        '        "exclude_hit": exclude_hit,\n'
         "    }\n"
         "result = json.dumps(out)\n"
     )
@@ -6749,10 +6400,7 @@ async def _filter_func_addrs_by_float_xrefs_via_mcp(
             return None
         if debug:
             constants = entry.get("constants", [])
-            print(
-                "    Preprocess: float constants for "
-                f"{hex(func_addr)} = {constants}"
-            )
+            print(f"    Preprocess: float constants for {hex(func_addr)} = {constants}")
         if exclude_values and exclude_hit:
             excluded_funcs.add(func_addr)
             continue
@@ -6762,15 +6410,9 @@ async def _filter_func_addrs_by_float_xrefs_via_mcp(
         filtered_funcs.add(func_addr)
 
     if debug and missing_xref_funcs:
-        print(
-            "    Preprocess: float xref missing funcs = "
-            f"{[hex(a) for a in sorted(missing_xref_funcs)]}"
-        )
+        print(f"    Preprocess: float xref missing funcs = {[hex(a) for a in sorted(missing_xref_funcs)]}")
     if debug and excluded_funcs:
-        print(
-            "    Preprocess: float exclude funcs = "
-            f"{[hex(a) for a in sorted(excluded_funcs)]}"
-        )
+        print(f"    Preprocess: float exclude funcs = {[hex(a) for a in sorted(excluded_funcs)]}")
 
     return filtered_funcs
 
@@ -6802,9 +6444,7 @@ async def preprocess_func_xrefs_via_mcp(
     callers or fallback alias body, plus optional vtable entries from a class
     name or vtable artifact stem, then applying configured exclusions.
     """
-    if inline_alias is not None and (
-        not isinstance(inline_alias, str) or not inline_alias
-    ):
+    if inline_alias is not None and (not isinstance(inline_alias, str) or not inline_alias):
         if debug:
             print(f"    Preprocess: invalid inline_alias for {func_name}")
         return None
@@ -6822,17 +6462,10 @@ async def preprocess_func_xrefs_via_mcp(
     exclude_floats = exclude_floats or []
     if not has_explicit_positive_source:
         if debug:
-            print(
-                f"    Preprocess: no explicit xref candidate sources "
-                f"configured for {func_name}"
-            )
+            print(f"    Preprocess: no explicit xref candidate sources configured for {func_name}")
         return None
 
-    dep_func_names = (
-        list(xref_funcs or [])
-        + list(exclude_funcs or [])
-        + ([inline_alias] if inline_alias else [])
-    )
+    dep_func_names = list(xref_funcs or []) + list(exclude_funcs or []) + ([inline_alias] if inline_alias else [])
     dep_gv_names = [
         gv_name
         for gv_name in list(xref_gvs or []) + list(exclude_gvs or [])
@@ -6841,19 +6474,13 @@ async def preprocess_func_xrefs_via_mcp(
     if dep_func_names or dep_gv_names or vtable_class:
         if not new_binary_dir:
             if debug:
-                print(
-                    f"    Preprocess: new_binary_dir is required for "
-                    f"xref deps of {func_name}"
-                )
+                print(f"    Preprocess: new_binary_dir is required for xref deps of {func_name}")
             return None
         try:
             new_binary_dir = os.fspath(new_binary_dir)
         except Exception:
             if debug:
-                print(
-                    f"    Preprocess: invalid new_binary_dir for "
-                    f"xref deps of {func_name}"
-                )
+                print(f"    Preprocess: invalid new_binary_dir for xref deps of {func_name}")
             return None
 
     candidate_sets = []
@@ -6868,10 +6495,7 @@ async def preprocess_func_xrefs_via_mcp(
         vtable_data = _read_yaml_file(vtable_yaml_path)
         if not isinstance(vtable_data, dict):
             if debug:
-                print(
-                    f"    Preprocess: vtable YAML missing or invalid: "
-                    f"{os.path.basename(vtable_yaml_path)}"
-                )
+                print(f"    Preprocess: vtable YAML missing or invalid: {os.path.basename(vtable_yaml_path)}")
             return None
 
         vtable_entries = vtable_data.get("vtable_entries", {})
@@ -6884,16 +6508,11 @@ async def preprocess_func_xrefs_via_mcp(
 
         if not vtable_addr_set:
             if debug:
-                print(
-                    f"    Preprocess: empty vtable entries for "
-                    f"{vtable_class}"
-                )
+                print(f"    Preprocess: empty vtable entries for {vtable_class}")
             return None
 
-    for xref_string in (xref_strings or []):
-        addr_set = await _collect_xref_func_starts_for_string(
-            session=session, xref_string=xref_string, debug=debug
-        )
+    for xref_string in xref_strings or []:
+        addr_set = await _collect_xref_func_starts_for_string(session=session, xref_string=xref_string, debug=debug)
         if addr_set is None:
             if debug:
                 short = str(xref_string)[:80]
@@ -6906,7 +6525,7 @@ async def preprocess_func_xrefs_via_mcp(
             return None
         candidate_sets.append(addr_set)
 
-    for xref_gv_name in (xref_gvs or []):
+    for xref_gv_name in xref_gvs or []:
         xref_gv_va = _load_gv_or_explicit_ea(
             new_binary_dir,
             platform,
@@ -6924,19 +6543,14 @@ async def preprocess_func_xrefs_via_mcp(
         )
         if not addr_set:
             if debug:
-                print(
-                    f"    Preprocess: empty candidate set for gv xref: "
-                    f"{xref_gv_name}"
-                )
+                print(f"    Preprocess: empty candidate set for gv xref: {xref_gv_name}")
             return None
         candidate_sets.append(addr_set)
 
-    for xref_signature in (xref_signatures or []):
+    for xref_signature in xref_signatures or []:
         addr_set = None
         narrowed_candidates = _intersect_addr_sets(candidate_sets)
-        if narrowed_candidates and (
-            len(narrowed_candidates) <= _SIGNATURE_XREF_PROBE_MAX_CANDIDATES
-        ):
+        if narrowed_candidates and (len(narrowed_candidates) <= _SIGNATURE_XREF_PROBE_MAX_CANDIDATES):
             if debug:
                 short = str(xref_signature)[:80]
                 print(
@@ -6952,10 +6566,7 @@ async def preprocess_func_xrefs_via_mcp(
             )
             if addr_set is None:
                 if debug:
-                    print(
-                        "    Preprocess: failed to probe signature xref within "
-                        "narrowed candidates"
-                    )
+                    print("    Preprocess: failed to probe signature xref within narrowed candidates")
                 return None
         else:
             addr_set = await _collect_xref_func_starts_for_signature(
@@ -6966,9 +6577,7 @@ async def preprocess_func_xrefs_via_mcp(
         if not addr_set:
             if debug:
                 short = str(xref_signature)[:80]
-                print(
-                    f"    Preprocess: empty candidate set for signature xref: {short}"
-                )
+                print(f"    Preprocess: empty candidate set for signature xref: {short}")
             return None
         candidate_sets.append(addr_set)
 
@@ -6991,26 +6600,17 @@ async def preprocess_func_xrefs_via_mcp(
         )
         if addr_set is None:
             if debug:
-                print(
-                    f"    Preprocess: failed to collect inline_alias callers: "
-                    f"{inline_alias}"
-                )
+                print(f"    Preprocess: failed to collect inline_alias callers: {inline_alias}")
             return None
         if not addr_set:
             addr_set = {inline_alias_va}
             if debug:
-                print(
-                    f"    Preprocess: no single call/jump caller for "
-                    f"{inline_alias}; using alias function itself"
-                )
+                print(f"    Preprocess: no single call/jump caller for {inline_alias}; using alias function itself")
         elif debug:
-            print(
-                f"    Preprocess: inline_alias {inline_alias} matched "
-                f"{len(addr_set)} caller function(s)"
-            )
+            print(f"    Preprocess: inline_alias {inline_alias} matched {len(addr_set)} caller function(s)")
         candidate_sets.append(addr_set)
 
-    for dep_func_name in (xref_funcs or []):
+    for dep_func_name in xref_funcs or []:
         dep_func_va = _load_symbol_addr_from_current_yaml(
             new_binary_dir,
             platform,
@@ -7022,9 +6622,7 @@ async def preprocess_func_xrefs_via_mcp(
         if dep_func_va is None:
             return None
 
-        addr_set = await _collect_xref_func_starts_for_ea(
-            session=session, target_ea=dep_func_va, debug=debug
-        )
+        addr_set = await _collect_xref_func_starts_for_ea(session=session, target_ea=dep_func_va, debug=debug)
         if not addr_set:
             if vtable_addr_set and dep_func_va in vtable_addr_set:
                 addr_set = {dep_func_va}
@@ -7036,23 +6634,17 @@ async def preprocess_func_xrefs_via_mcp(
                     )
             else:
                 if debug:
-                    print(
-                        f"    Preprocess: empty candidate set for func xref: "
-                        f"{dep_func_name}"
-                    )
+                    print(f"    Preprocess: empty candidate set for func xref: {dep_func_name}")
                 return None
         candidate_sets.append(addr_set)
 
     if vtable_addr_set is not None:
         if debug:
-            print(
-                f"    Preprocess: vtable {vtable_class} has "
-                f"{len(vtable_addr_set)} entries as candidate set"
-            )
+            print(f"    Preprocess: vtable {vtable_class} has {len(vtable_addr_set)} entries as candidate set")
         candidate_sets.append(vtable_addr_set)
 
     excluded_func_addrs = set()
-    for excluded_func_name in (exclude_funcs or []):
+    for excluded_func_name in exclude_funcs or []:
         excluded_func_va = _load_symbol_addr_from_current_yaml(
             new_binary_dir,
             platform,
@@ -7067,15 +6659,13 @@ async def preprocess_func_xrefs_via_mcp(
 
     if not candidate_sets:
         if debug:
-            print(
-                f"    Preprocess: no xref candidate sources configured for {func_name}"
-            )
+            print(f"    Preprocess: no xref candidate sources configured for {func_name}")
         return None
 
     common_funcs = _intersect_addr_sets(candidate_sets)
 
     excluded_string_func_addrs = set()
-    for excluded_string in (exclude_strings or []):
+    for excluded_string in exclude_strings or []:
         addr_set = await _collect_xref_func_starts_for_string(
             session=session,
             xref_string=excluded_string,
@@ -7084,29 +6674,18 @@ async def preprocess_func_xrefs_via_mcp(
         if addr_set is None:
             if debug:
                 short = str(excluded_string)[:80]
-                print(
-                    f"    Preprocess: failed to collect exclude string xref: {short}"
-                )
+                print(f"    Preprocess: failed to collect exclude string xref: {short}")
             return None
         if debug:
             short = str(excluded_string)[:80]
-            print(
-                f"    Preprocess: exclude string xref '{short}' matched "
-                f"{len(addr_set)} function(s)"
-            )
+            print(f"    Preprocess: exclude string xref '{short}' matched {len(addr_set)} function(s)")
         excluded_string_func_addrs |= set(addr_set)
 
     if debug and excluded_string_func_addrs:
-        print(
-            "    Preprocess: excluded_string_func_addrs = "
-            f"{[hex(a) for a in sorted(excluded_string_func_addrs)]}"
-        )
+        print(f"    Preprocess: excluded_string_func_addrs = {[hex(a) for a in sorted(excluded_string_func_addrs)]}")
 
     if debug:
-        print(
-            "    Preprocess: common_funcs before excludes = "
-            f"{[hex(a) for a in sorted(common_funcs)]}"
-        )
+        print(f"    Preprocess: common_funcs before excludes = {[hex(a) for a in sorted(common_funcs)]}")
 
     if excluded_func_addrs:
         common_funcs -= excluded_func_addrs
@@ -7115,7 +6694,7 @@ async def preprocess_func_xrefs_via_mcp(
         common_funcs -= excluded_string_func_addrs
 
     excluded_gv_func_addrs = set()
-    for excluded_gv_name in (exclude_gvs or []):
+    for excluded_gv_name in exclude_gvs or []:
         excluded_gv_va = _load_gv_or_explicit_ea(
             new_binary_dir,
             platform,
@@ -7133,17 +6712,14 @@ async def preprocess_func_xrefs_via_mcp(
         )
         if addr_set is None:
             if debug:
-                print(
-                    f"    Preprocess: failed to collect exclude gv xref: "
-                    f"{excluded_gv_name}"
-                )
+                print(f"    Preprocess: failed to collect exclude gv xref: {excluded_gv_name}")
             return None
         excluded_gv_func_addrs |= set(addr_set)
 
     if excluded_gv_func_addrs:
         common_funcs -= excluded_gv_func_addrs
 
-    for excluded_signature in (exclude_signatures or []):
+    for excluded_signature in exclude_signatures or []:
         if not common_funcs:
             break
         filtered_funcs = await _filter_func_addrs_by_signature_via_mcp(
@@ -7160,17 +6736,11 @@ async def preprocess_func_xrefs_via_mcp(
         common_funcs = filtered_funcs
 
     if debug:
-        print(
-            "    Preprocess: common_funcs after excludes = "
-            f"{[hex(a) for a in sorted(common_funcs)]}"
-        )
+        print(f"    Preprocess: common_funcs after excludes = {[hex(a) for a in sorted(common_funcs)]}")
 
     if xref_floats or exclude_floats:
         if debug:
-            print(
-                "    Preprocess: common_funcs before float filters = "
-                f"{[hex(a) for a in sorted(common_funcs)]}"
-            )
+            print(f"    Preprocess: common_funcs before float filters = {[hex(a) for a in sorted(common_funcs)]}")
         filtered_funcs = await _filter_func_addrs_by_float_xrefs_via_mcp(
             session=session,
             func_addrs=common_funcs,
@@ -7184,10 +6754,7 @@ async def preprocess_func_xrefs_via_mcp(
             return None
         common_funcs = filtered_funcs
         if debug:
-            print(
-                "    Preprocess: common_funcs after float filters = "
-                f"{[hex(a) for a in sorted(common_funcs)]}"
-            )
+            print(f"    Preprocess: common_funcs after float filters = {[hex(a) for a in sorted(common_funcs)]}")
 
     if len(common_funcs) != 1:
         if debug:
@@ -7253,7 +6820,7 @@ async def _rename_gv_in_ida(session, gv_va_hex, gv_name, debug=False):
         gv_va_int = int(gv_va_hex, 16)
         await session.call_tool(
             name="py_eval",
-            arguments={"code": f"import idc; idc.set_name({gv_va_int}, \"{gv_name}\", idc.SN_NOWARN)"},
+            arguments={"code": f'import idc; idc.set_name({gv_va_int}, "{gv_name}", idc.SN_NOWARN)'},
         )
         if debug:
             print(f"    Preprocess: renamed gv {gv_va_hex} -> {gv_name}")
@@ -7339,16 +6906,8 @@ def _can_probe_future_func_fast_path(
         list(xref_spec.get("xref_funcs") or [])
         + list(xref_spec.get("exclude_funcs") or [])
         + ([inline_alias] if inline_alias else [])
-        + [
-            gv_name
-            for gv_name in (xref_spec.get("xref_gvs") or [])
-            if not _is_explicit_address_literal(gv_name)
-        ]
-        + [
-            gv_name
-            for gv_name in (xref_spec.get("exclude_gvs") or [])
-            if not _is_explicit_address_literal(gv_name)
-        ]
+        + [gv_name for gv_name in (xref_spec.get("xref_gvs") or []) if not _is_explicit_address_literal(gv_name)]
+        + [gv_name for gv_name in (xref_spec.get("exclude_gvs") or []) if not _is_explicit_address_literal(gv_name)]
     )
     if not dependency_symbol_names:
         return True
@@ -7552,10 +7111,7 @@ async def preprocess_common_skill(
         unknown_keys = sorted(set(spec.keys()) - func_xrefs_allowed_keys)
         if unknown_keys:
             if debug:
-                print(
-                    f"    Preprocess: unknown func_xrefs keys for "
-                    f"{spec.get('func_name')}: {unknown_keys}"
-                )
+                print(f"    Preprocess: unknown func_xrefs keys for {spec.get('func_name')}: {unknown_keys}")
             return False
 
         func_name = spec.get("func_name")
@@ -7574,19 +7130,13 @@ async def preprocess_common_skill(
             field_value = spec.get(field_name, [])
             if not isinstance(field_value, (tuple, list)):
                 if debug:
-                    print(
-                        f"    Preprocess: invalid {field_name} type for "
-                        f"{func_name}: {type(field_value).__name__}"
-                    )
+                    print(f"    Preprocess: invalid {field_name} type for {func_name}: {type(field_value).__name__}")
                 return False
 
             field_list = list(field_value)
             if any(not isinstance(item, str) or not item for item in field_list):
                 if debug:
-                    print(
-                        f"    Preprocess: invalid {field_name} values for "
-                        f"{func_name}"
-                    )
+                    print(f"    Preprocess: invalid {field_name} values for {func_name}")
                 return False
             if field_name in {"xref_floats", "exclude_floats"}:
                 field_list = _normalize_float_xref_values(
@@ -7600,14 +7150,9 @@ async def preprocess_common_skill(
             normalized_spec[field_name] = field_list
 
         inline_alias = spec.get("inline_alias")
-        if inline_alias is not None and (
-            not isinstance(inline_alias, str) or not inline_alias
-        ):
+        if inline_alias is not None and (not isinstance(inline_alias, str) or not inline_alias):
             if debug:
-                print(
-                    f"    Preprocess: invalid inline_alias for "
-                    f"{func_name}: {inline_alias}"
-                )
+                print(f"    Preprocess: invalid inline_alias for {func_name}: {inline_alias}")
             return False
         normalized_spec["inline_alias"] = inline_alias
 
@@ -7645,25 +7190,16 @@ async def preprocess_common_skill(
             return False
         desired_fields = desired_field_spec["desired_output_fields"]
         allowed_fields = TARGET_KIND_TO_FIELD_SET[target_kind]
-        invalid_fields = [
-            field_name for field_name in desired_fields
-            if field_name not in allowed_fields
-        ]
+        invalid_fields = [field_name for field_name in desired_fields if field_name not in allowed_fields]
         if invalid_fields:
             if debug:
-                print(
-                    f"    Preprocess: invalid desired fields for {symbol_name}: "
-                    f"{invalid_fields}"
-                )
+                print(f"    Preprocess: invalid desired fields for {symbol_name}: {invalid_fields}")
             return False
 
     for symbol_name in target_kind_map:
         if symbol_name not in desired_fields_map:
             if debug:
-                print(
-                    f"    Preprocess: missing desired-fields for target symbol: "
-                    f"{symbol_name}"
-                )
+                print(f"    Preprocess: missing desired-fields for target symbol: {symbol_name}")
             return False
 
     # Build vtable-relation lookup: func_name -> vtable_class
@@ -7690,17 +7226,11 @@ async def preprocess_common_skill(
     # --- vtable targets ---
     for vtable_class in vtable_class_names:
         target_filename = f"{vtable_class}_vtable.{platform}.yaml"
-        target_outputs = [
-            path for path in expected_outputs
-            if os.path.basename(path) == target_filename
-        ]
+        target_outputs = [path for path in expected_outputs if os.path.basename(path) == target_filename]
 
         if len(target_outputs) != 1:
             if debug:
-                print(
-                    f"    Preprocess: expected exactly one output named {target_filename}, "
-                    f"got {len(target_outputs)}"
-                )
+                print(f"    Preprocess: expected exactly one output named {target_filename}, got {len(target_outputs)}")
             return False
 
         vtable_data = await preprocess_vtable_via_mcp(
@@ -7747,10 +7277,7 @@ async def preprocess_common_skill(
         missing_iv = [s[0] for s in inherit_vfuncs if s[0] not in iv_matched]
         if missing_iv:
             if debug:
-                print(
-                    "    Preprocess: expected outputs missing for "
-                    f"{', '.join(missing_iv)}"
-                )
+                print(f"    Preprocess: expected outputs missing for {', '.join(missing_iv)}")
             return False
 
         for spec in inherit_vfuncs:
@@ -7764,11 +7291,8 @@ async def preprocess_common_skill(
                     print(f"    Preprocess: missing desired-fields entry for {func_name}")
                 return False
             generation_options = desired_field_spec["generation_options"]
-            slot_only_inherit_vfunc = (
-                not gen_func_sig
-                and _is_slot_only_inherit_vfunc_fields(
-                    desired_field_spec["desired_output_fields"]
-                )
+            slot_only_inherit_vfunc = not gen_func_sig and _is_slot_only_inherit_vfunc_fields(
+                desired_field_spec["desired_output_fields"]
             )
 
             target_output = iv_matched[func_name]
@@ -7839,9 +7363,7 @@ async def preprocess_common_skill(
     # Merge func_names with func-xref-only targets so that functions that
     # appear exclusively in func_xrefs (and not in func_names) are also
     # processed through the func pipeline.
-    xref_only_names = [
-        name for name in func_xrefs_map if name not in func_names
-    ]
+    xref_only_names = [name for name in func_xrefs_map if name not in func_names]
     all_func_names = list(func_names) + xref_only_names
 
     if not all_func_names and not gv_names and not patch_names and not struct_member_names:
@@ -7852,10 +7374,7 @@ async def preprocess_common_skill(
         return True
 
     # Build expected filename -> (kind, name) mapping
-    expected_by_filename = {
-        f"{func_name}.{platform}.yaml": ("func", func_name)
-        for func_name in all_func_names
-    }
+    expected_by_filename = {f"{func_name}.{platform}.yaml": ("func", func_name) for func_name in all_func_names}
     for gv_name in gv_names:
         expected_by_filename[f"{gv_name}.{platform}.yaml"] = ("gv", gv_name)
     for patch_name in patch_names:
@@ -7891,10 +7410,7 @@ async def preprocess_common_skill(
     if missing_func or missing_gv or missing_patch or missing_struct:
         if debug:
             missing = missing_func + missing_gv + missing_patch + missing_struct
-            print(
-                "    Preprocess: expected outputs missing for "
-                f"{', '.join(missing)}"
-            )
+            print(f"    Preprocess: expected outputs missing for {', '.join(missing)}")
         return False
 
     llm_request_cache = {}
@@ -7952,10 +7468,13 @@ async def preprocess_common_skill(
                 candidate_desired_field_spec = desired_fields_map.get(candidate_func_name)
                 candidate_generation_options = {}
                 if isinstance(candidate_desired_field_spec, dict):
-                    candidate_generation_options = candidate_desired_field_spec.get(
-                        "generation_options",
-                        {},
-                    ) or {}
+                    candidate_generation_options = (
+                        candidate_desired_field_spec.get(
+                            "generation_options",
+                            {},
+                        )
+                        or {}
+                    )
                 fast_path_results[candidate_func_name] = await _try_preprocess_func_without_llm(
                     session=session,
                     target_output=candidate_target_output,
@@ -7986,10 +7505,7 @@ async def preprocess_common_skill(
                     debug=debug,
                 )
             candidate_request = llm_request_cache.get(candidate_func_name)
-            if (
-                _build_llm_decompile_request_cache_key(candidate_request)
-                == llm_cache_key
-            ):
+            if _build_llm_decompile_request_cache_key(candidate_request) == llm_cache_key:
                 llm_symbol_name_list.append(candidate_func_name)
 
         for candidate_gv_name in gv_names:
@@ -8014,10 +7530,7 @@ async def preprocess_common_skill(
                     debug=debug,
                 )
             candidate_request = llm_request_cache.get(candidate_gv_name)
-            if (
-                _build_llm_decompile_request_cache_key(candidate_request)
-                == llm_cache_key
-            ):
+            if _build_llm_decompile_request_cache_key(candidate_request) == llm_cache_key:
                 llm_symbol_name_list.append(candidate_gv_name)
 
         for candidate_struct_name in struct_member_names:
@@ -8052,10 +7565,7 @@ async def preprocess_common_skill(
                     debug=debug,
                 )
             candidate_request = llm_request_cache.get(candidate_struct_name)
-            if (
-                _build_llm_decompile_request_cache_key(candidate_request)
-                == llm_cache_key
-            ):
+            if _build_llm_decompile_request_cache_key(candidate_request) == llm_cache_key:
                 llm_symbol_name_list.append(candidate_struct_name)
 
         if not llm_symbol_name_list:
@@ -8246,9 +7756,7 @@ async def preprocess_common_skill(
                     "direct_vcall_inst_va": entry.get("insn_va"),
                     "require_func_sig": "func_sig" in desired_fields_set,
                     "require_vfunc_sig": "vfunc_sig" in desired_fields_set,
-                    "vfunc_sig_max_match": generation_options.get(
-                        "vfunc_sig_max_match", 1
-                    ),
+                    "vfunc_sig_max_match": generation_options.get("vfunc_sig_max_match", 1),
                     "allow_func_sig_across_function_boundary": generation_options.get(
                         "func_sig_allow_across_function_boundary",
                         False,
@@ -8260,9 +7768,7 @@ async def preprocess_common_skill(
                     "vfunc_sig_allow_across_function_boundary",
                     False,
                 ):
-                    direct_vcall_kwargs[
-                        "allow_vfunc_sig_across_function_boundary"
-                    ] = True
+                    direct_vcall_kwargs["allow_vfunc_sig_across_function_boundary"] = True
                 func_data = await _preprocess_direct_func_sig_via_mcp(
                     **direct_vcall_kwargs,
                 )
@@ -8277,9 +7783,7 @@ async def preprocess_common_skill(
                     "func_name": func_name,
                     "llm_result": llm_result,
                     "vtable_name": fallback_vtable_name,
-                    "vfunc_sig_max_match": generation_options.get(
-                        "vfunc_sig_max_match", 1
-                    ),
+                    "vfunc_sig_max_match": generation_options.get("vfunc_sig_max_match", 1),
                     "require_vfunc_sig": "vfunc_sig" in desired_fields_set,
                     "require_vtable_name": "vtable_name" in desired_fields_set,
                     "debug": debug,
@@ -8288,9 +7792,7 @@ async def preprocess_common_skill(
                     "vfunc_sig_allow_across_function_boundary",
                     False,
                 ):
-                    slot_only_kwargs[
-                        "allow_vfunc_sig_across_function_boundary"
-                    ] = True
+                    slot_only_kwargs["allow_vfunc_sig_across_function_boundary"] = True
                 func_data = await _build_enriched_slot_only_vfunc_payload_via_mcp(
                     **slot_only_kwargs,
                 )
@@ -8305,16 +7807,12 @@ async def preprocess_common_skill(
             func_data["vtable_name"] = vtable_relations_map[func_name]
 
         need_vfunc_slot = bool({"vfunc_offset", "vfunc_index"} & desired_fields_set)
-        need_compute_slot = need_vfunc_slot and (
-            "vfunc_offset" not in func_data or "vfunc_index" not in func_data
-        )
+        need_compute_slot = need_vfunc_slot and ("vfunc_offset" not in func_data or "vfunc_index" not in func_data)
         if need_compute_slot:
             vtable_class = vtable_relations_map.get(func_name) or func_data.get("vtable_name")
             if not isinstance(vtable_class, str) or not vtable_class:
                 if debug:
-                    print(
-                        f"    Preprocess: missing vtable class for slot enrichment of {func_name}"
-                    )
+                    print(f"    Preprocess: missing vtable class for slot enrichment of {func_name}")
                 return False
 
             func_va_hex = func_data.get("func_va")
@@ -8322,10 +7820,7 @@ async def preprocess_common_skill(
                 func_va_int = int(str(func_va_hex), 16)
             except (TypeError, ValueError):
                 if debug:
-                    print(
-                        f"    Preprocess: invalid func_va for slot enrichment of "
-                        f"{func_name}: {func_va_hex}"
-                    )
+                    print(f"    Preprocess: invalid func_va for slot enrichment of {func_name}: {func_va_hex}")
                 return False
 
             if _is_vtable_artifact_stem(vtable_class):
@@ -8365,10 +7860,7 @@ async def preprocess_common_skill(
                 )
                 if vtable_data is None:
                     if debug:
-                        print(
-                            f"    Preprocess: failed to look up {vtable_class} "
-                            f"vtable for {func_name}"
-                        )
+                        print(f"    Preprocess: failed to look up {vtable_class} vtable for {func_name}")
                     return False
 
             vtable_entries = vtable_data.get("vtable_entries", {})
@@ -8383,10 +7875,7 @@ async def preprocess_common_skill(
 
             if matched_index is None:
                 if debug:
-                    print(
-                        f"    Preprocess: {func_name} at {func_va_hex} "
-                        f"not found in {vtable_class} vtable entries"
-                    )
+                    print(f"    Preprocess: {func_name} at {func_va_hex} not found in {vtable_class} vtable entries")
                 return False
 
             func_data["vfunc_offset"] = hex(matched_index * 8)
@@ -8463,9 +7952,7 @@ async def preprocess_common_skill(
                 )
                 if direct_gv_va is None:
                     continue
-                _gv_gen_opts = (desired_fields_map.get(gv_name) or {}).get(
-                    "generation_options", {}
-                )
+                _gv_gen_opts = (desired_fields_map.get(gv_name) or {}).get("generation_options", {})
                 gv_data = await _preprocess_direct_gv_sig_via_mcp(
                     session=session,
                     new_path=target_output,
@@ -8473,9 +7960,7 @@ async def preprocess_common_skill(
                     gv_name=gv_name,
                     direct_gv_va=direct_gv_va,
                     gv_access_inst_va=entry.get("insn_va"),
-                    allow_across_function_boundary=_gv_gen_opts.get(
-                        "gv_sig_allow_across_function_boundary", False
-                    ),
+                    allow_across_function_boundary=_gv_gen_opts.get("gv_sig_allow_across_function_boundary", False),
                     debug=debug,
                 )
                 if gv_data is not None:
@@ -8489,9 +7974,7 @@ async def preprocess_common_skill(
             return False
 
         # Inject generation option flags into gv_data for YAML output
-        _gv_gen_opts_final = (desired_fields_map.get(gv_name) or {}).get(
-            "generation_options", {}
-        )
+        _gv_gen_opts_final = (desired_fields_map.get(gv_name) or {}).get("generation_options", {})
         if _gv_gen_opts_final.get("gv_sig_allow_across_function_boundary"):
             gv_data["gv_sig_allow_across_function_boundary"] = True
 
@@ -8599,10 +8082,7 @@ async def preprocess_common_skill(
                 entry_struct_name = str(entry.get("struct_name", "")).strip()
                 entry_member_name = str(entry.get("member_name", "")).strip()
                 if expected_struct_name and expected_member_name:
-                    if (
-                        entry_struct_name != expected_struct_name
-                        or entry_member_name != expected_member_name
-                    ):
+                    if entry_struct_name != expected_struct_name or entry_member_name != expected_member_name:
                         if debug:
                             print(
                                 "    Preprocess: struct-member name mismatch for "
@@ -8616,10 +8096,7 @@ async def preprocess_common_skill(
                         entry_struct_name,
                         entry_member_name,
                     )
-                    if (
-                        entry_symbol_name
-                        != struct_member_name
-                    ):
+                    if entry_symbol_name != struct_member_name:
                         if debug:
                             print(
                                 "    Preprocess: struct-member name mismatch for "

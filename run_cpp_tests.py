@@ -52,9 +52,7 @@ VTABLE_FIXER_AGENT_FILE = Path(".claude/agents/vtable-fixer.md")
 
 def parse_args():
     """Parse CLI arguments."""
-    parser = argparse.ArgumentParser(
-        description="Run configured C++ tests with clang++ and compare vtable metadata"
-    )
+    parser = argparse.ArgumentParser(description="Run configured C++ tests with clang++ and compare vtable metadata")
     parser.add_argument(
         "-configyaml",
         default=DEFAULT_CONFIG_FILE,
@@ -93,7 +91,7 @@ def parse_args():
     parser.add_argument(
         "-agent",
         default=os.environ.get("CS2VIBE_AGENT", DEFAULT_AGENT),
-        help=f"Agent executable to use for analysis, e.g., claude, claude.cmd, codex, codex.cmd (default: {DEFAULT_AGENT}, or set CS2VIBE_AGENT env var)"
+        help=f"Agent executable to use for analysis, e.g., claude, claude.cmd, codex, codex.cmd (default: {DEFAULT_AGENT}, or set CS2VIBE_AGENT env var)",
     )
     parser.add_argument(
         "-maxretry",
@@ -297,9 +295,7 @@ def _build_fix_prompt(
     lines.append(
         f"Please update the C++ header declarations for interface/class/struct '{symbol}' according to the YAML reference layout entries."
     )
-    lines.append(
-        "Follow the existing code style, formatting, and naming conventions in the header."
-    )
+    lines.append("Follow the existing code style, formatting, and naming conventions in the header.")
     lines.append("Do not make unrelated edits.")
     lines.append("")
     lines.append("Header file paths to edit:")
@@ -309,11 +305,11 @@ def _build_fix_prompt(
     lines.append("VTable Information:")
     for report in diff_reports:
         # reference modules are unrelated and should not be populated in prompt.
-        #module_name = report.get("reference_module")
-        #if not module_name:
+        # module_name = report.get("reference_module")
+        # if not module_name:
         #    requested = report.get("requested_modules", [])
         #    module_name = ", ".join(requested) if requested else "unknown"
-        #lines.append(f"Reference module: {module_name}")
+        # lines.append(f"Reference module: {module_name}")
         if report.get("comparison_kind") == "record_layout":
             lines.append("  Current record members in c++ header:")
             for entry_line in format_compiler_record_members(report):
@@ -359,9 +355,7 @@ def run_fix_header_agent(
 
     codex_developer_instructions = None
     if "codex" in agent.lower():
-        codex_developer_instructions = _load_codex_developer_instructions(
-            VTABLE_FIXER_AGENT_FILE
-        )
+        codex_developer_instructions = _load_codex_developer_instructions(VTABLE_FIXER_AGENT_FILE)
         if not codex_developer_instructions:
             return False
 
@@ -428,17 +422,13 @@ def run_fix_header_agent(
                 ]
             retry_target_desc = "the latest codex session (--last)"
         else:
-            print(
-                f"    Error: Unknown agent type '{agent}'. Agent name must contain 'claude' or 'codex'."
-            )
+            print(f"    Error: Unknown agent type '{agent}'. Agent name must contain 'claude' or 'codex'.")
             return False
 
         retry_tag = "[RETRY] " if is_retry else ""
         attempt_str = f"(attempt {attempt + 1}/{max_retries})" if max_retries > 1 else ""
         prompt_transport = " via stdin" if agent_input is not None else ""
-        print(
-            f"    {retry_tag}Running {attempt_str}: {agent} <vtable-fixer-prompt{prompt_transport}>"
-        )
+        print(f"    {retry_tag}Running {attempt_str}: {agent} <vtable-fixer-prompt{prompt_transport}>")
 
         try:
             run_kwargs = {
@@ -559,20 +549,14 @@ def run_fix_header_with_verification(
             return False
 
         new_compare_reports = recompile_result.get("compare_reports") or []
-        new_reports_with_diff = [
-            r for r in new_compare_reports if r.get("differences")
-        ]
+        new_reports_with_diff = [r for r in new_compare_reports if r.get("differences")]
 
         if not new_reports_with_diff:
             print("  [PASS] Verification succeeded -- all layout differences resolved.")
             return True
 
-        remaining_diffs = sum(
-            len(r.get("differences", [])) for r in new_reports_with_diff
-        )
-        print(
-            f"  [INFO] {remaining_diffs} layout difference(s) remain after agent edit."
-        )
+        remaining_diffs = sum(len(r.get("differences", [])) for r in new_reports_with_diff)
+        print(f"  [INFO] {remaining_diffs} layout difference(s) remain after agent edit.")
         if debug:
             for report in new_reports_with_diff:
                 for diff in report.get("differences", []):
@@ -580,9 +564,7 @@ def run_fix_header_with_verification(
 
         current_diff_reports = new_reports_with_diff
 
-    print(
-        f"  [FAIL] Layout differences persist after {max_verify} verify-and-retry cycle(s)."
-    )
+    print(f"  [FAIL] Layout differences persist after {max_verify} verify-and-retry cycle(s).")
     return False
 
 
@@ -769,9 +751,7 @@ def compile_and_compare(
                     "compiler_found": False,
                     "reference_found": False,
                     "differences": [],
-                    "notes": [
-                        f"Cannot map target triple '{target}' to yaml platform; layout compare skipped."
-                    ],
+                    "notes": [f"Cannot map target triple '{target}' to yaml platform; layout compare skipped."],
                 }
             ]
         else:
@@ -779,9 +759,7 @@ def compile_and_compare(
             if should_parse_vtable:
                 alias_symbols = _to_list(test_item.get("alias_symbols"))
                 try:
-                    merge_reference_modules = _to_bool(
-                        test_item.get("merge_reference_modules"), default=True
-                    )
+                    merge_reference_modules = _to_bool(test_item.get("merge_reference_modules"), default=True)
                 except ValueError as exc:
                     return {
                         "status": "invalid",
@@ -876,11 +854,7 @@ def main():
     print(f"clang++ -print-target-triple => {default_target_triple}")
 
     configured_targets = sorted(
-        {
-            str(item.get("target", "")).strip()
-            for item in cpp_tests
-            if str(item.get("target", "")).strip()
-        }
+        {str(item.get("target", "")).strip() for item in cpp_tests if str(item.get("target", "")).strip()}
     )
 
     if not configured_targets:
@@ -911,10 +885,7 @@ def main():
     print(f"Runnable tests: {len(runnable_tests)}")
     print(f"Skipped tests (unsupported target): {len(skipped_tests)}")
     for skipped in skipped_tests:
-        print(
-            f"- skip: {skipped.get('name', 'unnamed_test')} "
-            f"(target={skipped.get('target', '')})"
-        )
+        print(f"- skip: {skipped.get('name', 'unnamed_test')} (target={skipped.get('target', '')})")
 
     if not runnable_tests:
         print("No runnable tests for current clang++ environment.")
@@ -970,14 +941,10 @@ def main():
                 is_record = compare_report.get("comparison_kind") == "record_layout"
                 if is_record:
                     record_compare_run_count += 1
-                    lines = format_record_compare_report(
-                        compare_report, include_differences=not args.debug
-                    )
+                    lines = format_record_compare_report(compare_report, include_differences=not args.debug)
                 else:
                     vtable_compare_run_count += 1
-                    lines = format_vtable_compare_report(
-                        compare_report, include_differences=not args.debug
-                    )
+                    lines = format_vtable_compare_report(compare_report, include_differences=not args.debug)
                 for line in lines:
                     print(f"  {line}")
                 if compare_report.get("differences"):
@@ -989,21 +956,13 @@ def main():
                     reports_with_diff.append(compare_report)
                 if args.debug:
                     if is_record:
-                        compiler_debug_lines = format_compiler_record_members(
-                            compare_report
-                        )
-                        reference_debug_lines = format_reference_record_members(
-                            compare_report
-                        )
+                        compiler_debug_lines = format_compiler_record_members(compare_report)
+                        reference_debug_lines = format_reference_record_members(compare_report)
                         diff_lines = format_record_compare_differences(compare_report)
                         print("  [DEBUG] Compiler record members:")
                     else:
-                        compiler_debug_lines = format_compiler_vtable_entries(
-                            compare_report
-                        )
-                        reference_debug_lines = format_reference_vtable_entries(
-                            compare_report
-                        )
+                        compiler_debug_lines = format_compiler_vtable_entries(compare_report)
+                        reference_debug_lines = format_reference_vtable_entries(compare_report)
                         diff_lines = format_vtable_compare_differences(compare_report)
                         print("  [DEBUG] Compiler vtable entries:")
                     for debug_line in compiler_debug_lines:
@@ -1021,9 +980,7 @@ def main():
                 header_paths = _resolve_header_paths(test_item, config_dir)
                 if not header_paths:
                     header_fix_fail_count += 1
-                    print(
-                        f"  [FAIL] fixheader requested but no headers configured for test '{test_name}'."
-                    )
+                    print(f"  [FAIL] fixheader requested but no headers configured for test '{test_name}'.")
                 else:
                     claude_allowed_tools = _choose_override(
                         test_item.get("claude_allowed_tools"),
@@ -1037,9 +994,7 @@ def main():
                         test_item.get("claude_extra_args"),
                         args.claude_extra_args,
                     )
-                    print(
-                        f"  [INFO] Layout differences detected; invoking agent '{args.agent}' to fix headers..."
-                    )
+                    print(f"  [INFO] Layout differences detected; invoking agent '{args.agent}' to fix headers...")
                     header_fix_run_count += 1
                     if not run_fix_header_with_verification(
                         symbol=symbol,
@@ -1075,12 +1030,7 @@ def main():
     if compare_diff_count > 0:
         print("[FAIL] Layout compare differences are treated as test failures.")
 
-    if (
-        compile_failed_count > 0
-        or invalid_count > 0
-        or compare_diff_count > 0
-        or header_fix_fail_count > 0
-    ):
+    if compile_failed_count > 0 or invalid_count > 0 or compare_diff_count > 0 or header_fix_fail_count > 0:
         return 1
     return 0
 

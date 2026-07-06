@@ -10,12 +10,7 @@ import sys
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from gamedata_utils import (
-    convert_sig_to_swiftly,
-    normalize_func_name_colons_to_underscore,
-    load_jsonc,
-    save_jsonc
-)
+from gamedata_utils import convert_sig_to_swiftly, normalize_func_name_colons_to_underscore, load_jsonc, save_jsonc
 
 # Module metadata
 MODULE_NAME = "SwiftlyS2"
@@ -27,10 +22,14 @@ OFFSETS_PATH = "plugin_files/gamedata/cs2/core/offsets.jsonc"
 
 # Upstream download sources: (raw_url, relative_dest_path)
 DOWNLOAD_SOURCES = [
-    ("https://raw.githubusercontent.com/swiftly-solution/swiftlys2/master/plugin_files/gamedata/cs2/core/offsets.jsonc",
-     OFFSETS_PATH),
-    ("https://raw.githubusercontent.com/swiftly-solution/swiftlys2/master/plugin_files/gamedata/cs2/core/signatures.jsonc",
-     SIGNATURES_PATH),
+    (
+        "https://raw.githubusercontent.com/swiftly-solution/swiftlys2/master/plugin_files/gamedata/cs2/core/offsets.jsonc",
+        OFFSETS_PATH,
+    ),
+    (
+        "https://raw.githubusercontent.com/swiftly-solution/swiftlys2/master/plugin_files/gamedata/cs2/core/signatures.jsonc",
+        SIGNATURES_PATH,
+    ),
 ]
 
 
@@ -104,10 +103,7 @@ def _update_signatures(yaml_data, func_lib_map, platforms, sig_path, alias_to_na
         if not library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "unknown library"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "unknown library"})
             continue
 
         # Find matching YAML data
@@ -115,10 +111,7 @@ def _update_signatures(yaml_data, func_lib_map, platforms, sig_path, alias_to_na
         if not yaml_entry or yaml_entry.get("library") != library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data"})
             continue
 
         # Update platform signatures
@@ -128,11 +121,7 @@ def _update_signatures(yaml_data, func_lib_map, platforms, sig_path, alias_to_na
                 entry[platform] = sig
                 updated_count += 1
                 if debug:
-                    updated_symbols.append({
-                        "name": func_name,
-                        "type": "signature",
-                        "platform": platform
-                    })
+                    updated_symbols.append({"name": func_name, "type": "signature", "platform": platform})
 
     # Write back
     save_jsonc(sig_path, signatures)
@@ -158,10 +147,7 @@ def _update_offsets(yaml_data, func_lib_map, platforms, off_path, alias_to_name_
         if not yaml_entry:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data"})
             continue
 
         # Update platform offsets
@@ -172,21 +158,13 @@ def _update_offsets(yaml_data, func_lib_map, platforms, off_path, alias_to_name_
                     entry[platform] = yaml_entry[platform]["vfunc_index"]
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "offset", "platform": platform})
                 # Check for struct_member_offset (struct member offset)
                 elif "struct_member_offset" in yaml_entry[platform]:
                     entry[platform] = yaml_entry[platform]["struct_member_offset"]
                     updated_count += 1
                     if debug:
-                        updated_symbols.append({
-                            "name": func_name,
-                            "type": "struct_offset",
-                            "platform": platform
-                        })
+                        updated_symbols.append({"name": func_name, "type": "struct_offset", "platform": platform})
 
     # Write back
     save_jsonc(off_path, offsets)

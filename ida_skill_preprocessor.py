@@ -85,10 +85,7 @@ def _get_preprocess_entry(skill_name, debug=False):
     preprocess_func = getattr(module, _PREPROCESS_EXPORT_NAME, None)
     if not callable(preprocess_func):
         if debug:
-            print(
-                f"    Preprocess: script {script_path} does not export callable "
-                f"{_PREPROCESS_EXPORT_NAME}"
-            )
+            print(f"    Preprocess: script {script_path} does not export callable {_PREPROCESS_EXPORT_NAME}")
         _SCRIPT_ENTRY_CACHE[skill_name] = None
         return None
 
@@ -97,10 +94,20 @@ def _get_preprocess_entry(skill_name, debug=False):
 
 
 async def preprocess_single_skill_via_mcp(
-    host, port, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform,
-    llm_model=None, llm_apikey=None, llm_baseurl=None, llm_temperature=None,
-    llm_effort=None, llm_fake_as=None, llm_max_retries=None,
+    host,
+    port,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    llm_model=None,
+    llm_apikey=None,
+    llm_baseurl=None,
+    llm_temperature=None,
+    llm_effort=None,
+    llm_fake_as=None,
+    llm_max_retries=None,
     debug=False,
 ):
     """
@@ -155,8 +162,7 @@ async def preprocess_single_skill_via_mcp(
 
                     # Get image_base once for the script.
                     ib_result = await session.call_tool(
-                        name="py_eval",
-                        arguments={"code": "hex(idaapi.get_imagebase())"}
+                        name="py_eval", arguments={"code": "hex(idaapi.get_imagebase())"}
                     )
                     ib_data = parse_mcp_result(ib_result)
                     if isinstance(ib_data, dict):
@@ -202,4 +208,3 @@ async def preprocess_single_skill_via_mcp(
             print(f"  Preprocess MCP connection error for {skill_name}: {e}")
 
     return PREPROCESS_STATUS_FAILED
-

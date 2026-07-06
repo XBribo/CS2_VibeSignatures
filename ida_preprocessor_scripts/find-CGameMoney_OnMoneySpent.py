@@ -44,8 +44,14 @@ def _read_vtable_va(yaml_path):
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     vtable_yaml_path = os.path.join(
@@ -55,17 +61,10 @@ async def preprocess_skill(
     vtable_va = _read_vtable_va(vtable_yaml_path)
     if not vtable_va:
         if debug:
-            print(
-                "    Preprocess: CGameMoney_vtable "
-                "vtable_va not found, cannot resolve xref_gvs"
-            )
+            print("    Preprocess: CGameMoney_vtable vtable_va not found, cannot resolve xref_gvs")
         return False
 
-    xref_signatures = (
-        ["4C 8B 80 ?? 01 00 00 48 8D 05"]
-        if platform == "windows"
-        else ["48 8B 80 ?? 01 00 00 48 39 D0"]
-    )
+    xref_signatures = ["4C 8B 80 ?? 01 00 00 48 8D 05"] if platform == "windows" else ["48 8B 80 ?? 01 00 00 48 39 D0"]
 
     func_xrefs = [
         {

@@ -25,7 +25,7 @@ MANGLED_CLASS_NAMES = {
 }
 
 
-_PY_EVAL_TEMPLATE = r'''
+_PY_EVAL_TEMPLATE = r"""
 import ida_auto, ida_bytes, ida_name, idaapi, ida_segment, idautils, idc, json
 
 class_name = CLASS_NAME_PLACEHOLDER
@@ -123,7 +123,7 @@ if debug_enabled:
     result_obj["candidates"] = candidates
     result_obj["debug_trace"] = debug_trace
 result = json.dumps(result_obj)
-'''
+"""
 
 
 def _read_yaml(path):
@@ -142,11 +142,7 @@ def _parse_int(value):
 
 def _match_output(expected_outputs, platform):
     expected_filename = f"{TARGET_OUTPUT_STEM}.{platform}.yaml"
-    matches = [
-        output_path
-        for output_path in expected_outputs
-        if Path(output_path).name == expected_filename
-    ]
+    matches = [output_path for output_path in expected_outputs if Path(output_path).name == expected_filename]
     return matches[0] if len(matches) == 1 else None
 
 
@@ -164,8 +160,7 @@ def _build_py_eval(platform, main_vtable_va, image_base, debug):
     if not symbol_name:
         return None
     return (
-        _PY_EVAL_TEMPLATE
-        .replace("CLASS_NAME_PLACEHOLDER", json.dumps(TARGET_CLASS_NAME))
+        _PY_EVAL_TEMPLATE.replace("CLASS_NAME_PLACEHOLDER", json.dumps(TARGET_CLASS_NAME))
         .replace("SYMBOL_NAME_PLACEHOLDER", json.dumps(symbol_name))
         .replace("PLATFORM_PLACEHOLDER", json.dumps(platform))
         .replace("MAIN_VTABLE_VA_PLACEHOLDER", str(int(main_vtable_va)))
@@ -208,9 +203,7 @@ async def preprocess_skill(
 
     try:
         main_vtable_va = _parse_int(main_data["vtable_va"])
-        selected = await _lookup_vtable2(
-            session, platform, main_vtable_va, image_base, debug
-        )
+        selected = await _lookup_vtable2(session, platform, main_vtable_va, image_base, debug)
     except Exception:
         return False
 

@@ -48,7 +48,11 @@ STRING_XREF_FUNC_PTR_OFFSET = 0x10
 
 
 async def _linux_resolve_via_string_xref(
-    session, expected_outputs, platform, image_base, debug=False,
+    session,
+    expected_outputs,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Find CBaseFilter_InputTestActivator on Linux via TestActivator string xref."""
     func_name = "CBaseFilter_InputTestActivator"
@@ -70,9 +74,7 @@ async def _linux_resolve_via_string_xref(
         "search_str = 'TestActivator'",
         "func_va = None",
     ]
-    py_lines.extend(
-        _build_ida_strings_enumerator_py_lines(strings_var_name="strings")
-    )
+    py_lines.extend(_build_ida_strings_enumerator_py_lines(strings_var_name="strings"))
     py_lines.extend(
         [
             "for s in strings:",
@@ -120,25 +122,17 @@ async def _linux_resolve_via_string_xref(
 
     if not func_va:
         if debug:
-            print(
-                "    Preprocess: could not resolve "
-                "CBaseFilter_InputTestActivator via string xref"
-            )
+            print("    Preprocess: could not resolve CBaseFilter_InputTestActivator via string xref")
         return False
 
     if debug:
-        print(
-            f"    Preprocess: {func_name} at {hex(func_va)} "
-            "(via TestActivator string xref + 0x10)"
-        )
+        print(f"    Preprocess: {func_name} at {hex(func_va)} (via TestActivator string xref + 0x10)")
 
     # Rename function in IDA
     try:
         await session.call_tool(
             name="rename",
-            arguments={
-                "batch": {"func": {"addr": hex(func_va), "name": func_name}}
-            },
+            arguments={"batch": {"func": {"addr": hex(func_va), "name": func_name}}},
         )
     except Exception:
         pass
@@ -172,8 +166,15 @@ async def _linux_resolve_via_string_xref(
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Windows: LLM_DECOMPILE via _Register. Linux: string xref + data ptr."""
     if platform == "windows":
@@ -219,13 +220,14 @@ async def preprocess_skill(
                 if reuse_result:
                     write_func_yaml(output_path, reuse_result)
                     if debug:
-                        print(
-                            f"    Preprocess: {func_name} resolved "
-                            "via signature reuse"
-                        )
+                        print(f"    Preprocess: {func_name} resolved via signature reuse")
                     return True
 
         # Fallback: string xref approach
         return await _linux_resolve_via_string_xref(
-            session, expected_outputs, platform, image_base, debug=debug,
+            session,
+            expected_outputs,
+            platform,
+            image_base,
+            debug=debug,
         )

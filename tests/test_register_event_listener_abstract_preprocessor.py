@@ -27,9 +27,7 @@ def _py_eval_payload(payload: object) -> _FakeCallToolResult:
 
 
 def _import_register_event_listener_module():
-    return importlib.import_module(
-        "ida_preprocessor_scripts._register_event_listener_abstract"
-    )
+    return importlib.import_module("ida_preprocessor_scripts._register_event_listener_abstract")
 
 
 class TestBuildRegisterEventListenerPyEval(unittest.TestCase):
@@ -327,16 +325,14 @@ class TestCollectRegisterEventListenerCandidates(unittest.IsolatedAsyncioTestCas
             }
         )
 
-        result = (
-            await register_event_listener._collect_register_event_listener_candidates(
-                session=session,
-                platform="windows",
-                source_func_va="0x180010000",
-                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                search_window_after_anchor=24,
-                search_window_before_call=64,
-                debug=True,
-            )
+        result = await register_event_listener._collect_register_event_listener_candidates(
+            session=session,
+            platform="windows",
+            source_func_va="0x180010000",
+            anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+            search_window_after_anchor=24,
+            search_window_before_call=64,
+            debug=True,
         )
 
         py_eval_code = session.call_tool.await_args.kwargs["arguments"]["code"]
@@ -354,20 +350,16 @@ class TestCollectRegisterEventListenerCandidates(unittest.IsolatedAsyncioTestCas
     ) -> None:
         register_event_listener = _import_register_event_listener_module()
         session = AsyncMock()
-        session.call_tool.return_value = _py_eval_payload(
-            {"ok": False, "error": "ida_hexrays unavailable"}
-        )
+        session.call_tool.return_value = _py_eval_payload({"ok": False, "error": "ida_hexrays unavailable"})
 
-        result = (
-            await register_event_listener._collect_register_event_listener_candidates(
-                session=session,
-                platform="linux",
-                source_func_va="0x180010000",
-                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                search_window_after_anchor=24,
-                search_window_before_call=64,
-                debug=True,
-            )
+        result = await register_event_listener._collect_register_event_listener_candidates(
+            session=session,
+            platform="linux",
+            source_func_va="0x180010000",
+            anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+            search_window_after_anchor=24,
+            search_window_before_call=64,
+            debug=True,
         )
 
         self.assertIsNone(result)
@@ -385,16 +377,14 @@ class TestCollectRegisterEventListenerCandidates(unittest.IsolatedAsyncioTestCas
             }
         )
 
-        result = (
-            await register_event_listener._collect_register_event_listener_candidates(
-                session=session,
-                platform="windows",
-                source_func_va="0x180010000",
-                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                search_window_after_anchor=24,
-                search_window_before_call=64,
-                debug=True,
-            )
+        result = await register_event_listener._collect_register_event_listener_candidates(
+            session=session,
+            platform="windows",
+            source_func_va="0x180010000",
+            anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+            search_window_after_anchor=24,
+            search_window_before_call=64,
+            debug=True,
         )
 
         self.assertIsNone(result)
@@ -419,16 +409,14 @@ class TestCollectRegisterEventListenerCandidates(unittest.IsolatedAsyncioTestCas
             }
         )
 
-        result = (
-            await register_event_listener._collect_register_event_listener_candidates(
-                session=session,
-                platform="windows",
-                source_func_va="0x180010000",
-                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                search_window_after_anchor=24,
-                search_window_before_call=64,
-                debug=True,
-            )
+        result = await register_event_listener._collect_register_event_listener_candidates(
+            session=session,
+            platform="windows",
+            source_func_va="0x180010000",
+            anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+            search_window_after_anchor=24,
+            search_window_before_call=64,
+            debug=True,
         )
 
         self.assertIsNone(result)
@@ -454,24 +442,20 @@ class TestCollectRegisterEventListenerCandidates(unittest.IsolatedAsyncioTestCas
             }
         )
 
-        result = (
-            await register_event_listener._collect_register_event_listener_candidates(
-                session=session,
-                platform="windows",
-                source_func_va="0x180010000",
-                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                search_window_after_anchor=24,
-                search_window_before_call=64,
-                debug=True,
-            )
+        result = await register_event_listener._collect_register_event_listener_candidates(
+            session=session,
+            platform="windows",
+            source_func_va="0x180010000",
+            anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+            search_window_after_anchor=24,
+            search_window_before_call=64,
+            debug=True,
         )
 
         self.assertIsNone(result)
 
 
-class TestPreprocessRegisterEventListenerAbstractSkill(
-    unittest.IsolatedAsyncioTestCase
-):
+class TestPreprocessRegisterEventListenerAbstractSkill(unittest.IsolatedAsyncioTestCase):
     async def test_preprocess_skill_writes_register_function_and_target_callbacks(
         self,
     ) -> None:
@@ -504,64 +488,67 @@ class TestPreprocessRegisterEventListenerAbstractSkill(
             _ = debug
             return func_info_by_va.get(func_va)
 
-        with patch.object(
-            register_event_listener,
-            "_read_yaml",
-            return_value={"func_va": "0x180010000"},
-        ), patch.object(
-            register_event_listener,
-            "_collect_register_event_listener_candidates",
-            AsyncMock(
-                return_value={
-                    "register_func_va": "0x180055000",
-                    "items": [
-                        {
-                            "event_name": "CLoopModeGame::OnClientPollNetworking",
-                            "callback_va": "0x180066000",
-                            "call_ea": "0x180012345",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        },
-                        {
-                            "event_name": "CLoopModeGame::OnClientAdvanceTick",
-                            "callback_va": "0x180077000",
-                            "call_ea": "0x180012390",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        },
-                        {
-                            "event_name": "CLoopModeGame::OnUnusedNullsub",
-                            "callback_va": "0x180088000",
-                            "call_ea": "0x1800123D0",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        },
-                    ],
-                }
+        with (
+            patch.object(
+                register_event_listener,
+                "_read_yaml",
+                return_value={"func_va": "0x180010000"},
             ),
-        ), patch.object(
-            register_event_listener,
-            "_query_func_info",
-            AsyncMock(side_effect=_query_func_info_by_va),
-        ), patch.object(register_event_listener, "write_func_yaml") as mock_write:
-            result = (
-                await register_event_listener.preprocess_register_event_listener_abstract_skill(
-                    session=AsyncMock(),
-                    expected_outputs=[
-                        "/tmp/RegisterEventListener_Abstract.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientAdvanceTick.windows.yaml",
-                    ],
-                    new_binary_dir="/tmp",
-                    platform="windows",
-                    image_base=0x180000000,
-                    source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
-                    register_func_target_name="RegisterEventListener_Abstract",
-                    anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                    target_specs=target_specs,
-                    generate_yaml_desired_fields=requested_fields,
-                    debug=True,
-                )
+            patch.object(
+                register_event_listener,
+                "_collect_register_event_listener_candidates",
+                AsyncMock(
+                    return_value={
+                        "register_func_va": "0x180055000",
+                        "items": [
+                            {
+                                "event_name": "CLoopModeGame::OnClientPollNetworking",
+                                "callback_va": "0x180066000",
+                                "call_ea": "0x180012345",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            },
+                            {
+                                "event_name": "CLoopModeGame::OnClientAdvanceTick",
+                                "callback_va": "0x180077000",
+                                "call_ea": "0x180012390",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            },
+                            {
+                                "event_name": "CLoopModeGame::OnUnusedNullsub",
+                                "callback_va": "0x180088000",
+                                "call_ea": "0x1800123D0",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            },
+                        ],
+                    }
+                ),
+            ),
+            patch.object(
+                register_event_listener,
+                "_query_func_info",
+                AsyncMock(side_effect=_query_func_info_by_va),
+            ),
+            patch.object(register_event_listener, "write_func_yaml") as mock_write,
+        ):
+            result = await register_event_listener.preprocess_register_event_listener_abstract_skill(
+                session=AsyncMock(),
+                expected_outputs=[
+                    "/tmp/RegisterEventListener_Abstract.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientAdvanceTick.windows.yaml",
+                ],
+                new_binary_dir="/tmp",
+                platform="windows",
+                image_base=0x180000000,
+                source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
+                register_func_target_name="RegisterEventListener_Abstract",
+                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+                target_specs=target_specs,
+                generate_yaml_desired_fields=requested_fields,
+                debug=True,
             )
 
         self.assertTrue(result)
@@ -580,10 +567,7 @@ class TestPreprocessRegisterEventListenerAbstractSkill(
                 "func_va": "0x180077000",
             },
         }
-        actual_writes = {
-            call_args.args[0]: call_args.args[1]
-            for call_args in mock_write.call_args_list
-        }
+        actual_writes = {call_args.args[0]: call_args.args[1] for call_args in mock_write.call_args_list}
         self.assertEqual(expected_writes, actual_writes)
         self.assertNotIn(
             "/tmp/CLoopModeGame_OnUnusedNullsub.windows.yaml",
@@ -652,44 +636,49 @@ class TestPreprocessRegisterEventListenerAbstractSkill(
         mock_query = AsyncMock(side_effect=_query_func_info_by_va)
         mock_sig = AsyncMock(side_effect=_gen_func_sig_by_va)
 
-        with patch.object(
-            register_event_listener,
-            "_read_yaml",
-            return_value={"func_va": "0x180010000"},
-        ), patch.object(
-            register_event_listener,
-            "_collect_register_event_listener_candidates",
-            mock_collect,
-        ), patch.object(
-            register_event_listener,
-            "_query_func_info",
-            mock_query,
-        ), patch.object(
-            register_event_listener,
-            "preprocess_gen_func_sig_via_mcp",
-            mock_sig,
-        ), patch.object(
-            register_event_listener,
-            "_rename_func_best_effort",
-            AsyncMock(),
-        ), patch.object(register_event_listener, "write_func_yaml") as mock_write:
-            result = (
-                await register_event_listener.preprocess_register_event_listener_abstract_skill(
-                    session=AsyncMock(),
-                    expected_outputs=[
-                        "/tmp/RegisterEventListener_Abstract.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
-                    ],
-                    new_binary_dir="/tmp",
-                    platform="windows",
-                    image_base=0x180000000,
-                    source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
-                    register_func_target_name="RegisterEventListener_Abstract",
-                    anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                    target_specs=target_specs,
-                    generate_yaml_desired_fields=requested_fields,
-                    debug=True,
-                )
+        with (
+            patch.object(
+                register_event_listener,
+                "_read_yaml",
+                return_value={"func_va": "0x180010000"},
+            ),
+            patch.object(
+                register_event_listener,
+                "_collect_register_event_listener_candidates",
+                mock_collect,
+            ),
+            patch.object(
+                register_event_listener,
+                "_query_func_info",
+                mock_query,
+            ),
+            patch.object(
+                register_event_listener,
+                "preprocess_gen_func_sig_via_mcp",
+                mock_sig,
+            ),
+            patch.object(
+                register_event_listener,
+                "_rename_func_best_effort",
+                AsyncMock(),
+            ),
+            patch.object(register_event_listener, "write_func_yaml") as mock_write,
+        ):
+            result = await register_event_listener.preprocess_register_event_listener_abstract_skill(
+                session=AsyncMock(),
+                expected_outputs=[
+                    "/tmp/RegisterEventListener_Abstract.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
+                ],
+                new_binary_dir="/tmp",
+                platform="windows",
+                image_base=0x180000000,
+                source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
+                register_func_target_name="RegisterEventListener_Abstract",
+                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+                target_specs=target_specs,
+                generate_yaml_desired_fields=requested_fields,
+                debug=True,
             )
 
         self.assertTrue(result)
@@ -714,10 +703,7 @@ class TestPreprocessRegisterEventListenerAbstractSkill(
                 "func_size": "0x50",
             },
         }
-        actual_writes = {
-            call_args.args[0]: call_args.args[1]
-            for call_args in mock_write.call_args_list
-        }
+        actual_writes = {call_args.args[0]: call_args.args[1] for call_args in mock_write.call_args_list}
         self.assertEqual(expected_writes, actual_writes)
 
     async def test_preprocess_skill_returns_false_when_declared_event_is_missing(
@@ -740,52 +726,53 @@ class TestPreprocessRegisterEventListenerAbstractSkill(
             ("CLoopModeGame_OnClientAdvanceTick", ["func_name", "func_va"]),
         ]
 
-        with patch.object(
-            register_event_listener,
-            "_read_yaml",
-            return_value={"func_va": "0x180010000"},
-        ), patch.object(
-            register_event_listener,
-            "_collect_register_event_listener_candidates",
-            AsyncMock(
-                return_value={
-                    "register_func_va": "0x180055000",
-                    "items": [
-                        {
-                            "event_name": "CLoopModeGame::OnClientPollNetworking",
-                            "callback_va": "0x180066000",
-                            "call_ea": "0x180012345",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        }
-                    ],
-                }
+        with (
+            patch.object(
+                register_event_listener,
+                "_read_yaml",
+                return_value={"func_va": "0x180010000"},
             ),
-        ), patch.object(
-            register_event_listener,
-            "_query_func_info",
-            AsyncMock(
-                return_value={"func_va": "0x180055000", "func_size": "0x40"}
+            patch.object(
+                register_event_listener,
+                "_collect_register_event_listener_candidates",
+                AsyncMock(
+                    return_value={
+                        "register_func_va": "0x180055000",
+                        "items": [
+                            {
+                                "event_name": "CLoopModeGame::OnClientPollNetworking",
+                                "callback_va": "0x180066000",
+                                "call_ea": "0x180012345",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            }
+                        ],
+                    }
+                ),
             ),
-        ), patch.object(register_event_listener, "write_func_yaml") as mock_write:
-            result = (
-                await register_event_listener.preprocess_register_event_listener_abstract_skill(
-                    session=AsyncMock(),
-                    expected_outputs=[
-                        "/tmp/RegisterEventListener_Abstract.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientAdvanceTick.windows.yaml",
-                    ],
-                    new_binary_dir="/tmp",
-                    platform="windows",
-                    image_base=0x180000000,
-                    source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
-                    register_func_target_name="RegisterEventListener_Abstract",
-                    anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                    target_specs=target_specs,
-                    generate_yaml_desired_fields=requested_fields,
-                    debug=True,
-                )
+            patch.object(
+                register_event_listener,
+                "_query_func_info",
+                AsyncMock(return_value={"func_va": "0x180055000", "func_size": "0x40"}),
+            ),
+            patch.object(register_event_listener, "write_func_yaml") as mock_write,
+        ):
+            result = await register_event_listener.preprocess_register_event_listener_abstract_skill(
+                session=AsyncMock(),
+                expected_outputs=[
+                    "/tmp/RegisterEventListener_Abstract.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientAdvanceTick.windows.yaml",
+                ],
+                new_binary_dir="/tmp",
+                platform="windows",
+                image_base=0x180000000,
+                source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
+                register_func_target_name="RegisterEventListener_Abstract",
+                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+                target_specs=target_specs,
+                generate_yaml_desired_fields=requested_fields,
+                debug=True,
             )
 
         self.assertFalse(result)
@@ -806,64 +793,68 @@ class TestPreprocessRegisterEventListenerAbstractSkill(
             ("CLoopModeGame_OnClientPollNetworking", ["func_name", "func_va"]),
         ]
 
-        with patch.object(
-            register_event_listener,
-            "_read_yaml",
-            return_value={"func_va": "0x180010000"},
-        ), patch.object(
-            register_event_listener,
-            "_collect_register_event_listener_candidates",
-            AsyncMock(
-                return_value={
-                    "register_func_va": "0x180055000",
-                    "items": [
-                        {
-                            "event_name": "CLoopModeGame::OnClientPollNetworking",
-                            "callback_va": "0x180066000",
-                            "call_ea": "0x180012345",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        },
-                        {
-                            "event_name": "CLoopModeGame::OnUnusedNullsub",
-                            "callback_va": "0x180077000",
-                            "call_ea": "0x180012390",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        },
-                    ],
-                }
+        with (
+            patch.object(
+                register_event_listener,
+                "_read_yaml",
+                return_value={"func_va": "0x180010000"},
             ),
-        ), patch.object(
-            register_event_listener,
-            "_query_func_info",
-            AsyncMock(),
-        ) as mock_query, patch.object(
-            register_event_listener,
-            "_rename_func_best_effort",
-            AsyncMock(),
-        ) as mock_rename, patch.object(
-            register_event_listener,
-            "write_func_yaml",
-        ) as mock_write:
-            result = (
-                await register_event_listener.preprocess_register_event_listener_abstract_skill(
-                    session=AsyncMock(),
-                    expected_outputs=[
-                        "/tmp/RegisterEventListener_Abstract.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
-                    ],
-                    new_binary_dir="/tmp",
-                    platform="windows",
-                    image_base=0x180000000,
-                    source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
-                    register_func_target_name="RegisterEventListener_Abstract",
-                    anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                    target_specs=target_specs,
-                    generate_yaml_desired_fields=requested_fields,
-                    allow_extra_events=False,
-                    debug=True,
-                )
+            patch.object(
+                register_event_listener,
+                "_collect_register_event_listener_candidates",
+                AsyncMock(
+                    return_value={
+                        "register_func_va": "0x180055000",
+                        "items": [
+                            {
+                                "event_name": "CLoopModeGame::OnClientPollNetworking",
+                                "callback_va": "0x180066000",
+                                "call_ea": "0x180012345",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            },
+                            {
+                                "event_name": "CLoopModeGame::OnUnusedNullsub",
+                                "callback_va": "0x180077000",
+                                "call_ea": "0x180012390",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            },
+                        ],
+                    }
+                ),
+            ),
+            patch.object(
+                register_event_listener,
+                "_query_func_info",
+                AsyncMock(),
+            ) as mock_query,
+            patch.object(
+                register_event_listener,
+                "_rename_func_best_effort",
+                AsyncMock(),
+            ) as mock_rename,
+            patch.object(
+                register_event_listener,
+                "write_func_yaml",
+            ) as mock_write,
+        ):
+            result = await register_event_listener.preprocess_register_event_listener_abstract_skill(
+                session=AsyncMock(),
+                expected_outputs=[
+                    "/tmp/RegisterEventListener_Abstract.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
+                ],
+                new_binary_dir="/tmp",
+                platform="windows",
+                image_base=0x180000000,
+                source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
+                register_func_target_name="RegisterEventListener_Abstract",
+                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+                target_specs=target_specs,
+                generate_yaml_desired_fields=requested_fields,
+                allow_extra_events=False,
+                debug=True,
             )
 
         self.assertFalse(result)
@@ -900,64 +891,68 @@ class TestPreprocessRegisterEventListenerAbstractSkill(
             _ = debug
             return func_info_by_va.get(func_va)
 
-        with patch.object(
-            register_event_listener,
-            "_read_yaml",
-            return_value={"func_va": "0x180010000"},
-        ), patch.object(
-            register_event_listener,
-            "_collect_register_event_listener_candidates",
-            AsyncMock(
-                return_value={
-                    "register_func_va": "0x180055000",
-                    "items": [
-                        {
-                            "event_name": "CLoopModeGame::OnClientPollNetworking",
-                            "callback_va": "0x180066000",
-                            "call_ea": "0x180012345",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        },
-                        {
-                            "event_name": "CLoopModeGame::OnClientAdvanceTick",
-                            "callback_va": "0x180077000",
-                            "call_ea": "0x180012390",
-                            "temp_base": "0x28",
-                            "temp_callback_slot": "0x30",
-                        },
-                    ],
-                }
+        with (
+            patch.object(
+                register_event_listener,
+                "_read_yaml",
+                return_value={"func_va": "0x180010000"},
             ),
-        ), patch.object(
-            register_event_listener,
-            "_query_func_info",
-            AsyncMock(side_effect=_query_func_info_by_va),
-        ), patch.object(
-            register_event_listener,
-            "_rename_func_best_effort",
-            AsyncMock(),
-        ) as mock_rename, patch.object(
-            register_event_listener,
-            "write_func_yaml",
-        ) as mock_write:
-            result = (
-                await register_event_listener.preprocess_register_event_listener_abstract_skill(
-                    session=AsyncMock(),
-                    expected_outputs=[
-                        "/tmp/RegisterEventListener_Abstract.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
-                        "/tmp/CLoopModeGame_OnClientAdvanceTick.windows.yaml",
-                    ],
-                    new_binary_dir="/tmp",
-                    platform="windows",
-                    image_base=0x180000000,
-                    source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
-                    register_func_target_name="RegisterEventListener_Abstract",
-                    anchor_event_name="CLoopModeGame::OnClientPollNetworking",
-                    target_specs=target_specs,
-                    generate_yaml_desired_fields=requested_fields,
-                    debug=True,
-                )
+            patch.object(
+                register_event_listener,
+                "_collect_register_event_listener_candidates",
+                AsyncMock(
+                    return_value={
+                        "register_func_va": "0x180055000",
+                        "items": [
+                            {
+                                "event_name": "CLoopModeGame::OnClientPollNetworking",
+                                "callback_va": "0x180066000",
+                                "call_ea": "0x180012345",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            },
+                            {
+                                "event_name": "CLoopModeGame::OnClientAdvanceTick",
+                                "callback_va": "0x180077000",
+                                "call_ea": "0x180012390",
+                                "temp_base": "0x28",
+                                "temp_callback_slot": "0x30",
+                            },
+                        ],
+                    }
+                ),
+            ),
+            patch.object(
+                register_event_listener,
+                "_query_func_info",
+                AsyncMock(side_effect=_query_func_info_by_va),
+            ),
+            patch.object(
+                register_event_listener,
+                "_rename_func_best_effort",
+                AsyncMock(),
+            ) as mock_rename,
+            patch.object(
+                register_event_listener,
+                "write_func_yaml",
+            ) as mock_write,
+        ):
+            result = await register_event_listener.preprocess_register_event_listener_abstract_skill(
+                session=AsyncMock(),
+                expected_outputs=[
+                    "/tmp/RegisterEventListener_Abstract.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientPollNetworking.windows.yaml",
+                    "/tmp/CLoopModeGame_OnClientAdvanceTick.windows.yaml",
+                ],
+                new_binary_dir="/tmp",
+                platform="windows",
+                image_base=0x180000000,
+                source_yaml_stem="CLoopModeGame_RegisterEventMapInternal",
+                register_func_target_name="RegisterEventListener_Abstract",
+                anchor_event_name="CLoopModeGame::OnClientPollNetworking",
+                target_specs=target_specs,
+                generate_yaml_desired_fields=requested_fields,
+                debug=True,
             )
 
         self.assertFalse(result)

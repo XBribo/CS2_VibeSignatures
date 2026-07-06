@@ -1,6 +1,5 @@
 modules:
   - name: server
-
     symbols:
       - name: gameeventmanager
         category: gv

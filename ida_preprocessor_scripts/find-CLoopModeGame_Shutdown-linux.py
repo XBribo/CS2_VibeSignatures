@@ -8,18 +8,18 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 FUNC_XREFS = [
-                 {
-                     "func_name": 'CLoopModeGame_Shutdown',
-                     "xref_strings": ['--CLoopModeGame::SetWorldSession'],
-                     "xref_gvs": [],
-                     "xref_signatures": [],
-                     "xref_funcs": ['CLoopModeGame_SetGameSystemState'],
-                     "exclude_funcs": ['CLoopModeGame_SetWorldSession'],
-                     "exclude_strings": ["CLoopModeGame::ReceivedServerInfo restarting loopmode game systems from"],
-                     "exclude_gvs": [],
-                     "exclude_signatures": [],
-                 },
-             ]
+    {
+        "func_name": "CLoopModeGame_Shutdown",
+        "xref_strings": ["--CLoopModeGame::SetWorldSession"],
+        "xref_gvs": [],
+        "xref_signatures": [],
+        "xref_funcs": ["CLoopModeGame_SetGameSystemState"],
+        "exclude_funcs": ["CLoopModeGame_SetWorldSession"],
+        "exclude_strings": ["CLoopModeGame::ReceivedServerInfo restarting loopmode game systems from"],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
+    },
+]
 
 FUNC_VTABLE_RELATIONS = []
 
@@ -38,9 +38,16 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(

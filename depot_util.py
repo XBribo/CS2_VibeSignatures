@@ -53,10 +53,7 @@ def run_command(
         if attempt == 1:
             print(f"Running: {' '.join(redacted)}")
         else:
-            print(
-                f"Retrying ({attempt}/{attempt_count}): "
-                f"{' '.join(redacted)}"
-            )
+            print(f"Retrying ({attempt}/{attempt_count}): {' '.join(redacted)}")
 
         try:
             subprocess.run(command, check=True)
@@ -64,8 +61,5 @@ def run_command(
         except subprocess.CalledProcessError:
             if attempt == attempt_count:
                 raise
-            print(
-                "Command failed; retrying in "
-                f"{retry_delay_seconds:g}s ({attempt}/{attempt_count})"
-            )
+            print(f"Command failed; retrying in {retry_delay_seconds:g}s ({attempt}/{attempt_count})")
             time.sleep(retry_delay_seconds)

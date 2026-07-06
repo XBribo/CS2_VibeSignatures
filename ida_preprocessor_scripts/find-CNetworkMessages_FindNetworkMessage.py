@@ -8,32 +8,38 @@ TARGET_FUNCTION_NAMES = [
 ]
 
 FUNC_XREFS_WINDOWS = [
-                         {
-                             "func_name": 'CNetworkMessages_FindNetworkMessage',
-                             "xref_strings": ['unknown'],
-                             "xref_gvs": [],
-                             "xref_signatures": ['41 ?? FF FF 00 00', '41 ?? FF 7F 00 00'],
-                             "xref_funcs": [],
-                             "exclude_funcs": ['CNetworkMessages_FindNetworkMessagePartial', 'CNetworkMessages_ConfirmAllMessageHandlersInstalled'],
-                             "exclude_strings": [],
-                             "exclude_gvs": [],
-                             "exclude_signatures": [],
-                         },
-                     ]
+    {
+        "func_name": "CNetworkMessages_FindNetworkMessage",
+        "xref_strings": ["unknown"],
+        "xref_gvs": [],
+        "xref_signatures": ["41 ?? FF FF 00 00", "41 ?? FF 7F 00 00"],
+        "xref_funcs": [],
+        "exclude_funcs": [
+            "CNetworkMessages_FindNetworkMessagePartial",
+            "CNetworkMessages_ConfirmAllMessageHandlersInstalled",
+        ],
+        "exclude_strings": [],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
+    },
+]
 
 FUNC_XREFS_LINUX = [
-                       {
-                           "func_name": 'CNetworkMessages_FindNetworkMessage',
-                           "xref_strings": ['unknown'],
-                           "xref_gvs": [],
-                           "xref_signatures": ['81 FB FF FF 00 00', '66 81 E2 FF 7F'],
-                           "xref_funcs": [],
-                           "exclude_funcs": ['CNetworkMessages_FindNetworkMessagePartial', 'CNetworkMessages_ConfirmAllMessageHandlersInstalled'],
-                           "exclude_strings": [],
-                           "exclude_gvs": [],
-                           "exclude_signatures": [],
-                       },
-                   ]
+    {
+        "func_name": "CNetworkMessages_FindNetworkMessage",
+        "xref_strings": ["unknown"],
+        "xref_gvs": [],
+        "xref_signatures": ["81 FB FF FF 00 00", "66 81 E2 FF 7F"],
+        "xref_funcs": [],
+        "exclude_funcs": [
+            "CNetworkMessages_FindNetworkMessagePartial",
+            "CNetworkMessages_ConfirmAllMessageHandlersInstalled",
+        ],
+        "exclude_strings": [],
+        "exclude_gvs": [],
+        "exclude_signatures": [],
+    },
+]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
@@ -58,9 +64,16 @@ FUNC_VTABLE_RELATIONS = [
     ("CNetworkMessages_FindNetworkMessage", "CNetworkMessages"),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
     return await preprocess_common_skill(

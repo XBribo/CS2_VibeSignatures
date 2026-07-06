@@ -35,6 +35,7 @@ import os
 import re
 
 from dotenv import load_dotenv
+
 load_dotenv()
 import socket
 import subprocess
@@ -67,7 +68,7 @@ from ida_vcall_finder import (
     aggregate_vcall_results_for_object,
     export_object_xref_details_via_mcp,
 )
-    
+
 DEFAULT_CONFIG_FILE = "config.yaml"
 DEFAULT_BIN_DIR = "bin"
 DEFAULT_PLATFORM = "windows,linux"
@@ -232,7 +233,7 @@ def _derive_artifact_symbol_name(artifact_path, platform):
     basename = os.path.basename(str(artifact_path or ""))
     platform_suffix = f".{platform}.yaml"
     if basename.endswith(platform_suffix):
-        return basename[:-len(platform_suffix)]
+        return basename[: -len(platform_suffix)]
     if basename.endswith(".yaml"):
         return basename[:-5]
     return basename
@@ -258,11 +259,8 @@ def _is_current_module_artifact_path(artifact_path, binary_dir):
     try:
         artifact_resolved = Path(artifact_path).resolve()
         binary_dir_resolved = Path(binary_dir).resolve()
-        return (
-            os.path.commonpath(
-                [os.fspath(artifact_resolved), os.fspath(binary_dir_resolved)]
-            )
-            == os.fspath(binary_dir_resolved)
+        return os.path.commonpath([os.fspath(artifact_resolved), os.fspath(binary_dir_resolved)]) == os.fspath(
+            binary_dir_resolved
         )
     except (OSError, ValueError):
         return True
@@ -355,21 +353,17 @@ async def validate_expected_input_artifacts_via_session(
             with open(artifact_path, "r", encoding="utf-8") as handle:
                 artifact_payload = yaml.safe_load(handle)
         except Exception as exc:
-            invalid_artifacts.append(
-                f"{artifact_path}: failed to read YAML ({exc})"
-            )
+            invalid_artifacts.append(f"{artifact_path}: failed to read YAML ({exc})")
             continue
 
         if not isinstance(artifact_payload, dict):
-            invalid_artifacts.append(
-                f"{artifact_path}: invalid YAML payload (expected mapping)"
-            )
+            invalid_artifacts.append(f"{artifact_path}: invalid YAML payload (expected mapping)")
             continue
 
         issues = []
         raw_func_va = artifact_payload.get("func_va")
         func_va_text = str(raw_func_va or "").strip()
-        should_require_func_va = (category == "func")
+        should_require_func_va = category == "func"
         should_inspect_func_va = _is_current_module_artifact_path(
             artifact_path,
             binary_dir,
@@ -396,26 +390,17 @@ async def validate_expected_input_artifacts_via_session(
                     )
                     if inspect_payload is not None:
                         has_segment = bool(inspect_payload.get("has_segment"))
-                        segment_name = str(
-                            inspect_payload.get("segment_name", "")
-                        ).strip()
+                        segment_name = str(inspect_payload.get("segment_name", "")).strip()
                         if not has_segment:
-                            issues.append(
-                                f"func_va={func_va_text} is not mapped to any segment"
-                            )
+                            issues.append(f"func_va={func_va_text} is not mapped to any segment")
                         elif segment_name != ".text":
                             issues.append(
-                                f"func_va={func_va_text} resolves to segment {segment_name!r} "
-                                "instead of '.text'"
+                                f"func_va={func_va_text} resolves to segment {segment_name!r} instead of '.text'"
                             )
                         elif not inspect_payload.get("has_function"):
-                            issues.append(
-                                f"func_va={func_va_text} does not resolve to a function"
-                            )
+                            issues.append(f"func_va={func_va_text} does not resolve to a function")
                         elif not inspect_payload.get("is_function_start"):
-                            function_start = str(
-                                inspect_payload.get("function_start", "")
-                            ).strip() or "<unknown>"
+                            function_start = str(inspect_payload.get("function_start", "")).strip() or "<unknown>"
                             issues.append(
                                 f"func_va={func_va_text} resolves inside function "
                                 f"{function_start} instead of a function start"
@@ -483,6 +468,7 @@ async def survey_binary_via_session(session, detail_level="minimal"):
         return _merge_metadata_path(parsed, current_idb_path)
 
     return parsed
+
 
 async def check_mcp_health(host=DEFAULT_HOST, port=DEFAULT_PORT):
     """
@@ -858,10 +844,8 @@ def quit_ida_gracefully(process, host=DEFAULT_HOST, port=DEFAULT_PORT, debug=Fal
         return
 
     raise RuntimeError(
-        "quit_ida_gracefully() cannot run inside an active event loop; "
-        "use await quit_ida_gracefully_async() instead"
+        "quit_ida_gracefully() cannot run inside an active event loop; use await quit_ida_gracefully_async() instead"
     )
-
 
 
 def resolve_oldgamever(gamever, bin_dir):
@@ -900,17 +884,17 @@ def resolve_oldgamever(gamever, bin_dir):
 
     if suffix:
         # E.g., gamever="14141c" -> try 14141b, 14141a, 14141, 14140z..14140a, 14140
-        for c in range(ord(suffix) - 1, ord('a') - 1, -1):
+        for c in range(ord(suffix) - 1, ord("a") - 1, -1):
             candidates.append(f"{base}{chr(c)}")
         candidates.append(str(base))
         prev_base = base - 1
-        for c in range(ord('z'), ord('a') - 1, -1):
+        for c in range(ord("z"), ord("a") - 1, -1):
             candidates.append(f"{prev_base}{chr(c)}")
         candidates.append(str(prev_base))
     else:
         # E.g., gamever="14142" -> try 14141z..14141a, 14141, 14140
         prev_base = base - 1
-        for c in range(ord('z'), ord('a') - 1, -1):
+        for c in range(ord("z"), ord("a") - 1, -1):
             candidates.append(f"{prev_base}{chr(c)}")
         candidates.append(str(prev_base))
         candidates.append(str(prev_base - 1))
@@ -996,108 +980,89 @@ def _parse_optional_llm_effort(raw_value, parser):
 
     valid_efforts = {"none", "minimal", "low", "medium", "high", "xhigh"}
     if normalized_value not in valid_efforts:
-        parser.error(
-            "Invalid LLM effort: must be one of none, minimal, low, medium, high, xhigh"
-        )
+        parser.error("Invalid LLM effort: must be one of none, minimal, low, medium, high, xhigh")
     return normalized_value
 
 
 def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Analyze CS2 binary files using IDA Pro MCP and Claude/Codex agents"
-    )
+    parser = argparse.ArgumentParser(description="Analyze CS2 binary files using IDA Pro MCP and Claude/Codex agents")
     parser.add_argument(
-        "-configyaml",
-        default=DEFAULT_CONFIG_FILE,
-        help=f"Path to config.yaml file (default: {DEFAULT_CONFIG_FILE})"
+        "-configyaml", default=DEFAULT_CONFIG_FILE, help=f"Path to config.yaml file (default: {DEFAULT_CONFIG_FILE})"
     )
     parser.add_argument(
         "-bindir",
         default=DEFAULT_BIN_DIR,
-        help=f"Directory containing downloaded binaries (default: {DEFAULT_BIN_DIR})"
+        help=f"Directory containing downloaded binaries (default: {DEFAULT_BIN_DIR})",
     )
     parser.add_argument(
         "-gamever",
         default=os.environ.get("CS2VIBE_GAMEVER"),
         required="CS2VIBE_GAMEVER" not in os.environ,
-        help="Game version subdirectory name (required, or set CS2VIBE_GAMEVER env var)"
+        help="Game version subdirectory name (required, or set CS2VIBE_GAMEVER env var)",
     )
     parser.add_argument(
         "-platform",
         default=DEFAULT_PLATFORM,
-        help=f"Platforms to analyze, comma-separated (default: {DEFAULT_PLATFORM})"
+        help=f"Platforms to analyze, comma-separated (default: {DEFAULT_PLATFORM})",
     )
     parser.add_argument(
         "-agent",
         default=os.environ.get("CS2VIBE_AGENT", DEFAULT_AGENT),
-        help=f"Agent executable to use for analysis, e.g., claude, claude.cmd, codex, codex.cmd (default: {DEFAULT_AGENT}, or set CS2VIBE_AGENT env var)"
+        help=f"Agent executable to use for analysis, e.g., claude, claude.cmd, codex, codex.cmd (default: {DEFAULT_AGENT}, or set CS2VIBE_AGENT env var)",
     )
     parser.add_argument(
         "-modules",
         default=DEFAULT_MODULES,
-        help=f"Modules to analyze, comma-separated (default: {DEFAULT_MODULES} for all). E.g., server,engine"
+        help=f"Modules to analyze, comma-separated (default: {DEFAULT_MODULES} for all). E.g., server,engine",
     )
     parser.add_argument(
-        "-vcall_finder",
-        default=None,
-        help="vcall_finder object selector: '*' for all, or comma-separated object names"
+        "-vcall_finder", default=None, help="vcall_finder object selector: '*' for all, or comma-separated object names"
     )
     parser.add_argument(
         "-llm_model",
         default=os.environ.get("CS2VIBE_LLM_MODEL", DEFAULT_LLM_MODEL),
-        help=f"OpenAI-compatible model for preprocessing and vcall_finder workflow (default: {DEFAULT_LLM_MODEL}, or set CS2VIBE_LLM_MODEL env var)"
+        help=f"OpenAI-compatible model for preprocessing and vcall_finder workflow (default: {DEFAULT_LLM_MODEL}, or set CS2VIBE_LLM_MODEL env var)",
     )
     parser.add_argument(
         "-llm_apikey",
         default=os.environ.get("CS2VIBE_LLM_APIKEY"),
-        help="OpenAI-compatible API key used by preprocessing and vcall_finder aggregation (or set CS2VIBE_LLM_APIKEY env var)"
+        help="OpenAI-compatible API key used by preprocessing and vcall_finder aggregation (or set CS2VIBE_LLM_APIKEY env var)",
     )
     parser.add_argument(
         "-llm_baseurl",
         default=os.environ.get("CS2VIBE_LLM_BASEURL"),
-        help="Optional custom compatible base URL used by preprocessing and vcall_finder aggregation (required when -llm_fake_as=codex; or set CS2VIBE_LLM_BASEURL env var)"
+        help="Optional custom compatible base URL used by preprocessing and vcall_finder aggregation (required when -llm_fake_as=codex; or set CS2VIBE_LLM_BASEURL env var)",
     )
     parser.add_argument(
         "-llm_temperature",
         default=os.environ.get("CS2VIBE_LLM_TEMPERATURE"),
-        help="Optional OpenAI-compatible temperature used by preprocessing and vcall_finder aggregation (or set CS2VIBE_LLM_TEMPERATURE env var)"
+        help="Optional OpenAI-compatible temperature used by preprocessing and vcall_finder aggregation (or set CS2VIBE_LLM_TEMPERATURE env var)",
     )
     parser.add_argument(
         "-llm_fake_as",
         default=os.environ.get("CS2VIBE_LLM_FAKE_AS"),
-        help="Optional OpenAI-compatible fake_as override (only supports 'codex'; or set CS2VIBE_LLM_FAKE_AS env var)"
+        help="Optional OpenAI-compatible fake_as override (only supports 'codex'; or set CS2VIBE_LLM_FAKE_AS env var)",
     )
     parser.add_argument(
         "-llm_effort",
         default=os.environ.get("CS2VIBE_LLM_EFFORT"),
-        help="Optional OpenAI-compatible reasoning effort for preprocessing and vcall_finder aggregation (default: medium; or set CS2VIBE_LLM_EFFORT env var)"
+        help="Optional OpenAI-compatible reasoning effort for preprocessing and vcall_finder aggregation (default: medium; or set CS2VIBE_LLM_EFFORT env var)",
     )
-    parser.add_argument(
-        "-ida_args",
-        default="",
-        help="Additional arguments for idalib-mcp (optional)"
-    )
-    parser.add_argument(
-        "-debug",
-        action="store_true",
-        help="Enable debug output"
-    )
+    parser.add_argument("-ida_args", default="", help="Additional arguments for idalib-mcp (optional)")
+    parser.add_argument("-debug", action="store_true", help="Enable debug output")
     parser.add_argument(
         "-rename",
         action="store_true",
         help="Run post_process rename/comment pass for existing expected output YAML files",
     )
     parser.add_argument(
-        "-maxretry",
-        type=int,
-        default=3,
-        help="Maximum number of retry attempts for skill execution (default: 3)"
+        "-maxretry", type=int, default=3, help="Maximum number of retry attempts for skill execution (default: 3)"
     )
     parser.add_argument(
         "-oldgamever",
         default=None,
-        help="Old game version for signature reuse (default: gamever - 1). Set to 'none' to disable."
+        help="Old game version for signature reuse (default: gamever - 1). Set to 'none' to disable.",
     )
 
     args = parser.parse_args()
@@ -1228,20 +1193,22 @@ def parse_config(config_path):
         for skill in module.get("skills", []):
             skill_name = skill.get("name")
             if skill_name:
-                skills.append({
-                    "name": skill_name,
-                    "expected_output": skill.get("expected_output", []) or [],
-                    "expected_output_windows": skill.get("expected_output_windows", []) or [],
-                    "expected_output_linux": skill.get("expected_output_linux", []) or [],
-                    "optional_output": skill.get("optional_output", []) or [],
-                    "expected_input": skill.get("expected_input", []),
-                    "expected_input_windows": skill.get("expected_input_windows", []) or [],
-                    "expected_input_linux": skill.get("expected_input_linux", []) or [],
-                    "skip_if_exists": skill.get("skip_if_exists", []) or [],
-                    "prerequisite": skill.get("prerequisite", []) or [],
-                    "max_retries": skill.get("max_retries"),  # None means use default
-                    "platform": skill.get("platform"),  # None means all platforms
-                })
+                skills.append(
+                    {
+                        "name": skill_name,
+                        "expected_output": skill.get("expected_output", []) or [],
+                        "expected_output_windows": skill.get("expected_output_windows", []) or [],
+                        "expected_output_linux": skill.get("expected_output_linux", []) or [],
+                        "optional_output": skill.get("optional_output", []) or [],
+                        "expected_input": skill.get("expected_input", []),
+                        "expected_input_windows": skill.get("expected_input_windows", []) or [],
+                        "expected_input_linux": skill.get("expected_input_linux", []) or [],
+                        "skip_if_exists": skill.get("skip_if_exists", []) or [],
+                        "prerequisite": skill.get("prerequisite", []) or [],
+                        "max_retries": skill.get("max_retries"),  # None means use default
+                        "platform": skill.get("platform"),  # None means all platforms
+                    }
+                )
 
         if "vcall_finder" not in module or module.get("vcall_finder") is None:
             raw_vcall_finder_objects = []
@@ -1258,13 +1225,15 @@ def parse_config(config_path):
                     f"Invalid vcall_finder entry for module '{name}': expected string, got {type(object_name).__name__}"
                 )
 
-        modules.append({
-            "name": name,
-            "path_windows": module.get("path_windows"),
-            "path_linux": module.get("path_linux"),
-            "vcall_finder_objects": raw_vcall_finder_objects,
-            "skills": skills
-        })
+        modules.append(
+            {
+                "name": name,
+                "path_windows": module.get("path_windows"),
+                "path_linux": module.get("path_linux"),
+                "vcall_finder_objects": raw_vcall_finder_objects,
+                "skills": skills,
+            }
+        )
 
     return modules
 
@@ -1420,10 +1389,7 @@ def resolve_artifact_path(binary_dir, artifact_path, platform):
     real_gamever_dir = real_module_dir.parent.resolve()
     real_candidate = (real_module_dir / expanded).resolve()
 
-    if (
-        os.path.commonpath([str(real_candidate), str(real_gamever_dir)])
-        != str(real_gamever_dir)
-    ):
+    if os.path.commonpath([str(real_candidate), str(real_gamever_dir)]) != str(real_gamever_dir):
         raise ValueError(f"artifact path escapes gamever root: {artifact_path}")
 
     return candidate
@@ -1431,10 +1397,7 @@ def resolve_artifact_path(binary_dir, artifact_path, platform):
 
 def expand_expected_paths(binary_dir, paths, platform):
     """Expand {platform} placeholders and resolve artifact paths under a binary directory."""
-    return [
-        resolve_artifact_path(binary_dir, path, platform)
-        for path in paths
-    ]
+    return [resolve_artifact_path(binary_dir, path, platform) for path in paths]
 
 
 def all_expected_outputs_exist(expected_outputs):
@@ -1518,10 +1481,7 @@ def _collect_post_process_yaml_mappings(
             artifact_path = _absolute_path_preserve_spelling(output_path)
             if not _is_current_module_artifact_path(artifact_path, binary_dir):
                 if debug:
-                    print(
-                        "  Post-process: skipping YAML outside current module dir "
-                        f"{artifact_path}"
-                    )
+                    print(f"  Post-process: skipping YAML outside current module dir {artifact_path}")
                 continue
             seen_key = os.path.normcase(artifact_path)
             if seen_key in seen_paths:
@@ -1745,10 +1705,7 @@ async def _post_process_set_comments(session, comment_items, debug=False):
         if isinstance(payload, dict):
             for item in payload.get("items", []):
                 if isinstance(item, dict) and item.get("error") and debug:
-                    print(
-                        "  Post-process: set_comments item failed "
-                        f"at {item.get('addr')}: {item.get('error')}"
-                    )
+                    print(f"  Post-process: set_comments item failed at {item.get('addr')}: {item.get('error')}")
         return
     except Exception as exc:
         if debug:
@@ -1758,18 +1715,12 @@ async def _post_process_set_comments(session, comment_items, debug=False):
         addr_int = _parse_post_process_int(item["addr"])
         if addr_int is None:
             continue
-        code = (
-            "import idc\n"
-            f"idc.set_cmt({addr_int}, {json.dumps(item['comment'])}, 0)\n"
-        )
+        code = f"import idc\nidc.set_cmt({addr_int}, {json.dumps(item['comment'])}, 0)\n"
         try:
             await session.call_tool(name="py_eval", arguments={"code": code})
         except Exception as exc:
             if debug:
-                print(
-                    "  Post-process: py_eval comment fallback failed "
-                    f"at {item['addr']}: {exc}"
-                )
+                print(f"  Post-process: py_eval comment fallback failed at {item['addr']}: {exc}")
 
 
 async def _post_process_func_renames(session, func_renames, debug=False):
@@ -1802,10 +1753,7 @@ async def _post_process_func_renames(session, func_renames, debug=False):
             if isinstance(payload, dict) and debug:
                 for item in payload.get("func", []):
                     if isinstance(item, dict) and item.get("error"):
-                        print(
-                            "  Post-process: function rename item failed "
-                            f"{item.get('addr')}: {item.get('error')}"
-                        )
+                        print(f"  Post-process: function rename item failed {item.get('addr')}: {item.get('error')}")
         except Exception as exc:
             if debug:
                 print(
@@ -1814,10 +1762,7 @@ async def _post_process_func_renames(session, func_renames, debug=False):
                     f"(items={len(batch)}, range={start + 1}-{end}): {exc}"
                 )
                 for offset, item in enumerate(batch, start=start + 1):
-                    print(
-                        "    Post-process: function rename item "
-                        f"{offset}: {item['addr']} -> {item['name']}"
-                    )
+                    print(f"    Post-process: function rename item {offset}: {item['addr']} -> {item['name']}")
             continue
 
 
@@ -1826,18 +1771,12 @@ async def _post_process_data_renames(session, data_renames, debug=False):
         addr_int = _parse_post_process_int(item["addr"])
         if addr_int is None:
             continue
-        code = (
-            "import idc\n"
-            f"idc.set_name({addr_int}, {json.dumps(item['name'])}, idc.SN_NOWARN)\n"
-        )
+        code = f"import idc\nidc.set_name({addr_int}, {json.dumps(item['name'])}, idc.SN_NOWARN)\n"
         try:
             await session.call_tool(name="py_eval", arguments={"code": code})
         except Exception as exc:
             if debug:
-                print(
-                    "  Post-process: data rename failed "
-                    f"{item['addr']} -> {item['name']}: {exc}"
-                )
+                print(f"  Post-process: data rename failed {item['addr']} -> {item['name']}: {exc}")
 
 
 async def post_process_expected_outputs_via_session(
@@ -1955,11 +1894,7 @@ def start_idalib_mcp(binary_path, host=DEFAULT_HOST, port=DEFAULT_PORT, ida_args
         if debug:
             process = subprocess.Popen(cmd)
         else:
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
-            )
+            process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # Wait for MCP server to be ready
         print(f"  Waiting for MCP server on {host}:{port}...")
@@ -1988,6 +1923,7 @@ def _drain_text_stream(stream, chunks, forward_stream=None):
             stream.close()
         except Exception:
             pass
+
 
 def _run_process_with_stream_capture(cmd, *, agent_input=None, debug=False, timeout=SKILL_TIMEOUT):
     process = subprocess.Popen(
@@ -2095,7 +2031,7 @@ def run_skill(skill_name, agent="claude", debug=False, expected_yaml_paths=None,
                     frontmatter_end = idx
                     break
             if frontmatter_end is not None:
-                codex_system_prompt = "\n".join(lines[frontmatter_end + 1:]).strip()
+                codex_system_prompt = "\n".join(lines[frontmatter_end + 1 :]).strip()
 
         if not codex_system_prompt:
             print(f"    Error: Codex system prompt is empty in {system_prompt_path}")
@@ -2108,12 +2044,17 @@ def run_skill(skill_name, agent="claude", debug=False, expected_yaml_paths=None,
         agent_input = None
 
         if is_claude_agent:
-            cmd = [agent,
-                   "-p", f"/{skill_name}",
-                   "--agent", "sig-finder",
-                   "--allowedTools", "mcp__ida-pro-mcp__*",
-                   "--settings", '{"alwaysThinkingEnabled": false}',
-                   ]
+            cmd = [
+                agent,
+                "-p",
+                f"/{skill_name}",
+                "--agent",
+                "sig-finder",
+                "--allowedTools",
+                "mcp__ida-pro-mcp__*",
+                "--settings",
+                '{"alwaysThinkingEnabled": false}',
+            ]
             # Add session management flags
             if is_retry:
                 cmd.extend(["--resume", claude_session_id])
@@ -2125,9 +2066,35 @@ def run_skill(skill_name, agent="claude", debug=False, expected_yaml_paths=None,
             skill_prompt = f"Run SKILL: {skill_path}"
             agent_input = skill_prompt
             if is_retry:
-                cmd = [agent, "-c", codex_developer_instructions, "-c", "model_reasoning_effort=high", "-c", "model_reasoning_summary=none", "-c", "model_verbosity=low", "exec", "resume", "--last", "-"]
+                cmd = [
+                    agent,
+                    "-c",
+                    codex_developer_instructions,
+                    "-c",
+                    "model_reasoning_effort=high",
+                    "-c",
+                    "model_reasoning_summary=none",
+                    "-c",
+                    "model_verbosity=low",
+                    "exec",
+                    "resume",
+                    "--last",
+                    "-",
+                ]
             else:
-                cmd = [agent, "-c", codex_developer_instructions, "-c", "model_reasoning_effort=high", "-c", "model_reasoning_summary=none", "-c", "model_verbosity=low", "exec", "-"]
+                cmd = [
+                    agent,
+                    "-c",
+                    codex_developer_instructions,
+                    "-c",
+                    "model_reasoning_effort=high",
+                    "-c",
+                    "model_reasoning_summary=none",
+                    "-c",
+                    "model_verbosity=low",
+                    "exec",
+                    "-",
+                ]
             retry_target_desc = "the latest codex session (--last)"
 
         attempt_str = f"(attempt {attempt + 1}/{max_retries})" if max_retries > 1 else ""
@@ -2333,7 +2300,9 @@ def process_binary(
         if startup_post_process_failed:
             print("  Post-process preflight failed before IDA startup")
         else:
-            print("  All skills already have yaml files and no vcall_finder/post_process targets remain, skipping IDA startup")
+            print(
+                "  All skills already have yaml files and no vcall_finder/post_process targets remain, skipping IDA startup"
+            )
         return success_count, fail_count, skip_count
 
     # Refuse to start IDA if an `.id0` lock file exists next to the binary —
@@ -2394,9 +2363,7 @@ def process_binary(
                 continue
 
             # Ensure MCP connection is alive before running the skill
-            process, mcp_ok = ensure_mcp_available(
-                process, binary_path, host, port, ida_args, debug
-            )
+            process, mcp_ok = ensure_mcp_available(process, binary_path, host, port, ida_args, debug)
             if not mcp_ok:
                 remaining = len(skills_to_process) - skill_index
                 fail_count += remaining
@@ -2430,11 +2397,7 @@ def process_binary(
             )
             if invalid_expected_inputs:
                 fail_count += 1
-                invalid_label = (
-                    "artifact"
-                    if len(invalid_expected_inputs) == 1
-                    else "artifacts"
-                )
+                invalid_label = "artifact" if len(invalid_expected_inputs) == 1 else "artifacts"
                 print(
                     f"  Failed: {skill_name} (invalid expected_input {invalid_label}: "
                     f"{' | '.join(invalid_expected_inputs)})"
@@ -2473,10 +2436,7 @@ def process_binary(
                     print(f"  Pre-processing error for {skill_name}: {e}")
                 preprocess_status = PREPROCESS_STATUS_FAILED
 
-            if (
-                preprocess_status is True
-                or preprocess_status == PREPROCESS_STATUS_SUCCESS
-            ):
+            if preprocess_status is True or preprocess_status == PREPROCESS_STATUS_SUCCESS:
                 preprocess_status = PREPROCESS_STATUS_SUCCESS
             elif preprocess_status == PREPROCESS_STATUS_ABSENT_OK:
                 preprocess_status = PREPROCESS_STATUS_ABSENT_OK
@@ -2486,34 +2446,18 @@ def process_binary(
                 preprocess_status = PREPROCESS_STATUS_FAILED
 
             if preprocess_status == PREPROCESS_STATUS_SUCCESS:
-                missing_required_outputs = [
-                    p for p in required_outputs if not os.path.exists(p)
-                ]
-                optional_output_generated = any(
-                    os.path.exists(p) for p in optional_outputs
-                )
+                missing_required_outputs = [p for p in required_outputs if not os.path.exists(p)]
+                optional_output_generated = any(os.path.exists(p) for p in optional_outputs)
                 if missing_required_outputs:
                     fail_count += 1
-                    missing_names = [
-                        os.path.basename(p) for p in missing_required_outputs
-                    ]
-                    print(
-                        f"  Pre-processed but missing expected_output: {skill_name} "
-                        f"({', '.join(missing_names)})"
-                    )
+                    missing_names = [os.path.basename(p) for p in missing_required_outputs]
+                    print(f"  Pre-processed but missing expected_output: {skill_name} ({', '.join(missing_names)})")
                     print("  Aborting remaining skills after preprocess output validation failure")
                     abort_binary_processing = True
                     break
-                elif (
-                    not required_outputs
-                    and optional_outputs
-                    and not optional_output_generated
-                ):
+                elif not required_outputs and optional_outputs and not optional_output_generated:
                     skip_count += 1
-                    print(
-                        f"  Skipping skill: {skill_name} "
-                        "(optional outputs not generated)"
-                    )
+                    print(f"  Skipping skill: {skill_name} (optional outputs not generated)")
                 else:
                     success_count += 1
                     print(f"  Pre-processed: {skill_name} OK")
@@ -2536,10 +2480,7 @@ def process_binary(
 
             if not required_outputs and optional_outputs:
                 skip_count += 1
-                print(
-                    f"  Skipping skill: {skill_name} "
-                    "(optional outputs not generated)"
-                )
+                print(f"  Skipping skill: {skill_name} (optional outputs not generated)")
                 continue
 
             print(f"  Processing skill: {skill_name}")
@@ -2564,9 +2505,7 @@ def process_binary(
             return success_count, fail_count, skip_count
 
         for object_index, object_name in enumerate(vcall_targets):
-            process, mcp_ok = ensure_mcp_available(
-                process, binary_path, host, port, ida_args, debug
-            )
+            process, mcp_ok = ensure_mcp_available(process, binary_path, host, port, ida_args, debug)
             if not mcp_ok:
                 remaining = len(vcall_targets) - object_index
                 fail_count += remaining
@@ -2632,9 +2571,7 @@ def process_binary(
         if rename and post_process_collection_failed:
             print("  Post-process failed during YAML recollection")
         elif rename and post_process_yaml_items:
-            process, mcp_ok = ensure_mcp_available(
-                process, binary_path, host, port, ida_args, debug
-            )
+            process, mcp_ok = ensure_mcp_available(process, binary_path, host, port, ida_args, debug)
             if not mcp_ok:
                 fail_count += 1
                 print("  Failed to restore MCP connection, skipping post_process")
@@ -2725,12 +2662,12 @@ def main():
 
         all_vcall_objects.update(vcall_targets)
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Module: {module_name}")
         print(f"Skills: {len(skills)}")
         if vcall_targets:
             print(f"VCall targets: {len(vcall_targets)}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         for platform in platforms:
             path_key = f"path_{platform}"
@@ -2766,8 +2703,14 @@ def main():
 
             # Process binary
             success, fail, skip = process_binary(
-                binary_path, skills, agent,
-                DEFAULT_HOST, DEFAULT_PORT, ida_args, platform, debug,
+                binary_path,
+                skills,
+                agent,
+                DEFAULT_HOST,
+                DEFAULT_PORT,
+                ida_args,
+                platform,
+                debug,
                 max_retries=args.maxretry,
                 old_binary_dir=old_binary_dir,
                 gamever=gamever,
@@ -2835,9 +2778,9 @@ def main():
                 print(f"  Failed to aggregate {object_name}: {exc}")
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Summary")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"  Successful: {total_success}")
     print(f"  Failed: {total_fail}")
     print(f"  Skipped: {total_skip}")

@@ -148,9 +148,7 @@ def infer_target_from_binary_path(binary_path: str) -> dict[str, str]:
         raise ReferenceGenerationError("IDA survey did not provide a binary path")
 
     path_parts = [
-        part.strip()
-        for part in normalized_path.replace("\\", "/").split("/")
-        if part.strip() and part != "."
+        part.strip() for part in normalized_path.replace("\\", "/").split("/") if part.strip() and part != "."
     ]
     bin_index = next(
         (index for index in range(len(path_parts) - 1, -1, -1) if path_parts[index].lower() == "bin"),
@@ -207,13 +205,7 @@ def build_reference_output_path(
     func_name: str,
     platform: str,
 ) -> Path:
-    return (
-        Path(repo_root)
-        / "ida_preprocessor_scripts"
-        / "references"
-        / module
-        / f"{func_name}.{platform}.yaml"
-    )
+    return Path(repo_root) / "ida_preprocessor_scripts" / "references" / module / f"{func_name}.{platform}.yaml"
 
 
 def build_existing_yaml_path(
@@ -290,14 +282,10 @@ def load_symbol_aliases(
                 _append_alias(raw_alias)
 
             if not ordered_aliases:
-                raise ReferenceGenerationError(
-                    f"symbol '{func_name}' in module '{module}' has no usable alias values"
-                )
+                raise ReferenceGenerationError(f"symbol '{func_name}' in module '{module}' has no usable alias values")
             return ordered_aliases
 
-        raise ReferenceGenerationError(
-            f"symbol '{func_name}' not found in module '{module}' within config.yaml"
-        )
+        raise ReferenceGenerationError(f"symbol '{func_name}' not found in module '{module}' within config.yaml")
 
     raise ReferenceGenerationError(f"module '{module}' not found in config.yaml")
 
@@ -392,9 +380,7 @@ async def find_function_addr_by_names(
     if not resolved_matches:
         raise ReferenceGenerationError("unable to locate function address via IDA")
     if len(resolved_matches) > 1:
-        raise ReferenceGenerationError(
-            f"ambiguous function address matches returned via IDA: {resolved_matches!r}"
-        )
+        raise ReferenceGenerationError(f"ambiguous function address matches returned via IDA: {resolved_matches!r}")
     return resolved_matches[0]
 
 
@@ -735,9 +721,7 @@ async def resolve_generation_target(
         survey_result = await survey_binary_via_mcp(host, port)
     if not isinstance(survey_result, Mapping):
         missing_flags = ", ".join(f"-{key}" for key in missing_keys)
-        raise ReferenceGenerationError(
-            f"missing {missing_flags}, and failed to survey the current IDA binary via MCP"
-        )
+        raise ReferenceGenerationError(f"missing {missing_flags}, and failed to survey the current IDA binary via MCP")
 
     metadata = survey_result.get("metadata")
     if not isinstance(metadata, Mapping):

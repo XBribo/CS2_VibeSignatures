@@ -3,7 +3,7 @@
 
 from ida_analyze_util import preprocess_common_skill
 
-INHERIT_VFUNCS=[
+INHERIT_VFUNCS = [
     # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
     ("CCSPlayerController_Respawn", "CCSPlayerController", "CBasePlayerController_Respawn", True),
 ]
@@ -24,6 +24,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
         ],
     ),
 ]
+
 
 async def preprocess_skill(
     session,

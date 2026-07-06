@@ -24,7 +24,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            #"size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
             "offset_sig_allow_across_function_boundary:true",
@@ -32,9 +32,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Reuse previous gamever offset_sig to locate target struct offset and write YAML."""
     return await preprocess_common_skill(

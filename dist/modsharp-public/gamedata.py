@@ -11,12 +11,7 @@ import sys
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from gamedata_utils import (
-    convert_sig_to_css,
-    normalize_func_name_colons_to_underscore,
-    load_jsonc,
-    save_jsonc
-)
+from gamedata_utils import convert_sig_to_css, normalize_func_name_colons_to_underscore, load_jsonc, save_jsonc
 
 # Module metadata
 MODULE_NAME = "ModSharp"
@@ -84,12 +79,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         # Update Addresses section (signatures)
         if "Addresses" in gamedata:
             u, s, usyms, ssyms = _update_addresses(
-                gamedata["Addresses"],
-                yaml_data,
-                func_lib_map,
-                platforms,
-                alias_to_name_map,
-                debug
+                gamedata["Addresses"], yaml_data, func_lib_map, platforms, alias_to_name_map, debug
             )
             file_updated += u
             file_skipped += s
@@ -99,12 +89,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         # Update VFuncs section (virtual function indices)
         if "VFuncs" in gamedata:
             u, s, usyms, ssyms = _update_vfuncs(
-                gamedata["VFuncs"],
-                yaml_data,
-                func_lib_map,
-                platforms,
-                alias_to_name_map,
-                debug
+                gamedata["VFuncs"], yaml_data, func_lib_map, platforms, alias_to_name_map, debug
             )
             file_updated += u
             file_skipped += s
@@ -114,12 +99,7 @@ def update(yaml_data, func_lib_map, platforms, dist_dir, alias_to_name_map, debu
         # Update Offsets section (struct member offsets)
         if "Offsets" in gamedata:
             u, s, usyms, ssyms = _update_offsets(
-                gamedata["Offsets"],
-                yaml_data,
-                func_lib_map,
-                platforms,
-                alias_to_name_map,
-                debug
+                gamedata["Offsets"], yaml_data, func_lib_map, platforms, alias_to_name_map, debug
             )
             file_updated += u
             file_skipped += s
@@ -162,10 +142,7 @@ def _update_addresses(addresses, yaml_data, func_lib_map, platforms, alias_to_na
         if not library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "unknown library"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "unknown library"})
             continue
 
         # Find matching YAML data
@@ -173,10 +150,7 @@ def _update_addresses(addresses, yaml_data, func_lib_map, platforms, alias_to_na
         if not yaml_entry or yaml_entry.get("library") != library:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data"})
             continue
 
         # Update platform signatures
@@ -200,11 +174,7 @@ def _update_addresses(addresses, yaml_data, func_lib_map, platforms, alias_to_na
 
             updated_count += 1
             if debug:
-                updated_symbols.append({
-                    "name": func_name,
-                    "type": "signature",
-                    "platform": platform
-                })
+                updated_symbols.append({"name": func_name, "type": "signature", "platform": platform})
 
     return updated_count, skipped_count, updated_symbols, skipped_symbols
 
@@ -230,10 +200,7 @@ def _update_vfuncs(vfuncs, yaml_data, _func_lib_map, platforms, alias_to_name_ma
         if not yaml_entry:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data (vfunc)"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data (vfunc)"})
             continue
 
         # Update platform vfunc indices
@@ -248,11 +215,7 @@ def _update_vfuncs(vfuncs, yaml_data, _func_lib_map, platforms, alias_to_name_ma
             entry[platform] = platform_yaml["vfunc_index"]
             updated_count += 1
             if debug:
-                updated_symbols.append({
-                    "name": func_name,
-                    "type": "vfunc",
-                    "platform": platform
-                })
+                updated_symbols.append({"name": func_name, "type": "vfunc", "platform": platform})
 
     return updated_count, skipped_count, updated_symbols, skipped_symbols
 
@@ -278,10 +241,7 @@ def _update_offsets(offsets, yaml_data, _func_lib_map, platforms, alias_to_name_
         if not yaml_entry:
             skipped_count += 1
             if debug:
-                skipped_symbols.append({
-                    "name": func_name,
-                    "reason": "no matching YAML data (offset)"
-                })
+                skipped_symbols.append({"name": func_name, "reason": "no matching YAML data (offset)"})
             continue
 
         # Update platform offsets
@@ -296,20 +256,12 @@ def _update_offsets(offsets, yaml_data, _func_lib_map, platforms, alias_to_name_
                 entry[platform] = platform_yaml["vfunc_index"]
                 updated_count += 1
                 if debug:
-                    updated_symbols.append({
-                        "name": func_name,
-                        "type": "offset",
-                        "platform": platform
-                    })
+                    updated_symbols.append({"name": func_name, "type": "offset", "platform": platform})
             # Check for struct_member_offset (struct member offset)
             elif "struct_member_offset" in platform_yaml:
                 entry[platform] = platform_yaml["struct_member_offset"]
                 updated_count += 1
                 if debug:
-                    updated_symbols.append({
-                        "name": func_name,
-                        "type": "struct_offset",
-                        "platform": platform
-                    })
+                    updated_symbols.append({"name": func_name, "type": "struct_offset", "platform": platform})
 
     return updated_count, skipped_count, updated_symbols, skipped_symbols

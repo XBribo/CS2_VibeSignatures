@@ -70,8 +70,14 @@ def _read_struct_offset(new_binary_dir, stem, platform):
 
 
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    debug=False,
 ):
     """Locate CBaseEntity_FullEdictChanged via dynamic xref signature built from struct offsets."""
     if yaml is None:
@@ -80,31 +86,29 @@ async def preprocess_skill(
         return False
 
     transmit_offset, transmit_yaml = _read_struct_offset(
-        new_binary_dir, _NETWORK_TRANSMIT_COMPONENT_STEM, platform,
+        new_binary_dir,
+        _NETWORK_TRANSMIT_COMPONENT_STEM,
+        platform,
     )
     if transmit_offset is None:
         if debug:
-            print(
-                f"    Preprocess: failed to read offset from {os.path.basename(transmit_yaml)}"
-            )
+            print(f"    Preprocess: failed to read offset from {os.path.basename(transmit_yaml)}")
         return False
 
     state_flags_offset, state_flags_yaml = _read_struct_offset(
-        new_binary_dir, _STATE_FLAGS_STEM, platform,
+        new_binary_dir,
+        _STATE_FLAGS_STEM,
+        platform,
     )
     if state_flags_offset is None:
         if debug:
-            print(
-                f"    Preprocess: failed to read offset from {os.path.basename(state_flags_yaml)}"
-            )
+            print(f"    Preprocess: failed to read offset from {os.path.basename(state_flags_yaml)}")
         return False
 
     combined_offset = transmit_offset + state_flags_offset
     if combined_offset < 0 or combined_offset > 0xFFFFFFFF:
         if debug:
-            print(
-                f"    Preprocess: combined offset 0x{combined_offset:X} out of 32-bit range"
-            )
+            print(f"    Preprocess: combined offset 0x{combined_offset:X} out of 32-bit range")
         return False
 
     # Little-endian 4-byte encoding of the disp32 in `mov eax, [reg+disp32]`.

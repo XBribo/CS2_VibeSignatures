@@ -117,9 +117,17 @@ GENERATE_YAML_DESIRED_FIELDS = [
     for name in TARGET_FUNCTION_NAMES
 ]
 
+
 async def preprocess_skill(
-    session, skill_name, expected_outputs, old_yaml_map,
-    new_binary_dir, platform, image_base, llm_config=None, debug=False,
+    session,
+    skill_name,
+    expected_outputs,
+    old_yaml_map,
+    new_binary_dir,
+    platform,
+    image_base,
+    llm_config=None,
+    debug=False,
 ):
     """Extract registered script functions from GetScriptDescInternal."""
     return await preprocess_script_desc_internal_skill(
