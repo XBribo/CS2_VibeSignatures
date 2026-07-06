@@ -15,9 +15,10 @@ except ImportError:
 
 VFTABLE_HEADER_RE = re.compile(r"^\s*(?:VFTable|VTable) indices for '([^']+)' \((\d+) (?:entry|entries)\)\.\s*$")
 VFTABLE_LAYOUT_HEADER_RE = re.compile(
-    r"^\s*(?:VFTable|VTable) for '([^']+)'(?: in '([^']+)')? "
+    r"^\s*(?:VFTable|VTable) for '([^']+)'((?: in '[^']+')*) "
     r"\((\d+) (?:entry|entries)\)\.\s*$"
 )
+VFTABLE_LAYOUT_IN_CLASS_RE = re.compile(r" in '([^']+)'")
 VFTABLE_ENTRY_RE = re.compile(r"^\s*(\d+)\s+\|\s+(.+?)\s*$")
 # Group 2 captures the run of spaces between `|` and the declaration so the
 # parser can derive nesting depth from clang's 2-space-per-level indentation.
@@ -112,7 +113,8 @@ def parse_vftable_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
 
         layout_header = VFTABLE_LAYOUT_HEADER_RE.match(raw_line)
         if layout_header:
-            current_class = layout_header.group(2) or layout_header.group(1)
+            in_classes = VFTABLE_LAYOUT_IN_CLASS_RE.findall(layout_header.group(2) or "")
+            current_class = in_classes[-1] if in_classes else layout_header.group(1)
             current_declared_entries = 0
             current_raw_declared_entries = int(layout_header.group(3))
             current_raw_entries = 0
