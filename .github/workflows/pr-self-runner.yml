@@ -2,7 +2,7 @@ name: PR Self Runner Validation
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, closed]
 
 permissions:
   contents: read
@@ -14,6 +14,7 @@ concurrency:
 jobs:
   validate:
     if: >-
+      github.event.action != 'closed' &&
       (github.repository == 'HLND2T/CS2_VibeSignatures' ||
        github.repository == 'hzqst/CS2_VibeSignatures') &&
       github.event.pull_request.head.repo.full_name == github.repository &&
@@ -289,58 +290,137 @@ jobs:
             throw "run_cpp_tests.py failed with exit code $LASTEXITCODE"
           }
 
-      - name: Clean PR bin copy
-        if: always()
+  finalize-pr-workspace:
+    if: >-
+      github.event.action == 'closed' &&
+      (github.repository == 'HLND2T/CS2_VibeSignatures' ||
+       github.repository == 'hzqst/CS2_VibeSignatures') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !(github.event.pull_request.user.login == 'github-actions[bot]' &&
+        startsWith(github.event.pull_request.head.ref, 'bump-download/') &&
+        startsWith(github.event.pull_request.title, 'chore(download): Update manifest for '))
+    environment: win64
+    runs-on: [self-hosted, windows, x64]
+    env:
+      PERSISTED_WORKSPACE: ${{ secrets.PERSISTED_WORKSPACE }}
+
+    steps:
+      - name: Finalize PR workspace
         shell: pwsh
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:WORKSPACE)) {
-            Write-Host "WORKSPACE is not configured; skipping PR bin cleanup."
-            exit 0
+          $prNumber = "${{ github.event.pull_request.number }}"
+          $prWasMerged = "${{ github.event.pull_request.merged }}"
+
+          if ([string]::IsNullOrWhiteSpace($prNumber)) {
+            throw "Unable to determine pull request number."
           }
 
-          if ([string]::IsNullOrWhiteSpace($env:GAMEVER)) {
-            Write-Host "GAMEVER is not configured; skipping PR bin cleanup."
-            exit 0
+          if ([string]::IsNullOrWhiteSpace($env:RUNNER_WORKSPACE)) {
+            throw "RUNNER_WORKSPACE is not configured."
           }
 
-          $workspaceRoot = [IO.Path]::GetFullPath($env:WORKSPACE)
-          $binRoot = [IO.Path]::GetFullPath((Join-Path $workspaceRoot "bin"))
-          $targetBinGamever = [IO.Path]::GetFullPath((Join-Path $binRoot $env:GAMEVER))
+          $workspaceRoot = [IO.Path]::GetFullPath($env:RUNNER_WORKSPACE)
+          $workspaceName = "CS2_VibeSignatures-pr-$prNumber"
+          $prWorkspace = [IO.Path]::GetFullPath((Join-Path $workspaceRoot $workspaceName))
           $workspaceRootWithSeparator = $workspaceRoot.TrimEnd('\') + '\'
-          $binRootWithSeparator = $binRoot.TrimEnd('\') + '\'
 
-          if (-not $binRoot.StartsWith($workspaceRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
-            throw "Resolved bin root is outside WORKSPACE: $binRoot"
+          if ((Split-Path -Leaf $prWorkspace) -ne $workspaceName) {
+            throw "Resolved PR workspace leaf mismatch: $prWorkspace"
           }
 
-          if (Test-Path -LiteralPath $binRoot) {
-            $binItem = Get-Item -LiteralPath $binRoot -Force
-            if ($binItem.Attributes -band [IO.FileAttributes]::ReparsePoint) {
-              throw "Refusing to clean PR bin copy because workspace bin is a reparse point: $binRoot"
+          if (-not $prWorkspace.StartsWith($workspaceRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Resolved PR workspace is outside RUNNER_WORKSPACE: $prWorkspace"
+          }
+
+          if (-not (Test-Path -LiteralPath $prWorkspace)) {
+            if ($prWasMerged -eq "true") {
+              throw "PR workspace does not exist for merged PR: $prWorkspace"
             }
-          }
 
-          if ((Split-Path -Leaf $targetBinGamever) -ne $env:GAMEVER) {
-            throw "Resolved PR bin cleanup leaf mismatch: $targetBinGamever"
-          }
-
-          if (-not $targetBinGamever.StartsWith($binRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
-            throw "Resolved PR bin cleanup target is outside workspace bin root: $targetBinGamever"
-          }
-
-          if (-not (Test-Path -LiteralPath $targetBinGamever)) {
-            Write-Host "PR bin cleanup target does not exist: $targetBinGamever"
+            Write-Host "PR workspace does not exist; nothing to delete: $prWorkspace"
             exit 0
           }
 
-          if (-not (Test-Path -LiteralPath $targetBinGamever -PathType Container)) {
-            throw "PR bin cleanup target exists but is not a directory: $targetBinGamever"
+          if (-not (Test-Path -LiteralPath $prWorkspace -PathType Container)) {
+            throw "PR workspace exists but is not a directory: $prWorkspace"
           }
 
-          $targetItem = Get-Item -LiteralPath $targetBinGamever -Force
-          if ($targetItem.Attributes -band [IO.FileAttributes]::ReparsePoint) {
-            throw "Refusing to remove PR bin cleanup target because it is a reparse point: $targetBinGamever"
+          $workspaceItem = Get-Item -LiteralPath $prWorkspace -Force
+          if ($workspaceItem.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            throw "Refusing to remove PR workspace because it is a reparse point: $prWorkspace"
           }
 
-          Remove-Item -LiteralPath $targetBinGamever -Recurse -Force
-          Write-Host "Removed PR bin copy: $targetBinGamever"
+          if ($prWasMerged -eq "true") {
+            if ([string]::IsNullOrWhiteSpace($env:PERSISTED_WORKSPACE)) {
+              throw "PERSISTED_WORKSPACE secret is not configured for the win64 environment."
+            }
+
+            Set-Location $prWorkspace
+            $gamever = uv run python -c "import yaml; d=yaml.safe_load(open('download.yaml', encoding='utf-8')); print(d['downloads'][-1]['tag'])"
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to read latest game version from PR download.yaml."
+            }
+
+            $gamever = $gamever.Trim()
+            if ([string]::IsNullOrWhiteSpace($gamever)) {
+              throw "Latest game version from PR download.yaml is empty."
+            }
+
+            $sourceBinGamever = [IO.Path]::GetFullPath((Join-Path $prWorkspace "bin\$gamever"))
+            $sourceRootWithSeparator = $prWorkspace.TrimEnd('\') + '\'
+            if (-not $sourceBinGamever.StartsWith($sourceRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
+              throw "Resolved PR bin source is outside PR workspace: $sourceBinGamever"
+            }
+
+            if (-not (Test-Path -LiteralPath $sourceBinGamever -PathType Container)) {
+              throw "PR bin source for GAMEVER=$gamever does not exist: $sourceBinGamever"
+            }
+
+            $persistedRoot = [IO.Path]::GetFullPath($env:PERSISTED_WORKSPACE)
+            $persistedBinRoot = [IO.Path]::GetFullPath((Join-Path $persistedRoot "bin"))
+            $targetBinGamever = [IO.Path]::GetFullPath((Join-Path $persistedBinRoot $gamever))
+            $persistedRootWithSeparator = $persistedRoot.TrimEnd('\') + '\'
+            $persistedBinRootWithSeparator = $persistedBinRoot.TrimEnd('\') + '\'
+
+            if (-not $persistedBinRoot.StartsWith($persistedRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
+              throw "Resolved persisted bin root is outside PERSISTED_WORKSPACE: $persistedBinRoot"
+            }
+
+            if ((Split-Path -Leaf $targetBinGamever) -ne $gamever) {
+              throw "Resolved persisted bin target leaf mismatch: $targetBinGamever"
+            }
+
+            if (-not $targetBinGamever.StartsWith($persistedBinRootWithSeparator, [StringComparison]::OrdinalIgnoreCase)) {
+              throw "Resolved persisted bin target is outside persisted bin root: $targetBinGamever"
+            }
+
+            New-Item -ItemType Directory -Path $targetBinGamever -Force | Out-Null
+
+            $robocopyArgs = @(
+              $sourceBinGamever
+              $targetBinGamever
+              "*.yaml"
+              "/S"
+              "/COPY:DAT"
+              "/DCOPY:DAT"
+              "/R:2"
+              "/W:5"
+              "/XC"
+              "/XN"
+              "/XO"
+            )
+
+            robocopy @robocopyArgs
+            $robocopyExitCode = $LASTEXITCODE
+            if ($robocopyExitCode -ge 8) {
+              throw "Failed to copy PR bin/$gamever YAML files into persisted workspace; robocopy exit code $robocopyExitCode"
+            }
+
+            Write-Host "Copied PR bin/$gamever YAML files into persisted workspace; robocopy exit code $robocopyExitCode"
+            $global:LASTEXITCODE = 0
+          } else {
+            Write-Host "PR was closed without merge; skipping persisted YAML copy."
+          }
+
+          Remove-Item -LiteralPath $prWorkspace -Recurse -Force
+          Write-Host "Removed PR workspace: $prWorkspace"
