@@ -780,6 +780,15 @@ modules:
           - CNetworkGameClient_RecordEntityBandwidth.{platform}.yaml
         expected_input:
           - CNetworkServerService_Init.{platform}.yaml
+      - name: find-CNetworkGameClient_PrintNetStats
+        expected_output:
+          - CNetworkGameClient_PrintNetStats.{platform}.yaml
+      - name: find-CL_NET_PrintSummary_CommandHandler
+        expected_output:
+          - CL_NET_PrintSummary_CommandHandler.{platform}.yaml
+      - name: find-CMsgSource2NetworkFlowQuality_PrintStats
+        expected_output:
+          - CMsgSource2NetworkFlowQuality_PrintStats.{platform}.yaml
       - name: find-CNetworkGameClient_vtable
         expected_output:
           - CNetworkGameClient_vtable.{platform}.yaml
@@ -796,8 +805,22 @@ modules:
       - name: find-CEngineClient_vtable
         expected_output:
           - CEngineClient_vtable.{platform}.yaml
+      - name: find-CEngineClient_DumpNetStats
+        expected_output:
+          - CEngineClient_DumpNetStats.{platform}.yaml
+        expected_input:
+          - CNetworkGameClient_PrintNetStats.{platform}.yaml
+          - CL_NET_PrintSummary_CommandHandler.{platform}.yaml
+          - CEngineClient_vtable.{platform}.yaml
       - name: find-CEngineServer_vtable
         expected_output:
+          - CEngineServer_vtable.{platform}.yaml
+      - name: find-CEngineServer_DumpNetStats
+        expected_output:
+          - CEngineServer_DumpNetStats.{platform}.yaml
+        expected_input:
+          - CMsgSource2NetworkFlowQuality_PrintStats.{platform}.yaml
+          - CNetworkGameClient_PrintNetStats.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_ClientPrintf
         expected_output:
@@ -1341,6 +1364,16 @@ modules:
         alias:
           - CNetworkGameClient::RecordEntityBandwidth
           - RecordEntityBandwidth
+      - name: CNetworkGameClient_PrintNetStats
+        category: func
+        alias:
+          - CNetworkGameClient::PrintNetStats
+      - name: CL_NET_PrintSummary_CommandHandler
+        category: func
+      - name: CMsgSource2NetworkFlowQuality_PrintStats
+        category: func
+        alias:
+          - CMsgSource2NetworkFlowQuality::PrintStats
       - name: CNetworkGameClient_vtable
         category: vtable
       - name: CNetworkGameClient_DisconnectGame
@@ -1518,8 +1551,16 @@ modules:
         shared: true
       - name: CEngineClient_vtable
         category: vtable
+      - name: CEngineClient_DumpNetStats
+        category: vfunc
+        alias:
+          - CEngineClient::DumpNetStats
       - name: CEngineServer_vtable
         category: vtable
+      - name: CEngineServer_DumpNetStats
+        category: vfunc
+        alias:
+          - CEngineServer::DumpNetStats
       - name: CEngineServer_ClientPrintf
         category: vfunc
         alias:
