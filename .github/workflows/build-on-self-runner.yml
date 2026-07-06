@@ -130,6 +130,9 @@ jobs:
         run: |
           $args = @('-gamever', $env:GAMEVER, '-debug')
           uv run run_cpp_tests.py @args
+          if ($LASTEXITCODE -ne 0) {
+            throw "run_cpp_tests.py failed with exit code $LASTEXITCODE"
+          }
 
       - name: Archive release payload
         shell: pwsh

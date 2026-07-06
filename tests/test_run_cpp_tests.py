@@ -1,5 +1,6 @@
-import unittest
+import argparse
 import tempfile
+import unittest
 from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import patch
@@ -569,6 +570,79 @@ class TestRunFixHeaderWithVerification(unittest.TestCase):
         self.assertFalse(result)
         self.assertEqual(1, mock_agent.call_count)
         self.assertEqual(1, mock_compile.call_count)
+
+
+class TestMainExitStatus(unittest.TestCase):
+    @patch.object(run_cpp_tests, "run_one_test")
+    @patch.object(run_cpp_tests, "probe_target_support")
+    @patch.object(run_cpp_tests, "get_default_target_triple")
+    @patch.object(run_cpp_tests, "parse_config")
+    @patch.object(run_cpp_tests, "parse_args")
+    def test_returns_failure_when_record_or_vtable_compare_has_differences(
+        self,
+        mock_parse_args,
+        mock_parse_config,
+        mock_get_default_target_triple,
+        mock_probe_target_support,
+        mock_run_one_test,
+    ) -> None:
+        mock_parse_args.return_value = argparse.Namespace(
+            configyaml="config.yaml",
+            bindir="bin",
+            gamever="14132",
+            clang="clang++",
+            std="c++20",
+            debug=False,
+            fixheader=False,
+        )
+        mock_parse_config.return_value = [
+            {
+                "name": "TestLayout",
+                "symbol": "ITestLayout",
+                "cpp": "test.cpp",
+                "target": "x86_64-pc-windows-msvc",
+            }
+        ]
+        mock_get_default_target_triple.return_value = "x86_64-pc-windows-msvc"
+        mock_probe_target_support.return_value = {"supported": True, "output": ""}
+        compare_reports = [
+            (
+                "record layout",
+                {
+                    "comparison_kind": "record_layout",
+                    "struct_name": "SDL_Mouse",
+                    "differences": [
+                        {
+                            "type": "structmember_offset_mismatch",
+                            "message": "SDL_Mouse::focus mismatch",
+                        }
+                    ],
+                },
+            ),
+            (
+                "vtable layout",
+                {
+                    "class_name": "ITestLayout",
+                    "differences": [
+                        {
+                            "type": "vtable_size_mismatch",
+                            "message": "ITestLayout vtable size mismatch",
+                        }
+                    ],
+                },
+            ),
+        ]
+
+        for _case_name, compare_report in compare_reports:
+            with self.subTest(compare_kind=_case_name):
+                mock_run_one_test.return_value = {
+                    "status": "ok",
+                    "command": [],
+                    "output": "",
+                    "compare_reports": [compare_report],
+                }
+
+                self.assertEqual(1, run_cpp_tests.main())
 
 
 if __name__ == "__main__":

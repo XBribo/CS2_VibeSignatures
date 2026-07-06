@@ -279,6 +279,9 @@ jobs:
         run: |
           Set-Location $env:WORKSPACE
           uv run run_cpp_tests.py -gamever "$env:GAMEVER" -debug
+          if ($LASTEXITCODE -ne 0) {
+            throw "run_cpp_tests.py failed with exit code $LASTEXITCODE"
+          }
 
       - name: Clean PR bin copy
         if: always()

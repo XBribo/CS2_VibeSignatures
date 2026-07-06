@@ -496,7 +496,7 @@ def run_fix_header_with_verification(
 ) -> bool:
     """Run fix-header agent, then verify by recompiling.
 
-    If vtable diffs persist after the agent edits, re-run the agent with the
+    If layout diffs persist after the agent edits, re-run the agent with the
     updated diffs.  Repeats up to ``args.maxverify`` cycles.
 
     Returns True when all diffs are resolved, False otherwise.
@@ -564,14 +564,14 @@ def run_fix_header_with_verification(
         ]
 
         if not new_reports_with_diff:
-            print("  [PASS] Verification succeeded -- all vtable differences resolved.")
+            print("  [PASS] Verification succeeded -- all layout differences resolved.")
             return True
 
         remaining_diffs = sum(
             len(r.get("differences", [])) for r in new_reports_with_diff
         )
         print(
-            f"  [INFO] {remaining_diffs} vtable difference(s) remain after agent edit."
+            f"  [INFO] {remaining_diffs} layout difference(s) remain after agent edit."
         )
         if debug:
             for report in new_reports_with_diff:
@@ -581,7 +581,7 @@ def run_fix_header_with_verification(
         current_diff_reports = new_reports_with_diff
 
     print(
-        f"  [FAIL] Vtable differences persist after {max_verify} verify-and-retry cycle(s)."
+        f"  [FAIL] Layout differences persist after {max_verify} verify-and-retry cycle(s)."
     )
     return False
 
@@ -1072,7 +1072,15 @@ def main():
         print(f"Header fix agent runs: {header_fix_run_count}")
         print(f"Header fix agent failures: {header_fix_fail_count}")
 
-    if compile_failed_count > 0 or invalid_count > 0 or header_fix_fail_count > 0:
+    if compare_diff_count > 0:
+        print("[FAIL] Layout compare differences are treated as test failures.")
+
+    if (
+        compile_failed_count > 0
+        or invalid_count > 0
+        or compare_diff_count > 0
+        or header_fix_fail_count > 0
+    ):
         return 1
     return 0
 
