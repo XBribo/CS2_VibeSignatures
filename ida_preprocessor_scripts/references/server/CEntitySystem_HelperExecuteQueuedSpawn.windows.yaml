@@ -340,7 +340,7 @@ disasm_code: |-
   .text:00000001811F81DB                 mov     r8, rdi
   .text:00000001811F81DE                 mov     edx, ebx
   .text:00000001811F81E0                 mov     rcx, r12
-  .text:00000001811F81E3                 call    qword ptr [rax+90h]; 0x90 = CEntitySystem_SortEntities
+  .text:00000001811F81E3                 call    qword ptr [rax+90h]; 144LL = 0x90 = CEntitySystem_SortEntities
   .text:00000001811F81E9                 mov     rax, [r12]
   .text:00000001811F81ED                 mov     r8, rdi
   .text:00000001811F81F0                 mov     edx, ebx
@@ -642,8 +642,8 @@ procedure: |-
     if ( v51 > 0 )
     {
       if ( v51 > 1 )
-        (*(void (__fastcall **)(__int64, _QWORD, _QWORD *))(*(_QWORD *)v4 + 144LL))(v4, (unsigned int)v51, v52);// 144LL = CEntitySystem_SortEntities
-      (*(void (__fastcall **)(__int64, _QWORD, _QWORD *))(*(_QWORD *)v4 + 152LL))(v4, (unsigned int)v51, v52);// CEntitySystem_Spawn
+        (*(void (__fastcall **)(__int64, _QWORD, _QWORD *))(*(_QWORD *)v4 + 144LL))(v4, (unsigned int)v51, v52);// 144LL = 0x90 = CEntitySystem_SortEntities
+      (*(void (__fastcall **)(__int64, _QWORD, _QWORD *))(*(_QWORD *)v4 + 152LL))(v4, (unsigned int)v51, v52);// 152LL = 0x98 = CEntitySystem_Spawn
     }
     v42 = v47;
     LODWORD(v42) = v47 & 0x7FFFFFFF;

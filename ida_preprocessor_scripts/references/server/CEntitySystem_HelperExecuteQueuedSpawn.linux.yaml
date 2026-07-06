@@ -307,7 +307,7 @@ disasm_code: |-
   .text:0000000001E61973                 mov     rax, [rbx]
   .text:0000000001E61976                 cmp     r15d, 1
   .text:0000000001E6197A                 jz      short loc_1E61993
-  .text:0000000001E6197C                 mov     rcx, [rax+98h]; 0x98 = CEntitySystem_SortEntities
+  .text:0000000001E6197C                 mov     rcx, [rax+98h]; 152LL = 0x98 = CEntitySystem_SortEntities
   .text:0000000001E61983                 lea     rdx, nullsub_1672
   .text:0000000001E6198A                 cmp     rcx, rdx
   .text:0000000001E6198D                 jnz     loc_1E61B90
@@ -728,7 +728,7 @@ procedure: |-
           v44 = *a1;
           if ( v20 != 1 )
           {
-            v45 = *(__int64 (__fastcall **)())(v44 + 152);// 152LL = CEntitySystem_SortEntities
+            v45 = *(__int64 (__fastcall **)())(v44 + 152);// 152LL = 0x98 = CEntitySystem_SortEntities
             if ( v45 != nullsub_1672 )
             {
               ((void (__fastcall *)(__int64 *, _QWORD, _QWORD *))v45)(a1, v20, dest);
