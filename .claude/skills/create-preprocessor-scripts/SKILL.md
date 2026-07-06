@@ -456,7 +456,39 @@ This step is mandatory -- do not report completion without running and passing t
 
 ---
 
-## Step 6: Commit Changes
+## Step 6: Verify Formatting and Regression Tests
+
+Before committing, verify code formatting for tracked Python/YAML files and run the regression test suite.
+
+### 6a. Formatting
+
+Check formatting for all tracked Python/YAML files:
+
+```bash
+uv run python format_repo_files.py --check
+```
+
+If the check reports files that need formatting, apply it:
+
+```bash
+uv run python format_repo_files.py
+```
+
+### 6b. Regression Tests
+
+Run the unittest suite:
+
+```bash
+uv run python -m unittest discover -s tests -b
+```
+
+**Keep 0 unittest failures before committing.** If any test fails, investigate and fix it before proceeding to the commit step.
+
+This step is mandatory -- do not commit until formatting passes (`--check` is clean) and the unittest suite reports 0 failures.
+
+---
+
+## Step 7: Commit Changes
 
 After validation passes, commit all changes to git.
 
@@ -495,6 +527,8 @@ Before finishing, verify:
 - [ ] config.yaml `symbols` section has entries for all targets (no duplicates)
 - [ ] Pattern-specific checks pass (see the Checklist section in the chosen pattern reference file)
 - [ ] `uv run ida_analyze_bin.py -debug` passes with 0 failures
+- [ ] `uv run python format_repo_files.py --check` reports no formatting issues (run `uv run python format_repo_files.py` to fix)
+- [ ] `uv run python -m unittest discover -s tests -b` passes with 0 failures
 - [ ] All changes committed to git (on `dev` branch, NOT `main`)
 
 ## Real-World Examples
