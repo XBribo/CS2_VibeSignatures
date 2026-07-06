@@ -63,6 +63,14 @@ class TestPrSelfRunnerWorkflow(unittest.TestCase):
         self.assertIn("Remove-Item -LiteralPath $prWorkspace -Recurse -Force", workflow)
         self.assertIn('Write-Host "Removed PR workspace: $prWorkspace"', workflow)
 
+    def test_closed_event_leaves_pr_workspace_before_deleting_it(self) -> None:
+        workflow = Path(".github/workflows/pr-self-runner.yml").read_text(encoding="utf-8")
+
+        self.assertIn(
+            "Set-Location $workspaceRoot\n\n          Remove-Item -LiteralPath $prWorkspace -Recurse -Force",
+            workflow,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -422,5 +422,7 @@ jobs:
             Write-Host "PR was closed without merge; skipping persisted YAML copy."
           }
 
+          Set-Location $workspaceRoot
+
           Remove-Item -LiteralPath $prWorkspace -Recurse -Force
           Write-Host "Removed PR workspace: $prWorkspace"
