@@ -940,6 +940,11 @@ modules:
           - CEngineServer_GetPlayerInfo.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
+      - name: find-CEngineServer_ClientCommandKeyValues
+        expected_output:
+          - CEngineServer_ClientCommandKeyValues.{platform}.yaml
+        expected_input:
+          - CEngineServer_vtable.{platform}.yaml
       - name: find-CLog_Print
         expected_output:
           - CLog_Print.{platform}.yaml
@@ -1695,6 +1700,10 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::GetPlayerInfo
+      - name: CEngineServer_ClientCommandKeyValues
+        category: vfunc
+        alias:
+          - CEngineServer::ClientCommandKeyValues
       - name: CLog_Print
         category: func
         alias:
