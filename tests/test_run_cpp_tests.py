@@ -65,6 +65,38 @@ class TestParseVftableLayouts(unittest.TestCase):
             parsed["CDerived"]["methods_by_index"][3]["member_name"],
         )
 
+    def test_prefers_complete_vftable_for_multi_level_derived_class(self) -> None:
+        compiler_output = (
+            "VFTable for 'IGrandParent' in 'IParent' in 'CDerived' (5 entries).\n"
+            "   0 | CDerived RTTI\n"
+            "   1 | void IGrandParent::GrandParentVirtual() [pure]\n"
+            "   2 | void IParent::ParentVirtual() [pure]\n"
+            "   3 | void CDerived::ChildVirtual() [pure]\n"
+            "   4 | void CDerived::ChildTailVirtual() [pure]\n"
+            "\n"
+            "VFTable indices for 'CDerived' (2 entries).\n"
+            "   2 | void CDerived::ChildVirtual()\n"
+            "   3 | void CDerived::ChildTailVirtual()\n"
+        )
+
+        parsed = cpp_tests_util.parse_vftable_layouts(compiler_output)
+
+        self.assertIn("CDerived", parsed)
+        self.assertEqual(4, parsed["CDerived"]["declared_entries"])
+        self.assertEqual(4, parsed["CDerived"]["entry_count"])
+        self.assertEqual(
+            "GrandParentVirtual",
+            parsed["CDerived"]["methods_by_index"][0]["member_name"],
+        )
+        self.assertEqual(
+            "ParentVirtual",
+            parsed["CDerived"]["methods_by_index"][1]["member_name"],
+        )
+        self.assertEqual(
+            "ChildTailVirtual",
+            parsed["CDerived"]["methods_by_index"][3]["member_name"],
+        )
+
 
 class TestCompareVtableWithYaml(unittest.TestCase):
     def test_complete_derived_vftable_matches_inherited_overload_reference(self) -> None:

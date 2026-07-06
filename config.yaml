@@ -9566,6 +9566,33 @@ cpp_tests:
       - fdump-vtable-layouts
     reference_modules:
       - engine  # bin/{gamever}/engine/CLoopTypeClientServer_*.{platform}.yaml
+  - name: IVEngineServer2_MSVC
+    symbol: IVEngineServer2
+    alias_symbols:
+      - CEngineServer
+    cpp: cpp_tests/ivengineserver2.cpp
+    headers:
+      - hl2sdk_cs2/public/eiface.h  # This is for LLM agent
+    claude_permission_mode: acceptEdits
+    claude_allowed_tools: Read,Edit,MultiEdit,Write
+    target: x86_64-pc-windows-msvc
+    include_directories:
+      - cpp_tests/stubs
+      - hl2sdk_cs2/game/shared
+      - hl2sdk_cs2/public
+      - hl2sdk_cs2/public/tier0
+      - hl2sdk_cs2/public/tier1
+    defines:
+      - COMPILER_MSVC=1
+      - COMPILER_MSVC64=1
+      - _MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION
+    additional_compiler_options:
+      - fms-extensions
+      - fms-compatibility
+      - Xclang
+      - fdump-vtable-layouts
+    reference_modules:
+      - engine  # bin/{gamever}/engine/CEngineServer_*.{platform}.yaml
   - name: IGameSystemFactory_MSVC
     symbol: IGameSystemFactory
     cpp: cpp_tests/igamesystemfactory.cpp
