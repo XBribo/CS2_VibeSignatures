@@ -940,6 +940,15 @@ modules:
           - CEngineServer_GetPlayerInfo.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
+      - name: find-CLog_Print
+        expected_output:
+          - CLog_Print.{platform}.yaml
+      - name: find-CEngineServer_LogPrint
+        expected_output:
+          - CEngineServer_LogPrint.{platform}.yaml
+        expected_input:
+          - CLog_Print.{platform}.yaml
+          - CEngineServer_vtable.{platform}.yaml
       - name: find-CLoopTypeClientServerService_vtable
         expected_output:
           - CLoopTypeClientServerService_vtable.{platform}.yaml
@@ -1686,6 +1695,14 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::GetPlayerInfo
+      - name: CLog_Print
+        category: func
+        alias:
+          - CLog::Print
+      - name: CEngineServer_LogPrint
+        category: vfunc
+        alias:
+          - CEngineServer::LogPrint
       - name: CLoopTypeClientServerService_vtable
         category: vtable
       - name: CLoopTypeClientServerService_vtable2
