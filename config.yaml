@@ -943,6 +943,12 @@ modules:
           - CEngineServer_SetFakeClientConVarValue.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
+      - name: find-CEngineServer_CreateFakeClient
+        expected_output:
+          - CEngineServer_CreateFakeClient.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_CreateFakeClient_Impl.{platform}.yaml
+          - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_GetPlayerInfo
         expected_output:
           - CEngineServer_GetPlayerInfo.{platform}.yaml
@@ -1712,6 +1718,10 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::SetFakeClientConVarValue
+      - name: CEngineServer_CreateFakeClient
+        category: vfunc
+        alias:
+          - CEngineServer::CreateFakeClient
       - name: CEngineServer_GetPlayerInfo
         category: vfunc
         alias:
