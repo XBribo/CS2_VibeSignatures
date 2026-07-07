@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CNetworkGameServerBase_AsyncUnloadSpawnGroupInterrnal skill."""
+"""Preprocess script for find-CNetworkGameServerBase_AsyncUnloadSpawnGroupInternal skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CNetworkGameServerBase_AsyncUnloadSpawnGroupInterrnal",
+    "CNetworkGameServerBase_AsyncUnloadSpawnGroupInternal",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CNetworkGameServerBase_AsyncUnloadSpawnGroupInterrnal",
+        "func_name": "CNetworkGameServerBase_AsyncUnloadSpawnGroupInternal",
         "xref_strings": [
             "SV:  AsyncUnloadSpawnGroup( %s ) -- unloading loading spawngroup",
         ],
@@ -26,7 +26,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CNetworkGameServerBase_AsyncUnloadSpawnGroupInterrnal",
+        "CNetworkGameServerBase_AsyncUnloadSpawnGroupInternal",
         [
             "func_name",
             "func_sig",
