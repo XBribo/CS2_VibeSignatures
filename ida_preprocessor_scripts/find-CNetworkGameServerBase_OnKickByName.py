@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-PerformKick skill."""
+"""Preprocess script for find-CNetworkGameServerBase_OnKickByName skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "PerformKick",
+    "CNetworkGameServerBase_OnKickByName",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "PerformKick",
+        "func_name": "CNetworkGameServerBase_OnKickByName",
         "xref_strings": [
-            "%s kicked by %s (%s)\n",
+            'Can\'t kick "%s", name not found',
         ],
         "xref_gvs": [],
         "xref_signatures": [],
@@ -26,7 +26,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "PerformKick",
+        "CNetworkGameServerBase_OnKickByName",
         [
             "func_name",
             "func_sig",
