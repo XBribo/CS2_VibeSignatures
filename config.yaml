@@ -2039,6 +2039,10 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::GetPlayerNetworkIDString
+      - name: CNetworkGameServerBase_RemoveClientFromGame
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::RemoveClientFromGame
       - name: CEngineServer_GetPlayerNetworkIDString
         category: vfunc
         alias:
@@ -9449,6 +9453,17 @@ modules:
           - CNetworkGameServer_vtable.{platform}.yaml
           - g_pSource2GameClients.{platform}.yaml
           - CNetworkGameServerBase_ConnectClient.{platform}.yaml
+      # Same late-pass placement/reason as the skill above: depends on g_pSource2GameClients.
+      # Discovered as the CNetworkGameServer_vtable entry that BOTH calls
+      # CServerSideClientBase_GetNetworkIDString and references g_pSource2GameClients (the
+      # xref_funcs + xref_gvs + vtable intersection uniquely selects it, no excludes needed).
+      - name: find-CNetworkGameServerBase_RemoveClientFromGame
+        expected_output:
+          - CNetworkGameServerBase_RemoveClientFromGame.{platform}.yaml
+        expected_input:
+          - CServerSideClientBase_GetNetworkIDString.{platform}.yaml
+          - CNetworkGameServer_vtable.{platform}.yaml
+          - g_pSource2GameClients.{platform}.yaml
   - name: client  # Execute Shutdown-dependent client skills after engine2.dll generates ILoopModeFactory_Shutdown
     path_windows: game/csgo/bin/win64/client.dll
     path_linux: game/csgo/bin/linuxsteamrt64/libclient.so
