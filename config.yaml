@@ -464,6 +464,11 @@ modules:
           - CNetworkGameServer_DirectUpdate.{platform}.yaml
         expected_input:
           - CNetworkGameServer_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_SetMaxClients
+        expected_output:
+          - CNetworkGameServerBase_SetMaxClients.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_vtable.{platform}.yaml
       - name: find-CServerSideClient_vtable
         expected_output:
           - CServerSideClient_vtable.{platform}.yaml
@@ -1405,6 +1410,10 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServer::DirectUpdate
+      - name: CNetworkGameServerBase_SetMaxClients
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::SetMaxClients
       - name: CNetworkGameClient_SendMovePacket
         category: func
         alias:
