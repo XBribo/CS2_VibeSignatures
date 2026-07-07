@@ -901,6 +901,17 @@ modules:
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
           - INetworkGameServer_ServerEndSimulate.{platform}.yaml
+      - name: find-INetworkGameServer_ServerPostSimulate
+        expected_output:
+          - INetworkGameServer_ServerPostSimulate.{platform}.yaml
+        expected_input:
+          - CNetworkServerService_OnServerPostSimulate.{platform}.yaml
+      - name: find-CNetworkGameServerBase_ServerPostSimulate
+        expected_output:
+          - CNetworkGameServerBase_ServerPostSimulate.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+          - INetworkGameServer_ServerPostSimulate.{platform}.yaml
       - name: find-ISource2Server_PreWorldUpdate
         expected_output:
           - ISource2Server_PreWorldUpdate.{platform}.yaml
@@ -1873,6 +1884,14 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::ServerEndSimulate
+      - name: INetworkGameServer_ServerPostSimulate
+        category: vfunc
+        alias:
+          - INetworkGameServer::ServerPostSimulate
+      - name: CNetworkGameServerBase_ServerPostSimulate
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::ServerPostSimulate
       - name: ISource2Server_PreWorldUpdate
         category: vfunc
         alias:

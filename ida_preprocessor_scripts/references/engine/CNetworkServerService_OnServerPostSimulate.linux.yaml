@@ -1,0 +1,127 @@
+func_name: CNetworkServerService_OnServerPostSimulate
+func_va: '0x5a9b70'
+disasm_code: |-
+  .text:00000000005A9B70                 movss   xmm0, cs:dword_255B70
+  .text:00000000005A9B78                 pxor    xmm1, xmm1
+  .text:00000000005A9B7C                 cvtsd2ss xmm1, cs:qword_97E610
+  .text:00000000005A9B84                 push    rbp
+  .text:00000000005A9B85                 mulss   xmm0, cs:dword_9C4B14
+  .text:00000000005A9B8D                 mov     rbp, rsp
+  .text:00000000005A9B90                 push    r12
+  .text:00000000005A9B92                 mov     r12, rsi
+  .text:00000000005A9B95                 cmp     cs:byte_9C4B10, 0
+  .text:00000000005A9B9C                 push    rbx
+  .text:00000000005A9B9D                 mov     cs:qword_97E610, 0
+  .text:00000000005A9BA8                 addss   xmm0, xmm1
+  .text:00000000005A9BAC                 movss   cs:dword_9C4B14, xmm0
+  .text:00000000005A9BB4                 jz      short loc_5A9BFA
+  .text:00000000005A9BB6                 cmp     cs:g_pGameServer, 0
+  .text:00000000005A9BBE                 jnz     short loc_5A9C01
+  .text:00000000005A9BC0                 cmp     cs:qword_97E620, 0
+  .text:00000000005A9BC8                 jnz     loc_5A9C70
+  .text:00000000005A9BCE                 xchg    ax, ax
+  .text:00000000005A9BD0                 cmp     cs:qword_97E628, 0
+  .text:00000000005A9BD8                 jnz     short loc_5A9BE0
+  .text:00000000005A9BDA                 pop     rbx
+  .text:00000000005A9BDB                 pop     r12
+  .text:00000000005A9BDD                 pop     rbp
+  .text:00000000005A9BDE                 retn
+  .text:00000000005A9BE0                 mov     rdi, cs:qword_97E628
+  .text:00000000005A9BE7                 mov     rsi, r12
+  .text:00000000005A9BEA                 pop     rbx
+  .text:00000000005A9BEB                 pop     r12
+  .text:00000000005A9BED                 pop     rbp
+  .text:00000000005A9BEE                 mov     rax, [rdi]
+  .text:00000000005A9BF1                 mov     rax, [rax+90h]; 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+  .text:00000000005A9BF8                 jmp     rax
+  .text:00000000005A9BFA                 call    sub_5BE940
+  .text:00000000005A9BFF                 jmp     short loc_5A9BB6
+  .text:00000000005A9C01                 mov     rdx, cs:g_pGameServer
+  .text:00000000005A9C08                 nop     dword ptr [rax+rax+00000000h]
+  .text:00000000005A9C10                 mov     rdi, rdx
+  .text:00000000005A9C13                 xor     ebx, ebx
+  .text:00000000005A9C15                 mov     rax, [rdi]
+  .text:00000000005A9C18                 mov     rsi, r12
+  .text:00000000005A9C1B                 call    qword ptr [rax+90h]; 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+  .text:00000000005A9C21                 lea     eax, [rbx+1]
+  .text:00000000005A9C24                 mov     rdi, cs:qword_97E620
+  .text:00000000005A9C2B                 mov     rdx, cs:g_pGameServer
+  .text:00000000005A9C32                 cmp     eax, 1
+  .text:00000000005A9C35                 jz      short loc_5A9C48
+  .text:00000000005A9C37                 cmp     eax, 2
+  .text:00000000005A9C3A                 jz      short loc_5A9BD0
+  .text:00000000005A9C3C                 test    eax, eax
+  .text:00000000005A9C3E                 jz      short loc_5A9C60
+  .text:00000000005A9C40                 add     eax, 1
+  .text:00000000005A9C43                 cmp     eax, 1
+  .text:00000000005A9C46                 jnz     short loc_5A9C37
+  .text:00000000005A9C48                 test    rdi, rdi
+  .text:00000000005A9C4B                 jz      short loc_5A9BD0
+  .text:00000000005A9C4D                 nop     dword ptr [rax]
+  .text:00000000005A9C50                 mov     ebx, 1
+  .text:00000000005A9C55                 jmp     short loc_5A9C15
+  .text:00000000005A9C60                 test    rdx, rdx
+  .text:00000000005A9C63                 jnz     short loc_5A9C10
+  .text:00000000005A9C65                 test    rdi, rdi
+  .text:00000000005A9C68                 jz      loc_5A9BD0
+  .text:00000000005A9C6E                 jmp     short loc_5A9C50
+  .text:00000000005A9C70                 mov     rdi, cs:qword_97E620
+  .text:00000000005A9C77                 jmp     short loc_5A9C50
+procedure: |-
+  void __fastcall CNetworkServerService_OnServerPostSimulate(__int64 a1, __int64 a2)
+  {
+    float v2; // xmm1_4
+    __int64 v3; // rdx
+    __int64 v4; // rdi
+    int v5; // ebx
+    int v6; // eax
+
+    v2 = *(double *)&qword_97E610;
+    qword_97E610 = 0;
+    *(float *)&dword_9C4B14 = (float)(0.99900001 * *(float *)&dword_9C4B14) + v2;
+    if ( !byte_9C4B10 )
+      sub_5BE940();
+    if ( g_pGameServer )
+    {
+      v3 = g_pGameServer;
+  LABEL_8:
+      v4 = v3;
+      v5 = 0;
+      goto LABEL_9;
+    }
+    if ( qword_97E620[0] )
+    {
+      v4 = qword_97E620[0];
+  LABEL_14:
+      while ( 1 )
+      {
+        v5 = 1;
+  LABEL_9:
+        (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)v4 + 144LL))(v4, a2);// 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+        v6 = v5 + 1;
+        v4 = qword_97E620[0];
+        v3 = g_pGameServer;
+        if ( v5 )
+          break;
+  LABEL_13:
+        if ( !qword_97E620[0] )
+          goto LABEL_5;
+      }
+      while ( v6 != 2 )
+      {
+        if ( !v6 )
+        {
+          if ( g_pGameServer )
+            goto LABEL_8;
+          if ( !qword_97E620[0] )
+            break;
+          goto LABEL_14;
+        }
+        if ( ++v6 == 1 )
+          goto LABEL_13;
+      }
+    }
+  LABEL_5:
+    if ( qword_97E628 )
+      (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)qword_97E628 + 144LL))(qword_97E628, a2);// 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+  }
