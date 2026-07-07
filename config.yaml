@@ -472,6 +472,9 @@ modules:
       - name: find-CNetworkGameServerBase_CheckTimeouts
         expected_output:
           - CNetworkGameServerBase_CheckTimeouts.{platform}.yaml
+      - name: find-CNetworkGameServerBase_OnKickById
+        expected_output:
+          - CNetworkGameServerBase_OnKickById.{platform}.yaml
       - name: find-CServerSideClient_vtable
         expected_output:
           - CServerSideClient_vtable.{platform}.yaml
@@ -767,6 +770,9 @@ modules:
       - name: find-CNetworkServerService_RegisterEventMapInternal
         expected_output:
           - CNetworkServerService_RegisterEventMapInternal.{platform}.yaml
+      - name: find-CNetworkServerService_OnKickByIdHLTV
+        expected_output:
+          - CNetworkServerService_OnKickByIdHLTV.{platform}.yaml
       - name: find-CNetworkServerService_OnEventMapCallbacks-engine
         expected_output:
           - CNetworkServerService_OnServerAdvanceTick.{platform}.yaml
@@ -1427,6 +1433,10 @@ modules:
         category: func
         alias:
           - CNetworkGameServerBase::CheckTimeouts
+      - name: CNetworkGameServerBase_OnKickById
+        category: func
+        alias:
+          - CNetworkGameServerBase::OnKickById
       - name: CNetworkGameClient_SendMovePacket
         category: func
         alias:
@@ -1652,6 +1662,10 @@ modules:
         category: func
         alias:
           - CNetworkServerService::OnSimpleLoopFrameUpdate
+      - name: CNetworkServerService_OnKickByIdHLTV
+        category: func
+        alias:
+          - CNetworkServerService::OnKickByIdHLTV
       - name: INetworkGameServer_PreWorldUpdate
         category: vfunc
         alias:
