@@ -475,6 +475,9 @@ modules:
       - name: find-CNetworkGameServerBase_OnKickById
         expected_output:
           - CNetworkGameServerBase_OnKickById.{platform}.yaml
+      - name: find-CNetworkGameServerBase_OnKickByName
+        expected_output:
+          - CNetworkGameServerBase_OnKickByName.{platform}.yaml
       - name: find-CServerSideClient_vtable
         expected_output:
           - CServerSideClient_vtable.{platform}.yaml
@@ -1452,6 +1455,10 @@ modules:
         category: func
         alias:
           - CNetworkGameServerBase::OnKickById
+      - name: CNetworkGameServerBase_OnKickByName
+        category: func
+        alias:
+          - CNetworkGameServerBase::OnKickByName
       - name: CNetworkGameClient_SendMovePacket
         category: func
         alias:
