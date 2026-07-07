@@ -565,6 +565,9 @@ modules:
       - name: find-CNetworkGameServer_GetFreeClient
         expected_output:
           - CNetworkGameServer_GetFreeClient.{platform}.yaml
+      - name: find-CNetworkGameServer_CreateFakeClient_Impl
+        expected_output:
+          - CNetworkGameServer_CreateFakeClient_Impl.{platform}.yaml
       - name: find-g_pGameServer-AND-CServerSideClientBase_ClientPrintf-AND-CNetworkGameServer_ClientList
         expected_output:
           - g_pGameServer.{platform}.yaml
@@ -939,6 +942,12 @@ modules:
         expected_output:
           - CEngineServer_SetFakeClientConVarValue.{platform}.yaml
         expected_input:
+          - CEngineServer_vtable.{platform}.yaml
+      - name: find-CEngineServer_CreateFakeClient
+        expected_output:
+          - CEngineServer_CreateFakeClient.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_CreateFakeClient_Impl.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_GetPlayerInfo
         expected_output:
@@ -1365,6 +1374,10 @@ modules:
         alias:
           - CNetworkGameServer::GetFreeClient
           - GetFreeClient
+      - name: CNetworkGameServer_CreateFakeClient_Impl
+        category: func
+        alias:
+          - CNetworkGameServer::CreateFakeClient_Impl
       - name: CNetworkGameClient_SendMovePacket
         category: func
         alias:
@@ -1705,6 +1718,10 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::SetFakeClientConVarValue
+      - name: CEngineServer_CreateFakeClient
+        category: vfunc
+        alias:
+          - CEngineServer::CreateFakeClient
       - name: CEngineServer_GetPlayerInfo
         category: vfunc
         alias:
