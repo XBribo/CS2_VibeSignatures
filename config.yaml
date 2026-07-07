@@ -459,6 +459,11 @@ modules:
           - CNetworkGameServer_ActivateServer.{platform}.yaml
         expected_input:
           - CNetworkGameServer_vtable.{platform}.yaml
+      - name: find-CNetworkGameServer_DirectUpdate
+        expected_output:
+          - CNetworkGameServer_DirectUpdate.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_vtable.{platform}.yaml
       - name: find-CServerSideClient_vtable
         expected_output:
           - CServerSideClient_vtable.{platform}.yaml
@@ -1396,6 +1401,10 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServer::ActivateServer
+      - name: CNetworkGameServer_DirectUpdate
+        category: vfunc
+        alias:
+          - CNetworkGameServer::DirectUpdate
       - name: CNetworkGameClient_SendMovePacket
         category: func
         alias:
