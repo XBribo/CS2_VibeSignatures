@@ -57,8 +57,8 @@ disasm_code: |-
   .text:00000001801EB386                 jmp     short loc_1801EB38E
   .text:00000001801EB388                 mov     rax, [r8]
   .text:00000001801EB38B                 mov     rcx, r8
-  .text:00000001801EB38E                 ; 0x1C8 = 456 = INetworkGameServer_ClientUpdate
-  .text:00000001801EB38E                 call    qword ptr [rax+1C8h]; 0x1C8 = 456 = INetworkGameServer_ClientUpdate
+  .text:00000001801EB38E                 ; 0x1C8 = 456 = INetworkGameServer_PreWorldUpdate
+  .text:00000001801EB38E                 call    qword ptr [rax+1C8h]; 0x1C8 = 456 = INetworkGameServer_PreWorldUpdate
   .text:00000001801EB394                 inc     ebx
   .text:00000001801EB396                 mov     r9, cs:qword_1806874B8
   .text:00000001801EB39D                 mov     rcx, cs:qword_1806874B0
@@ -245,7 +245,7 @@ procedure: |-
       }
       v10 = *v4;
   LABEL_20:
-      (*(void (__fastcall **)(__int64 *, __int64, __int64 *, __int64))(v10 + 456))(v4, v9, v6, v2);// 0x1C8 = 456 = INetworkGameServer_ClientUpdate
+      (*(void (__fastcall **)(__int64 *, __int64, __int64 *, __int64))(v10 + 456))(v4, v9, v6, v2);// 0x1C8 = 456 = INetworkGameServer_PreWorldUpdate
       ++i;
   LABEL_21:
       v2 = qword_1806874B8;

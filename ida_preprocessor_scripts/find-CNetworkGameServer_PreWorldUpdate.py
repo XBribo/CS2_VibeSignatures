@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CNetworkGameServer_ClientUpdate skill."""
+"""Preprocess script for find-CNetworkGameServer_PreWorldUpdate skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 INHERIT_VFUNCS = [
     # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
-    ("CNetworkGameServer_ClientUpdate", "CNetworkGameServer", "INetworkGameServer_ClientUpdate", True),
+    ("CNetworkGameServer_PreWorldUpdate", "CNetworkGameServer", "INetworkGameServer_PreWorldUpdate", True),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CNetworkGameServer_ClientUpdate",
+        "CNetworkGameServer_PreWorldUpdate",
         [
             "func_name",
             "func_va",

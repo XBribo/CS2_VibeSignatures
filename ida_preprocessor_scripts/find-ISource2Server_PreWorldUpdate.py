@@ -12,7 +12,7 @@ LLM_DECOMPILE = [
     (
         "ISource2Server_PreWorldUpdate",
         "prompt/call_llm_decompile.md",
-        "references/engine/CNetworkGameServer_ClientUpdate.{platform}.yaml",
+        "references/engine/CNetworkGameServer_PreWorldUpdate.{platform}.yaml",
     ),
 ]
 

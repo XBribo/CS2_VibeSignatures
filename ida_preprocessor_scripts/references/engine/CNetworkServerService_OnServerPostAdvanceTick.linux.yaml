@@ -99,7 +99,7 @@ disasm_code: |-
   .text:00000000005A68DF                 jmp     sub_5A5740
   .text:00000000005A68E8                 mov     rdi, cs:qword_9779A8
   .text:00000000005A68EF                 mov     rax, [rdi]
-  .text:00000000005A68F2                 call    qword ptr [rax+1C8h]; 0x1C8 = 456 = INetworkGameServer_ClientUpdate
+  .text:00000000005A68F2                 call    qword ptr [rax+1C8h]; 0x1C8 = 456 = INetworkGameServer_PreWorldUpdate
   .text:00000000005A68F8                 jmp     loc_5A6746
   .text:00000000005A68FD                 mov     cs:byte_9BCF34, 0
   .text:00000000005A6904                 mov     rax, cs:g_pThreadPool_ptr
@@ -150,7 +150,7 @@ disasm_code: |-
   .text:00000000005A69C8                 mov     rdi, rdx
   .text:00000000005A69CB                 xor     ebx, ebx
   .text:00000000005A69CD                 mov     rax, [rdi]
-  .text:00000000005A69D0                 call    qword ptr [rax+1C8h]; 0x1C8 = 456 = INetworkGameServer_ClientUpdate
+  .text:00000000005A69D0                 call    qword ptr [rax+1C8h]; 0x1C8 = 456 = INetworkGameServer_PreWorldUpdate
   .text:00000000005A69D6                 lea     eax, [rbx+1]
   .text:00000000005A69D9                 mov     rdi, cs:qword_9779A0
   .text:00000000005A69E0                 mov     rdx, cs:g_pGameServer
@@ -218,7 +218,7 @@ procedure: |-
       {
         v19 = 1;
   LABEL_31:
-        (*(void (__fastcall **)(__int64))(*(_QWORD *)v18 + 456LL))(v18);// 0x1C8 = 456 = INetworkGameServer_ClientUpdate
+        (*(void (__fastcall **)(__int64))(*(_QWORD *)v18 + 456LL))(v18);// 0x1C8 = 456 = INetworkGameServer_PreWorldUpdate
         v20 = v19 + 1;
         v18 = qword_9779A0;
         v17 = g_pGameServer;
@@ -244,7 +244,7 @@ procedure: |-
     }
   LABEL_3:
     if ( qword_9779A8 )
-      (*(void (__fastcall **)(__int64))(*(_QWORD *)qword_9779A8 + 456LL))(qword_9779A8);// 0x1C8 = 456 = INetworkGameServer_ClientUpdate
+      (*(void (__fastcall **)(__int64))(*(_QWORD *)qword_9779A8 + 456LL))(qword_9779A8);// 0x1C8 = 456 = INetworkGameServer_PreWorldUpdate
     if ( *(_BYTE *)(a1 + 400) && *(_QWORD *)(a1 + 336) )
       sub_5C6800(a1);
     if ( *(_BYTE *)(a2 + 60) || *(_BYTE *)(a2 + 41) )

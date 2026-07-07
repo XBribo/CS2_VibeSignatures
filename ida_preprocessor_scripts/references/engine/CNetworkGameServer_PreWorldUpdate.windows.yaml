@@ -1,4 +1,4 @@
-func_name: CNetworkGameServer_ClientUpdate
+func_name: CNetworkGameServer_PreWorldUpdate
 func_va: '0x1800aba40'
 disasm_code: |-
   .text:00000001800ABA40                 cmp     dword ptr [rcx+38h], 3
@@ -12,7 +12,7 @@ disasm_code: |-
   .text:00000001800ABA57                 jmp     qword ptr [rax+78h]; 0x78 = 120LL = ISource2Server_PreWorldUpdate
   .text:00000001800ABA5B                 retn
 procedure: |-
-  __int64 __fastcall CNetworkGameServer_ClientUpdate(__int64 a1, __int64 a2)
+  __int64 __fastcall CNetworkGameServer_PreWorldUpdate(__int64 a1, __int64 a2)
   {
     __int64 result; // rax
 

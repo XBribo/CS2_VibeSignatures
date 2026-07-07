@@ -1,4 +1,4 @@
-func_name: CNetworkGameServer_ClientUpdate
+func_name: CNetworkGameServer_PreWorldUpdate
 func_va: '0x6aeb90'
 disasm_code: |-
   .text:00000000006AEB90                 cmp     dword ptr [rdi+38h], 3
@@ -12,7 +12,7 @@ disasm_code: |-
   .text:00000000006AEBB4                 mov     rax, [rax+78h]; 0x78 = 120 = ISource2Server_PreWorldUpdate
   .text:00000000006AEBB8                 jmp     rax
 procedure: |-
-  __int64 __fastcall CNetworkGameServer_ClientUpdate(__int64 a1)
+  __int64 __fastcall CNetworkGameServer_PreWorldUpdate(__int64 a1)
   {
     __int64 result; // rax
 

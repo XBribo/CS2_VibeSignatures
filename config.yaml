@@ -767,22 +767,22 @@ modules:
           - CNetworkServerService_OnSimpleLoopFrameUpdate.{platform}.yaml
         expected_input:
           - CNetworkServerService_RegisterEventMapInternal.{platform}.yaml
-      - name: find-INetworkGameServer_ClientUpdate
+      - name: find-INetworkGameServer_PreWorldUpdate
         expected_output:
-          - INetworkGameServer_ClientUpdate.{platform}.yaml
+          - INetworkGameServer_PreWorldUpdate.{platform}.yaml
         expected_input:
           - CNetworkServerService_OnServerPostAdvanceTick.{platform}.yaml
-      - name: find-CNetworkGameServer_ClientUpdate
+      - name: find-CNetworkGameServer_PreWorldUpdate
         expected_output:
-          - CNetworkGameServer_ClientUpdate.{platform}.yaml
+          - CNetworkGameServer_PreWorldUpdate.{platform}.yaml
         expected_input:
           - CNetworkGameServer_vtable.{platform}.yaml
-          - INetworkGameServer_ClientUpdate.{platform}.yaml
+          - INetworkGameServer_PreWorldUpdate.{platform}.yaml
       - name: find-ISource2Server_PreWorldUpdate
         expected_output:
           - ISource2Server_PreWorldUpdate.{platform}.yaml
         expected_input:
-          - CNetworkGameServer_ClientUpdate.{platform}.yaml
+          - CNetworkGameServer_PreWorldUpdate.{platform}.yaml
       - name: find-INetworkMessages_SetIsForServer
         expected_output:
           - INetworkMessages_SetIsForServer.{platform}.yaml
@@ -1621,14 +1621,14 @@ modules:
         category: func
         alias:
           - CNetworkServerService::OnSimpleLoopFrameUpdate
-      - name: INetworkGameServer_ClientUpdate
+      - name: INetworkGameServer_PreWorldUpdate
         category: vfunc
         alias:
-          - INetworkGameServer::ClientUpdate
-      - name: CNetworkGameServer_ClientUpdate
+          - INetworkGameServer::PreWorldUpdate
+      - name: CNetworkGameServer_PreWorldUpdate
         category: vfunc
         alias:
-          - CNetworkGameServer::ClientUpdate
+          - CNetworkGameServer::PreWorldUpdate
       - name: ISource2Server_PreWorldUpdate
         category: vfunc
         alias:
