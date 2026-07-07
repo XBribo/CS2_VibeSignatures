@@ -871,6 +871,7 @@ modules:
           - CNetworkServerService_OnServerPollNetworking.{platform}.yaml
           - CNetworkServerService_OnServerProcessNetworking.{platform}.yaml
           - CNetworkServerService_OnServerBeginSimulate.{platform}.yaml
+          - CNetworkServerService_OnServerEndSimulate.{platform}.yaml
           - CNetworkServerService_OnServerPostSimulate.{platform}.yaml
           - CNetworkServerService_OnServerPostAdvanceTick.{platform}.yaml
           - CNetworkServerService_OnFrameBoundary.{platform}.yaml
@@ -1813,6 +1814,10 @@ modules:
         category: func
         alias:
           - CNetworkServerService::OnServerBeginSimulate
+      - name: CNetworkServerService_OnServerEndSimulate
+        category: func
+        alias:
+          - CNetworkServerService::OnServerEndSimulate
       - name: CNetworkServerService_OnServerPostSimulate
         category: func
         alias:

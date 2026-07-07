@@ -8,6 +8,7 @@ TARGET_FUNCTION_NAMES = [
     "CNetworkServerService_OnServerPollNetworking",
     "CNetworkServerService_OnServerProcessNetworking",
     "CNetworkServerService_OnServerBeginSimulate",
+    "CNetworkServerService_OnServerEndSimulate",
     "CNetworkServerService_OnServerPostSimulate",
     "CNetworkServerService_OnServerPostAdvanceTick",
     "CNetworkServerService_OnFrameBoundary",
@@ -34,6 +35,11 @@ LLM_DECOMPILE = [
     ),
     (
         "CNetworkServerService_OnServerBeginSimulate",
+        "prompt/call_llm_decompile.md",
+        "references/engine/CNetworkServerService_RegisterEventMapInternal.{platform}.yaml",
+    ),
+    (
+        "CNetworkServerService_OnServerEndSimulate",
         "prompt/call_llm_decompile.md",
         "references/engine/CNetworkServerService_RegisterEventMapInternal.{platform}.yaml",
     ),
@@ -98,6 +104,16 @@ GENERATE_YAML_DESIRED_FIELDS = [
     ),
     (
         "CNetworkServerService_OnServerBeginSimulate",
+        [
+            "func_name",
+            "func_sig",
+            "func_va",
+            "func_rva",
+            "func_size",
+        ],
+    ),
+    (
+        "CNetworkServerService_OnServerEndSimulate",
         [
             "func_name",
             "func_sig",
