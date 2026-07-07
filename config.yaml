@@ -997,6 +997,15 @@ modules:
         expected_input:
           - CLog_Print.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
+      - name: find-PerformKick
+        expected_output:
+          - PerformKick.{platform}.yaml
+      - name: find-CEngineServer_KickClient
+        expected_output:
+          - CEngineServer_KickClient.{platform}.yaml
+        expected_input:
+          - PerformKick.{platform}.yaml
+          - CEngineServer_vtable.{platform}.yaml
       - name: find-CLoopTypeClientServerService_vtable
         expected_output:
           - CLoopTypeClientServerService_vtable.{platform}.yaml
@@ -1807,6 +1816,12 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::LogPrint
+      - name: PerformKick
+        category: func
+      - name: CEngineServer_KickClient
+        category: vfunc
+        alias:
+          - CEngineServer::KickClient
       - name: CLoopTypeClientServerService_vtable
         category: vtable
       - name: CLoopTypeClientServerService_vtable2
