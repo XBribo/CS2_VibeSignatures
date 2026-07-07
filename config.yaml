@@ -651,6 +651,21 @@ modules:
           - CNetworkGameServerBase_BroadcastPrintf.{platform}.yaml
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_ReserveServerForQueuedGame
+        expected_output:
+          - CNetworkGameServerBase_ReserveServerForQueuedGame.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_FinishChangeLevel
+        expected_output:
+          - CNetworkGameServerBase_FinishChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_StartChangeLevel
+        expected_output:
+          - CNetworkGameServerBase_StartChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
       - name: find-g_pGameServer-AND-CServerSideClientBase_ClientPrintf-AND-CNetworkGameServer_ClientList
         expected_output:
           - g_pGameServer.{platform}.yaml
@@ -1498,6 +1513,18 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::BroadcastPrintf
+      - name: CNetworkGameServerBase_ReserveServerForQueuedGame
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::ReserveServerForQueuedGame
+      - name: CNetworkGameServerBase_FinishChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::FinishChangeLevel
+      - name: CNetworkGameServerBase_StartChangeLevel
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::StartChangeLevel
       - name: CNetworkGameServer_GetFreeClient
         category: func
         alias:
