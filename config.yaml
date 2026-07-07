@@ -476,6 +476,11 @@ modules:
         expected_input:
           - CNetworkGameServer_vtable.{platform}.yaml
           - CNetworkGameServerBase_Shutdown.{platform}.yaml
+      - name: find-CNetworkGameServer_SpawnServer
+        expected_output:
+          - CNetworkGameServer_SpawnServer.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_vtable.{platform}.yaml
       - name: find-CNetworkGameServerBase_ServerPollNetworking
         expected_output:
           - CNetworkGameServerBase_ServerPollNetworking.{platform}.yaml
@@ -664,6 +669,11 @@ modules:
       - name: find-CNetworkGameServerBase_StartChangeLevel
         expected_output:
           - CNetworkGameServerBase_StartChangeLevel.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_SetServerState
+        expected_output:
+          - CNetworkGameServerBase_SetServerState.{platform}.yaml
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
       - name: find-g_pGameServer-AND-CServerSideClientBase_ClientPrintf-AND-CNetworkGameServer_ClientList
@@ -1525,6 +1535,10 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::StartChangeLevel
+      - name: CNetworkGameServerBase_SetServerState
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::SetServerState
       - name: CNetworkGameServer_GetFreeClient
         category: func
         alias:
@@ -1570,6 +1584,10 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServer::Shutdown
+      - name: CNetworkGameServer_SpawnServer
+        category: vfunc
+        alias:
+          - CNetworkGameServer::SpawnServer
       - name: CNetworkGameServerBase_SetMaxClients
         category: vfunc
         alias:
