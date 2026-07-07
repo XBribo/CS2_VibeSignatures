@@ -641,6 +641,16 @@ modules:
         expected_input:
           - CNetworkGameServerBase_ShutdownInternal.{platform}.yaml
           - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_BroadcastMessage
+        expected_output:
+          - CNetworkGameServerBase_BroadcastMessage.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_BroadcastPrintf
+        expected_output:
+          - CNetworkGameServerBase_BroadcastPrintf.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
       - name: find-g_pGameServer-AND-CServerSideClientBase_ClientPrintf-AND-CNetworkGameServer_ClientList
         expected_output:
           - g_pGameServer.{platform}.yaml
@@ -1480,6 +1490,14 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::ServerPollNetworking
+      - name: CNetworkGameServerBase_BroadcastMessage
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::BroadcastMessage
+      - name: CNetworkGameServerBase_BroadcastPrintf
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::BroadcastPrintf
       - name: CNetworkGameServer_GetFreeClient
         category: func
         alias:
