@@ -9858,3 +9858,52 @@ cpp_tests:
       - fdump-record-layouts
     reference_modules:
       - SDL3  # bin/{gamever}/SDL3/SDL_Mouse_*.{platform}.yaml
+  - name: INetworkGameServer_MSVC
+    symbol: INetworkGameServer
+    cpp: cpp_tests/inetworkgameserver.cpp
+    headers:
+      - hl2sdk_cs2/public/iserver.h  # This is for LLM agent
+    claude_permission_mode: acceptEdits
+    claude_allowed_tools: Read,Edit,MultiEdit,Write
+    target: x86_64-pc-windows-msvc
+    include_directories:
+      - hl2sdk_cs2/game/shared
+      - hl2sdk_cs2/public
+      - hl2sdk_cs2/public/tier0
+      - hl2sdk_cs2/public/tier1
+    defines:
+      - COMPILER_MSVC=1
+      - COMPILER_MSVC64=1
+      - _MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION
+    additional_compiler_options:
+      - fms-extensions
+      - fms-compatibility
+      - Xclang
+      - fdump-vtable-layouts
+    reference_modules:
+      - engine  # bin/{gamever}/engine/INetworkGameServer_*.{platform}.yaml
+    merge_reference_modules: false  # Avoid stale duplicate INetworkGameServer_ClientUpdate at index 58
+  - name: CNetworkGameServerBase_MSVC
+    symbol: CNetworkGameServerBase
+    cpp: cpp_tests/inetworkgameserver.cpp
+    headers:
+      - hl2sdk_cs2/public/iserver.h  # This is for LLM agent
+    claude_permission_mode: acceptEdits
+    claude_allowed_tools: Read,Edit,MultiEdit,Write
+    target: x86_64-pc-windows-msvc
+    include_directories:
+      - hl2sdk_cs2/game/shared
+      - hl2sdk_cs2/public
+      - hl2sdk_cs2/public/tier0
+      - hl2sdk_cs2/public/tier1
+    defines:
+      - COMPILER_MSVC=1
+      - COMPILER_MSVC64=1
+      - _MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION
+    additional_compiler_options:
+      - fms-extensions
+      - fms-compatibility
+      - Xclang
+      - fdump-vtable-layouts
+    reference_modules:
+      - engine  # bin/{gamever}/engine/CNetworkGameServerBase_*.{platform}.yaml
