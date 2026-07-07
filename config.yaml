@@ -1266,6 +1266,12 @@ modules:
       - name: find-CServerSideClientBase_GetNetworkIDString
         expected_output:
           - CServerSideClientBase_GetNetworkIDString.{platform}.yaml
+      - name: find-CEngineServer_GetPlayerNetworkIDString
+        expected_output:
+          - CEngineServer_GetPlayerNetworkIDString.{platform}.yaml
+        expected_input:
+          - CServerSideClientBase_GetNetworkIDString.{platform}.yaml
+          - CEngineServer_vtable.{platform}.yaml
       - name: find-CNetworkGameClientBase_vtable
         expected_output:
           - CNetworkGameClientBase_vtable.{platform}.yaml
@@ -2029,6 +2035,14 @@ modules:
         category: func
         alias:
           - CServerSideClientBase::GetNetworkIDString
+      - name: CNetworkGameServerBase_GetPlayerNetworkIDString
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::GetPlayerNetworkIDString
+      - name: CEngineServer_GetPlayerNetworkIDString
+        category: vfunc
+        alias:
+          - CEngineServer::GetPlayerNetworkIDString
       - name: CNetworkGameClientBase_vtable
         category: vtable
       - name: CNetworkGameClientBase_ProcessSetConVar
@@ -9422,6 +9436,20 @@ modules:
           - g_pNavGameTest.{platform}.yaml
         expected_input:
           - g_pInterfaceGlobals.{platform}.yaml
+      # Placed in the late engine pass because it depends on g_pSource2GameClients,
+      # which is only produced for engine2.dll here (via find-g_pInterfaceGlobals_ppGlobal).
+      # The script also excludes CNetworkGameServerBase_ConnectClient (an extra xref
+      # collider on Linux) via exclude_funcs. ConnectClient is produced earlier in the
+      # primary engine pass, so its YAML already exists when this runs; it is intentionally
+      # NOT listed in expected_input because its YAML has no func_sig (it is only an
+      # LLM_DECOMPILE predecessor), which expected_input validation would reject.
+      - name: find-CNetworkGameServerBase_GetPlayerNetworkIDString
+        expected_output:
+          - CNetworkGameServerBase_GetPlayerNetworkIDString.{platform}.yaml
+        expected_input:
+          - CServerSideClientBase_GetNetworkIDString.{platform}.yaml
+          - CNetworkGameServer_vtable.{platform}.yaml
+          - g_pSource2GameClients.{platform}.yaml
   - name: client  # Execute Shutdown-dependent client skills after engine2.dll generates ILoopModeFactory_Shutdown
     path_windows: game/csgo/bin/win64/client.dll
     path_linux: game/csgo/bin/linuxsteamrt64/libclient.so
