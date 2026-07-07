@@ -146,20 +146,10 @@ GENERATE_YAML_DESIRED_FIELDS = [
             "struct_name",
             "member_name",
             "offset",
-            "size",
+            # "size",
             "offset_sig",
             "offset_sig_disp",
-        ],
-    ),
-    (
-        "CGameEntitySystem_m_pEntity2SaveRestore",
-        [
-            "struct_name",
-            "member_name",
-            "offset",
-            "size",
-            "offset_sig",
-            "offset_sig_disp",
+            "offset_sig_allow_across_function_boundary:true",
         ],
     ),
     (

@@ -263,6 +263,18 @@ jobs:
           Write-Host "Copied persisted bin/$env:GAMEVER into PR workspace; robocopy exit code $robocopyExitCode"
           $global:LASTEXITCODE = 0
 
+      - name: Prune PR-added expected_output YAMLs from bin
+        shell: pwsh
+        run: |
+          Set-Location $env:WORKSPACE
+          # HEAD is the refs/pull/N/merge commit; HEAD^1 is the PR base branch tip.
+          # Delete expected_output artifacts this PR adds to config.yaml so
+          # ida_analyze_bin.py regenerates them instead of skipping on stale cache.
+          uv run python prune_pr_expected_output_bin.py -gamever "$env:GAMEVER" -baseref "HEAD^1"
+          if ($LASTEXITCODE -ne 0) {
+            throw "prune_pr_expected_output_bin.py failed with exit code $LASTEXITCODE"
+          }
+
       - name: Run Python unit tests
         shell: pwsh
         run: |

@@ -115,8 +115,26 @@ def parse_vftable_layouts(compiler_output: str) -> Dict[str, Dict[str, Any]]:
         if layout_header:
             in_classes = VFTABLE_LAYOUT_IN_CLASS_RE.findall(layout_header.group(2) or "")
             current_class = in_classes[-1] if in_classes else layout_header.group(1)
+            raw_declared_entries = int(layout_header.group(3))
+            existing = parsed.get(current_class)
+            if existing and existing.get("source_kind") == "complete":
+                existing_count = max(
+                    int(existing.get("declared_entries") or 0),
+                    len(existing.get("methods_by_index", {})),
+                )
+                # Clang emits secondary vfptr tables as `... in 'Derived'` too.
+                # Keep the largest complete table for the owning class; smaller
+                # secondary tables are not the primary vtable compare target.
+                if existing_count >= max(raw_declared_entries - 1, 0):
+                    current_class = None
+                    current_declared_entries = 0
+                    current_raw_declared_entries = 0
+                    current_raw_entries = 0
+                    current_metadata_entries = 0
+                    current_section_kind = ""
+                    continue
             current_declared_entries = 0
-            current_raw_declared_entries = int(layout_header.group(3))
+            current_raw_declared_entries = raw_declared_entries
             current_raw_entries = 0
             current_metadata_entries = 0
             current_section_kind = "complete"

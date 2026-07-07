@@ -1,0 +1,281 @@
+func_name: CNetworkServerService_OnServerPostSimulate
+func_va: '0x1801dfa70'
+disasm_code: |-
+  .text:00000001801DFA70                 mov     [rsp+arg_0], rbx
+  .text:00000001801DFA75                 mov     [rsp+arg_8], rsi
+  .text:00000001801DFA7A                 push    rdi
+  .text:00000001801DFA7B                 sub     rsp, 40h
+  .text:00000001801DFA7F                 movsd   xmm0, cs:qword_18090E658
+  .text:00000001801DFA87                 xor     ebx, ebx
+  .text:00000001801DFA89                 cmp     cs:byte_18090D4E0, bl
+  .text:00000001801DFA8F                 mov     rsi, rdx
+  .text:00000001801DFA92                 movss   xmm1, cs:dword_18090D4DC
+  .text:00000001801DFA9A                 mov     rdi, rcx
+  .text:00000001801DFA9D                 mulss   xmm1, cs:dword_180583688
+  .text:00000001801DFAA5                 cvtpd2ps xmm0, xmm0
+  .text:00000001801DFAA9                 addss   xmm1, xmm0
+  .text:00000001801DFAAD                 xorps   xmm0, xmm0
+  .text:00000001801DFAB0                 movsd   cs:qword_18090E658, xmm0
+  .text:00000001801DFAB8                 movss   cs:dword_18090D4DC, xmm1
+  .text:00000001801DFAC0                 jnz     short loc_1801DFB34
+  .text:00000001801DFAC2                 lea     rdx, [rsp+48h+var_28]
+  .text:00000001801DFAC7                 call    sub_1801DF5C0
+  .text:00000001801DFACC                 mov     rcx, rax
+  .text:00000001801DFACF                 call    sub_180246430
+  .text:00000001801DFAD4                 mov     eax, [rsp+48h+var_14]
+  .text:00000001801DFAD8                 mov     rdx, [rsp+48h+var_20]
+  .text:00000001801DFADD                 mov     [rsp+48h+var_28], ebx
+  .text:00000001801DFAE1                 test    eax, 0C0000000h
+  .text:00000001801DFAE6                 jnz     short loc_1801DFB28
+  .text:00000001801DFAE8                 test    rdx, rdx
+  .text:00000001801DFAEB                 jz      short loc_1801DFB08
+  .text:00000001801DFAED                 mov     rax, cs:g_pMemAlloc
+  .text:00000001801DFAF4                 mov     rcx, [rax]
+  .text:00000001801DFAF7                 mov     rax, [rcx]
+  .text:00000001801DFAFA                 call    qword ptr [rax+18h]
+  .text:00000001801DFAFD                 mov     eax, [rsp+48h+var_14]
+  .text:00000001801DFB01                 mov     edx, ebx
+  .text:00000001801DFB03                 mov     [rsp+48h+var_20], rbx
+  .text:00000001801DFB08                 mov     [rsp+48h+var_18], ebx
+  .text:00000001801DFB0C                 test    eax, 0C0000000h
+  .text:00000001801DFB11                 jnz     short loc_1801DFB28
+  .text:00000001801DFB13                 test    rdx, rdx
+  .text:00000001801DFB16                 jz      short loc_1801DFB28
+  .text:00000001801DFB18                 mov     rax, cs:g_pMemAlloc
+  .text:00000001801DFB1F                 mov     rcx, [rax]
+  .text:00000001801DFB22                 mov     rax, [rcx]
+  .text:00000001801DFB25                 call    qword ptr [rax+18h]
+  .text:00000001801DFB28                 mov     rax, [rdi]
+  .text:00000001801DFB2B                 mov     rcx, rdi
+  .text:00000001801DFB2E                 call    qword ptr [rax+188h]
+  .text:00000001801DFB34                 mov     r10, cs:qword_180688058
+  .text:00000001801DFB3B                 mov     r8, cs:qword_180688050
+  .text:00000001801DFB42                 mov     r9, cs:g_pGameServer
+  .text:00000001801DFB49                 nop     dword ptr [rax+00000000h]
+  .text:00000001801DFB50                 mov     ecx, ebx
+  .text:00000001801DFB52                 test    ebx, ebx
+  .text:00000001801DFB54                 jz      short loc_1801DFB6A
+  .text:00000001801DFB56                 sub     ecx, 1
+  .text:00000001801DFB59                 jz      short loc_1801DFB65
+  .text:00000001801DFB5B                 cmp     ecx, 1
+  .text:00000001801DFB5E                 jnz     short loc_1801DFB72
+  .text:00000001801DFB60                 mov     rax, r10
+  .text:00000001801DFB63                 jmp     short loc_1801DFB6D
+  .text:00000001801DFB65                 mov     rax, r8
+  .text:00000001801DFB68                 jmp     short loc_1801DFB6D
+  .text:00000001801DFB6A                 mov     rax, r9
+  .text:00000001801DFB6D                 test    rax, rax
+  .text:00000001801DFB70                 jnz     short loc_1801DFB79
+  .text:00000001801DFB72                 inc     ebx
+  .text:00000001801DFB74                 cmp     ebx, 3
+  .text:00000001801DFB77                 jl      short loc_1801DFB50
+  .text:00000001801DFB79                 cmp     ebx, 3
+  .text:00000001801DFB7C                 jz      loc_1801DFC33
+  .text:00000001801DFB82                 mov     ecx, ebx
+  .text:00000001801DFB84                 test    ebx, ebx
+  .text:00000001801DFB86                 jz      short loc_1801DFBDB
+  .text:00000001801DFB88                 sub     ecx, 1
+  .text:00000001801DFB8B                 jz      short loc_1801DFBD3
+  .text:00000001801DFB8D                 mov     rdx, rsi
+  .text:00000001801DFB90                 cmp     ecx, 1
+  .text:00000001801DFB93                 jz      short loc_1801DFBAE
+  .text:00000001801DFB95                 mov     rax, ds:0
+  .text:00000001801DFB9D                 xor     ecx, ecx
+  .text:00000001801DFB9F                 call    qword ptr [rax+90h]; 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+  .text:00000001801DFBA5                 inc     ebx
+  .text:00000001801DFBA7                 cmp     ebx, 3
+  .text:00000001801DFBAA                 jl      short loc_1801DFBEC
+  .text:00000001801DFBAC                 jmp     short loc_1801DFBBC
+  .text:00000001801DFBAE                 mov     rax, [r10]
+  .text:00000001801DFBB1                 mov     rcx, r10
+  .text:00000001801DFBB4                 call    qword ptr [rax+90h]; 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+  .text:00000001801DFBBA                 inc     ebx
+  .text:00000001801DFBBC                 mov     r10, cs:qword_180688058
+  .text:00000001801DFBC3                 mov     r8, cs:qword_180688050
+  .text:00000001801DFBCA                 mov     r9, cs:g_pGameServer
+  .text:00000001801DFBD1                 jmp     short loc_1801DFC2A
+  .text:00000001801DFBD3                 mov     rax, [r8]
+  .text:00000001801DFBD6                 mov     rcx, r8
+  .text:00000001801DFBD9                 jmp     short loc_1801DFBE1
+  .text:00000001801DFBDB                 mov     rax, [r9]
+  .text:00000001801DFBDE                 mov     rcx, r9
+  .text:00000001801DFBE1                 mov     rdx, rsi
+  .text:00000001801DFBE4                 call    qword ptr [rax+90h]; 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+  .text:00000001801DFBEA                 inc     ebx
+  .text:00000001801DFBEC                 mov     r10, cs:qword_180688058
+  .text:00000001801DFBF3                 mov     r8, cs:qword_180688050
+  .text:00000001801DFBFA                 mov     r9, cs:g_pGameServer
+  .text:00000001801DFC01                 mov     ecx, ebx
+  .text:00000001801DFC03                 test    ebx, ebx
+  .text:00000001801DFC05                 jz      short loc_1801DFC1B
+  .text:00000001801DFC07                 sub     ecx, 1
+  .text:00000001801DFC0A                 jz      short loc_1801DFC16
+  .text:00000001801DFC0C                 cmp     ecx, 1
+  .text:00000001801DFC0F                 jnz     short loc_1801DFC23
+  .text:00000001801DFC11                 mov     rax, r10
+  .text:00000001801DFC14                 jmp     short loc_1801DFC1E
+  .text:00000001801DFC16                 mov     rax, r8
+  .text:00000001801DFC19                 jmp     short loc_1801DFC1E
+  .text:00000001801DFC1B                 mov     rax, r9
+  .text:00000001801DFC1E                 test    rax, rax
+  .text:00000001801DFC21                 jnz     short loc_1801DFC2A
+  .text:00000001801DFC23                 inc     ebx
+  .text:00000001801DFC25                 cmp     ebx, 3
+  .text:00000001801DFC28                 jl      short loc_1801DFC01
+  .text:00000001801DFC2A                 cmp     ebx, 3
+  .text:00000001801DFC2D                 jnz     loc_1801DFB82
+  .text:00000001801DFC33                 mov     rbx, [rsp+48h+arg_0]
+  .text:00000001801DFC38                 mov     rsi, [rsp+48h+arg_8]
+  .text:00000001801DFC3D                 add     rsp, 40h
+  .text:00000001801DFC41                 pop     rdi
+  .text:00000001801DFC42                 retn
+procedure: |-
+  void __fastcall CNetworkServerService_OnServerPostSimulate(__int64 a1, __int64 a2)
+  {
+    int v2; // ebx
+    float v5; // xmm0_4
+    __int64 v6; // rax
+    int v7; // eax
+    __int64 v8; // rdx
+    __int64 v9; // r10
+    _QWORD *v10; // r8
+    _QWORD *v11; // r9
+    __int64 v12; // rax
+    __int64 v13; // rax
+    _QWORD *v14; // rcx
+    __int64 v15; // rax
+    int v16; // [rsp+20h] [rbp-28h] BYREF
+    __int64 v17; // [rsp+28h] [rbp-20h]
+    int v18; // [rsp+30h] [rbp-18h]
+    int v19; // [rsp+34h] [rbp-14h]
+
+    v2 = 0;
+    v5 = *(double *)&qword_18090E658;
+    qword_18090E658 = 0;
+    *(float *)&dword_18090D4DC = (float)(*(float *)&dword_18090D4DC * 0.99900001) + v5;
+    if ( !byte_18090D4E0 )
+    {
+      v6 = sub_1801DF5C0(a1, &v16);
+      sub_180246430(v6);
+      v7 = v19;
+      v8 = v17;
+      v16 = 0;
+      if ( (v19 & 0xC0000000) == 0 )
+      {
+        if ( v17 )
+        {
+          (*(void (__fastcall **)(_QWORD, __int64))(*g_pMemAlloc + 24LL))(g_pMemAlloc, v17);
+          v7 = v19;
+          v8 = 0;
+          v17 = 0;
+        }
+        v18 = 0;
+        if ( (v7 & 0xC0000000) == 0 )
+        {
+          if ( v8 )
+            (*(void (__fastcall **)(_QWORD))(*g_pMemAlloc + 24LL))(g_pMemAlloc);
+        }
+      }
+      (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)a1 + 392LL))(a1, v8);
+    }
+    v9 = qword_180688058;
+    v10 = (_QWORD *)qword_180688050[0];
+    v11 = (_QWORD *)g_pGameServer;
+    do
+    {
+      if ( v2 )
+      {
+        if ( v2 == 1 )
+        {
+          v12 = qword_180688050[0];
+        }
+        else
+        {
+          if ( v2 != 2 )
+            goto LABEL_17;
+          v12 = qword_180688058;
+        }
+      }
+      else
+      {
+        v12 = g_pGameServer;
+      }
+      if ( v12 )
+        break;
+  LABEL_17:
+      ++v2;
+    }
+    while ( v2 < 3 );
+    if ( v2 != 3 )
+    {
+      while ( 1 )
+      {
+        if ( !v2 )
+        {
+          v13 = *v11;
+          v14 = v11;
+          goto LABEL_28;
+        }
+        if ( v2 == 1 )
+          break;
+        if ( v2 == 2 )
+        {
+          (*(void (__fastcall **)(__int64, __int64, _QWORD *, _QWORD *))(*(_QWORD *)v9 + 144LL))(v9, a2, v10, v11);// 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+          v2 = 3;
+        }
+        else
+        {
+          (*(void (__fastcall **)(_QWORD, __int64, _QWORD *, _QWORD *))(MEMORY[0] + 144LL))(0, a2, v10, v11);// 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+          if ( ++v2 < 3 )
+            goto LABEL_29;
+        }
+        v9 = qword_180688058;
+        v10 = (_QWORD *)qword_180688050[0];
+        v11 = (_QWORD *)g_pGameServer;
+  LABEL_38:
+        if ( v2 == 3 )
+          return;
+      }
+      v13 = *v10;
+      v14 = v10;
+  LABEL_28:
+      (*(void (__fastcall **)(_QWORD *, __int64, _QWORD *, _QWORD *, int, __int64, int))(v13
+                                                                                       + 144))(// 0x90 = 144 = INetworkGameServer_ServerPostSimulate
+        v14,
+        a2,
+        v10,
+        v11,
+        v16,
+        v17,
+        v18);
+      ++v2;
+  LABEL_29:
+      v9 = qword_180688058;
+      v10 = (_QWORD *)qword_180688050[0];
+      v11 = (_QWORD *)g_pGameServer;
+      while ( 2 )
+      {
+        if ( !v2 )
+        {
+          v15 = g_pGameServer;
+          goto LABEL_36;
+        }
+        if ( v2 != 1 )
+        {
+          if ( v2 == 2 )
+          {
+            v15 = qword_180688058;
+  LABEL_36:
+            if ( v15 )
+              goto LABEL_38;
+          }
+          if ( ++v2 >= 3 )
+            goto LABEL_38;
+          continue;
+        }
+        break;
+      }
+      v15 = qword_180688050[0];
+      goto LABEL_36;
+    }
+  }
