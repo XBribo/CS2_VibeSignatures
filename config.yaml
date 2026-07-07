@@ -602,6 +602,16 @@ modules:
           - CNetworkGameServerBase_StartHLTVMaster.{platform}.yaml
         expected_input:
           - CNetworkGameServerBase_CreateFakeClient.{platform}.yaml
+      - name: find-CNetworkGameServerBase_RegisterLoadingSpawnGroups
+        expected_output:
+          - CNetworkGameServerBase_RegisterLoadingSpawnGroups.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_Init
+        expected_output:
+          - CNetworkGameServerBase_Init.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
       - name: find-CNetworkGameServerBase_Shutdown-windows
         platform: windows
         expected_output:
@@ -1471,6 +1481,14 @@ modules:
         category: func
         alias:
           - CNetworkGameServerBase::StartHLTVMaster
+      - name: CNetworkGameServerBase_RegisterLoadingSpawnGroups
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::RegisterLoadingSpawnGroups
+      - name: CNetworkGameServerBase_Init
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::Init
       - name: CNetworkGameServerBase_Shutdown
         category: vfunc
         alias:
