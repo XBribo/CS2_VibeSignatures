@@ -4791,6 +4791,9 @@ modules:
       - name: find-BotKill_CommandHandler
         expected_output:
           - BotKill_CommandHandler.{platform}.yaml
+      - name: find-PerformKick
+        expected_output:
+          - PerformKick.{platform}.yaml
       - name: find-EntInfo_CommandHandler
         expected_output:
           - EntInfo_CommandHandler.{platform}.yaml
@@ -8482,6 +8485,8 @@ modules:
         category: func
         alias:
           - CCSBotManager::BotKillCommand
+      - name: PerformKick
+        category: func
       - name: EntInfo_CommandHandler
         category: func
         alias:
