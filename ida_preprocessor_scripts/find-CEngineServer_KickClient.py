@@ -13,7 +13,7 @@ FUNC_XREFS = [
         "xref_strings": [],
         "xref_gvs": [],
         "xref_signatures": [],
-        "xref_funcs": ["PerformKick"],
+        "xref_funcs": ["CNetworkGameServerBase_KickClient"],
         "exclude_funcs": [],
         "exclude_strings": [],
         "exclude_gvs": [],

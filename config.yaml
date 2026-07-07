@@ -997,14 +997,14 @@ modules:
         expected_input:
           - CLog_Print.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-PerformKick
+      - name: find-CNetworkGameServerBase_KickClient
         expected_output:
-          - PerformKick.{platform}.yaml
+          - CNetworkGameServerBase_KickClient.{platform}.yaml
       - name: find-CEngineServer_KickClient
         expected_output:
           - CEngineServer_KickClient.{platform}.yaml
         expected_input:
-          - PerformKick.{platform}.yaml
+          - CNetworkGameServerBase_KickClient.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CLoopTypeClientServerService_vtable
         expected_output:
@@ -1816,7 +1816,7 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::LogPrint
-      - name: PerformKick
+      - name: CNetworkGameServerBase_KickClient
         category: func
       - name: CEngineServer_KickClient
         category: vfunc
