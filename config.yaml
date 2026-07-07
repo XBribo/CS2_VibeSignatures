@@ -602,6 +602,23 @@ modules:
           - CNetworkGameServerBase_StartHLTVMaster.{platform}.yaml
         expected_input:
           - CNetworkGameServerBase_CreateFakeClient.{platform}.yaml
+      - name: find-CNetworkGameServerBase_Shutdown-windows
+        platform: windows
+        expected_output:
+          - CNetworkGameServerBase_Shutdown.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_ShutdownInternal-linux
+        platform: linux
+        expected_output:
+          - CNetworkGameServerBase_ShutdownInternal.{platform}.yaml
+      - name: find-CNetworkGameServerBase_Shutdown-linux
+        platform: linux
+        expected_output:
+          - CNetworkGameServerBase_Shutdown.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_ShutdownInternal.{platform}.yaml
+          - CNetworkGameServerBase_vtable.{platform}.yaml
       - name: find-g_pGameServer-AND-CServerSideClientBase_ClientPrintf-AND-CNetworkGameServer_ClientList
         expected_output:
           - g_pGameServer.{platform}.yaml
@@ -786,6 +803,11 @@ modules:
       - name: find-CNetworkServerService_OnKickByIdHLTV
         expected_output:
           - CNetworkServerService_OnKickByIdHLTV.{platform}.yaml
+      - name: find-CNetworkServerService_DisconnectGameNow
+        expected_output:
+          - CNetworkServerService_DisconnectGameNow.{platform}.yaml
+        expected_input:
+          - CNetworkServerService_vtable.{platform}.yaml
       - name: find-CNetworkServerService_OnEventMapCallbacks-engine
         expected_output:
           - CNetworkServerService_OnServerAdvanceTick.{platform}.yaml
@@ -1449,6 +1471,14 @@ modules:
         category: func
         alias:
           - CNetworkGameServerBase::StartHLTVMaster
+      - name: CNetworkGameServerBase_Shutdown
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::Shutdown
+      - name: CNetworkGameServerBase_ShutdownInternal
+        category: func
+        alias:
+          - CNetworkGameServerBase::ShutdownInternal
       - name: CNetworkGameServer_ActivateServer
         category: vfunc
         alias:
@@ -1706,6 +1736,10 @@ modules:
         category: func
         alias:
           - CNetworkServerService::OnKickByIdHLTV
+      - name: CNetworkServerService_DisconnectGameNow
+        category: vfunc
+        alias:
+          - CNetworkServerService::DisconnectGameNow
       - name: INetworkGameServer_PreWorldUpdate
         category: vfunc
         alias:
