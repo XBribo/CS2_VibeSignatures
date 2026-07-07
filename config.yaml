@@ -464,6 +464,18 @@ modules:
           - CNetworkGameServer_DirectUpdate.{platform}.yaml
         expected_input:
           - CNetworkGameServer_vtable.{platform}.yaml
+      - name: find-CNetworkGameServer_Init
+        expected_output:
+          - CNetworkGameServer_Init.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_vtable.{platform}.yaml
+          - CNetworkGameServerBase_Init.{platform}.yaml
+      - name: find-CNetworkGameServer_Shutdown
+        expected_output:
+          - CNetworkGameServer_Shutdown.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_vtable.{platform}.yaml
+          - CNetworkGameServerBase_Shutdown.{platform}.yaml
       - name: find-CNetworkGameServerBase_ServerPollNetworking
         expected_output:
           - CNetworkGameServerBase_ServerPollNetworking.{platform}.yaml
@@ -1505,6 +1517,14 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServer::DirectUpdate
+      - name: CNetworkGameServer_Init
+        category: vfunc
+        alias:
+          - CNetworkGameServer::Init
+      - name: CNetworkGameServer_Shutdown
+        category: vfunc
+        alias:
+          - CNetworkGameServer::Shutdown
       - name: CNetworkGameServerBase_SetMaxClients
         category: vfunc
         alias:
