@@ -624,6 +624,18 @@ modules:
           - CNetworkGameServerBase_RegisterLoadingSpawnGroups.{platform}.yaml
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkServerSpawnGroupCreatePrerequisites_Init
+        expected_output:
+          - CNetworkServerSpawnGroupCreatePrerequisites_Init.{platform}.yaml
+      - name: find-CNetworkGameServerBase_LoadSpawnGroup
+        expected_output:
+          - CNetworkGameServerBase_LoadSpawnGroup.{platform}.yaml
+        expected_input:
+          - CNetworkServerSpawnGroupCreatePrerequisites_Init.{platform}.yaml
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_SpawnGroupThink
+        expected_output:
+          - CNetworkGameServerBase_SpawnGroupThink.{platform}.yaml
       - name: find-CNetworkGameServerBase_Init
         expected_output:
           - CNetworkGameServerBase_Init.{platform}.yaml
@@ -1579,6 +1591,18 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::RegisterLoadingSpawnGroups
+      - name: CNetworkServerSpawnGroupCreatePrerequisites_Init
+        category: func
+        alias:
+          - CNetworkServerSpawnGroupCreatePrerequisites::Init
+      - name: CNetworkGameServerBase_LoadSpawnGroup
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::LoadSpawnGroup
+      - name: CNetworkGameServerBase_SpawnGroupThink
+        category: func
+        alias:
+          - CNetworkGameServerBase::SpawnGroupThink
       - name: CNetworkGameServerBase_Init
         category: vfunc
         alias:
