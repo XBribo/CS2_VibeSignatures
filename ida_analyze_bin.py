@@ -372,10 +372,9 @@ async def validate_expected_input_artifacts_via_session(
         if should_require_func_va and not func_va_text:
             issues.append("missing required field func_va")
 
-        if category == "func":
-            func_sig_text = str(artifact_payload.get("func_sig") or "").strip()
-            if not func_sig_text:
-                issues.append("missing required field func_sig")
+        # func_sig is intentionally NOT required here: a func artifact may be consumed
+        # only as an xref/exclude anchor (located by func_va for same-binary xref
+        # computation), in which case its YAML legitimately omits func_sig.
 
         if func_va_text:
             try:

@@ -9439,10 +9439,8 @@ modules:
       # Placed in the late engine pass because it depends on g_pSource2GameClients,
       # which is only produced for engine2.dll here (via find-g_pInterfaceGlobals_ppGlobal).
       # The script also excludes CNetworkGameServerBase_ConnectClient (an extra xref
-      # collider on Linux) via exclude_funcs. ConnectClient is produced earlier in the
-      # primary engine pass, so its YAML already exists when this runs; it is intentionally
-      # NOT listed in expected_input because its YAML has no func_sig (it is only an
-      # LLM_DECOMPILE predecessor), which expected_input validation would reject.
+      # collider on Linux) via exclude_funcs; it is produced in the primary engine pass and
+      # listed in expected_input below (only its func_va is consumed for the xref exclude).
       - name: find-CNetworkGameServerBase_GetPlayerNetworkIDString
         expected_output:
           - CNetworkGameServerBase_GetPlayerNetworkIDString.{platform}.yaml
@@ -9450,6 +9448,7 @@ modules:
           - CServerSideClientBase_GetNetworkIDString.{platform}.yaml
           - CNetworkGameServer_vtable.{platform}.yaml
           - g_pSource2GameClients.{platform}.yaml
+          - CNetworkGameServerBase_ConnectClient.{platform}.yaml
   - name: client  # Execute Shutdown-dependent client skills after engine2.dll generates ILoopModeFactory_Shutdown
     path_windows: game/csgo/bin/win64/client.dll
     path_linux: game/csgo/bin/linuxsteamrt64/libclient.so

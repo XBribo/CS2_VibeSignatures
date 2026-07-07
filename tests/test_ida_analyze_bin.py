@@ -1915,10 +1915,7 @@ class TestProcessBinary(unittest.TestCase):
                     ida_analyze_bin,
                     "_run_validate_expected_input_artifacts_via_mcp",
                     return_value=[
-                        (
-                            f"{expected_input_path}: func_va=0x616050 resolves to segment "
-                            "'.data' instead of '.text'; missing required field func_sig"
-                        )
+                        (f"{expected_input_path}: func_va=0x616050 resolves to segment '.data' instead of '.text'")
                     ],
                 ),
                 patch.object(ida_analyze_bin, "_run_preprocess_single_skill_via_mcp") as mock_preprocess,
@@ -1947,7 +1944,6 @@ class TestProcessBinary(unittest.TestCase):
         mock_preprocess.assert_not_called()
         mock_run_skill.assert_not_called()
         self.assertIn("invalid expected_input artifact", stdout.getvalue())
-        self.assertIn("missing required field func_sig", stdout.getvalue())
         mock_quit_ida.assert_called_once_with(fake_process, "127.0.0.1", 13337, debug=False)
 
     def test_process_binary_does_not_start_ida_for_post_process_when_rename_is_false(
@@ -2195,7 +2191,7 @@ class TestProcessBinary(unittest.TestCase):
 
 
 class TestExpectedInputArtifactValidation(unittest.IsolatedAsyncioTestCase):
-    async def test_validate_expected_input_artifacts_reports_invalid_func_va_and_missing_func_sig(self) -> None:
+    async def test_validate_expected_input_artifacts_reports_invalid_func_va_segment(self) -> None:
         with TemporaryDirectory() as temp_dir:
             artifact_path = Path(temp_dir) / "CDemoRecorder_WriteSpawnGroups.linux.yaml"
             artifact_path.write_text(
@@ -2243,7 +2239,9 @@ class TestExpectedInputArtifactValidation(unittest.IsolatedAsyncioTestCase):
             "func_va=0x616050 resolves to segment '.data' instead of '.text'",
             issues[0],
         )
-        self.assertIn("missing required field func_sig", issues[0])
+        # func_sig is no longer required for category:func artifacts, so a sig-less
+        # payload must NOT produce a "missing required field func_sig" issue.
+        self.assertNotIn("missing required field func_sig", issues[0])
 
     async def test_validate_expected_input_artifacts_skips_func_va_mapping_for_sibling_module_artifact(
         self,
