@@ -636,6 +636,26 @@ modules:
       - name: find-CNetworkGameServerBase_SpawnGroupThink
         expected_output:
           - CNetworkGameServerBase_SpawnGroupThink.{platform}.yaml
+      - name: find-CNetworkGameServerBase_PrintSpawnGroupStatus
+        expected_output:
+          - CNetworkGameServerBase_PrintSpawnGroupStatus.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_AsyncUnloadSpawnGroup
+        expected_output:
+          - CNetworkGameServerBase_AsyncUnloadSpawnGroup.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+      - name: find-CNetworkGameServer_PrepareForAssetLoad
+        expected_output:
+          - CNetworkGameServer_PrepareForAssetLoad.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_vtable.{platform}.yaml
+      - name: find-CNetworkGameServerBase_IsSaveRestoreAllowed
+        expected_output:
+          - CNetworkGameServerBase_IsSaveRestoreAllowed.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
       - name: find-CNetworkGameServerBase_Init
         expected_output:
           - CNetworkGameServerBase_Init.{platform}.yaml
@@ -1603,6 +1623,22 @@ modules:
         category: func
         alias:
           - CNetworkGameServerBase::SpawnGroupThink
+      - name: CNetworkGameServerBase_PrintSpawnGroupStatus
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::PrintSpawnGroupStatus
+      - name: CNetworkGameServerBase_AsyncUnloadSpawnGroup
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::AsyncUnloadSpawnGroup
+      - name: CNetworkGameServer_PrepareForAssetLoad
+        category: vfunc
+        alias:
+          - CNetworkGameServer::PrepareForAssetLoad
+      - name: CNetworkGameServerBase_IsSaveRestoreAllowed
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::IsSaveRestoreAllowed
       - name: CNetworkGameServerBase_Init
         category: vfunc
         alias:
