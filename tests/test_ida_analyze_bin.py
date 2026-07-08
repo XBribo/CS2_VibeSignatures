@@ -201,6 +201,96 @@ class TestSurveyBinaryViaSession(unittest.IsolatedAsyncioTestCase):
         )
 
 
+class TestOpenedBinaryIdentityValidation(unittest.TestCase):
+    def test_accepts_ida_database_suffix_for_expected_binary_path(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            binary_path = Path(temp_dir) / "bin" / "14141" / "server" / "libserver.so"
+            binary_path.parent.mkdir(parents=True, exist_ok=True)
+            binary_path.write_bytes(b"server-binary")
+
+            ok, reasons = ida_analyze_bin.validate_opened_binary_identity(
+                str(binary_path),
+                "linux",
+                {"metadata": {"path": f"{binary_path}.i64", "base_address": "0x0"}},
+            )
+
+        self.assertTrue(ok, reasons)
+        self.assertEqual([], reasons)
+
+    def test_rejects_wrong_opened_module_path(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            expected_path = Path(temp_dir) / "bin" / "14141" / "server" / "libserver.so"
+            opened_path = Path(temp_dir) / "bin" / "14141" / "engine" / "libengine2.so.i64"
+            expected_path.parent.mkdir(parents=True, exist_ok=True)
+            opened_path.parent.mkdir(parents=True, exist_ok=True)
+            expected_path.write_bytes(b"server-binary")
+
+            ok, reasons = ida_analyze_bin.validate_opened_binary_identity(
+                str(expected_path),
+                "linux",
+                {"metadata": {"path": str(opened_path), "base_address": "0x0"}},
+            )
+
+        self.assertFalse(ok)
+        self.assertTrue(any("path mismatch" in reason for reason in reasons), reasons)
+
+    def test_accepts_moved_idb_when_sha256_matches(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            binary_path = Path(temp_dir) / "bin" / "14141" / "server" / "server.dll"
+            binary_path.parent.mkdir(parents=True, exist_ok=True)
+            binary_path.write_bytes(b"same-binary")
+
+            ok, reasons = ida_analyze_bin.validate_opened_binary_identity(
+                str(binary_path),
+                "windows",
+                {
+                    "metadata": {
+                        "path": "D:/moved/server.dll.i64",
+                        "sha256": "a1f82722bc8e33aa9100d16001377c07366a779a2c42bc58fdeba9cf8fa9f1fd",
+                        "base_address": "0x180000000",
+                    }
+                },
+            )
+
+        self.assertTrue(ok, reasons)
+
+    def test_rejects_moved_idb_when_sha256_mismatches(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            binary_path = Path(temp_dir) / "bin" / "14141" / "server" / "server.dll"
+            binary_path.parent.mkdir(parents=True, exist_ok=True)
+            binary_path.write_bytes(b"same-binary")
+
+            ok, reasons = ida_analyze_bin.validate_opened_binary_identity(
+                str(binary_path),
+                "windows",
+                {
+                    "metadata": {
+                        "path": "D:/moved/server.dll.i64",
+                        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                        "base_address": "0x180000000",
+                    }
+                },
+            )
+
+        self.assertFalse(ok)
+        self.assertTrue(any("sha256 mismatch" in reason for reason in reasons), reasons)
+
+    def test_rejects_linux_target_with_pe_style_base_address(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            binary_path = Path(temp_dir) / "bin" / "14141" / "server" / "libserver.so"
+            binary_path.parent.mkdir(parents=True, exist_ok=True)
+            binary_path.write_bytes(b"server-binary")
+
+            ok, reasons = ida_analyze_bin.validate_opened_binary_identity(
+                str(binary_path),
+                "linux",
+                {"metadata": {"path": f"{binary_path}.i64", "base_address": "0x180000000"}},
+            )
+
+        self.assertFalse(ok)
+        self.assertTrue(any("PE-style base_address" in reason for reason in reasons), reasons)
+
+
 class TestResolveArtifactPath(unittest.TestCase):
     def test_resolve_artifact_path_keeps_current_module_artifacts_local(self) -> None:
         binary_dir = str(Path("/tmp/bin/14141/networksystem"))
@@ -1006,6 +1096,15 @@ class TestStartIdalibMcp(unittest.TestCase):
 
 
 class TestProcessBinary(unittest.TestCase):
+    def setUp(self) -> None:
+        verify_patcher = patch.object(
+            ida_analyze_bin,
+            "verify_opened_binary_via_mcp",
+            return_value=True,
+        )
+        self.mock_verify_opened_binary = verify_patcher.start()
+        self.addCleanup(verify_patcher.stop)
+
     def test_process_binary_treats_absent_ok_as_skip_and_continues(self) -> None:
         with TemporaryDirectory() as temp_dir:
             binary_dir = Path(temp_dir) / "engine"
@@ -2190,6 +2289,238 @@ class TestProcessBinary(unittest.TestCase):
         self.assertEqual((0, 1, 1), (success, fail, skip))
 
 
+class TestProcessBinaryOpenedBinaryVerification(unittest.TestCase):
+    def test_process_binary_aborts_before_preprocess_when_opened_binary_mismatches(self) -> None:
+        fake_process = object()
+
+        with TemporaryDirectory() as temp_dir:
+            binary_dir = Path(temp_dir) / "bin" / "14141" / "server"
+            binary_dir.mkdir(parents=True, exist_ok=True)
+            binary_path = str(binary_dir / "server.dll")
+
+            with (
+                patch.object(ida_analyze_bin, "start_idalib_mcp", return_value=fake_process),
+                patch.object(ida_analyze_bin, "verify_opened_binary_via_mcp", return_value=False),
+                patch.object(ida_analyze_bin, "ensure_mcp_available") as mock_ensure,
+                patch.object(ida_analyze_bin, "_run_validate_expected_input_artifacts_via_mcp") as mock_validate,
+                patch.object(ida_analyze_bin, "_run_preprocess_single_skill_via_mcp") as mock_preprocess,
+                patch.object(ida_analyze_bin, "run_skill") as mock_run_skill,
+                patch.object(ida_analyze_bin, "quit_ida_gracefully") as mock_quit_ida,
+                patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                success, fail, skip = ida_analyze_bin.process_binary(
+                    binary_path=binary_path,
+                    skills=[
+                        {
+                            "name": "find-CBaseEntity_vtable",
+                            "expected_output": ["CBaseEntity_vtable.{platform}.yaml"],
+                            "expected_input": [],
+                        }
+                    ],
+                    agent="codex",
+                    host="127.0.0.1",
+                    port=13337,
+                    ida_args="",
+                    platform="windows",
+                    debug=False,
+                    max_retries=1,
+                )
+
+        self.assertEqual((0, 1, 0), (success, fail, skip))
+        self.assertIn("opened binary verification failure", stdout.getvalue())
+        mock_ensure.assert_not_called()
+        mock_validate.assert_not_called()
+        mock_preprocess.assert_not_called()
+        mock_run_skill.assert_not_called()
+        mock_quit_ida.assert_not_called()
+
+    def test_process_binary_aborts_before_skill_mcp_work_when_recheck_mismatches(self) -> None:
+        fake_process = object()
+
+        with TemporaryDirectory() as temp_dir:
+            binary_dir = Path(temp_dir) / "bin" / "14141" / "server"
+            binary_dir.mkdir(parents=True, exist_ok=True)
+            binary_path = str(binary_dir / "server.dll")
+
+            with (
+                patch.object(ida_analyze_bin, "start_idalib_mcp", return_value=fake_process),
+                patch.object(
+                    ida_analyze_bin,
+                    "verify_opened_binary_via_mcp",
+                    side_effect=[True, False],
+                ),
+                patch.object(ida_analyze_bin, "ensure_mcp_available", return_value=(fake_process, True)),
+                patch.object(ida_analyze_bin, "_run_validate_expected_input_artifacts_via_mcp") as mock_validate,
+                patch.object(ida_analyze_bin, "_run_preprocess_single_skill_via_mcp") as mock_preprocess,
+                patch.object(ida_analyze_bin, "run_skill") as mock_run_skill,
+                patch.object(ida_analyze_bin, "quit_ida_gracefully") as mock_quit_ida,
+            ):
+                success, fail, skip = ida_analyze_bin.process_binary(
+                    binary_path=binary_path,
+                    skills=[
+                        {
+                            "name": "find-CBaseEntity_vtable",
+                            "expected_output": ["CBaseEntity_vtable.{platform}.yaml"],
+                            "expected_input": [],
+                        },
+                        {
+                            "name": "find-CBaseEntity_dtor",
+                            "expected_output": ["CBaseEntity_dtor.{platform}.yaml"],
+                            "expected_input": [],
+                        },
+                    ],
+                    agent="codex",
+                    host="127.0.0.1",
+                    port=13337,
+                    ida_args="",
+                    platform="windows",
+                    debug=False,
+                    max_retries=1,
+                )
+
+        self.assertEqual((0, 2, 0), (success, fail, skip))
+        mock_validate.assert_not_called()
+        mock_preprocess.assert_not_called()
+        mock_run_skill.assert_not_called()
+        mock_quit_ida.assert_not_called()
+
+    def test_process_binary_aborts_before_agent_fallback_when_recheck_mismatches(self) -> None:
+        fake_process = object()
+
+        with TemporaryDirectory() as temp_dir:
+            binary_dir = Path(temp_dir) / "bin" / "14141" / "server"
+            binary_dir.mkdir(parents=True, exist_ok=True)
+            binary_path = str(binary_dir / "server.dll")
+
+            with (
+                patch.object(ida_analyze_bin, "start_idalib_mcp", return_value=fake_process),
+                patch.object(
+                    ida_analyze_bin,
+                    "verify_opened_binary_via_mcp",
+                    side_effect=[True, True, True, False],
+                ),
+                patch.object(ida_analyze_bin, "ensure_mcp_available", return_value=(fake_process, True)),
+                patch.object(
+                    ida_analyze_bin,
+                    "_run_validate_expected_input_artifacts_via_mcp",
+                    return_value=[],
+                ),
+                patch.object(
+                    ida_analyze_bin,
+                    "_run_preprocess_single_skill_via_mcp",
+                    return_value=ida_analyze_bin.PREPROCESS_STATUS_NO_SCRIPT,
+                ) as mock_preprocess,
+                patch.object(ida_analyze_bin, "run_skill") as mock_run_skill,
+                patch.object(ida_analyze_bin, "quit_ida_gracefully") as mock_quit_ida,
+            ):
+                success, fail, skip = ida_analyze_bin.process_binary(
+                    binary_path=binary_path,
+                    skills=[
+                        {
+                            "name": "find-CBaseEntity_vtable",
+                            "expected_output": ["CBaseEntity_vtable.{platform}.yaml"],
+                            "expected_input": [],
+                        }
+                    ],
+                    agent="codex",
+                    host="127.0.0.1",
+                    port=13337,
+                    ida_args="",
+                    platform="windows",
+                    debug=False,
+                    max_retries=1,
+                )
+
+        self.assertEqual((0, 1, 0), (success, fail, skip))
+        mock_preprocess.assert_called_once()
+        mock_run_skill.assert_not_called()
+        mock_quit_ida.assert_not_called()
+
+    def test_process_binary_aborts_before_vcall_export_when_recheck_mismatches(self) -> None:
+        fake_process = object()
+
+        with TemporaryDirectory() as temp_dir:
+            binary_dir = Path(temp_dir) / "bin" / "14141" / "networksystem"
+            binary_dir.mkdir(parents=True, exist_ok=True)
+            binary_path = str(binary_dir / "networksystem.dll")
+
+            with (
+                patch.object(ida_analyze_bin, "start_idalib_mcp", return_value=fake_process),
+                patch.object(
+                    ida_analyze_bin,
+                    "verify_opened_binary_via_mcp",
+                    side_effect=[True, False],
+                ),
+                patch.object(ida_analyze_bin, "ensure_mcp_available", return_value=(fake_process, True)),
+                patch.object(ida_analyze_bin, "preprocess_single_vcall_object_via_mcp") as mock_vcall,
+                patch.object(ida_analyze_bin, "quit_ida_gracefully") as mock_quit_ida,
+            ):
+                success, fail, skip = ida_analyze_bin.process_binary(
+                    binary_path=binary_path,
+                    skills=[],
+                    agent="codex",
+                    host="127.0.0.1",
+                    port=13337,
+                    ida_args="",
+                    platform="windows",
+                    debug=False,
+                    max_retries=1,
+                    gamever="14141",
+                    module_name="networksystem",
+                    vcall_targets=["g_pNetworkMessages"],
+                )
+
+        self.assertEqual((0, 1, 0), (success, fail, skip))
+        mock_vcall.assert_not_called()
+        mock_quit_ida.assert_not_called()
+
+    def test_process_binary_aborts_before_post_process_when_recheck_mismatches(self) -> None:
+        fake_process = object()
+
+        with TemporaryDirectory() as temp_dir:
+            binary_dir = Path(temp_dir) / "bin" / "14141" / "server"
+            binary_dir.mkdir(parents=True, exist_ok=True)
+            binary_path = str(binary_dir / "server.dll")
+            (binary_dir / "CEntFireOutputAutoCompletionFunctor_FireOutput.windows.yaml").write_text(
+                "func_name: CEntFireOutputAutoCompletionFunctor_FireOutput\nfunc_va: '0x180c165c0'\n",
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(ida_analyze_bin, "start_idalib_mcp", return_value=fake_process),
+                patch.object(
+                    ida_analyze_bin,
+                    "verify_opened_binary_via_mcp",
+                    side_effect=[True, False],
+                ),
+                patch.object(ida_analyze_bin, "ensure_mcp_available", return_value=(fake_process, True)),
+                patch.object(ida_analyze_bin, "_run_post_process_expected_outputs_via_mcp") as mock_post_process,
+                patch.object(ida_analyze_bin, "quit_ida_gracefully") as mock_quit_ida,
+            ):
+                success, fail, skip = ida_analyze_bin.process_binary(
+                    binary_path=binary_path,
+                    skills=[
+                        {
+                            "name": "find-CEntFireOutputAutoCompletionFunctor_FireOutput",
+                            "expected_output": ["CEntFireOutputAutoCompletionFunctor_FireOutput.{platform}.yaml"],
+                            "expected_input": [],
+                        }
+                    ],
+                    agent="codex",
+                    host="127.0.0.1",
+                    port=13337,
+                    ida_args="",
+                    platform="windows",
+                    debug=False,
+                    max_retries=1,
+                    rename=True,
+                )
+
+        self.assertEqual((0, 1, 1), (success, fail, skip))
+        mock_post_process.assert_not_called()
+        mock_quit_ida.assert_not_called()
+
+
 class TestExpectedInputArtifactValidation(unittest.IsolatedAsyncioTestCase):
     async def test_validate_expected_input_artifacts_reports_invalid_func_va_segment(self) -> None:
         with TemporaryDirectory() as temp_dir:
@@ -3164,6 +3495,15 @@ class TestParseArgsLlmOptions(unittest.TestCase):
 
 
 class TestProcessBinaryLlmWiring(unittest.TestCase):
+    def setUp(self) -> None:
+        verify_patcher = patch.object(
+            ida_analyze_bin,
+            "verify_opened_binary_via_mcp",
+            return_value=True,
+        )
+        self.mock_verify_opened_binary = verify_patcher.start()
+        self.addCleanup(verify_patcher.stop)
+
     @patch("ida_analyze_bin.os.path.exists", return_value=False)
     @patch.object(ida_analyze_bin, "run_skill", return_value=False)
     @patch.object(

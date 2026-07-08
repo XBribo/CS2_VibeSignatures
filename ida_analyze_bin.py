@@ -29,14 +29,11 @@ Output:
 """
 
 import argparse
+import hashlib
 import inspect
 import json
 import os
 import re
-
-from dotenv import load_dotenv
-
-load_dotenv()
 import socket
 import subprocess
 import sys
@@ -44,6 +41,8 @@ import threading
 import time
 import uuid
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 try:
     import yaml
@@ -69,6 +68,8 @@ from ida_vcall_finder import (
     export_object_xref_details_via_mcp,
 )
 
+load_dotenv()
+
 DEFAULT_CONFIG_FILE = "config.yaml"
 DEFAULT_BIN_DIR = "bin"
 DEFAULT_PLATFORM = "windows,linux"
@@ -88,6 +89,9 @@ ERROR_MARKER_RE = re.compile(
 _MCP_PREFLIGHT_DONE = False
 _MCP_PREFLIGHT_FAILED = False
 _ARTIFACT_SYMBOL_CATEGORY_CACHE = {}
+_BINARY_HASH_CACHE = {}
+_IDA_DATABASE_SUFFIXES = (".i64", ".idb")
+_PE_STYLE_BASE_ADDRESS = 0x180000000
 
 
 def _absolute_path_preserve_spelling(path):
@@ -570,6 +574,149 @@ async def survey_binary_via_mcp(host=DEFAULT_HOST, port=DEFAULT_PORT, detail_lev
                     return await survey_binary_via_session(session, detail_level=detail_level)
     except Exception:
         return None
+
+
+def _strip_ida_database_suffix(path):
+    normalized = str(path)
+    lowered = normalized.lower()
+    for suffix in _IDA_DATABASE_SUFFIXES:
+        if lowered.endswith(suffix):
+            return normalized[: -len(suffix)]
+    return normalized
+
+
+def _normalize_binary_identity_path(path):
+    if not isinstance(path, str) or not path.strip():
+        return ""
+
+    value = _strip_ida_database_suffix(path.strip()).replace("\\", "/")
+    mnt_match = re.match(r"^/mnt/([A-Za-z])/(.*)$", value)
+    if mnt_match:
+        value = f"{mnt_match.group(1)}:/{mnt_match.group(2)}"
+
+    has_windows_drive = bool(re.match(r"^[A-Za-z]:/", value))
+    if not has_windows_drive and not value.startswith("/"):
+        value = _absolute_path_preserve_spelling(value).replace("\\", "/")
+    else:
+        value = os.path.normpath(value).replace("\\", "/")
+
+    return value.rstrip("/").lower()
+
+
+def _hash_file(path):
+    absolute_path = _absolute_path_preserve_spelling(path)
+    stat = os.stat(absolute_path)
+    cache_key = (absolute_path, stat.st_size, stat.st_mtime_ns)
+    cached = _BINARY_HASH_CACHE.get(cache_key)
+    if cached:
+        return cached
+
+    md5_hash = hashlib.md5()
+    sha256_hash = hashlib.sha256()
+    with open(absolute_path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            md5_hash.update(chunk)
+            sha256_hash.update(chunk)
+
+    hashes = {"md5": md5_hash.hexdigest(), "sha256": sha256_hash.hexdigest()}
+    _BINARY_HASH_CACHE[cache_key] = hashes
+    return hashes
+
+
+def _metadata_hash(metadata, key):
+    value = metadata.get(key)
+    return value.strip().lower() if isinstance(value, str) and value.strip() else ""
+
+
+def _parse_metadata_int(metadata, key):
+    value = metadata.get(key)
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            return int(value.strip(), 0)
+        except ValueError:
+            return None
+    return None
+
+
+def validate_opened_binary_identity(binary_path, platform, survey_payload):
+    if not isinstance(survey_payload, dict):
+        return False, ["survey_binary returned no metadata"]
+
+    metadata = survey_payload.get("metadata")
+    if not isinstance(metadata, dict):
+        return False, ["survey_binary returned no metadata"]
+
+    reasons = []
+    if platform == "linux":
+        base_address = _parse_metadata_int(metadata, "base_address")
+        if base_address is not None and base_address >= _PE_STYLE_BASE_ADDRESS:
+            reasons.append(f"PE-style base_address for linux target: {hex(base_address)}")
+
+    opened_sha256 = _metadata_hash(metadata, "sha256")
+    opened_md5 = _metadata_hash(metadata, "md5")
+    expected_hashes = None
+    if opened_sha256 or opened_md5:
+        try:
+            expected_hashes = _hash_file(binary_path)
+        except OSError as exc:
+            reasons.append(f"could not hash expected binary: {exc}")
+
+    if opened_sha256 and expected_hashes:
+        expected_sha256 = expected_hashes["sha256"]
+        if opened_sha256 != expected_sha256:
+            reasons.append(f"sha256 mismatch: expected {expected_sha256}, opened {opened_sha256}")
+        return not reasons, reasons
+
+    if opened_md5 and expected_hashes:
+        expected_md5 = expected_hashes["md5"]
+        if opened_md5 != expected_md5:
+            reasons.append(f"md5 mismatch: expected {expected_md5}, opened {opened_md5}")
+        return not reasons, reasons
+
+    opened_path = metadata.get("path")
+    expected_path = _normalize_binary_identity_path(_absolute_path_preserve_spelling(binary_path))
+    normalized_opened_path = _normalize_binary_identity_path(opened_path) if isinstance(opened_path, str) else ""
+    if not normalized_opened_path:
+        reasons.append("path mismatch: opened metadata path is missing")
+    elif normalized_opened_path != expected_path:
+        reasons.append(f"path mismatch: expected {expected_path}, opened {normalized_opened_path}")
+
+    return not reasons, reasons
+
+
+def verify_opened_binary_via_mcp(binary_path, platform, host=DEFAULT_HOST, port=DEFAULT_PORT, debug=False):
+    try:
+        survey = asyncio.run(survey_binary_via_mcp(host=host, port=port, detail_level="minimal"))
+    except Exception as exc:
+        survey = None
+        if debug:
+            print(f"  Opened binary survey failed: {exc}")
+
+    ok, reasons = validate_opened_binary_identity(binary_path, platform, survey)
+    if ok:
+        return True
+
+    metadata = survey.get("metadata") if isinstance(survey, dict) else {}
+    opened_path = metadata.get("path") if isinstance(metadata, dict) else None
+    base_address = metadata.get("base_address") if isinstance(metadata, dict) else None
+    opened_sha256 = metadata.get("sha256") if isinstance(metadata, dict) else None
+    opened_md5 = metadata.get("md5") if isinstance(metadata, dict) else None
+
+    print("  Failed: opened binary verification failed")
+    print(f"    Expected: {_absolute_path_preserve_spelling(binary_path)}")
+    print(f"    Opened: {opened_path or '(unknown)'}")
+    print(f"    Platform: {platform}")
+    if base_address:
+        print(f"    Opened base_address: {base_address}")
+    if opened_sha256:
+        print(f"    Opened sha256: {opened_sha256}")
+    if opened_md5:
+        print(f"    Opened md5: {opened_md5}")
+    for reason in reasons:
+        print(f"    Reason: {reason}")
+    return False
 
 
 async def validate_expected_input_artifacts_via_mcp(
@@ -1385,6 +1532,19 @@ def should_start_binary_processing(
     return bool(skills_to_process or vcall_targets or post_process_yaml_items)
 
 
+def _pending_binary_work_count(
+    skills_to_process=None,
+    skill_index=0,
+    vcall_targets=None,
+    vcall_index=0,
+    post_process_yaml_items=None,
+):
+    remaining_skills = max(0, len(skills_to_process or []) - skill_index)
+    remaining_vcalls = max(0, len(vcall_targets or []) - vcall_index)
+    post_process_count = 1 if post_process_yaml_items else 0
+    return remaining_skills + remaining_vcalls + post_process_count
+
+
 def resolve_artifact_path(binary_dir, artifact_path, platform):
     """Resolve one artifact path under the current gamever root."""
     if not artifact_path:
@@ -1911,7 +2071,7 @@ def start_idalib_mcp(binary_path, host=DEFAULT_HOST, port=DEFAULT_PORT, ida_args
             process.kill()
             return None
 
-        print(f"  MCP server is ready")
+        print("  MCP server is ready")
         return process
 
     except Exception as e:
@@ -2339,7 +2499,21 @@ def process_binary(
             skip_count,
         )
 
+    skip_graceful_quit = False
     try:
+        if not verify_opened_binary_via_mcp(binary_path, platform, host, port, debug=debug):
+            pending_count = _pending_binary_work_count(
+                skills_to_process=skills_to_process,
+                vcall_targets=vcall_targets,
+                post_process_yaml_items=startup_post_process_yaml_items,
+            )
+            fail_count += pending_count
+            skip_graceful_quit = True
+            print(
+                f"  Aborting current binary after opened binary verification failure ({pending_count} pending work item(s))"
+            )
+            return success_count, fail_count, skip_count
+
         # Process each skill: try preprocess first, then run_skill if needed
         abort_binary_processing = False
         for skill_index, (
@@ -2378,6 +2552,21 @@ def process_binary(
                 print(f"  Failed to restore MCP connection, aborting remaining {remaining} skill(s)")
                 abort_binary_processing = True
                 break
+            if not verify_opened_binary_via_mcp(binary_path, platform, host, port, debug=debug):
+                remaining = _pending_binary_work_count(
+                    skills_to_process=skills_to_process,
+                    skill_index=skill_index,
+                    vcall_targets=vcall_targets,
+                    post_process_yaml_items=startup_post_process_yaml_items,
+                )
+                fail_count += remaining
+                skip_graceful_quit = True
+                print(
+                    "  Aborting current binary after opened binary verification failure "
+                    f"({remaining} pending work item(s))"
+                )
+                abort_binary_processing = True
+                break
 
             # Check if all expected_input files are available before running the skill
             platform_input_key = f"expected_input_{platform}"
@@ -2411,6 +2600,21 @@ def process_binary(
                     f"{' | '.join(invalid_expected_inputs)})"
                 )
                 continue
+            if not verify_opened_binary_via_mcp(binary_path, platform, host, port, debug=debug):
+                remaining = _pending_binary_work_count(
+                    skills_to_process=skills_to_process,
+                    skill_index=skill_index,
+                    vcall_targets=vcall_targets,
+                    post_process_yaml_items=startup_post_process_yaml_items,
+                )
+                fail_count += remaining
+                skip_graceful_quit = True
+                print(
+                    "  Aborting current binary after opened binary verification failure "
+                    f"({remaining} pending work item(s))"
+                )
+                abort_binary_processing = True
+                break
 
             # Try preprocessing first. Some preprocessors can run without old YAMLs.
             old_yaml_map = None
@@ -2491,6 +2695,22 @@ def process_binary(
                 print(f"  Skipping skill: {skill_name} (optional outputs not generated)")
                 continue
 
+            if not verify_opened_binary_via_mcp(binary_path, platform, host, port, debug=debug):
+                remaining = _pending_binary_work_count(
+                    skills_to_process=skills_to_process,
+                    skill_index=skill_index,
+                    vcall_targets=vcall_targets,
+                    post_process_yaml_items=startup_post_process_yaml_items,
+                )
+                fail_count += remaining
+                skip_graceful_quit = True
+                print(
+                    "  Aborting current binary after opened binary verification failure "
+                    f"({remaining} pending work item(s))"
+                )
+                abort_binary_processing = True
+                break
+
             print(f"  Processing skill: {skill_name}")
 
             if run_skill(
@@ -2501,10 +2721,10 @@ def process_binary(
                 max_retries=skill_max_retries,
             ):
                 success_count += 1
-                print(f"    Success")
+                print("    Success")
             else:
                 fail_count += 1
-                print(f"    Failed")
+                print("    Failed")
                 print("  Aborting remaining skills after fallback skill failure")
                 abort_binary_processing = True
                 break
@@ -2518,6 +2738,20 @@ def process_binary(
                 remaining = len(vcall_targets) - object_index
                 fail_count += remaining
                 print(f"  Failed to restore MCP connection, aborting remaining {remaining} vcall_finder target(s)")
+                break
+            if not verify_opened_binary_via_mcp(binary_path, platform, host, port, debug=debug):
+                remaining = _pending_binary_work_count(
+                    vcall_targets=vcall_targets,
+                    vcall_index=object_index,
+                    post_process_yaml_items=startup_post_process_yaml_items,
+                )
+                fail_count += remaining
+                skip_graceful_quit = True
+                print(
+                    "  Aborting current binary after opened binary verification failure "
+                    f"({remaining} pending work item(s))"
+                )
+                abort_binary_processing = True
                 break
 
             print(f"  Processing vcall_finder: {object_name}")
@@ -2559,6 +2793,9 @@ def process_binary(
                     f"skipped_functions={skipped_functions}"
                 )
 
+        if abort_binary_processing:
+            return success_count, fail_count, skip_count
+
         post_process_yaml_items = []
         post_process_collection_failed = False
         if rename and not startup_post_process_failed:
@@ -2584,6 +2821,11 @@ def process_binary(
                 fail_count += 1
                 print("  Failed to restore MCP connection, skipping post_process")
             else:
+                if not verify_opened_binary_via_mcp(binary_path, platform, host, port, debug=debug):
+                    fail_count += 1
+                    skip_graceful_quit = True
+                    print("  Aborting current binary after opened binary verification failure (1 pending work item(s))")
+                    return success_count, fail_count, skip_count
                 try:
                     post_process_ok = _run_post_process_expected_outputs_via_mcp(
                         host=host,
@@ -2601,7 +2843,10 @@ def process_binary(
 
     finally:
         # Gracefully quit IDA via MCP to avoid breaking IDB
-        quit_ida_gracefully(process, host, port, debug=debug)
+        if skip_graceful_quit:
+            print("  Skipping automatic IDA shutdown after opened binary verification failure")
+        else:
+            quit_ida_gracefully(process, host, port, debug=debug)
 
     return success_count, fail_count, skip_count
 
@@ -2695,7 +2940,7 @@ def main():
             # Check if binary exists
             if not os.path.exists(binary_path):
                 print(f"  Error: Binary file not found: {binary_path}")
-                print(f"  Hint: Run download_bin.py first to download binaries")
+                print("  Hint: Run download_bin.py first to download binaries")
                 total_skip += len(skills) + len(vcall_targets)
                 continue
 
@@ -2787,7 +3032,7 @@ def main():
 
     # Summary
     print(f"\n{'=' * 60}")
-    print(f"Summary")
+    print("Summary")
     print(f"{'=' * 60}")
     print(f"  Successful: {total_success}")
     print(f"  Failed: {total_fail}")
