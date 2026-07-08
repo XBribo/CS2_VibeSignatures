@@ -1243,6 +1243,11 @@ modules:
           - CLoopTypeClientServerService_OnLoopActivate.{platform}.yaml
         expected_input:
           - CLoopTypeClientServerService_vtable.{platform}.yaml
+      - name: find-CLoopTypeSimpleService_OnLoopActivate
+        expected_output:
+          - CLoopTypeSimpleService_OnLoopActivate.{platform}.yaml
+        expected_input:
+          - CLoopTypeSimpleService_vtable.{platform}.yaml
       - name: find-CLoopTypeClientServerService_HandleInputEvent
         expected_output:
           - CLoopTypeClientServerService_HandleInputEvent.{platform}.yaml
@@ -1320,6 +1325,9 @@ modules:
       - name: find-CLoopTypeSimple_vtable
         expected_output:
           - CLoopTypeSimple_vtable.{platform}.yaml
+      - name: find-CLoopTypeSimpleService_vtable
+        expected_output:
+          - CLoopTypeSimpleService_vtable.{platform}.yaml
       - name: find-CLoopTypeSimple_FrameUpdate
         expected_output:
           - CLoopTypeSimple_FrameUpdate.{platform}.yaml
@@ -2123,6 +2131,8 @@ modules:
           - CLoopTypeClientServer::OutputListeners
       - name: CLoopTypeSimple_vtable
         category: vtable
+      - name: CLoopTypeSimpleService_vtable
+        category: vtable
       - name: CLoopTypeSimple_FrameUpdate
         category: vfunc
         alias:
@@ -2131,6 +2141,10 @@ modules:
         category: vfunc
         alias:
           - CLoopTypeClientServerService::OnLoopActivate
+      - name: CLoopTypeSimpleService_OnLoopActivate
+        category: vfunc
+        alias:
+          - CLoopTypeSimpleService::OnLoopActivate
       - name: CLoopTypeClientServerService_HandleInputEvent
         category: vfunc
         alias:
