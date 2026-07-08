@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CLoopTypeBase_GenerateSecondaryDependencies skill."""
+"""Preprocess script for find-CLoopTypeBase_GenerateServiceDependencies-windows skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CLoopTypeBase_GenerateSecondaryDependencies",
+    "CLoopTypeBase_GenerateServiceDependencies",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CLoopTypeBase_GenerateSecondaryDependencies",
+        "func_name": "CLoopTypeBase_GenerateServiceDependencies",
         "xref_strings": [
-            'Loop "%s" contains a circular dependency with service "%s"!',
+            'Service "%s" is specified to both run before and after service "%s"!',
         ],
         "xref_gvs": [],
         "xref_signatures": [],
@@ -26,7 +26,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CLoopTypeBase_GenerateSecondaryDependencies",
+        "CLoopTypeBase_GenerateServiceDependencies",
         [
             "func_name",
             "func_sig",

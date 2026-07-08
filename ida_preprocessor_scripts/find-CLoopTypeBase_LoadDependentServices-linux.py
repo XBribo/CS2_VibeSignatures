@@ -1,17 +1,27 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CLoopTypeBase_AddDependentServices skill."""
+"""Preprocess script for find-CLoopTypeBase_LoadDependentServices-linux skill.
+
+On Linux, the three dependency helpers (AddDependentServices,
+GenerateServiceDependencies, GenerateSecondaryDependencies) are inlined into a
+single function. All three assertion strings live in that one function, so the
+intersection of their string xrefs uniquely identifies it (Linux only).
+"""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CLoopTypeBase_AddDependentServices",
+    "CLoopTypeBase_LoadDependentServices",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CLoopTypeBase_AddDependentServices",
+        "func_name": "CLoopTypeBase_LoadDependentServices",
+        # Multiple xref_strings are AND-intersected: the target is the single
+        # function that references all three inlined-helper assertion strings.
         "xref_strings": [
             'Unable to find service "%s" which is depended on by service "%s"!',
+            'Service "%s" is specified to both run before and after service "%s"!',
+            'Loop "%s" contains a circular dependency with service "%s"!',
         ],
         "xref_gvs": [],
         "xref_signatures": [],
@@ -26,7 +36,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CLoopTypeBase_AddDependentServices",
+        "CLoopTypeBase_LoadDependentServices",
         [
             "func_name",
             "func_sig",

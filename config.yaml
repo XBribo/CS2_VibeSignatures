@@ -1238,15 +1238,22 @@ modules:
           - CLoopTypeBase_LoopTypeInit.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_LoopTypeInit.{platform}.yaml
-      - name: find-CLoopTypeBase_AddDependentServices
+      - name: find-CLoopTypeBase_AddDependentServices-windows
         expected_output:
           - CLoopTypeBase_AddDependentServices.{platform}.yaml
-      - name: find-CLoopTypeBase_GenerateServiceDependencies
+        platform: windows
+      - name: find-CLoopTypeBase_GenerateServiceDependencies-windows
         expected_output:
           - CLoopTypeBase_GenerateServiceDependencies.{platform}.yaml
-      - name: find-CLoopTypeBase_GenerateSecondaryDependencies
+        platform: windows
+      - name: find-CLoopTypeBase_GenerateSecondaryDependencies-windows
         expected_output:
           - CLoopTypeBase_GenerateSecondaryDependencies.{platform}.yaml
+        platform: windows
+      - name: find-CLoopTypeBase_LoadDependentServices-linux
+        expected_output:
+          - CLoopTypeBase_LoadDependentServices.{platform}.yaml
+        platform: linux
       - name: find-CLoopTypeClientServerService_OnLoopActivate
         expected_output:
           - CLoopTypeClientServerService_OnLoopActivate.{platform}.yaml
@@ -2218,6 +2225,10 @@ modules:
         category: func
         alias:
           - CLoopTypeBase::GenerateSecondaryDependencies
+      - name: CLoopTypeBase_LoadDependentServices
+        category: func
+        alias:
+          - CLoopTypeBase::LoadDependentServices
       - name: ILoopModeFactory_GetLoopModeType
         category: vfunc
         alias:

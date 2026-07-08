@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CLoopTypeBase_GenerateServiceDependencies skill."""
+"""Preprocess script for find-CLoopTypeBase_AddDependentServices-windows skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CLoopTypeBase_GenerateServiceDependencies",
+    "CLoopTypeBase_AddDependentServices",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CLoopTypeBase_GenerateServiceDependencies",
+        "func_name": "CLoopTypeBase_AddDependentServices",
         "xref_strings": [
-            'Service "%s" is specified to both run before and after service "%s"!',
+            'Unable to find service "%s" which is depended on by service "%s"!',
         ],
         "xref_gvs": [],
         "xref_signatures": [],
@@ -26,7 +26,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CLoopTypeBase_GenerateServiceDependencies",
+        "CLoopTypeBase_AddDependentServices",
         [
             "func_name",
             "func_sig",
