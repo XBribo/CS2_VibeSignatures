@@ -225,7 +225,7 @@ disasm_code: |-
   .text:0000000180069274                 mov     [rbp+1F80h+var_1F98], 0Fh
   .text:000000018006927C                 mov     byte ptr [rbp+1F80h+var_1FB0], 0
   .text:0000000180069280                 mov     rax, [rcx]
-  .text:0000000180069283                 call    qword ptr [rax+18h]; g_pNetworkMessages->Serialize, 0x18 = INetworkMessages_Serialize
+  .text:0000000180069283                 call    qword ptr [rax+18h]; 0x18 = INetworkMessages_Serialize
   .text:0000000180069286                 test    al, al
   .text:0000000180069288                 jz      short loc_180069294
   .text:000000018006928A                 cmp     byte ptr [r13+2CCF70h], 0

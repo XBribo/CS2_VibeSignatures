@@ -28,13 +28,13 @@ disasm_code: |-
   .text:000000000061940D                 add     rbx, [r12+1F8h]
   .text:0000000000619415                 mov     r15d, [rbx+10h]
   .text:0000000000619419                 mov     rsi, rbx
-  .text:000000000061941C                 call    qword ptr [rax+38h]; g_pNetworkMessages->SerializeAbstract, 0x38 = INetworkMessages_SerializeAbstract
+  .text:000000000061941C                 call    qword ptr [rax+38h]; 0x38 = INetworkMessages_SerializeAbstract
   .text:000000000061941F                 test    al, al
   .text:0000000000619421                 jz      loc_6194D0
   .text:0000000000619427                 mov     rdi, cs:g_pNetworkMessages
   .text:000000000061942E                 mov     rsi, r13
   .text:0000000000619431                 mov     rax, [rdi]
-  .text:0000000000619434                 call    qword ptr [rax+60h]; g_pNetworkMessages->GetNetMessageInfo, 0x60 = INetworkMessages_GetNetMessageInfo
+  .text:0000000000619434                 call    qword ptr [rax+60h]; 0x60 = INetworkMessages_GetNetMessageInfo
   .text:0000000000619437                 cmp     dword ptr [rax+18h], 33h ; '3'
   .text:000000000061943B                 mov     r13, rax
   .text:000000000061943E                 jnz     short loc_61944B

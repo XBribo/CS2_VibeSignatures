@@ -41,7 +41,7 @@ disasm_code: |-
   .text:00000001800AAC7D                 mov     [rbx+0D0h], rbp
   .text:00000001800AAC84                 mov     dword ptr [rbx+0D8h], 0FFFFFFFFh
   .text:00000001800AAC8E                 mov     rax, [rcx]
-  .text:00000001800AAC91                 call    qword ptr [rax+0E0h]; g_pNetworkMessages->GetFieldChangeCallbackOrderCount(),  0xE0 = INetworkMessages_GetFieldChangeCallbackOrderCount
+  .text:00000001800AAC91                 call    qword ptr [rax+0E0h]; 0xE0 = INetworkMessages_GetFieldChangeCallbackOrderCount
   .text:00000001800AAC97                 mov     edi, eax
   .text:00000001800AAC99                 mov     [rbx+0DCh], eax
   .text:00000001800AAC9F                 mov     byte ptr [rbx+0E0h], 0
@@ -62,7 +62,7 @@ disasm_code: |-
   .text:00000001800AACCD                 mov     rcx, cs:g_pNetworkMessages
   .text:00000001800AACD4                 mov     r8, [rbx+28h]
   .text:00000001800AACD8                 mov     rax, [rcx]
-  .text:00000001800AACDB                 call    qword ptr [rax+0E8h]; g_pNetworkMessages->GetFieldChangeCallbackPriorities(...),  0xE8 = INetworkMessages_GetFieldChangeCallbackPriorities
+  .text:00000001800AACDB                 call    qword ptr [rax+0E8h]; 0xE8 = INetworkMessages_GetFieldChangeCallbackPriorities
   .text:00000001800AACE1                 mov     rcx, rbx
   .text:00000001800AACE4                 call    sub_1800AA8F0
   .text:00000001800AACE9                 mov     r14, [rsp+38h+arg_8]

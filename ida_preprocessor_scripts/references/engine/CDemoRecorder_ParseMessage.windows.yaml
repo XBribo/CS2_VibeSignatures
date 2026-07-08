@@ -27,7 +27,7 @@ disasm_code: |-
   .text:0000000180028FBA                 mov     [rsp+58h+arg_18], r14
   .text:0000000180028FBF                 mov     rdx, rbx
   .text:0000000180028FC2                 mov     r12d, [rbx+10h]
-  .text:0000000180028FC6                 call    qword ptr [rax+38h]; g_pNetworkMessages->SerializeAbstract, 0x38 = INetworkMessages_SerializeAbstract
+  .text:0000000180028FC6                 call    qword ptr [rax+38h]; 0x38 = INetworkMessages_SerializeAbstract
   .text:0000000180028FC9                 test    al, al
   .text:0000000180028FCB                 jnz     short loc_180028FFA
   .text:0000000180028FCD                 mov     ecx, cs:dword_180688300
@@ -42,7 +42,7 @@ disasm_code: |-
   .text:0000000180028FFA                 mov     rcx, cs:g_pNetworkMessages
   .text:0000000180029001                 mov     rdx, rsi
   .text:0000000180029004                 mov     rax, [rcx]
-  .text:0000000180029007                 call    qword ptr [rax+60h]; g_pNetworkMessages->GetNetMessageInfo, 0x60 = INetworkMessages_GetNetMessageInfo
+  .text:0000000180029007                 call    qword ptr [rax+60h]; 0x60 = INetworkMessages_GetNetMessageInfo
   .text:000000018002900A                 mov     r14, rax
   .text:000000018002900D                 cmp     dword ptr [rax+18h], 33h ; '3'
   .text:0000000180029011                 jnz     loc_180029103

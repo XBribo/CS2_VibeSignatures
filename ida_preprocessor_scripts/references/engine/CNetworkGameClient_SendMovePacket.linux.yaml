@@ -180,7 +180,7 @@ disasm_code: |-
   .text:000000000066F6A0                 mov     rbx, [rbp+var_D0]
   .text:000000000066F6A7                 mov     rax, [rdi]
   .text:000000000066F6AA                 lea     rsi, [rbx+2CCF60h]
-  .text:000000000066F6B1                 call    qword ptr [rax+18h]; g_pNetworkMessages->Serialize, 0x18 = INetworkMessages_Serialize
+  .text:000000000066F6B1                 call    qword ptr [rax+18h]; 0x18 = INetworkMessages_Serialize
   .text:000000000066F6B4                 test    al, al
   .text:000000000066F6B6                 jz      loc_66FC35
   .text:000000000066F6BC                 cmp     byte ptr [rbx+2CCF80h], 0
@@ -272,7 +272,7 @@ disasm_code: |-
   .text:000000000066F858                 mov     rdi, cs:g_pNetworkMessages
   .text:000000000066F85F                 lea     rsi, [rax+2CCF60h]
   .text:000000000066F866                 mov     rax, [rdi]
-  .text:000000000066F869                 call    qword ptr [rax+18h]; g_pNetworkMessages->Serialize, 0x18 = INetworkMessages_Serialize
+  .text:000000000066F869                 call    qword ptr [rax+18h]; 0x18 = INetworkMessages_Serialize
   .text:000000000066F86C                 test    al, al
   .text:000000000066F86E                 jz      short loc_66F884
   .text:000000000066F870                 mov     rax, [rbp+var_D0]
