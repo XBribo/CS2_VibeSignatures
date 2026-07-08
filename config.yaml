@@ -980,6 +980,17 @@ modules:
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
           - INetworkGameServer_ServerProcessNetworking.{platform}.yaml
+      - name: find-INetworkGameServer_GetTimeScale
+        expected_output:
+          - INetworkGameServer_GetTimeScale.{platform}.yaml
+        expected_input:
+          - CLoopTypeClientServer_AdvanceTime.{platform}.yaml
+      - name: find-CNetworkGameServerBase_GetTimeScale
+        expected_output:
+          - CNetworkGameServerBase_GetTimeScale.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+          - INetworkGameServer_GetTimeScale.{platform}.yaml
       - name: find-ISource2Server_PreWorldUpdate
         expected_output:
           - ISource2Server_PreWorldUpdate.{platform}.yaml
@@ -1211,6 +1222,9 @@ modules:
           - ILoopType_AddEngineService.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_LoopTypeInit.{platform}.yaml
+      - name: find-CLoopTypeClientServer_AdvanceTime
+        expected_output:
+          - CLoopTypeClientServer_AdvanceTime.{platform}.yaml
       - name: find-CLoopTypeClientServer_Update
         expected_output:
           - CLoopTypeClientServer_Update.{platform}.yaml
@@ -2048,6 +2062,14 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::ServerProcessNetworking
+      - name: INetworkGameServer_GetTimeScale
+        category: vfunc
+        alias:
+          - INetworkGameServer::GetTimeScale
+      - name: CNetworkGameServerBase_GetTimeScale
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::GetTimeScale
       - name: ISource2Server_PreWorldUpdate
         category: vfunc
         alias:
@@ -2194,6 +2216,10 @@ modules:
         category: vfunc
         alias:
           - CLoopTypeClientServer::LoopTypeInit
+      - name: CLoopTypeClientServer_AdvanceTime
+        category: func
+        alias:
+          - CLoopTypeClientServer::AdvanceTime
       - name: CLoopTypeClientServer_Update
         category: vfunc
         alias:
