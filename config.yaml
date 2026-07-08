@@ -1238,6 +1238,15 @@ modules:
           - CLoopTypeBase_LoopTypeInit.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_LoopTypeInit.{platform}.yaml
+      - name: find-CLoopTypeBase_AddDependentServices
+        expected_output:
+          - CLoopTypeBase_AddDependentServices.{platform}.yaml
+      - name: find-CLoopTypeBase_GenerateServiceDependencies
+        expected_output:
+          - CLoopTypeBase_GenerateServiceDependencies.{platform}.yaml
+      - name: find-CLoopTypeBase_GenerateSecondaryDependencies
+        expected_output:
+          - CLoopTypeBase_GenerateSecondaryDependencies.{platform}.yaml
       - name: find-CLoopTypeClientServerService_OnLoopActivate
         expected_output:
           - CLoopTypeClientServerService_OnLoopActivate.{platform}.yaml
@@ -2197,6 +2206,18 @@ modules:
         category: vfunc
         alias:
           - CLoopTypeBase::GetImplType
+      - name: CLoopTypeBase_AddDependentServices
+        category: func
+        alias:
+          - CLoopTypeBase::AddDependentServices
+      - name: CLoopTypeBase_GenerateServiceDependencies
+        category: func
+        alias:
+          - CLoopTypeBase::GenerateServiceDependencies
+      - name: CLoopTypeBase_GenerateSecondaryDependencies
+        category: func
+        alias:
+          - CLoopTypeBase::GenerateSecondaryDependencies
       - name: ILoopModeFactory_GetLoopModeType
         category: vfunc
         alias:
