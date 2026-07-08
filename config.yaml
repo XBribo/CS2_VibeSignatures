@@ -6526,7 +6526,6 @@ modules:
           - CEntityInstance_AddChangeAccessorPath.{platform}.yaml
         expected_input:
           - EntityInstanceAddChangeAccessorPath.{platform}.yaml
-          - CEntityInstance_vtable.{platform}.yaml
       - name: find-CEntityInstance_AssignChangeAccessorPathIds
         expected_output:
           - CEntityInstance_AssignChangeAccessorPathIds.{platform}.yaml

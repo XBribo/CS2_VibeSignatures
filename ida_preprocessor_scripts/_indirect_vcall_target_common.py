@@ -19,10 +19,15 @@ re-scanned every run, so a vtable layout shift is picked up automatically.
 Some compilers split the dispatch so the slot displacement lives in a load
 rather than the branch itself (e.g. Linux/GCC emits ``mov rax, [rax+78h]`` then
 ``jmp rax`` where Windows/MSVC emits ``jmp qword ptr [rax+78h]``). Passing
-``resolve_load_then_branch=True`` makes the scan trace a register-indirect
-branch back to the nearest preceding ``mov reg, [base+disp]`` load, so both
-forms resolve to the same slot. It is opt-in and off by default, leaving the
-strict memory-indirect-only scan unchanged for existing callers.
+``resolve_load_then_branch=True`` makes the scan resolve a register-indirect
+branch to the vtable slot via a control-flow-aware backward walk: from the
+branch's basic block it climbs the predecessor chain to the reaching
+``mov reg, [base+disp]`` load. Walking real control-flow edges (rather than
+linear address order) lets it see past an early-out guard whose *not-taken*
+path clobbers the register -- e.g. ``mov rax,[rax+128h]; cmp rax,rdx; jnz L;
+mov eax,-1; retn; L: jmp rax`` -- which a linear scan would mis-resolve. It is
+opt-in and off by default, leaving the strict memory-indirect-only scan
+unchanged for existing callers.
 """
 
 import json
@@ -53,44 +58,107 @@ if not idaapi.get_func(func_addr):
     idaapi.add_func(func_addr)
 func = idaapi.get_func(func_addr)
 
+NON_DEF_MNEMONICS = {"cmp", "test", "push", "jmp"}
+
+
+def _reg_def_kind(ea, reg):
+    # Classify how the instruction at `ea` defines register `reg`:
+    #   ("load", disp) -- `mov reg, [base+disp]` (a vtable-slot load)
+    #   ("other", )    -- any other write to reg (clobbers a tracked slot)
+    #   None           -- does not write reg
+    insn = idaapi.insn_t()
+    if not idaapi.decode_insn(insn, ea):
+        return None
+    mnem = idc.print_insn_mnem(ea).lower()
+    if mnem == "mov":
+        dst = insn.ops[0]
+        src = insn.ops[1]
+        if dst.type == idaapi.o_reg and dst.reg == reg:
+            if src.type in (idaapi.o_displ, idaapi.o_phrase):
+                return ("load", int(src.addr) & 0xFFFFFFFF)
+            return ("other", )
+        return None
+    # A call clobbers its return register; treat it as an opaque redefinition.
+    if mnem == "call":
+        return ("other", )
+    op0 = insn.ops[0]
+    if op0.type == idaapi.o_reg and op0.reg == reg and mnem not in NON_DEF_MNEMONICS:
+        return ("other", )
+    return None
+
+
+def _resolve_reg_branch(fc, branch_ea, reg):
+    # Control-flow-aware backward search: resolve a register-indirect branch
+    # (`jmp/call reg`) to the vtable slot it dispatches through by walking back
+    # over the dominating basic-block chain to the reaching `mov reg,[base+disp]`
+    # load. This sees past an early-out guard whose *not-taken* path clobbers reg
+    # (e.g. the Linux/GCC form `mov rax,[rax+128h]; cmp rax,rdx; jnz L;
+    # mov eax,-1; retn; L: jmp rax`), which a purely linear scan cannot. Returns
+    # the single offset when all explored paths agree, else None.
+    start = None
+    for b in fc:
+        if b.start_ea <= branch_ea < b.end_ea:
+            start = b
+            break
+    if start is None:
+        return None
+    found = set()
+    visited = set()
+    stack = [(start, branch_ea)]
+    steps = 0
+    while stack and steps < 256:
+        steps += 1
+        block, upper = stack.pop()
+        kind = None
+        for h in reversed([x for x in idautils.Heads(block.start_ea, block.end_ea) if x < upper]):
+            kind = _reg_def_kind(h, reg)
+            if kind is not None:
+                break
+        if kind is not None:
+            # A load contributes its offset; a non-load clobber contributes
+            # nothing -- either way this path is resolved, so stop climbing it.
+            if kind[0] == "load":
+                found.add(kind[1])
+            continue
+        for p in block.preds():
+            if p.id not in visited:
+                visited.add(p.id)
+                stack.append((p, p.end_ea))
+    if len(found) == 1:
+        return next(iter(found))
+    return None
+
+
+# py_eval runs this template via `exec(code, globals, locals)` with distinct
+# dicts, so the top-level constants/imports/helpers above land in `locals` and
+# are invisible to each other's function bodies (which resolve names via
+# `globals`). Bridge them into globals before the main logic -- the repo-wide
+# py_eval idiom that avoids NameError at runtime.
+globals().update(locals())
+
 if func:
+    fc = None
     targets = []
     seen = set()
-    # Displacement of the most recent `mov <reg>, [base+disp]` per destination
-    # register. Lets a register-indirect branch (`jmp/call reg`) be resolved back
-    # to the vtable slot it dispatches through -- e.g. the Linux/GCC form
-    # `mov rax, [rax+78h]` then `jmp rax`, where the offset lives in the load
-    # rather than in the branch. Only consulted when resolve_load_then_branch is
-    # set; the default strict scan matches only memory-indirect branches.
-    reg_last_load = {}
     for head in idautils.Heads(func.start_ea, func.end_ea):
         insn = idaapi.insn_t()
         if not idaapi.decode_insn(insn, head):
             continue
         mnem = idc.print_insn_mnem(head).lower()
-
-        if resolve_load_then_branch and mnem == "mov":
-            dst = insn.ops[0]
-            src = insn.ops[1]
-            if dst.type == idaapi.o_reg:
-                if src.type in (idaapi.o_displ, idaapi.o_phrase):
-                    reg_last_load[dst.reg] = int(src.addr) & 0xFFFFFFFF
-                else:
-                    # Destination overwritten by a non-load; drop any stale slot.
-                    reg_last_load.pop(dst.reg, None)
-
         if mnem not in allowed_mnemonics:
             continue
         op = insn.ops[0]
         # o_displ = [reg+disp]; o_phrase = [reg] (disp 0): register-based
         # memory-indirect branches (vtable calls). o_mem (rip-relative / absolute
         # global pointer) is intentionally excluded. o_reg (branch through a bare
-        # register) is resolved from its preceding load when enabled.
+        # register) is resolved from its reaching vtable-slot load when enabled.
         offset = None
         if op.type in (idaapi.o_displ, idaapi.o_phrase):
             offset = int(op.addr) & 0xFFFFFFFF
         elif resolve_load_then_branch and op.type == idaapi.o_reg:
-            offset = reg_last_load.get(op.reg)
+            if fc is None:
+                fc = idaapi.FlowChart(func, flags=idaapi.FC_PREDS)
+            offset = _resolve_reg_branch(fc, head, op.reg)
         if offset is None:
             continue
         # vtable slots are non-negative and pointer-aligned; drop anything else.
@@ -302,10 +370,12 @@ async def preprocess_indirect_vcall_target_skill(
     (default 1) unique vtable-slot offset must be found, otherwise the skill fails.
 
     When ``resolve_load_then_branch`` is set, a register-indirect branch
-    (``jmp/call reg``) is also resolved by tracing the register back to the
-    nearest preceding ``mov reg, [base+disp]`` load, so the split dispatch form
+    (``jmp/call reg``) is also resolved by a control-flow-aware backward walk
+    from the branch's basic block up the predecessor chain to the reaching
+    ``mov reg, [base+disp]`` load, so the split dispatch form
     ``mov rax, [rax+78h]`` / ``jmp rax`` (common on Linux/GCC) yields the same
-    slot as the direct ``jmp qword ptr [rax+78h]`` form emitted on Windows.
+    slot as the direct ``jmp qword ptr [rax+78h]`` form emitted on Windows --
+    even when an early-out guard clobbers the register on its not-taken path.
     """
     if yaml is None:
         _debug(debug, "PyYAML is required")
