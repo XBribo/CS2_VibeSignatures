@@ -2301,6 +2301,93 @@ class TestExpectedInputArtifactValidation(unittest.IsolatedAsyncioTestCase):
         mock_inspect_func_va.assert_not_awaited()
 
 
+class TestInspectFuncVaPyEvalSelfHeal(unittest.IsolatedAsyncioTestCase):
+    """The expected_input validator promotes an un-analyzed .text thunk (a bare
+    loc_, code but not a function) to a function via idaapi.add_func before
+    deciding func_va does not resolve to a function."""
+
+    async def _capture_inspect_py_eval(self, func_va_text: str) -> str:
+        captured: dict[str, object] = {}
+
+        class _CapturingSession:
+            async def call_tool(self, name, arguments):
+                captured["name"] = name
+                captured["code"] = arguments["code"]
+                # Stop after capturing; the helper swallows the exception and
+                # returns None, so we get the exact py_eval string it built.
+                raise RuntimeError("stop after capturing py_eval code")
+
+        result = await ida_analyze_bin._inspect_func_va_via_session(
+            _CapturingSession(),
+            func_va_text,
+        )
+        self.assertIsNone(result)
+        self.assertEqual("py_eval", captured["name"])
+        return captured["code"]
+
+    @staticmethod
+    def _exec_inspect_py_eval(code: str, *, seg_name, add_func_succeeds: bool):
+        state = {"is_func": False}
+
+        def fake_get_func(ea):
+            if not state["is_func"]:
+                return None
+            return SimpleNamespace(start_ea=ea, end_ea=ea + 0x18)
+
+        def fake_add_func(_ea):
+            # Mirror IDA: add_func succeeds only on real code, no-ops otherwise.
+            if add_func_succeeds:
+                state["is_func"] = True
+            return add_func_succeeds
+
+        seg_sentinel = object() if seg_name is not None else None
+        fake_ida_segment = SimpleNamespace(
+            getseg=lambda _ea: seg_sentinel,
+            get_segm_name=lambda _seg: seg_name,
+        )
+        fake_ida_funcs = SimpleNamespace(get_func=fake_get_func)
+        fake_idaapi = SimpleNamespace(
+            getseg=lambda _ea: seg_sentinel,
+            add_func=fake_add_func,
+        )
+
+        namespace: dict[str, object] = {}
+        with patch.dict(
+            "sys.modules",
+            {
+                "ida_funcs": fake_ida_funcs,
+                "ida_segment": fake_ida_segment,
+                "idaapi": fake_idaapi,
+            },
+        ):
+            exec(code, namespace)
+        return json.loads(namespace["result"])
+
+    async def test_unanalyzed_text_thunk_is_promoted_to_function(self) -> None:
+        code = await self._capture_inspect_py_eval("0x5a8d30")
+        payload = self._exec_inspect_py_eval(
+            code,
+            seg_name=".text",
+            add_func_succeeds=True,
+        )
+        self.assertTrue(payload["has_segment"])
+        self.assertEqual(".text", payload["segment_name"])
+        self.assertTrue(payload["has_function"])
+        self.assertEqual("0x5a8d30", payload["function_start"])
+        self.assertTrue(payload["is_function_start"])
+
+    async def test_non_function_address_still_reports_missing_function(self) -> None:
+        code = await self._capture_inspect_py_eval("0x616050")
+        payload = self._exec_inspect_py_eval(
+            code,
+            seg_name=".text",
+            add_func_succeeds=False,
+        )
+        self.assertTrue(payload["has_segment"])
+        self.assertFalse(payload["has_function"])
+        self.assertFalse(payload["is_function_start"])
+
+
 class _FakePipe:
     def __init__(self, chunks: list[str]) -> None:
         self._chunks = list(chunks)
