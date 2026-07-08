@@ -126,7 +126,7 @@ disasm_code: |-
   .text:0000000180226553                 test    rcx, rcx
   .text:0000000180226556                 jz      short loc_180226563
   .text:0000000180226558                 mov     rax, [rcx]
-  .text:000000018022655B                 call    qword ptr [rax+0B0h]  ; 0B0h = INetworkGameServer_GetTimeScale
+  .text:000000018022655B                 call    qword ptr [rax+0B0h]  ; 0B0h = INetworkGameServer_GetTimescale
   .text:0000000180226561                 jmp     short loc_18022656B
   .text:0000000180226563                 movss   xmm0, cs:dword_18058368C
   .text:000000018022656B                 mov     edx, 0FFFFFFFFh
@@ -358,7 +358,7 @@ procedure: |-
     }
     v14 = *(_QWORD *)(a1 + 312);
     if ( v14 )
-      v15 = (*(float (__fastcall **)(__int64))(*(_QWORD *)v14 + 176LL))(v14);// 176LL = 0xB0 = INetworkGameServer_GetTimeScale
+      v15 = (*(float (__fastcall **)(__int64))(*(_QWORD *)v14 + 176LL))(v14);// 176LL = 0xB0 = INetworkGameServer_GetTimescale
     else
       v15 = 1.0;
     *(float *)(a1 + 336) = v15;

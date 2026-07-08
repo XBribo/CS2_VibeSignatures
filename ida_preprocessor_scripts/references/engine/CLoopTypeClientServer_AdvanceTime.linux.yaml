@@ -61,7 +61,7 @@ disasm_code: |-
   .text:000000000053E6DC                 jz      loc_53E8C0
   .text:000000000053E6E2                 mov     rax, [rdi]
   .text:000000000053E6E5                 lea     rdx, sub_696D70
-  .text:000000000053E6EC                 mov     rax, [rax+0B0h]  ; 0B0h = INetworkGameServer_GetTimeScale
+  .text:000000000053E6EC                 mov     rax, [rax+0B0h]  ; 0B0h = INetworkGameServer_GetTimescale
   .text:000000000053E6F3                 cmp     rax, rdx
   .text:000000000053E6F6                 jnz     loc_53EBE8
   .text:000000000053E6FC                 movss   xmm0, dword ptr [rdi+458h]
@@ -299,7 +299,7 @@ disasm_code: |-
   .text:000000000053EBD0                 cmp     cs:byte_980FE4, 0
   .text:000000000053EBD7                 jnz     loc_53EA7E
   .text:000000000053EBDD                 jmp     loc_53E766
-  .text:000000000053EBE8                 call    rax  ; INetworkGameServer_GetTimeScale (indirect call via vtable+0B0h)
+  .text:000000000053EBE8                 call    rax  ; INetworkGameServer_GetTimescale (indirect call via vtable+0B0h)
   .text:000000000053EBEA                 jmp     loc_53E704
   .text:000000000053EBF0                 mov     rax, cs:qword_982DA8
   .text:000000000053EBF7                 mov     rax, [rax+8]
@@ -461,7 +461,7 @@ procedure: |-
     if ( !v9 )
       goto LABEL_42;
   LABEL_17:
-    v10 = *(void (**)(void))(*(_QWORD *)v9 + 176LL);// 176LL = 0xB0 = INetworkGameServer_GetTimeScale
+    v10 = *(void (**)(void))(*(_QWORD *)v9 + 176LL);// 176LL = 0xB0 = INetworkGameServer_GetTimescale
     if ( (char *)v10 == (char *)sub_696D70 )
       LODWORD(v6) = v9[278];
     else

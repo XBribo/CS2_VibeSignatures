@@ -980,17 +980,17 @@ modules:
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
           - INetworkGameServer_ServerProcessNetworking.{platform}.yaml
-      - name: find-INetworkGameServer_GetTimeScale
+      - name: find-INetworkGameServer_GetTimescale
         expected_output:
-          - INetworkGameServer_GetTimeScale.{platform}.yaml
+          - INetworkGameServer_GetTimescale.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_AdvanceTime.{platform}.yaml
-      - name: find-CNetworkGameServerBase_GetTimeScale
+      - name: find-CNetworkGameServerBase_GetTimescale
         expected_output:
-          - CNetworkGameServerBase_GetTimeScale.{platform}.yaml
+          - CNetworkGameServerBase_GetTimescale.{platform}.yaml
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
-          - INetworkGameServer_GetTimeScale.{platform}.yaml
+          - INetworkGameServer_GetTimescale.{platform}.yaml
       - name: find-ISource2Server_PreWorldUpdate
         expected_output:
           - ISource2Server_PreWorldUpdate.{platform}.yaml
@@ -2062,14 +2062,14 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::ServerProcessNetworking
-      - name: INetworkGameServer_GetTimeScale
+      - name: INetworkGameServer_GetTimescale
         category: vfunc
         alias:
-          - INetworkGameServer::GetTimeScale
-      - name: CNetworkGameServerBase_GetTimeScale
+          - INetworkGameServer::GetTimescale
+      - name: CNetworkGameServerBase_GetTimescale
         category: vfunc
         alias:
-          - CNetworkGameServerBase::GetTimeScale
+          - CNetworkGameServerBase::GetTimescale
       - name: ISource2Server_PreWorldUpdate
         category: vfunc
         alias:

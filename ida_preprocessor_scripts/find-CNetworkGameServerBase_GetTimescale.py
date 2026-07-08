@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CNetworkGameServerBase_GetTimeScale skill."""
+"""Preprocess script for find-CNetworkGameServerBase_GetTimescale skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 INHERIT_VFUNCS = [
     # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
-    # generate_func_sig=False: CNetworkGameServerBase::GetTimeScale is too short for a stable func_sig.
+    # generate_func_sig=False: CNetworkGameServerBase::GetTimescale is too short for a stable func_sig.
     (
-        "CNetworkGameServerBase_GetTimeScale",
+        "CNetworkGameServerBase_GetTimescale",
         "CNetworkGameServerBase",
-        "INetworkGameServer_GetTimeScale",
+        "INetworkGameServer_GetTimescale",
         False,
     ),
 ]
@@ -18,7 +18,7 @@ GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     # No func_sig (too short); still resolve the concrete function address via the vtable slot.
     (
-        "CNetworkGameServerBase_GetTimeScale",
+        "CNetworkGameServerBase_GetTimescale",
         [
             "func_name",
             "func_va",
@@ -42,7 +42,7 @@ async def preprocess_skill(
     image_base,
     debug=False,
 ):
-    """Resolve GetTimeScale by inherited vfunc slot without emitting func_sig."""
+    """Resolve GetTimescale by inherited vfunc slot without emitting func_sig."""
     _ = skill_name
 
     return await preprocess_common_skill(

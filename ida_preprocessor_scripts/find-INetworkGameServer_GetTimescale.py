@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-INetworkGameServer_GetTimeScale skill."""
+"""Preprocess script for find-INetworkGameServer_GetTimescale skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "INetworkGameServer_GetTimeScale",
+    "INetworkGameServer_GetTimescale",
 ]
 
 LLM_DECOMPILE = [
     # (symbol_name, path_to_prompt, path_to_reference)
     (
-        "INetworkGameServer_GetTimeScale",
+        "INetworkGameServer_GetTimescale",
         "prompt/call_llm_decompile.md",
         "references/engine/CLoopTypeClientServer_AdvanceTime.{platform}.yaml",
     ),
@@ -19,13 +19,13 @@ LLM_DECOMPILE = [
 # INetworkGameServer is an abstract interface -- no vtable YAML needed; vtable_name is metadata only
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
-    ("INetworkGameServer_GetTimeScale", "INetworkGameServer"),
+    ("INetworkGameServer_GetTimescale", "INetworkGameServer"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "INetworkGameServer_GetTimeScale",
+        "INetworkGameServer_GetTimescale",
         [
             "func_name",
             "vfunc_sig",
