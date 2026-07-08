@@ -1,0 +1,194 @@
+func_name: CNetworkServerService_OnServerProcessNetworking
+func_va: '0x1801df450'
+disasm_code: |-
+  .text:00000001801DF450                 mov     [rsp+arg_0], rbx
+  .text:00000001801DF455                 push    rdi
+  .text:00000001801DF456                 sub     rsp, 20h
+  .text:00000001801DF45A                 mov     r10, cs:qword_180688058
+  .text:00000001801DF461                 mov     rdi, rdx
+  .text:00000001801DF464                 mov     r8, cs:qword_180688050
+  .text:00000001801DF46B                 xor     ebx, ebx
+  .text:00000001801DF46D                 mov     r9, cs:g_pGameServer
+  .text:00000001801DF474                 mov     ecx, ebx
+  .text:00000001801DF476                 test    ebx, ebx
+  .text:00000001801DF478                 jz      short loc_1801DF48E
+  .text:00000001801DF47A                 sub     ecx, 1
+  .text:00000001801DF47D                 jz      short loc_1801DF489
+  .text:00000001801DF47F                 cmp     ecx, 1
+  .text:00000001801DF482                 jnz     short loc_1801DF496
+  .text:00000001801DF484                 mov     rax, r10
+  .text:00000001801DF487                 jmp     short loc_1801DF491
+  .text:00000001801DF489                 mov     rax, r8
+  .text:00000001801DF48C                 jmp     short loc_1801DF491
+  .text:00000001801DF48E                 mov     rax, r9
+  .text:00000001801DF491                 test    rax, rax
+  .text:00000001801DF494                 jnz     short loc_1801DF49D
+  .text:00000001801DF496                 inc     ebx
+  .text:00000001801DF498                 cmp     ebx, 3
+  .text:00000001801DF49B                 jl      short loc_1801DF474
+  .text:00000001801DF49D                 cmp     ebx, 3
+  .text:00000001801DF4A0                 jz      loc_1801DF552
+  .text:00000001801DF4A6                 mov     ecx, ebx
+  .text:00000001801DF4A8                 test    ebx, ebx
+  .text:00000001801DF4AA                 jz      short loc_1801DF4F9
+  .text:00000001801DF4AC                 sub     ecx, 1
+  .text:00000001801DF4AF                 jz      short loc_1801DF4F1
+  .text:00000001801DF4B1                 mov     rdx, rdi
+  .text:00000001801DF4B4                 cmp     ecx, 1
+  .text:00000001801DF4B7                 jz      short loc_1801DF4CF
+  .text:00000001801DF4B9                 mov     rax, ds:0
+  .text:00000001801DF4C1                 xor     ecx, ecx
+  .text:00000001801DF4C3                 call    qword ptr [rax+78h]; 0x78 = 120 = INetworkGameServer_ServerProcessNetworking
+  .text:00000001801DF4C6                 inc     ebx
+  .text:00000001801DF4C8                 cmp     ebx, 3
+  .text:00000001801DF4CB                 jl      short loc_1801DF507
+  .text:00000001801DF4CD                 jmp     short loc_1801DF4DA
+  .text:00000001801DF4CF                 mov     rax, [r10]
+  .text:00000001801DF4D2                 mov     rcx, r10
+  .text:00000001801DF4D5                 call    qword ptr [rax+78h]; 0x78 = 120 = INetworkGameServer_ServerProcessNetworking
+  .text:00000001801DF4D8                 inc     ebx
+  .text:00000001801DF4DA                 mov     r10, cs:qword_180688058
+  .text:00000001801DF4E1                 mov     r8, cs:qword_180688050
+  .text:00000001801DF4E8                 mov     r9, cs:g_pGameServer
+  .text:00000001801DF4EF                 jmp     short loc_1801DF549
+  .text:00000001801DF4F1                 mov     rax, [r8]
+  .text:00000001801DF4F4                 mov     rcx, r8
+  .text:00000001801DF4F7                 jmp     short loc_1801DF4FF
+  .text:00000001801DF4F9                 mov     rax, [r9]
+  .text:00000001801DF4FC                 mov     rcx, r9
+  .text:00000001801DF4FF                 mov     rdx, rdi
+  .text:00000001801DF502                 call    qword ptr [rax+78h]; 0x78 = 120 = INetworkGameServer_ServerProcessNetworking
+  .text:00000001801DF505                 inc     ebx
+  .text:00000001801DF507                 mov     r10, cs:qword_180688058
+  .text:00000001801DF50E                 mov     r8, cs:qword_180688050
+  .text:00000001801DF515                 mov     r9, cs:g_pGameServer
+  .text:00000001801DF51C                 nop     dword ptr [rax+00h]
+  .text:00000001801DF520                 mov     eax, ebx
+  .text:00000001801DF522                 test    ebx, ebx
+  .text:00000001801DF524                 jz      short loc_1801DF53A
+  .text:00000001801DF526                 sub     eax, 1
+  .text:00000001801DF529                 jz      short loc_1801DF535
+  .text:00000001801DF52B                 cmp     eax, 1
+  .text:00000001801DF52E                 jnz     short loc_1801DF542
+  .text:00000001801DF530                 mov     rax, r10
+  .text:00000001801DF533                 jmp     short loc_1801DF53D
+  .text:00000001801DF535                 mov     rax, r8
+  .text:00000001801DF538                 jmp     short loc_1801DF53D
+  .text:00000001801DF53A                 mov     rax, r9
+  .text:00000001801DF53D                 test    rax, rax
+  .text:00000001801DF540                 jnz     short loc_1801DF549
+  .text:00000001801DF542                 inc     ebx
+  .text:00000001801DF544                 cmp     ebx, 3
+  .text:00000001801DF547                 jl      short loc_1801DF520
+  .text:00000001801DF549                 cmp     ebx, 3
+  .text:00000001801DF54C                 jnz     loc_1801DF4A6
+  .text:00000001801DF552                 mov     rbx, [rsp+28h+arg_0]
+  .text:00000001801DF557                 add     rsp, 20h
+  .text:00000001801DF55B                 pop     rdi
+  .text:00000001801DF55C                 retn
+procedure: |-
+  void __fastcall CNetworkServerService_OnServerProcessNetworking(__int64 a1, __int64 a2)
+  {
+    __int64 v2; // r10
+    _QWORD *v4; // r8
+    int v5; // ebx
+    _QWORD *v6; // r9
+    __int64 v7; // rax
+    __int64 v8; // rax
+    _QWORD *v9; // rcx
+    __int64 v10; // rax
+
+    v2 = qword_180688058;
+    v4 = (_QWORD *)qword_180688050[0];
+    v5 = 0;
+    v6 = (_QWORD *)g_pGameServer;
+    do
+    {
+      if ( v5 )
+      {
+        if ( v5 == 1 )
+        {
+          v7 = qword_180688050[0];
+        }
+        else
+        {
+          if ( v5 != 2 )
+            goto LABEL_9;
+          v7 = qword_180688058;
+        }
+      }
+      else
+      {
+        v7 = g_pGameServer;
+      }
+      if ( v7 )
+        break;
+  LABEL_9:
+      ++v5;
+    }
+    while ( v5 < 3 );
+    if ( v5 != 3 )
+    {
+      while ( 1 )
+      {
+        if ( !v5 )
+        {
+          v8 = *v6;
+          v9 = v6;
+          goto LABEL_20;
+        }
+        if ( v5 == 1 )
+          break;
+        if ( v5 == 2 )
+        {
+          (*(void (__fastcall **)(__int64, __int64, _QWORD *, _QWORD *))(*(_QWORD *)v2 + 120LL))(v2, a2, v4, v6);// 0x78 = 120 = INetworkGameServer_ServerProcessNetworking
+          v5 = 3;
+        }
+        else
+        {
+          (*(void (__fastcall **)(_QWORD, __int64, _QWORD *, _QWORD *))(MEMORY[0] + 120LL))(0, a2, v4, v6);// 0x78 = 120 = INetworkGameServer_ServerProcessNetworking
+          if ( ++v5 < 3 )
+            goto LABEL_21;
+        }
+        v2 = qword_180688058;
+        v4 = (_QWORD *)qword_180688050[0];
+        v6 = (_QWORD *)g_pGameServer;
+  LABEL_30:
+        if ( v5 == 3 )
+          return;
+      }
+      v8 = *v4;
+      v9 = v4;
+  LABEL_20:
+      (*(void (__fastcall **)(_QWORD *, __int64, _QWORD *, _QWORD *))(v8 + 120))(v9, a2, v4, v6);// 0x78 = 120 = INetworkGameServer_ServerProcessNetworking
+      ++v5;
+  LABEL_21:
+      v2 = qword_180688058;
+      v4 = (_QWORD *)qword_180688050[0];
+      v6 = (_QWORD *)g_pGameServer;
+      while ( 2 )
+      {
+        if ( !v5 )
+        {
+          v10 = g_pGameServer;
+          goto LABEL_28;
+        }
+        if ( v5 != 1 )
+        {
+          if ( v5 == 2 )
+          {
+            v10 = qword_180688058;
+  LABEL_28:
+            if ( v10 )
+              goto LABEL_30;
+          }
+          if ( ++v5 >= 3 )
+            goto LABEL_30;
+          continue;
+        }
+        break;
+      }
+      v10 = qword_180688050[0];
+      goto LABEL_28;
+    }
+  }

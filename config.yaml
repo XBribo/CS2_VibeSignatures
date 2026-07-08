@@ -969,6 +969,28 @@ modules:
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
           - INetworkGameServer_ServerAdvanceTick.{platform}.yaml
+      - name: find-INetworkGameServer_ServerProcessNetworking
+        expected_output:
+          - INetworkGameServer_ServerProcessNetworking.{platform}.yaml
+        expected_input:
+          - CNetworkServerService_OnServerProcessNetworking.{platform}.yaml
+      - name: find-CNetworkGameServerBase_ServerProcessNetworking
+        expected_output:
+          - CNetworkGameServerBase_ServerProcessNetworking.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+          - INetworkGameServer_ServerProcessNetworking.{platform}.yaml
+      - name: find-INetworkGameServer_GetTimescale
+        expected_output:
+          - INetworkGameServer_GetTimescale.{platform}.yaml
+        expected_input:
+          - CLoopTypeClientServer_AdvanceTime.{platform}.yaml
+      - name: find-CNetworkGameServerBase_GetTimescale
+        expected_output:
+          - CNetworkGameServerBase_GetTimescale.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+          - INetworkGameServer_GetTimescale.{platform}.yaml
       - name: find-ISource2Server_PreWorldUpdate
         expected_output:
           - ISource2Server_PreWorldUpdate.{platform}.yaml
@@ -1200,6 +1222,9 @@ modules:
           - ILoopType_AddEngineService.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_LoopTypeInit.{platform}.yaml
+      - name: find-CLoopTypeClientServer_AdvanceTime
+        expected_output:
+          - CLoopTypeClientServer_AdvanceTime.{platform}.yaml
       - name: find-CLoopTypeClientServer_Update
         expected_output:
           - CLoopTypeClientServer_Update.{platform}.yaml
@@ -2029,6 +2054,22 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::ServerAdvanceTick
+      - name: INetworkGameServer_ServerProcessNetworking
+        category: vfunc
+        alias:
+          - INetworkGameServer::ServerProcessNetworking
+      - name: CNetworkGameServerBase_ServerProcessNetworking
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::ServerProcessNetworking
+      - name: INetworkGameServer_GetTimescale
+        category: vfunc
+        alias:
+          - INetworkGameServer::GetTimescale
+      - name: CNetworkGameServerBase_GetTimescale
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::GetTimescale
       - name: ISource2Server_PreWorldUpdate
         category: vfunc
         alias:
@@ -2175,6 +2216,10 @@ modules:
         category: vfunc
         alias:
           - CLoopTypeClientServer::LoopTypeInit
+      - name: CLoopTypeClientServer_AdvanceTime
+        category: func
+        alias:
+          - CLoopTypeClientServer::AdvanceTime
       - name: CLoopTypeClientServer_Update
         category: vfunc
         alias:
