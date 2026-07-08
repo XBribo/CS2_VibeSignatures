@@ -13,7 +13,7 @@ FUNC_XREFS = [
         "xref_strings": [],
         "xref_gvs": [],
         "xref_signatures": [],
-        "xref_funcs": ["CEngineServer_GetSteamUniverse_Impl"],
+        "xref_funcs": ["GetSteamUniverse"],
         "exclude_funcs": [],
         "exclude_strings": [],
         "exclude_gvs": [],

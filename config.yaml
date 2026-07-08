@@ -1050,16 +1050,16 @@ modules:
           - CEngineServer_GetSteamUniverse.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-CEngineServer_GetSteamUniverse_Impl-linux
+      - name: find-GetSteamUniverse-linux
         platform: linux
         expected_output:
-          - CEngineServer_GetSteamUniverse_Impl.{platform}.yaml
+          - GetSteamUniverse.{platform}.yaml
       - name: find-CEngineServer_GetSteamUniverse-linux
         platform: linux
         expected_output:
           - CEngineServer_GetSteamUniverse.{platform}.yaml
         expected_input:
-          - CEngineServer_GetSteamUniverse_Impl.{platform}.yaml
+          - GetSteamUniverse.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_ChangeLevel
         expected_output:
@@ -2005,14 +2005,12 @@ modules:
         category: func
       - name: ShowFrameTimeReport
         category: func
+      - name: SetFrameTimeAmnesty
+        category: func
       - name: CEngineServer_ShowFrameTimeReport
         category: vfunc
         alias:
           - CEngineServer::ShowFrameTimeReport
-      - name: SetFrameTimeAmnesty
-        category: func
-        alias:
-          - CEngineServer::SetFrameTimeAmnesty_Impl
       - name: CEngineServer_SetFrameTimeAmnesty
         category: vfunc
         alias:
@@ -2021,7 +2019,7 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::GetSteamUniverse
-      - name: CEngineServer_GetSteamUniverse_Impl
+      - name: GetSteamUniverse
         category: func
         alias:
           - CEngineServer::GetSteamUniverse_Impl
