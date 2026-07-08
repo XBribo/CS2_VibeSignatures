@@ -850,94 +850,43 @@ class TestFindCBaseFilterInputTestActivator(unittest.IsolatedAsyncioTestCase):
 
 
 class TestFindILoopModeHandleInputEvent(unittest.IsolatedAsyncioTestCase):
-    async def test_preprocess_skill_tolerates_missing_old_yaml_map(
+    async def test_preprocess_skill_forwards_indirect_vcall_target_contract(
         self,
     ) -> None:
         module = _load_module(
             ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH,
             "find_ILoopMode_HandleInputEvent",
         )
-        session = AsyncMock()
-        session.call_tool.return_value = _py_eval_payload({"vfunc_offset": 0x28})
+        mock_helper = AsyncMock(return_value=True)
 
-        with (
-            tempfile.TemporaryDirectory() as tmpdir,
-            patch.object(
-                module,
-                "write_func_yaml",
-            ) as write_func_yaml,
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
         ):
-            predecessor_yaml = Path(tmpdir) / "CLoopTypeClientServerService_HandleInputEvent.linux.yaml"
-            predecessor_yaml.write_text("func_va: 0x180123450\n", encoding="utf-8")
-            output_path = str(Path(tmpdir) / "ILoopMode_HandleInputEvent.linux.yaml")
-
             result = await module.preprocess_skill(
-                session=session,
+                session="session",
                 skill_name="skill",
-                expected_outputs=[output_path],
-                old_yaml_map=None,
-                new_binary_dir=tmpdir,
-                platform="linux",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="windows",
                 image_base=0x180000000,
                 debug=True,
             )
 
         self.assertTrue(result)
-        session.call_tool.assert_awaited_once()
-        write_func_yaml.assert_called_once_with(
-            output_path,
-            {
-                "func_name": "ILoopMode_HandleInputEvent",
-                "vtable_name": "ILoopMode",
-                "vfunc_offset": "0x28",
-                "vfunc_index": 5,
-            },
-        )
-
-    async def test_preprocess_skill_reuses_old_yaml_via_output_path_key(
-        self,
-    ) -> None:
-        module = _load_module(
-            ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH,
-            "find_ILoopMode_HandleInputEvent",
-        )
-        session = AsyncMock()
-
-        with (
-            tempfile.TemporaryDirectory() as tmpdir,
-            patch.object(
-                module,
-                "write_func_yaml",
-            ) as write_func_yaml,
-        ):
-            output_path = str(Path(tmpdir) / "ILoopMode_HandleInputEvent.linux.yaml")
-            old_yaml_path = str(Path(tmpdir) / "old.ILoopMode_HandleInputEvent.linux.yaml")
-            Path(old_yaml_path).write_text(
-                "vfunc_offset: 0x30\n",
-                encoding="utf-8",
-            )
-
-            result = await module.preprocess_skill(
-                session=session,
-                skill_name="skill",
-                expected_outputs=[output_path],
-                old_yaml_map={output_path: old_yaml_path},
-                new_binary_dir=tmpdir,
-                platform="linux",
-                image_base=0x180000000,
-                debug=True,
-            )
-
-        self.assertTrue(result)
-        session.call_tool.assert_not_awaited()
-        write_func_yaml.assert_called_once_with(
-            output_path,
-            {
-                "func_name": "ILoopMode_HandleInputEvent",
-                "vtable_name": "ILoopMode",
-                "vfunc_offset": "0x30",
-                "vfunc_index": 6,
-            },
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="windows",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            debug=True,
         )
 
 
