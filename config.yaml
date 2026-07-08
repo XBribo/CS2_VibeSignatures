@@ -958,6 +958,17 @@ modules:
         expected_input:
           - CNetworkGameServerBase_vtable.{platform}.yaml
           - INetworkGameServer_ServerPostSimulate.{platform}.yaml
+      - name: find-INetworkGameServer_ServerAdvanceTick
+        expected_output:
+          - INetworkGameServer_ServerAdvanceTick.{platform}.yaml
+        expected_input:
+          - CNetworkServerService_OnServerAdvanceTick.{platform}.yaml
+      - name: find-CNetworkGameServerBase_ServerAdvanceTick
+        expected_output:
+          - CNetworkGameServerBase_ServerAdvanceTick.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+          - INetworkGameServer_ServerAdvanceTick.{platform}.yaml
       - name: find-ISource2Server_PreWorldUpdate
         expected_output:
           - ISource2Server_PreWorldUpdate.{platform}.yaml
@@ -2010,6 +2021,14 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServerBase::ServerPostSimulate
+      - name: INetworkGameServer_ServerAdvanceTick
+        category: vfunc
+        alias:
+          - INetworkGameServer::ServerAdvanceTick
+      - name: CNetworkGameServerBase_ServerAdvanceTick
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::ServerAdvanceTick
       - name: ISource2Server_PreWorldUpdate
         category: vfunc
         alias:
