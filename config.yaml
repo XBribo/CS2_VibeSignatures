@@ -481,6 +481,17 @@ modules:
           - CNetworkGameServer_SpawnServer.{platform}.yaml
         expected_input:
           - CNetworkGameServer_vtable.{platform}.yaml
+      - name: find-CNetworkGameServer_SpawnServer-decompiles
+        expected_output:
+          - INetworkGameServer_GetMaxClients.{platform}.yaml
+        expected_input:
+          - CNetworkGameServer_SpawnServer.{platform}.yaml
+      - name: find-CNetworkGameServerBase_GetMaxClients
+        expected_output:
+          - CNetworkGameServerBase_GetMaxClients.{platform}.yaml
+        expected_input:
+          - CNetworkGameServerBase_vtable.{platform}.yaml
+          - INetworkGameServer_GetMaxClients.{platform}.yaml
       - name: find-CNetworkGameServerBase_ServerPollNetworking
         expected_output:
           - CNetworkGameServerBase_ServerPollNetworking.{platform}.yaml
@@ -1710,6 +1721,10 @@ modules:
         category: vfunc
         alias:
           - CNetworkGameServer::SpawnServer
+      - name: CNetworkGameServerBase_GetMaxClients
+        category: vfunc
+        alias:
+          - CNetworkGameServerBase::GetMaxClients
       - name: CNetworkGameServerBase_SetMaxClients
         category: vfunc
         alias:
@@ -1967,6 +1982,10 @@ modules:
         category: vfunc
         alias:
           - CNetworkServerService::DisconnectGameNow
+      - name: INetworkGameServer_GetMaxClients
+        category: vfunc
+        alias:
+          - INetworkGameServer::GetMaxClients
       - name: INetworkGameServer_PreWorldUpdate
         category: vfunc
         alias:
