@@ -74,7 +74,7 @@ disasm_code: |-
   .text:00000001800FE3EB                 mov     [rsp+3F0h+var_18], rdi
   .text:00000001800FE3F3                 mov     [rsp+3F0h+var_20], r12
   .text:00000001800FE3FB                 mov     rax, [rcx]
-  .text:00000001800FE3FE                 call    qword ptr [rax+80h]; g_pNetworkMessages->GetNetworkGroupCount(...), 0x80 =  INetworkMessages_GetNetworkGroupCount
+  .text:00000001800FE3FE                 call    qword ptr [rax+80h]; 0x80 =  INetworkMessages_GetNetworkGroupCount
   .text:00000001800FE404                 movzx   ecx, byte ptr [r13+0E0h]
   .text:00000001800FE40C                 mov     r12, rbx
   .text:00000001800FE40F                 mov     [rbp+2F0h+arg_18], eax
@@ -100,13 +100,13 @@ disasm_code: |-
   .text:00000001800FE463                 mov     rcx, cs:g_pNetworkMessages
   .text:00000001800FE46A                 mov     edx, r14d
   .text:00000001800FE46D                 mov     rax, [rcx]
-  .text:00000001800FE470                 call    qword ptr [rax+88h]; g_pNetworkMessages->GetNetworkGroupName(...), 0x88 =  INetworkMessages_GetNetworkGroupName
+  .text:00000001800FE470                 call    qword ptr [rax+88h]; 0x88 = INetworkMessages_GetNetworkGroupName
   .text:00000001800FE476                 mov     rcx, cs:g_pNetworkMessages
   .text:00000001800FE47D                 lea     rdx, [rsp+3F0h+var_39C]
   .text:00000001800FE482                 mov     r8d, r14d
   .text:00000001800FE485                 mov     [rbp+2F0h+var_338], rax
   .text:00000001800FE489                 mov     r9, [rcx]
-  .text:00000001800FE48C                 call    qword ptr [r9+90h]; g_pNetworkMessages->GetNetworkGroupColor(...), 0x90 =  INetworkMessages_GetNetworkGroupColor
+  .text:00000001800FE48C                 call    qword ptr [r9+90h]; 0x90 = INetworkMessages_GetNetworkGroupColor
   .text:00000001800FE493                 cmp     esi, edi
   .text:00000001800FE495                 jnz     loc_1800FE551
   .text:00000001800FE49B                 mov     esi, r12d

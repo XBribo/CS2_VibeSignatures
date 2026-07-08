@@ -8,6 +8,9 @@ from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import ida_skill_preprocessor
+from ida_preprocessor_scripts._indirect_vcall_target_common import (
+    _build_indirect_vcall_target_py_eval,
+)
 
 
 FLATTENED_SERIALIZERS_SCRIPT_PATH = Path(
@@ -46,6 +49,14 @@ BOT_ADD_COMMAND_HANDLER_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-BotAdd
 SHOW_HUD_HINT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ShowHudHint.py")
 CBASEFILTER_INPUTTESTACTIVATOR_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CBaseFilter_InputTestActivator.py")
 ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ILoopMode_HandleInputEvent.py")
+ISOURCE2SERVER_PREWORLDUPDATE_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ISource2Server_PreWorldUpdate.py")
+CENTITYINSTANCE_POSTDATAUPDATE_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CEntityInstance_PostDataUpdate.py")
+CENTITYINSTANCE_ADDCHANGEACCESSORPATH_SCRIPT_PATH = Path(
+    "ida_preprocessor_scripts/find-CEntityInstance_AddChangeAccessorPath.py"
+)
+INETWORKGAMESERVER_SERVERENDSIMULATE_SCRIPT_PATH = Path(
+    "ida_preprocessor_scripts/find-INetworkGameServer_ServerEndSimulate.py"
+)
 ON_EVENT_MAP_CALLBACKS_CLIENT_SCRIPT_PATH = Path(
     "ida_preprocessor_scripts/find-CLoopModeGame_OnEventMapCallbacks-client.py"
 )
@@ -850,95 +861,369 @@ class TestFindCBaseFilterInputTestActivator(unittest.IsolatedAsyncioTestCase):
 
 
 class TestFindILoopModeHandleInputEvent(unittest.IsolatedAsyncioTestCase):
-    async def test_preprocess_skill_tolerates_missing_old_yaml_map(
+    async def test_preprocess_skill_forwards_indirect_vcall_target_contract(
         self,
     ) -> None:
         module = _load_module(
             ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH,
             "find_ILoopMode_HandleInputEvent",
         )
-        session = AsyncMock()
-        session.call_tool.return_value = _py_eval_payload({"vfunc_offset": 0x28})
+        mock_helper = AsyncMock(return_value=True)
 
-        with (
-            tempfile.TemporaryDirectory() as tmpdir,
-            patch.object(
-                module,
-                "write_func_yaml",
-            ) as write_func_yaml,
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
         ):
-            predecessor_yaml = Path(tmpdir) / "CLoopTypeClientServerService_HandleInputEvent.linux.yaml"
-            predecessor_yaml.write_text("func_va: 0x180123450\n", encoding="utf-8")
-            output_path = str(Path(tmpdir) / "ILoopMode_HandleInputEvent.linux.yaml")
-
             result = await module.preprocess_skill(
-                session=session,
+                session="session",
                 skill_name="skill",
-                expected_outputs=[output_path],
-                old_yaml_map=None,
-                new_binary_dir=tmpdir,
-                platform="linux",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="windows",
                 image_base=0x180000000,
                 debug=True,
             )
 
         self.assertTrue(result)
-        session.call_tool.assert_awaited_once()
-        write_func_yaml.assert_called_once_with(
-            output_path,
-            {
-                "func_name": "ILoopMode_HandleInputEvent",
-                "vtable_name": "ILoopMode",
-                "vfunc_offset": "0x28",
-                "vfunc_index": 5,
-            },
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="windows",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            debug=True,
         )
 
-    async def test_preprocess_skill_reuses_old_yaml_via_output_path_key(
+
+class TestFindISource2ServerPreWorldUpdate(unittest.IsolatedAsyncioTestCase):
+    async def test_preprocess_skill_forwards_load_then_branch_contract(
         self,
     ) -> None:
         module = _load_module(
-            ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH,
-            "find_ILoopMode_HandleInputEvent",
+            ISOURCE2SERVER_PREWORLDUPDATE_SCRIPT_PATH,
+            "find_ISource2Server_PreWorldUpdate",
         )
-        session = AsyncMock()
+        mock_helper = AsyncMock(return_value=True)
 
-        with (
-            tempfile.TemporaryDirectory() as tmpdir,
-            patch.object(
-                module,
-                "write_func_yaml",
-            ) as write_func_yaml,
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
         ):
-            output_path = str(Path(tmpdir) / "ILoopMode_HandleInputEvent.linux.yaml")
-            old_yaml_path = str(Path(tmpdir) / "old.ILoopMode_HandleInputEvent.linux.yaml")
-            Path(old_yaml_path).write_text(
-                "vfunc_offset: 0x30\n",
-                encoding="utf-8",
-            )
-
             result = await module.preprocess_skill(
-                session=session,
+                session="session",
                 skill_name="skill",
-                expected_outputs=[output_path],
-                old_yaml_map={output_path: old_yaml_path},
-                new_binary_dir=tmpdir,
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
                 platform="linux",
                 image_base=0x180000000,
                 debug=True,
             )
 
         self.assertTrue(result)
-        session.call_tool.assert_not_awaited()
-        write_func_yaml.assert_called_once_with(
-            output_path,
-            {
-                "func_name": "ILoopMode_HandleInputEvent",
-                "vtable_name": "ILoopMode",
-                "vfunc_offset": "0x30",
-                "vfunc_index": 6,
-            },
+        # Linux splits the dispatch into `mov rax,[rax+78h]; jmp rax`, so this
+        # skill must opt into register-indirect-via-load resolution.
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="linux",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            resolve_load_then_branch=True,
+            debug=True,
         )
+
+
+class TestFindCEntityInstancePostDataUpdate(unittest.IsolatedAsyncioTestCase):
+    async def test_preprocess_skill_forwards_load_then_branch_contract(
+        self,
+    ) -> None:
+        module = _load_module(
+            CENTITYINSTANCE_POSTDATAUPDATE_SCRIPT_PATH,
+            "find_CEntityInstance_PostDataUpdate",
+        )
+        mock_helper = AsyncMock(return_value=True)
+
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
+        ):
+            result = await module.preprocess_skill(
+                session="session",
+                skill_name="skill",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="linux",
+                image_base=0x180000000,
+                debug=True,
+            )
+
+        self.assertTrue(result)
+        # Linux loads the slot then tail-calls through a register
+        # (`mov rax,[rax+60h]` ... `jmp rax`), so this skill must opt into
+        # register-indirect-via-load resolution.
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="linux",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            resolve_load_then_branch=True,
+            debug=True,
+        )
+
+
+class TestFindCEntityInstanceAddChangeAccessorPath(unittest.IsolatedAsyncioTestCase):
+    async def test_preprocess_skill_forwards_load_then_branch_contract(
+        self,
+    ) -> None:
+        module = _load_module(
+            CENTITYINSTANCE_ADDCHANGEACCESSORPATH_SCRIPT_PATH,
+            "find_CEntityInstance_AddChangeAccessorPath",
+        )
+        mock_helper = AsyncMock(return_value=True)
+
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
+        ):
+            result = await module.preprocess_skill(
+                session="session",
+                skill_name="skill",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="linux",
+                image_base=0x180000000,
+                debug=True,
+            )
+
+        self.assertTrue(result)
+        # Linux loads the slot then tail-calls through a register
+        # (`mov rax,[rax+128h]` ... `jmp rax`), so this skill must opt into
+        # register-indirect-via-load resolution.
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="linux",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            resolve_load_then_branch=True,
+            debug=True,
+        )
+
+
+class TestFindINetworkGameServerServerEndSimulate(unittest.IsolatedAsyncioTestCase):
+    async def test_preprocess_skill_forwards_indirect_vcall_target_contract(
+        self,
+    ) -> None:
+        module = _load_module(
+            INETWORKGAMESERVER_SERVERENDSIMULATE_SCRIPT_PATH,
+            "find_INetworkGameServer_ServerEndSimulate",
+        )
+        mock_helper = AsyncMock(return_value=True)
+
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
+        ):
+            result = await module.preprocess_skill(
+                session="session",
+                skill_name="skill",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="windows",
+                image_base=0x180000000,
+                debug=True,
+            )
+
+        self.assertTrue(result)
+        # Both platforms emit a direct `jmp qword ptr [rax+88h]`, so this skill
+        # uses the default scan (no resolve_load_then_branch).
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="windows",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            debug=True,
+        )
+
+
+class TestIndirectVcallTargetCommon(unittest.TestCase):
+    def test_build_py_eval_embeds_resolve_load_then_branch_when_enabled(
+        self,
+    ) -> None:
+        code = _build_indirect_vcall_target_py_eval(
+            func_va=0x1000,
+            allowed_mnemonics=("call", "jmp"),
+            resolve_load_then_branch=True,
+        )
+        self.assertIn("resolve_load_then_branch = True", code)
+        self.assertNotIn("__RESOLVE_LOAD_THEN_BRANCH__", code)
+
+    def test_build_py_eval_defaults_resolve_load_then_branch_off(self) -> None:
+        code = _build_indirect_vcall_target_py_eval(
+            func_va=0x1000,
+            allowed_mnemonics=("call", "jmp"),
+        )
+        self.assertIn("resolve_load_then_branch = False", code)
+        self.assertNotIn("__RESOLVE_LOAD_THEN_BRANCH__", code)
+
+    def test_build_py_eval_embeds_cfg_backward_search(self) -> None:
+        # Register-indirect (`jmp/call reg`) resolution must use a
+        # control-flow-aware backward walk (FlowChart + predecessor chain) so it
+        # can see past an early-out guard that clobbers the branch register on a
+        # not-taken path, rather than a linear last-load-per-register scan.
+        code = _build_indirect_vcall_target_py_eval(
+            func_va=0x1000,
+            allowed_mnemonics=("call", "jmp"),
+            resolve_load_then_branch=True,
+        )
+        self.assertIn("FlowChart", code)
+        self.assertIn("FC_PREDS", code)
+        self.assertIn(".preds()", code)
+        self.assertIn("_resolve_reg_branch", code)
+        # exec-scoping bridge so the top-level helpers see each other under
+        # py_eval's distinct globals/locals (repo-wide py_eval convention).
+        self.assertIn("globals().update(locals())", code)
+        # the superseded linear heuristic must not linger
+        self.assertNotIn("reg_last_load", code)
+        # the emitted py_eval body must still be valid Python
+        compile(code, "<pyeval>", "exec")
+
+    def test_pyeval_resolves_reg_branch_past_early_out_guard(self) -> None:
+        # Regression: the emitted py_eval body must resolve a register-indirect
+        # branch (`jmp reg`) to its vtable slot even when an early-out guard
+        # clobbers the branch register on a NOT-taken path -- and it must do so
+        # under `exec(code, globals, locals)` with DISTINCT dicts (how py_eval
+        # runs it), where a top-level def lands in locals and is invisible to a
+        # sibling top-level function body (which resolves names via globals).
+        import sys
+        import types
+        import json as _json
+
+        # IDA operand type constants (values only need to be internally
+        # consistent with the stub namespace below).
+        O_VOID, O_REG, O_PHRASE, O_DISPL, O_NEAR = 0, 1, 3, 4, 7
+
+        class _Op:
+            def __init__(self, type=O_VOID, reg=0, addr=0):
+                self.type = type
+                self.reg = reg
+                self.addr = addr
+
+        class _Insn:
+            def __init__(self):
+                self.ops = [_Op() for _ in range(8)]
+
+        # Linux/GCC guard idiom, one instruction per ea:
+        #   0: mov rax,[rdi]        load off 0 into reg0 (vtable ptr)
+        #   1: lea rdx, X           write reg2
+        #   2: mov rax,[rax+0x128]  load off 0x128 into reg0  <-- the slot
+        #   3: cmp rax, rdx
+        #   4: jnz 6
+        #   5: mov eax, -1          non-load clobber of reg0 (not-taken path)
+        #   6: jmp rax              branch through reg0 (jnz target)
+        prog = {
+            0: ("mov", [_Op(O_REG, 0), _Op(O_PHRASE, 7, 0)]),
+            1: ("lea", [_Op(O_REG, 2), _Op(O_NEAR, 0, 0x9999)]),
+            2: ("mov", [_Op(O_REG, 0), _Op(O_DISPL, 0, 0x128)]),
+            3: ("cmp", [_Op(O_REG, 0), _Op(O_REG, 2)]),
+            4: ("jnz", [_Op(O_NEAR, 0, 6)]),
+            5: ("mov", [_Op(O_REG, 0), _Op(O_VOID)]),
+            6: ("jmp", [_Op(O_REG, 0)]),
+        }
+
+        def _decode(insn, ea):
+            ops = prog[ea][1]
+            insn.ops = list(ops) + [_Op() for _ in range(8 - len(ops))]
+            return True
+
+        def _heads(start, end):
+            return [ea for ea in sorted(prog) if start <= ea < end]
+
+        class _Block:
+            def __init__(self, bid, start, end, preds):
+                self.id = bid
+                self.start_ea = start
+                self.end_ea = end
+                self._preds = preds
+
+            def preds(self):
+                return iter(self._preds)
+
+        # A: [0,5) ends at jnz; B: [5,6) early-out; C: [6,7) jmp rax.
+        # C's only predecessor is A (the jnz-taken edge) -- B is NOT a pred of C,
+        # so the clobber at ea 5 must never be visited.
+        block_a = _Block(0, 0, 5, [])
+        block_b = _Block(1, 5, 6, [block_a])
+        block_c = _Block(2, 6, 7, [block_a])
+        flow = [block_a, block_b, block_c]
+
+        func = types.SimpleNamespace(start_ea=0, end_ea=7)
+        idaapi_stub = types.SimpleNamespace(
+            o_void=O_VOID,
+            o_reg=O_REG,
+            o_phrase=O_PHRASE,
+            o_displ=O_DISPL,
+            FC_PREDS=1,
+            insn_t=_Insn,
+            decode_insn=_decode,
+            get_func=lambda ea: func,
+            add_func=lambda ea: None,
+            FlowChart=lambda f, flags=0: list(flow),
+        )
+        idc_stub = types.SimpleNamespace(print_insn_mnem=lambda ea: prog[ea][0])
+        idautils_stub = types.SimpleNamespace(Heads=_heads)
+
+        code = _build_indirect_vcall_target_py_eval(
+            func_va=0,
+            allowed_mnemonics=("call", "jmp"),
+            resolve_load_then_branch=True,
+        )
+        # globals hold idaapi/idc/idautils (as the MCP host injects them), so
+        # nested/closure name resolution mirrors the real py_eval environment.
+        exec_globals = {"idaapi": idaapi_stub, "idc": idc_stub, "idautils": idautils_stub}
+        exec_locals: dict = {}
+        with patch.dict(
+            sys.modules,
+            {"idaapi": idaapi_stub, "idc": idc_stub, "idautils": idautils_stub},
+        ):
+            exec(code, exec_globals, exec_locals)  # must not raise NameError
+
+        parsed = _json.loads(exec_locals["result"])
+        self.assertEqual(len(parsed["targets"]), 1)
+        self.assertEqual(parsed["targets"][0]["vfunc_offset"], "0x128")
+        self.assertEqual(parsed["targets"][0]["vfunc_index"], 37)
 
 
 class TestFindCLoopModeGameOnEventMapCallbacksClient(unittest.IsolatedAsyncioTestCase):

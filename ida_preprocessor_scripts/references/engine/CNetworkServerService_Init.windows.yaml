@@ -13,11 +13,11 @@ disasm_code: |-
   .text:00000001801EBD26                 call    sub_180400090
   .text:00000001801EBD2B                 mov     rax, cs:g_pNetworkMessages
   .text:00000001801EBD32                 mov     rdx, [rax]
-  .text:00000001801EBD35                 mov     rbx, [rdx+100h]
+  .text:00000001801EBD35                 mov     rbx, [rdx+100h]; 0x100 = INetworkMessages_SetIsForServer
   .text:00000001801EBD3C                 call    sub_180411570
   .text:00000001801EBD41                 mov     rcx, cs:g_pNetworkMessages
   .text:00000001801EBD48                 movzx   edx, al
-  .text:00000001801EBD4B                 call    rbx; g_pNetworkMessages->SetIsForServer(...), 0x100 = INetworkMessages_SetIsForServer
+  .text:00000001801EBD4B                 call    rbx
   .text:00000001801EBD4D                 mov     rcx, cs:g_pNetworkMessages
   .text:00000001801EBD54                 lea     r8, aServertoclient; "ServerToClient"
   .text:00000001801EBD5B                 mov     edx, 1
@@ -27,7 +27,7 @@ disasm_code: |-
   .text:00000001801EBD6C                 lea     r8, aEntities; "Entities"
   .text:00000001801EBD73                 mov     edx, 1
   .text:00000001801EBD78                 mov     rax, [rcx]
-  .text:00000001801EBD7B                 call    qword ptr [rax+98h]; g_pNetworkMessages->AssociateNetMessageGroupIdWithChannelCategory(...), 152LL = INetworkMessages_AssociateNetMessageGroupIdWithChannelCategory
+  .text:00000001801EBD7B                 call    qword ptr [rax+98h]; 152LL = INetworkMessages_AssociateNetMessageGroupIdWithChannelCategory
   .text:00000001801EBD81                 mov     rax, cs:qword_180687288
   .text:00000001801EBD88                 xor     ebp, ebp
   .text:00000001801EBD8A                 mov     rbx, cs:g_pNetworkMessages
@@ -41,7 +41,7 @@ disasm_code: |-
   .text:00000001801EBDB0                 mov     edx, 4
   .text:00000001801EBDB5                 mov     rcx, rbx
   .text:00000001801EBDB8                 mov     [rsp+188h+var_168], rbp
-  .text:00000001801EBDBD                 call    qword ptr [rax+10h]; g_pNetworkMessages->FindOrCreateNetMessage(...), 0x10 = INetworkMessages_FindOrCreateNetMessage
+  .text:00000001801EBDBD                 call    qword ptr [rax+10h]; 0x10 = INetworkMessages_FindOrCreateNetMessage
   .text:00000001801EBDC0                 mov     cs:qword_180687288, rax
   .text:00000001801EBDC7                 mov     r10, [rbx]
   .text:00000001801EBDCA                 mov     r9b, 1

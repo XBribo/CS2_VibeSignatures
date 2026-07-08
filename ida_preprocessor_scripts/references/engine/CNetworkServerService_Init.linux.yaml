@@ -14,21 +14,21 @@ disasm_code: |-
   .text:00000000005AA991                 jz      loc_5AB040
   .text:00000000005AA997                 mov     r12, cs:g_pNetworkMessages
   .text:00000000005AA99E                 mov     rax, [r12]
-  .text:00000000005AA9A2                 mov     r13, [rax+100h]
+  .text:00000000005AA9A2                 mov     r13, [rax+100h]; 0x100 = INetworkMessages_SetIsForServer
   .text:00000000005AA9A9                 call    sub_858820
   .text:00000000005AA9AE                 mov     rdi, r12
   .text:00000000005AA9B1                 movzx   esi, al
-  .text:00000000005AA9B4                 call    r13; g_pNetworkMessages->SetIsForServer(...), 0x100 = INetworkMessages_SetIsForServer
+  .text:00000000005AA9B4                 call    r13
   .text:00000000005AA9B7                 mov     rdi, cs:g_pNetworkMessages
   .text:00000000005AA9BE                 lea     rdx, aServertoclient; "ServerToClient"
   .text:00000000005AA9C5                 mov     esi, 1
   .text:00000000005AA9CA                 mov     rax, [rdi]
-  .text:00000000005AA9CD                 call    qword ptr [rax]; g_pNetworkMessages->RegisterNetworkCategory(...), 0 = INetworkMessages_RegisterNetworkCategory
+  .text:00000000005AA9CD                 call    qword ptr [rax]; 0 = INetworkMessages_RegisterNetworkCategory
   .text:00000000005AA9CF                 mov     rdi, cs:g_pNetworkMessages
   .text:00000000005AA9D6                 mov     esi, 1
   .text:00000000005AA9DB                 lea     rdx, aEntities; "Entities"
   .text:00000000005AA9E2                 mov     rax, [rdi]
-  .text:00000000005AA9E5                 call    qword ptr [rax+98h]; g_pNetworkMessages->AssociateNetMessageGroupIdWithChannelCategory(...), 0x98 = INetworkMessages_AssociateNetMessageGroupIdWithChannelCategory
+  .text:00000000005AA9E5                 call    qword ptr [rax+98h]; 0x98 = INetworkMessages_AssociateNetMessageGroupIdWithChannelCategory
   .text:00000000005AA9EB                 mov     rsi, cs:qword_9BD230
   .text:00000000005AA9F2                 mov     rdi, cs:g_pNetworkMessages
   .text:00000000005AA9F9                 test    rsi, rsi
@@ -1001,7 +1001,7 @@ disasm_code: |-
   .text:00000000005ABB37                 mov     ecx, 78h ; 'x'
   .text:00000000005ABB3C                 mov     [rbp+var_28], rdi
   .text:00000000005ABB40                 lea     rdx, off_967FA0
-  .text:00000000005ABB47                 call    qword ptr [rax+10h]; g_pNetworkMessages->FindOrCreateNetMessage(...), 0x10 = INetworkMessages_FindOrCreateNetMessage
+  .text:00000000005ABB47                 call    qword ptr [rax+10h]; 0x10 = INetworkMessages_FindOrCreateNetMessage
   .text:00000000005ABB4A                 mov     rdi, [rbp+var_28]
   .text:00000000005ABB4E                 mov     cs:qword_9BD230, rax
   .text:00000000005ABB55                 mov     rsi, rax

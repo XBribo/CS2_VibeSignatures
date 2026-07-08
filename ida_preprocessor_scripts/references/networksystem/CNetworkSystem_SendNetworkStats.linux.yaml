@@ -1707,7 +1707,7 @@ disasm_code: |-
   .text:00000000003EC6D7                 mov     rdi, [r13+0]
   .text:00000000003EC6DB                 mov     esi, r12d
   .text:00000000003EC6DE                 mov     rax, [rdi]
-  .text:00000000003EC6E1                 call    qword ptr [rax+90h]; g_pNetworkMessages->GetNetworkGroupColor(...), 0x90 =  INetworkMessages_GetNetworkGroupColor
+  .text:00000000003EC6E1                 call    qword ptr [rax+90h]; 0x90 =  INetworkMessages_GetNetworkGroupColor
   .text:00000000003EC6E7                 mov     r15d, dword ptr [rbp+var_420]
   .text:00000000003EC6EE                 mov     ecx, dword ptr [rbp+var_410]
   .text:00000000003EC6F4                 mov     ebx, eax
