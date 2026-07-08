@@ -1012,11 +1012,11 @@ modules:
           - CEngineServer_ClientPrintf.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-CEngineServer_GetFrameTimeAmnesty-linux-AND-CEngineServer_GetFrameTimeAmnesty_Impl-windows
+      - name: find-CEngineServer_GetFrameTimeAmnesty-linux-AND-GetFrameTimeAmnesty-windows
         expected_output_linux:
           - CEngineServer_GetFrameTimeAmnesty.{platform}.yaml
         expected_output_windows:
-          - CEngineServer_GetFrameTimeAmnesty_Impl.{platform}.yaml
+          - GetFrameTimeAmnesty.{platform}.yaml
         expected_input_linux:
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_GetFrameTimeAmnesty-windows
@@ -1024,25 +1024,25 @@ modules:
         expected_output:
           - CEngineServer_GetFrameTimeAmnesty.{platform}.yaml
         expected_input:
-          - CEngineServer_GetFrameTimeAmnesty_Impl.{platform}.yaml
+          - GetFrameTimeAmnesty.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-CEngineServer_ShowFrameTimeReport_Impl
+      - name: find-ShowFrameTimeReport
         expected_output:
-          - CEngineServer_ShowFrameTimeReport_Impl.{platform}.yaml
+          - ShowFrameTimeReport.{platform}.yaml
       - name: find-CEngineServer_ShowFrameTimeReport
         expected_output:
           - CEngineServer_ShowFrameTimeReport.{platform}.yaml
         expected_input:
-          - CEngineServer_ShowFrameTimeReport_Impl.{platform}.yaml
+          - ShowFrameTimeReport.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-CEngineServer_SetFrameTimeAmnesty_Impl
+      - name: find-SetFrameTimeAmnesty
         expected_output:
-          - CEngineServer_SetFrameTimeAmnesty_Impl.{platform}.yaml
+          - SetFrameTimeAmnesty.{platform}.yaml
       - name: find-CEngineServer_SetFrameTimeAmnesty
         expected_output:
           - CEngineServer_SetFrameTimeAmnesty.{platform}.yaml
         expected_input:
-          - CEngineServer_SetFrameTimeAmnesty_Impl.{platform}.yaml
+          - SetFrameTimeAmnesty.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_GetSteamUniverse-windows
         platform: windows
@@ -1050,16 +1050,16 @@ modules:
           - CEngineServer_GetSteamUniverse.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-CEngineServer_GetSteamUniverse_Impl-linux
+      - name: find-GetSteamUniverse-linux
         platform: linux
         expected_output:
-          - CEngineServer_GetSteamUniverse_Impl.{platform}.yaml
+          - GetSteamUniverse.{platform}.yaml
       - name: find-CEngineServer_GetSteamUniverse-linux
         platform: linux
         expected_output:
           - CEngineServer_GetSteamUniverse.{platform}.yaml
         expected_input:
-          - CEngineServer_GetSteamUniverse_Impl.{platform}.yaml
+          - GetSteamUniverse.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_ChangeLevel
         expected_output:
@@ -1238,11 +1238,40 @@ modules:
           - CLoopTypeBase_LoopTypeInit.{platform}.yaml
         expected_input:
           - CLoopTypeClientServer_LoopTypeInit.{platform}.yaml
+      - name: find-CLoopTypeBase_AddDependentServices-windows
+        expected_output:
+          - CLoopTypeBase_AddDependentServices.{platform}.yaml
+        platform: windows
+      - name: find-CLoopTypeBase_GenerateServiceDependencies-windows
+        expected_output:
+          - CLoopTypeBase_GenerateServiceDependencies.{platform}.yaml
+        platform: windows
+      - name: find-CLoopTypeBase_GenerateSecondaryDependencies-windows
+        expected_output:
+          - CLoopTypeBase_GenerateSecondaryDependencies.{platform}.yaml
+        platform: windows
+      - name: find-CLoopTypeBase_LoadDependentServices-linux
+        expected_output:
+          - CLoopTypeBase_LoadDependentServices.{platform}.yaml
+        platform: linux
+      - name: find-IEngineService_GetServiceDependencies-AND-IEngineService_GetName
+        expected_output:
+          - IEngineService_GetServiceDependencies.{platform}.yaml
+          - IEngineService_GetName.{platform}.yaml
+        expected_input_windows:
+          - CLoopTypeBase_AddDependentServices.{platform}.yaml
+        expected_input_linux:
+          - CLoopTypeBase_LoadDependentServices.{platform}.yaml
       - name: find-CLoopTypeClientServerService_OnLoopActivate
         expected_output:
           - CLoopTypeClientServerService_OnLoopActivate.{platform}.yaml
         expected_input:
           - CLoopTypeClientServerService_vtable.{platform}.yaml
+      - name: find-CLoopTypeSimpleService_OnLoopActivate
+        expected_output:
+          - CLoopTypeSimpleService_OnLoopActivate.{platform}.yaml
+        expected_input:
+          - CLoopTypeSimpleService_vtable.{platform}.yaml
       - name: find-CLoopTypeClientServerService_HandleInputEvent
         expected_output:
           - CLoopTypeClientServerService_HandleInputEvent.{platform}.yaml
@@ -1320,6 +1349,9 @@ modules:
       - name: find-CLoopTypeSimple_vtable
         expected_output:
           - CLoopTypeSimple_vtable.{platform}.yaml
+      - name: find-CLoopTypeSimpleService_vtable
+        expected_output:
+          - CLoopTypeSimpleService_vtable.{platform}.yaml
       - name: find-CLoopTypeSimple_FrameUpdate
         expected_output:
           - CLoopTypeSimple_FrameUpdate.{platform}.yaml
@@ -2001,23 +2033,18 @@ modules:
         platform: windows
         alias:
           - CEngineServer::GetFrameTimeAmnesty
-      - name: CEngineServer_GetFrameTimeAmnesty_Impl
+      - name: GetFrameTimeAmnesty
         category: func
-        platform: windows
-        alias:
-          - CEngineServer::GetFrameTimeAmnesty_Impl
-      - name: CEngineServer_ShowFrameTimeReport_Impl
+      - name: ShowFrameTimeReport
         category: func
-        alias:
-          - CEngineServer::ShowFrameTimeReport
+      - name: SetFrameTimeAmnesty
+        category: func
+      - name: GetSteamUniverse
+        category: func
       - name: CEngineServer_ShowFrameTimeReport
         category: vfunc
         alias:
           - CEngineServer::ShowFrameTimeReport
-      - name: CEngineServer_SetFrameTimeAmnesty_Impl
-        category: func
-        alias:
-          - CEngineServer::SetFrameTimeAmnesty_Impl
       - name: CEngineServer_SetFrameTimeAmnesty
         category: vfunc
         alias:
@@ -2026,10 +2053,6 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::GetSteamUniverse
-      - name: CEngineServer_GetSteamUniverse_Impl
-        category: func
-        alias:
-          - CEngineServer::GetSteamUniverse_Impl
       - name: CEngineServer_ChangeLevel
         category: vfunc
         alias:
@@ -2092,6 +2115,14 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::KickClient
+      - name: CEngineServer_IsDedicatedServer
+        category: vfunc
+        alias:
+          - CEngineServer::IsDedicatedServer
+      - name: CEngineServer_ServerCommand
+        category: vfunc
+        alias:
+          - CEngineServer::ServerCommand
       - name: CLoopTypeClientServerService_vtable
         category: vtable
       - name: CLoopTypeClientServerService_vtable2
@@ -2132,6 +2163,8 @@ modules:
           - CLoopTypeClientServer::OutputListeners
       - name: CLoopTypeSimple_vtable
         category: vtable
+      - name: CLoopTypeSimpleService_vtable
+        category: vtable
       - name: CLoopTypeSimple_FrameUpdate
         category: vfunc
         alias:
@@ -2140,6 +2173,10 @@ modules:
         category: vfunc
         alias:
           - CLoopTypeClientServerService::OnLoopActivate
+      - name: CLoopTypeSimpleService_OnLoopActivate
+        category: vfunc
+        alias:
+          - CLoopTypeSimpleService::OnLoopActivate
       - name: CLoopTypeClientServerService_HandleInputEvent
         category: vfunc
         alias:
@@ -2192,6 +2229,30 @@ modules:
         category: vfunc
         alias:
           - CLoopTypeBase::GetImplType
+      - name: CLoopTypeBase_AddDependentServices
+        category: func
+        alias:
+          - CLoopTypeBase::AddDependentServices
+      - name: CLoopTypeBase_GenerateServiceDependencies
+        category: func
+        alias:
+          - CLoopTypeBase::GenerateServiceDependencies
+      - name: CLoopTypeBase_GenerateSecondaryDependencies
+        category: func
+        alias:
+          - CLoopTypeBase::GenerateSecondaryDependencies
+      - name: CLoopTypeBase_LoadDependentServices
+        category: func
+        alias:
+          - CLoopTypeBase::LoadDependentServices
+      - name: IEngineService_GetServiceDependencies
+        category: vfunc
+        alias:
+          - IEngineService::GetServiceDependencies
+      - name: IEngineService_GetName
+        category: vfunc
+        alias:
+          - IEngineService::GetName
       - name: ILoopModeFactory_GetLoopModeType
         category: vfunc
         alias:
@@ -3904,6 +3965,15 @@ modules:
       - name: find-CMultiplayRules_vtable
         expected_output:
           - CMultiplayRules_vtable.{platform}.yaml
+      - name: find-CMultiplayRules_ctor
+        expected_output:
+          - CMultiplayRules_ctor.{platform}.yaml
+      - name: find-CMultiplayRules_ctor-decompiles
+        expected_output:
+          - IVEngineServer2_ServerCommand.{platform}.yaml
+          - IVEngineServer2_IsDedicatedServer.{platform}.yaml
+        expected_input:
+          - CMultiplayRules_ctor.{platform}.yaml
       - name: find-CCSGameRules_vtable
         expected_output:
           - CCSGameRules_vtable.{platform}.yaml
@@ -6649,6 +6719,10 @@ modules:
         category: vtable
       - name: CMultiplayRules_vtable
         category: vtable
+      - name: CMultiplayRules_ctor
+        category: func
+        alias:
+          - CMultiplayRules::CMultiplayRules
       - name: CCSGameRules_vtable
         category: vtable
       - name: CGameMoney_vtable
@@ -7530,6 +7604,14 @@ modules:
         category: vfunc
         alias:
           - IAppSystem::PreShutdown
+      - name: IVEngineServer2_ServerCommand
+        category: vfunc
+        alias:
+          - IVEngineServer2::ServerCommand
+      - name: IVEngineServer2_IsDedicatedServer
+        category: vfunc
+        alias:
+          - IVEngineServer2::IsDedicatedServer
       - name: CSource2Server_Shutdown
         category: vfunc
         alias:
@@ -9598,6 +9680,18 @@ modules:
         expected_input:
           - ../server/IAppSystem_Connect.{platform}.yaml
           - CNetSupportImpl_vtable.{platform}.yaml
+      - name: find-CEngineServer_IsDedicatedServer
+        expected_output:
+          - CEngineServer_IsDedicatedServer.{platform}.yaml
+        expected_input:
+          - CEngineServer_vtable.{platform}.yaml
+          - ../server/IVEngineServer2_IsDedicatedServer.{platform}.yaml
+      - name: find-CEngineServer_ServerCommand
+        expected_output:
+          - CEngineServer_ServerCommand.{platform}.yaml
+        expected_input:
+          - CEngineServer_vtable.{platform}.yaml
+          - ../server/IVEngineServer2_ServerCommand.{platform}.yaml
       - name: find-ConnectInterfaces
         expected_output:
           - ConnectInterfaces.{platform}.yaml
@@ -10043,6 +10137,8 @@ cpp_tests:
       - fdump-vtable-layouts
     reference_modules:
       - engine  # bin/{gamever}/engine/CEngineServer_*.{platform}.yaml
+      - client  # bin/{gamever}/client/IVEngineServer2_*.{platform}.yaml
+      - server  # bin/{gamever}/server/IVEngineServer2_*.{platform}.yaml
   - name: IGameSystemFactory_MSVC
     symbol: IGameSystemFactory
     cpp: cpp_tests/igamesystemfactory.cpp

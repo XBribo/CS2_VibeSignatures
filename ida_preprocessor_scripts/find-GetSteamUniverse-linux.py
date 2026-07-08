@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEngineServer_GetSteamUniverse_Impl-linux skill."""
+"""Preprocess script for find-GetSteamUniverse-linux skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CEngineServer_GetSteamUniverse_Impl",
+    "GetSteamUniverse",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CEngineServer_GetSteamUniverse_Impl",
+        "func_name": "GetSteamUniverse",
         "xref_strings": [
             "Steam Universe is invalid",
         ],
@@ -26,7 +26,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEngineServer_GetSteamUniverse_Impl",
+        "GetSteamUniverse",
         [
             "func_name",
             "func_sig",

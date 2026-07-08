@@ -1,35 +1,18 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEngineServer_ShowFrameTimeReport skill."""
+"""Preprocess script for find-CEngineServer_ServerCommand skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
-TARGET_FUNCTION_NAMES = [
-    "CEngineServer_ShowFrameTimeReport",
-]
-
-FUNC_XREFS = [
-    {
-        "func_name": "CEngineServer_ShowFrameTimeReport",
-        "xref_strings": [],
-        "xref_gvs": [],
-        "xref_signatures": [],
-        "xref_funcs": ["ShowFrameTimeReport"],
-        "exclude_funcs": [],
-        "exclude_strings": [],
-        "exclude_gvs": [],
-        "exclude_signatures": [],
-    },
-]
-
-FUNC_VTABLE_RELATIONS = [
-    # (func_name, vtable_class)
-    ("CEngineServer_ShowFrameTimeReport", "CEngineServer_vtable"),
+INHERIT_VFUNCS = [
+    # (target_func_name, inherit_vtable_class, base_vfunc_name, generate_func_sig)
+    # base_vfunc is in the server module; use ../server/ prefix so the path resolves correctly.
+    ("CEngineServer_ServerCommand", "CEngineServer", "../server/IVEngineServer2_ServerCommand", True),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEngineServer_ShowFrameTimeReport",
+        "CEngineServer_ServerCommand",
         [
             "func_name",
             "func_va",
@@ -54,7 +37,9 @@ async def preprocess_skill(
     image_base,
     debug=False,
 ):
-    """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
+    """Reuse old func_sig; fallback to inheriting slot index from IVEngineServer2_ServerCommand."""
+    _ = skill_name
+
     return await preprocess_common_skill(
         session=session,
         expected_outputs=expected_outputs,
@@ -62,9 +47,7 @@ async def preprocess_skill(
         new_binary_dir=new_binary_dir,
         platform=platform,
         image_base=image_base,
-        func_names=TARGET_FUNCTION_NAMES,
-        func_xrefs=FUNC_XREFS,
-        func_vtable_relations=FUNC_VTABLE_RELATIONS,
+        inherit_vfuncs=INHERIT_VFUNCS,
         generate_yaml_desired_fields=GENERATE_YAML_DESIRED_FIELDS,
         debug=debug,
     )

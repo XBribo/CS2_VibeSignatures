@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEngineServer_ShowFrameTimeReport skill."""
+"""Preprocess script for find-ShowFrameTimeReport skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CEngineServer_ShowFrameTimeReport",
+    "ShowFrameTimeReport",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CEngineServer_ShowFrameTimeReport",
-        "xref_strings": [],
+        "func_name": "ShowFrameTimeReport",
+        "xref_strings": [
+            "Summary of %d frames.  (%d frames excluded from analysis.)",
+        ],
         "xref_gvs": [],
         "xref_signatures": [],
-        "xref_funcs": ["ShowFrameTimeReport"],
+        "xref_funcs": [],
         "exclude_funcs": [],
         "exclude_strings": [],
         "exclude_gvs": [],
@@ -21,24 +23,16 @@ FUNC_XREFS = [
     },
 ]
 
-FUNC_VTABLE_RELATIONS = [
-    # (func_name, vtable_class)
-    ("CEngineServer_ShowFrameTimeReport", "CEngineServer_vtable"),
-]
-
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEngineServer_ShowFrameTimeReport",
+        "ShowFrameTimeReport",
         [
             "func_name",
+            "func_sig",
             "func_va",
             "func_rva",
             "func_size",
-            "func_sig",
-            "vtable_name",
-            "vfunc_offset",
-            "vfunc_index",
         ],
     ),
 ]
@@ -64,7 +58,6 @@ async def preprocess_skill(
         image_base=image_base,
         func_names=TARGET_FUNCTION_NAMES,
         func_xrefs=FUNC_XREFS,
-        func_vtable_relations=FUNC_VTABLE_RELATIONS,
         generate_yaml_desired_fields=GENERATE_YAML_DESIRED_FIELDS,
         debug=debug,
     )

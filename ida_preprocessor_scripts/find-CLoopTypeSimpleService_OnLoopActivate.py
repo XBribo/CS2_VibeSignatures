@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEngineServer_ShowFrameTimeReport skill."""
+"""Preprocess script for find-CLoopTypeSimpleService_OnLoopActivate skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CEngineServer_ShowFrameTimeReport",
+    "CLoopTypeSimpleService_OnLoopActivate",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CEngineServer_ShowFrameTimeReport",
-        "xref_strings": [],
+        "func_name": "CLoopTypeSimpleService_OnLoopActivate",
+        "xref_strings": ["FULLMATCH:SimpleEngineLoop"],
         "xref_gvs": [],
         "xref_signatures": [],
-        "xref_funcs": ["ShowFrameTimeReport"],
+        "xref_funcs": [],
         "exclude_funcs": [],
         "exclude_strings": [],
         "exclude_gvs": [],
@@ -23,13 +23,13 @@ FUNC_XREFS = [
 
 FUNC_VTABLE_RELATIONS = [
     # (func_name, vtable_class)
-    ("CEngineServer_ShowFrameTimeReport", "CEngineServer_vtable"),
+    ("CLoopTypeSimpleService_OnLoopActivate", "CLoopTypeSimpleService"),
 ]
 
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEngineServer_ShowFrameTimeReport",
+        "CLoopTypeSimpleService_OnLoopActivate",
         [
             "func_name",
             "func_va",

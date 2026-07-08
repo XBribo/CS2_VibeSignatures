@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEngineServer_GetFrameTimeAmnesty-linux-AND-CEngineServer_GetFrameTimeAmnesty_Impl-windows skill."""
+"""Preprocess script for find-CEngineServer_GetFrameTimeAmnesty-linux-AND-GetFrameTimeAmnesty-windows skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
@@ -8,7 +8,7 @@ TARGET_FUNCTION_NAMES_LINUX = [
 ]
 
 TARGET_FUNCTION_NAMES_WINDOWS = [
-    "CEngineServer_GetFrameTimeAmnesty_Impl",
+    "GetFrameTimeAmnesty",
 ]
 
 FUNC_XREFS_LINUX = [
@@ -29,7 +29,7 @@ FUNC_XREFS_LINUX = [
 
 FUNC_XREFS_WINDOWS = [
     {
-        "func_name": "CEngineServer_GetFrameTimeAmnesty_Impl",
+        "func_name": "GetFrameTimeAmnesty",
         "xref_strings": [
             "!engine_frametime_warnings_enable",
         ],
@@ -66,7 +66,7 @@ GENERATE_YAML_DESIRED_FIELDS_LINUX = [
 
 GENERATE_YAML_DESIRED_FIELDS_WINDOWS = [
     (
-        "CEngineServer_GetFrameTimeAmnesty_Impl",
+        "GetFrameTimeAmnesty",
         [
             "func_name",
             "func_sig",

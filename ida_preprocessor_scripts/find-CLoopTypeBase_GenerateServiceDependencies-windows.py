@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEngineServer_ShowFrameTimeReport_Impl skill."""
+"""Preprocess script for find-CLoopTypeBase_GenerateServiceDependencies-windows skill."""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CEngineServer_ShowFrameTimeReport_Impl",
+    "CLoopTypeBase_GenerateServiceDependencies",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CEngineServer_ShowFrameTimeReport_Impl",
+        "func_name": "CLoopTypeBase_GenerateServiceDependencies",
         "xref_strings": [
-            "Summary of %d frames.  (%d frames excluded from analysis.)",
+            'Service "%s" is specified to both run before and after service "%s"!',
         ],
         "xref_gvs": [],
         "xref_signatures": [],
@@ -26,7 +26,7 @@ FUNC_XREFS = [
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEngineServer_ShowFrameTimeReport_Impl",
+        "CLoopTypeBase_GenerateServiceDependencies",
         [
             "func_name",
             "func_sig",

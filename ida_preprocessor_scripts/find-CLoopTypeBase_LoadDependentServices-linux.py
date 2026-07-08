@@ -1,19 +1,31 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-CEngineServer_ShowFrameTimeReport skill."""
+"""Preprocess script for find-CLoopTypeBase_LoadDependentServices-linux skill.
+
+On Linux, the three dependency helpers (AddDependentServices,
+GenerateServiceDependencies, GenerateSecondaryDependencies) are inlined into a
+single function. All three assertion strings live in that one function, so the
+intersection of their string xrefs uniquely identifies it (Linux only).
+"""
 
 from ida_analyze_util import preprocess_common_skill
 
 TARGET_FUNCTION_NAMES = [
-    "CEngineServer_ShowFrameTimeReport",
+    "CLoopTypeBase_LoadDependentServices",
 ]
 
 FUNC_XREFS = [
     {
-        "func_name": "CEngineServer_ShowFrameTimeReport",
-        "xref_strings": [],
+        "func_name": "CLoopTypeBase_LoadDependentServices",
+        # Multiple xref_strings are AND-intersected: the target is the single
+        # function that references all three inlined-helper assertion strings.
+        "xref_strings": [
+            'Unable to find service "%s" which is depended on by service "%s"!',
+            'Service "%s" is specified to both run before and after service "%s"!',
+            'Loop "%s" contains a circular dependency with service "%s"!',
+        ],
         "xref_gvs": [],
         "xref_signatures": [],
-        "xref_funcs": ["ShowFrameTimeReport"],
+        "xref_funcs": [],
         "exclude_funcs": [],
         "exclude_strings": [],
         "exclude_gvs": [],
@@ -21,24 +33,16 @@ FUNC_XREFS = [
     },
 ]
 
-FUNC_VTABLE_RELATIONS = [
-    # (func_name, vtable_class)
-    ("CEngineServer_ShowFrameTimeReport", "CEngineServer_vtable"),
-]
-
 GENERATE_YAML_DESIRED_FIELDS = [
     # (symbol_name, generate_yaml_fields)
     (
-        "CEngineServer_ShowFrameTimeReport",
+        "CLoopTypeBase_LoadDependentServices",
         [
             "func_name",
+            "func_sig",
             "func_va",
             "func_rva",
             "func_size",
-            "func_sig",
-            "vtable_name",
-            "vfunc_offset",
-            "vfunc_index",
         ],
     ),
 ]
@@ -64,7 +68,6 @@ async def preprocess_skill(
         image_base=image_base,
         func_names=TARGET_FUNCTION_NAMES,
         func_xrefs=FUNC_XREFS,
-        func_vtable_relations=FUNC_VTABLE_RELATIONS,
         generate_yaml_desired_fields=GENERATE_YAML_DESIRED_FIELDS,
         debug=debug,
     )
