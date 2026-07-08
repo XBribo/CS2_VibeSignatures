@@ -6118,7 +6118,6 @@ modules:
           - CEntityInstance_PostDataUpdate.{platform}.yaml
         expected_input:
           - CEntityInstance_PostDataUpdateDelta.{platform}.yaml
-          - CEntityInstance_vtable.{platform}.yaml
       - name: find-CEntityInstance_Connect
         expected_output:
           - CEntityInstance_Connect.{platform}.yaml

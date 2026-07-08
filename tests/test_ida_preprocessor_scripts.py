@@ -50,6 +50,7 @@ SHOW_HUD_HINT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ShowHudHint.py")
 CBASEFILTER_INPUTTESTACTIVATOR_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CBaseFilter_InputTestActivator.py")
 ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ILoopMode_HandleInputEvent.py")
 ISOURCE2SERVER_PREWORLDUPDATE_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ISource2Server_PreWorldUpdate.py")
+CENTITYINSTANCE_POSTDATAUPDATE_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CEntityInstance_PostDataUpdate.py")
 ON_EVENT_MAP_CALLBACKS_CLIENT_SCRIPT_PATH = Path(
     "ida_preprocessor_scripts/find-CLoopModeGame_OnEventMapCallbacks-client.py"
 )
@@ -924,6 +925,51 @@ class TestFindISource2ServerPreWorldUpdate(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result)
         # Linux splits the dispatch into `mov rax,[rax+78h]; jmp rax`, so this
         # skill must opt into register-indirect-via-load resolution.
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="linux",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            resolve_load_then_branch=True,
+            debug=True,
+        )
+
+
+class TestFindCEntityInstancePostDataUpdate(unittest.IsolatedAsyncioTestCase):
+    async def test_preprocess_skill_forwards_load_then_branch_contract(
+        self,
+    ) -> None:
+        module = _load_module(
+            CENTITYINSTANCE_POSTDATAUPDATE_SCRIPT_PATH,
+            "find_CEntityInstance_PostDataUpdate",
+        )
+        mock_helper = AsyncMock(return_value=True)
+
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
+        ):
+            result = await module.preprocess_skill(
+                session="session",
+                skill_name="skill",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="linux",
+                image_base=0x180000000,
+                debug=True,
+            )
+
+        self.assertTrue(result)
+        # Linux loads the slot then tail-calls through a register
+        # (`mov rax,[rax+60h]` ... `jmp rax`), so this skill must opt into
+        # register-indirect-via-load resolution.
         mock_helper.assert_awaited_once_with(
             session="session",
             expected_outputs=["out.yaml"],
