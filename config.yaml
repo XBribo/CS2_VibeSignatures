@@ -2007,6 +2007,8 @@ modules:
         category: func
       - name: SetFrameTimeAmnesty
         category: func
+      - name: GetSteamUniverse
+        category: func
       - name: CEngineServer_ShowFrameTimeReport
         category: vfunc
         alias:
@@ -2019,10 +2021,6 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::GetSteamUniverse
-      - name: GetSteamUniverse
-        category: func
-        alias:
-          - CEngineServer::GetSteamUniverse_Impl
       - name: CEngineServer_ChangeLevel
         category: vfunc
         alias:
