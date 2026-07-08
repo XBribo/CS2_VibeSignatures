@@ -13,7 +13,7 @@ FUNC_XREFS = [
         "xref_strings": [],
         "xref_gvs": [],
         "xref_signatures": [],
-        "xref_funcs": ["CEngineServer_GetFrameTimeAmnesty_Impl"],
+        "xref_funcs": ["GetFrameTimeAmnesty"],
         "exclude_funcs": [],
         "exclude_strings": [],
         "exclude_gvs": [],
