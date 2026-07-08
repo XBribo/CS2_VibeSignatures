@@ -15,6 +15,14 @@ The scan mirrors ``_direct_branch_target_common`` but resolves a vtable *slot*
 (offset/index) instead of a concrete branch target, so the output is slot-only:
 ``func_name, vtable_name, vfunc_offset, vfunc_index``. The source function is
 re-scanned every run, so a vtable layout shift is picked up automatically.
+
+Some compilers split the dispatch so the slot displacement lives in a load
+rather than the branch itself (e.g. Linux/GCC emits ``mov rax, [rax+78h]`` then
+``jmp rax`` where Windows/MSVC emits ``jmp qword ptr [rax+78h]``). Passing
+``resolve_load_then_branch=True`` makes the scan trace a register-indirect
+branch back to the nearest preceding ``mov reg, [base+disp]`` load, so both
+forms resolve to the same slot. It is opt-in and off by default, leaving the
+strict memory-indirect-only scan unchanged for existing callers.
 """
 
 import json
@@ -39,6 +47,7 @@ _SUPPORTED_FIELDS = {
 _INDIRECT_VCALL_TARGET_PY_EVAL = """import idaapi, idautils, idc, json
 func_addr = __FUNC_ADDR__
 allowed_mnemonics = set(__ALLOWED_MNEMONICS__)
+resolve_load_then_branch = __RESOLVE_LOAD_THEN_BRANCH__
 result_obj = None
 if not idaapi.get_func(func_addr):
     idaapi.add_func(func_addr)
@@ -47,20 +56,43 @@ func = idaapi.get_func(func_addr)
 if func:
     targets = []
     seen = set()
+    # Displacement of the most recent `mov <reg>, [base+disp]` per destination
+    # register. Lets a register-indirect branch (`jmp/call reg`) be resolved back
+    # to the vtable slot it dispatches through -- e.g. the Linux/GCC form
+    # `mov rax, [rax+78h]` then `jmp rax`, where the offset lives in the load
+    # rather than in the branch. Only consulted when resolve_load_then_branch is
+    # set; the default strict scan matches only memory-indirect branches.
+    reg_last_load = {}
     for head in idautils.Heads(func.start_ea, func.end_ea):
-        mnem = idc.print_insn_mnem(head).lower()
-        if mnem not in allowed_mnemonics:
-            continue
         insn = idaapi.insn_t()
         if not idaapi.decode_insn(insn, head):
             continue
-        op = insn.ops[0]
-        # o_displ = [reg+disp]; o_phrase = [reg] (disp 0). Both are register-based
-        # memory-indirect branches (vtable calls). o_mem (rip-relative / absolute
-        # global pointer) and o_reg (call reg) are intentionally excluded.
-        if op.type not in (idaapi.o_displ, idaapi.o_phrase):
+        mnem = idc.print_insn_mnem(head).lower()
+
+        if resolve_load_then_branch and mnem == "mov":
+            dst = insn.ops[0]
+            src = insn.ops[1]
+            if dst.type == idaapi.o_reg:
+                if src.type in (idaapi.o_displ, idaapi.o_phrase):
+                    reg_last_load[dst.reg] = int(src.addr) & 0xFFFFFFFF
+                else:
+                    # Destination overwritten by a non-load; drop any stale slot.
+                    reg_last_load.pop(dst.reg, None)
+
+        if mnem not in allowed_mnemonics:
             continue
-        offset = int(op.addr) & 0xFFFFFFFF
+        op = insn.ops[0]
+        # o_displ = [reg+disp]; o_phrase = [reg] (disp 0): register-based
+        # memory-indirect branches (vtable calls). o_mem (rip-relative / absolute
+        # global pointer) is intentionally excluded. o_reg (branch through a bare
+        # register) is resolved from its preceding load when enabled.
+        offset = None
+        if op.type in (idaapi.o_displ, idaapi.o_phrase):
+            offset = int(op.addr) & 0xFFFFFFFF
+        elif resolve_load_then_branch and op.type == idaapi.o_reg:
+            offset = reg_last_load.get(op.reg)
+        if offset is None:
+            continue
         # vtable slots are non-negative and pointer-aligned; drop anything else.
         if offset % 8 != 0:
             continue
@@ -177,10 +209,12 @@ async def _call_py_eval_json(session, code, debug=False, error_label="py_eval"):
         return None
 
 
-def _build_indirect_vcall_target_py_eval(func_va, allowed_mnemonics):
+def _build_indirect_vcall_target_py_eval(func_va, allowed_mnemonics, resolve_load_then_branch=False):
     normalized = [str(item).lower() for item in allowed_mnemonics]
-    return _INDIRECT_VCALL_TARGET_PY_EVAL.replace("__FUNC_ADDR__", str(func_va)).replace(
-        "__ALLOWED_MNEMONICS__", json.dumps(normalized)
+    return (
+        _INDIRECT_VCALL_TARGET_PY_EVAL.replace("__FUNC_ADDR__", str(func_va))
+        .replace("__ALLOWED_MNEMONICS__", json.dumps(normalized))
+        .replace("__RESOLVE_LOAD_THEN_BRANCH__", "True" if resolve_load_then_branch else "False")
     )
 
 
@@ -191,10 +225,16 @@ class IndirectVcallTargetLocator:
         self.session = session
         self.debug = debug
 
-    async def collect_targets(self, source_func_va, allowed_mnemonics=("call", "jmp")):
+    async def collect_targets(
+        self,
+        source_func_va,
+        allowed_mnemonics=("call", "jmp"),
+        resolve_load_then_branch=False,
+    ):
         code = _build_indirect_vcall_target_py_eval(
             func_va=source_func_va,
             allowed_mnemonics=allowed_mnemonics,
+            resolve_load_then_branch=resolve_load_then_branch,
         )
         parsed = await _call_py_eval_json(
             session=self.session,
@@ -250,6 +290,7 @@ async def preprocess_indirect_vcall_target_skill(
     vtable_name,
     generate_yaml_desired_fields,
     allowed_mnemonics=("call", "jmp"),
+    resolve_load_then_branch=False,
     expected_target_count=1,
     debug=False,
 ):
@@ -259,6 +300,12 @@ async def preprocess_indirect_vcall_target_skill(
     (``{source_yaml_stem}.{platform}.yaml`` in ``new_binary_dir``); its body is
     scanned for register-based indirect branches. Exactly ``expected_target_count``
     (default 1) unique vtable-slot offset must be found, otherwise the skill fails.
+
+    When ``resolve_load_then_branch`` is set, a register-indirect branch
+    (``jmp/call reg``) is also resolved by tracing the register back to the
+    nearest preceding ``mov reg, [base+disp]`` load, so the split dispatch form
+    ``mov rax, [rax+78h]`` / ``jmp rax`` (common on Linux/GCC) yields the same
+    slot as the direct ``jmp qword ptr [rax+78h]`` form emitted on Windows.
     """
     if yaml is None:
         _debug(debug, "PyYAML is required")
@@ -299,6 +346,7 @@ async def preprocess_indirect_vcall_target_skill(
     targets = await locator.collect_targets(
         source_func_va=source_func_va,
         allowed_mnemonics=allowed_mnemonics,
+        resolve_load_then_branch=resolve_load_then_branch,
     )
     if not isinstance(targets, list) or len(targets) != expected_target_count:
         count = len(targets) if isinstance(targets, list) else "N/A"

@@ -1,38 +1,37 @@
 #!/usr/bin/env python3
-"""Preprocess script for find-ISource2Server_PreWorldUpdate skill."""
+"""Preprocess script for find-ISource2Server_PreWorldUpdate skill.
 
-from ida_analyze_util import preprocess_common_skill
+ISource2Server::PreWorldUpdate is an abstract-interface vfunc dispatched by the
+thin thunk CNetworkGameServer_PreWorldUpdate, whose body ends in a single
+indirect vtable call. The vfunc slot is resolved deterministically by scanning
+that thunk for its unique indirect vcall -- no LLM decompile and no fragile
+across-boundary vfunc_sig on a short 'jmp [reg+disp8]'.
 
-TARGET_FUNCTION_NAMES = [
-    "ISource2Server_PreWorldUpdate",
-]
+The dispatch shape differs per platform: Windows emits it directly as
+``jmp qword ptr [rax+78h]``, while Linux splits it into ``mov rax, [rax+78h]``
+followed by ``jmp rax``. resolve_load_then_branch is enabled so the scan traces
+the register-indirect jump back to its defining vtable-slot load and both
+platforms resolve to the same slot.
+"""
 
-LLM_DECOMPILE = [
-    # (symbol_name, path_to_prompt, path_to_reference)
-    (
-        "ISource2Server_PreWorldUpdate",
-        "prompt/call_llm_decompile.md",
-        "references/engine/CNetworkGameServer_PreWorldUpdate.{platform}.yaml",
-    ),
-]
+from ida_preprocessor_scripts._indirect_vcall_target_common import (
+    preprocess_indirect_vcall_target_skill,
+)
 
-# ISource2Server is an abstract interface -- no vtable YAML needed; vtable_name is metadata only
-FUNC_VTABLE_RELATIONS = [
-    # (func_name, vtable_class)
-    ("ISource2Server_PreWorldUpdate", "ISource2Server"),
-]
+SOURCE_FUNCTION_NAME = "CNetworkGameServer_PreWorldUpdate"
+
+TARGET_FUNCTION_NAME = "ISource2Server_PreWorldUpdate"
+VTABLE_CLASS = "ISource2Server"
 
 GENERATE_YAML_DESIRED_FIELDS = [
-    # (symbol_name, generate_yaml_fields)
+    # (symbol_name, generate_yaml_fields) -- slot-only output for an abstract interface vfunc
     (
         "ISource2Server_PreWorldUpdate",
         [
             "func_name",
-            "vfunc_sig",
-            "vfunc_sig_allow_across_function_boundary:true",
+            "vtable_name",
             "vfunc_offset",
             "vfunc_index",
-            "vtable_name",
         ],
     ),
 ]
@@ -46,21 +45,20 @@ async def preprocess_skill(
     new_binary_dir,
     platform,
     image_base,
-    llm_config=None,
     debug=False,
 ):
-    """Reuse previous gamever func_sig to locate target function(s) and write YAML."""
-    return await preprocess_common_skill(
+    """Scan the CNetworkGameServer_PreWorldUpdate thunk for its unique indirect vcall."""
+    _ = skill_name, old_yaml_map, image_base
+
+    return await preprocess_indirect_vcall_target_skill(
         session=session,
         expected_outputs=expected_outputs,
-        old_yaml_map=old_yaml_map,
         new_binary_dir=new_binary_dir,
         platform=platform,
-        image_base=image_base,
-        func_names=TARGET_FUNCTION_NAMES,
-        func_vtable_relations=FUNC_VTABLE_RELATIONS,
-        llm_decompile_specs=LLM_DECOMPILE,
-        llm_config=llm_config,
+        source_yaml_stem=SOURCE_FUNCTION_NAME,
+        target_name=TARGET_FUNCTION_NAME,
+        vtable_name=VTABLE_CLASS,
         generate_yaml_desired_fields=GENERATE_YAML_DESIRED_FIELDS,
+        resolve_load_then_branch=True,
         debug=debug,
     )

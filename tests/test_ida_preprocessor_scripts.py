@@ -8,6 +8,9 @@ from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import ida_skill_preprocessor
+from ida_preprocessor_scripts._indirect_vcall_target_common import (
+    _build_indirect_vcall_target_py_eval,
+)
 
 
 FLATTENED_SERIALIZERS_SCRIPT_PATH = Path(
@@ -46,6 +49,7 @@ BOT_ADD_COMMAND_HANDLER_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-BotAdd
 SHOW_HUD_HINT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ShowHudHint.py")
 CBASEFILTER_INPUTTESTACTIVATOR_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CBaseFilter_InputTestActivator.py")
 ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ILoopMode_HandleInputEvent.py")
+ISOURCE2SERVER_PREWORLDUPDATE_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ISource2Server_PreWorldUpdate.py")
 ON_EVENT_MAP_CALLBACKS_CLIENT_SCRIPT_PATH = Path(
     "ida_preprocessor_scripts/find-CLoopModeGame_OnEventMapCallbacks-client.py"
 )
@@ -888,6 +892,71 @@ class TestFindILoopModeHandleInputEvent(unittest.IsolatedAsyncioTestCase):
             generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
             debug=True,
         )
+
+
+class TestFindISource2ServerPreWorldUpdate(unittest.IsolatedAsyncioTestCase):
+    async def test_preprocess_skill_forwards_load_then_branch_contract(
+        self,
+    ) -> None:
+        module = _load_module(
+            ISOURCE2SERVER_PREWORLDUPDATE_SCRIPT_PATH,
+            "find_ISource2Server_PreWorldUpdate",
+        )
+        mock_helper = AsyncMock(return_value=True)
+
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
+        ):
+            result = await module.preprocess_skill(
+                session="session",
+                skill_name="skill",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="linux",
+                image_base=0x180000000,
+                debug=True,
+            )
+
+        self.assertTrue(result)
+        # Linux splits the dispatch into `mov rax,[rax+78h]; jmp rax`, so this
+        # skill must opt into register-indirect-via-load resolution.
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="linux",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
+            resolve_load_then_branch=True,
+            debug=True,
+        )
+
+
+class TestIndirectVcallTargetCommon(unittest.TestCase):
+    def test_build_py_eval_embeds_resolve_load_then_branch_when_enabled(
+        self,
+    ) -> None:
+        code = _build_indirect_vcall_target_py_eval(
+            func_va=0x1000,
+            allowed_mnemonics=("call", "jmp"),
+            resolve_load_then_branch=True,
+        )
+        self.assertIn("resolve_load_then_branch = True", code)
+        self.assertNotIn("__RESOLVE_LOAD_THEN_BRANCH__", code)
+
+    def test_build_py_eval_defaults_resolve_load_then_branch_off(self) -> None:
+        code = _build_indirect_vcall_target_py_eval(
+            func_va=0x1000,
+            allowed_mnemonics=("call", "jmp"),
+        )
+        self.assertIn("resolve_load_then_branch = False", code)
+        self.assertNotIn("__RESOLVE_LOAD_THEN_BRANCH__", code)
 
 
 class TestFindCLoopModeGameOnEventMapCallbacksClient(unittest.IsolatedAsyncioTestCase):
