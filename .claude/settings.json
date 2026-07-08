@@ -34,7 +34,11 @@
       "Bash(mkdir -p)",
       "Bash(mv -p)",
       "Bash(ls -la)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(uv run *)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }
