@@ -51,6 +51,9 @@ CBASEFILTER_INPUTTESTACTIVATOR_SCRIPT_PATH = Path("ida_preprocessor_scripts/find
 ILOOPMODE_HANDLEINPUTEVENT_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ILoopMode_HandleInputEvent.py")
 ISOURCE2SERVER_PREWORLDUPDATE_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-ISource2Server_PreWorldUpdate.py")
 CENTITYINSTANCE_POSTDATAUPDATE_SCRIPT_PATH = Path("ida_preprocessor_scripts/find-CEntityInstance_PostDataUpdate.py")
+INETWORKGAMESERVER_SERVERENDSIMULATE_SCRIPT_PATH = Path(
+    "ida_preprocessor_scripts/find-INetworkGameServer_ServerEndSimulate.py"
+)
 ON_EVENT_MAP_CALLBACKS_CLIENT_SCRIPT_PATH = Path(
     "ida_preprocessor_scripts/find-CLoopModeGame_OnEventMapCallbacks-client.py"
 )
@@ -980,6 +983,49 @@ class TestFindCEntityInstancePostDataUpdate(unittest.IsolatedAsyncioTestCase):
             vtable_name=module.VTABLE_CLASS,
             generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
             resolve_load_then_branch=True,
+            debug=True,
+        )
+
+
+class TestFindINetworkGameServerServerEndSimulate(unittest.IsolatedAsyncioTestCase):
+    async def test_preprocess_skill_forwards_indirect_vcall_target_contract(
+        self,
+    ) -> None:
+        module = _load_module(
+            INETWORKGAMESERVER_SERVERENDSIMULATE_SCRIPT_PATH,
+            "find_INetworkGameServer_ServerEndSimulate",
+        )
+        mock_helper = AsyncMock(return_value=True)
+
+        with patch.object(
+            module,
+            "preprocess_indirect_vcall_target_skill",
+            mock_helper,
+            create=True,
+        ):
+            result = await module.preprocess_skill(
+                session="session",
+                skill_name="skill",
+                expected_outputs=["out.yaml"],
+                old_yaml_map={"k": "v"},
+                new_binary_dir="bin_dir",
+                platform="windows",
+                image_base=0x180000000,
+                debug=True,
+            )
+
+        self.assertTrue(result)
+        # Both platforms emit a direct `jmp qword ptr [rax+88h]`, so this skill
+        # uses the default scan (no resolve_load_then_branch).
+        mock_helper.assert_awaited_once_with(
+            session="session",
+            expected_outputs=["out.yaml"],
+            new_binary_dir="bin_dir",
+            platform="windows",
+            source_yaml_stem=module.SOURCE_FUNCTION_NAME,
+            target_name=module.TARGET_FUNCTION_NAME,
+            vtable_name=module.VTABLE_CLASS,
+            generate_yaml_desired_fields=module.GENERATE_YAML_DESIRED_FIELDS,
             debug=True,
         )
 
