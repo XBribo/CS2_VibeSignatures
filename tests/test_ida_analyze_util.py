@@ -419,6 +419,46 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
             result["vtable_entries"],
         )
 
+    def test_build_vtable_py_eval_selects_windows_rtti_zero_offset_col(self) -> None:
+        class_name = "CLoopTypeSimpleService"
+        primary_col = 0x1815B1B48
+        secondary_col = 0x1815B1B70
+        primary_vtable = 0x1815828F8
+        secondary_vtable = 0x1815828E8
+
+        result = self._run_vtable_py_eval(
+            class_name=class_name,
+            symbol_aliases=[],
+            name_to_ea={
+                f"??_R4{class_name}@@6B@": secondary_col,
+                f"??_R4{class_name}@@6B@_0": primary_col,
+            },
+            name_by_ea={
+                primary_vtable: "CLoopTypeSimpleService_vtable",
+                secondary_vtable: "CLoopTypeSimpleService_vtable2",
+            },
+            data_refs={
+                primary_col: [primary_vtable - 8],
+                secondary_col: [secondary_vtable - 8],
+            },
+            ptr_values={
+                primary_vtable: 0x1800520F0,
+                primary_vtable + 8: 0x180052050,
+                primary_vtable + 16: 0,
+                secondary_vtable: 0x180231860,
+                secondary_vtable + 8: 0,
+            },
+            dword_values={
+                primary_col + 4: 0,
+                secondary_col + 4: 56,
+            },
+            func_addrs={0x1800520F0, 0x180052050, 0x180231860},
+        )
+
+        self.assertEqual("CLoopTypeSimpleService_vtable", result["vtable_symbol"])
+        self.assertEqual(hex(primary_vtable), result["vtable_va"])
+        self.assertEqual(2, result["vtable_numvfunc"])
+
     def _run_vtable_py_eval(
         self,
         *,
@@ -428,6 +468,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
         name_by_ea: dict[int, str],
         data_refs: dict[int, list[int]],
         ptr_values: dict[int, int],
+        dword_values: dict[int, int] | None = None,
         func_addrs: set[int],
     ) -> dict[str, object]:
         py_code = ida_analyze_util._build_vtable_py_eval(
@@ -443,6 +484,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
                 name_by_ea=name_by_ea,
                 data_refs=data_refs,
                 ptr_values=ptr_values,
+                dword_values=dword_values or {},
                 func_addrs=func_addrs,
             ),
             clear=False,
@@ -458,6 +500,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
         name_by_ea: dict[int, str],
         data_refs: dict[int, list[int]],
         ptr_values: dict[int, int],
+        dword_values: dict[int, int],
         func_addrs: set[int],
     ) -> dict[str, types.ModuleType]:
         ida_auto = types.ModuleType("ida_auto")
@@ -473,7 +516,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
         ida_bytes.DELIT_SIMPLE = 0
         ida_bytes.del_items = lambda *args: None
         ida_bytes.get_qword = lambda ea: ptr_values.get(ea, 0)
-        ida_bytes.get_dword = lambda ea: 0
+        ida_bytes.get_dword = lambda ea: dword_values.get(ea, 0)
         ida_bytes.get_full_flags = lambda ea: 1 if ea in func_addrs else 0
         ida_bytes.is_code = lambda flags: bool(flags)
 
@@ -483,6 +526,7 @@ class TestVtableAliasSupport(unittest.IsolatedAsyncioTestCase):
 
         idautils = types.ModuleType("idautils")
         idautils.DataRefsTo = lambda ea: data_refs.get(ea, [])
+        idautils.Names = lambda: [(ea, name) for name, ea in name_to_ea.items()]
 
         idc = types.ModuleType("idc")
         idc.create_insn = lambda ea: True

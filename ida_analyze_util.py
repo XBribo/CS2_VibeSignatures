@@ -74,10 +74,19 @@ vtable_start = None
 vtable_symbol = ""
 is_linux = False
 
-def _resolve_windows_rtti_symbol(symbol_name, fallback_vtable_symbol=None):
-    col_addr = ida_name.get_name_ea(idaapi.BADADDR, symbol_name)
+def _read_windows_col_offset_to_top(col_addr):
+    raw_offset = ida_bytes.get_dword(col_addr + 4)
+    if raw_offset & 0x80000000:
+        return raw_offset - 0x100000000
+    return raw_offset
+
+def _resolve_windows_rtti_col(col_addr, fallback_vtable_symbol=None, expected_offset_to_top=0):
     if col_addr == idaapi.BADADDR:
         return None
+    if expected_offset_to_top is not None:
+        offset_to_top = _read_windows_col_offset_to_top(col_addr)
+        if offset_to_top != expected_offset_to_top:
+            return None
     rdata_seg = ida_segment.get_segm_by_name(".rdata")
     for ref in idautils.DataRefsTo(col_addr):
         if rdata_seg and not (rdata_seg.start_ea <= ref < rdata_seg.end_ea):
@@ -90,6 +99,49 @@ def _resolve_windows_rtti_symbol(symbol_name, fallback_vtable_symbol=None):
         )
         return (vtable_start, sym, False)
     return None
+
+def _resolve_windows_rtti_symbol(
+    symbol_name,
+    fallback_vtable_symbol=None,
+    expected_offset_to_top=0,
+):
+    col_addr = ida_name.get_name_ea(idaapi.BADADDR, symbol_name)
+    if col_addr == idaapi.BADADDR:
+        return None
+    return _resolve_windows_rtti_col(
+        col_addr,
+        fallback_vtable_symbol,
+        expected_offset_to_top=expected_offset_to_top,
+    )
+
+def _resolve_windows_primary_rtti_symbol(class_name):
+    col_prefix = "??_R4" + class_name + "@@6B@"
+    fallback_vtable_symbol = "??_7" + class_name + "@@6B@"
+    candidates = []
+    try:
+        names = idautils.Names()
+    except Exception:
+        names = []
+
+    for col_addr, col_name in names:
+        if col_name != col_prefix and not col_name.startswith(col_prefix + "_"):
+            continue
+        _found = _resolve_windows_rtti_col(
+            col_addr,
+            fallback_vtable_symbol,
+            expected_offset_to_top=0,
+        )
+        if _found:
+            candidates.append(_found)
+
+    if candidates:
+        return sorted(candidates, key=lambda item: item[0])[0]
+
+    return _resolve_windows_rtti_symbol(
+        col_prefix,
+        fallback_vtable_symbol,
+        expected_offset_to_top=0,
+    )
 
 def _try_direct_symbol(symbol_name):
     if not symbol_name:
@@ -181,13 +233,9 @@ if vtable_start is None:
     if _found:
         vtable_start, vtable_symbol, is_linux = _found
 
-# RTTI fallback: Windows ??_R4ClassName@@6B@
+# RTTI fallback: Windows Complete Object Locator with offset-to-top == 0
 if vtable_start is None:
-    col_name = "??_R4" + class_name + "@@6B@"
-    _found = _resolve_windows_rtti_symbol(
-        col_name,
-        "??_7" + class_name + "@@6B@",
-    )
+    _found = _resolve_windows_primary_rtti_symbol(class_name)
     if _found:
         is_linux = False
         vtable_start, vtable_symbol, is_linux = _found
