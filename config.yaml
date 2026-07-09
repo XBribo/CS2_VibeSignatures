@@ -1105,11 +1105,27 @@ modules:
         expected_input:
           - GetSteamUniverse.{platform}.yaml
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-CEngineServer_ChangeLevel
+      - name: find-CNetworkGameServerBase_ChangeLevel
+        optional_output:
+          - CNetworkGameServerBase_ChangeLevel.{platform}.yaml
+        skip_if_exists:
+          - CEngineServer_ChangeLevel.{platform}.yaml
+      - name: find-CEngineServer_ChangeLevel-noinline
+        optional_output:
+          - CEngineServer_ChangeLevel.{platform}.yaml
+        expected_input:
+          - CEngineServer_vtable.{platform}.yaml
+        prerequisite:
+          - find-CNetworkGameServerBase_ChangeLevel
+      - name: find-CEngineServer_ChangeLevel-inlined
         expected_output:
           - CEngineServer_ChangeLevel.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
+        skip_if_exists:
+          - CEngineServer_ChangeLevel.{platform}.yaml
+        prerequisite:
+          - find-CEngineServer_ChangeLevel-noinline
       - name: find-CMapListService_IsMapValid-windows
         platform: windows
         expected_output:
