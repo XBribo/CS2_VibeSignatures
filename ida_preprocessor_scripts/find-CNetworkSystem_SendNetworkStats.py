@@ -15,7 +15,7 @@ FUNC_XREFS = [
         "xref_signatures": ["E0 00 00 00 04"],
         "xref_funcs": [],
         "exclude_funcs": [],
-        "exclude_strings": [],
+        "exclude_strings": ["Class data is a \'%s\', not a table"],
         "exclude_gvs": [],
         "exclude_signatures": [],
     },
