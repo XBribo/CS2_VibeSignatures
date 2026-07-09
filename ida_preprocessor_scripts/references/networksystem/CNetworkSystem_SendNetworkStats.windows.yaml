@@ -724,11 +724,11 @@ procedure: |-
                   do
                   {
                     v61[0] = (*(__int64 (__fastcall **)(__int64, _QWORD))(*(_QWORD *)g_pNetworkMessages
-                                                                        + 136LL))(// g_pNetworkMessages->GetNetworkGroupName(...), 136LL =  INetworkMessages_GetNetworkGroupName
+                                                                        + 136LL))(// 136LL = INetworkMessages_GetNetworkGroupName
                                g_pNetworkMessages,
                                v6);
                     (*(void (__fastcall **)(__int64, int *, _QWORD))(*(_QWORD *)g_pNetworkMessages
-                                                                   + 144LL))(// g_pNetworkMessages->GetNetworkGroupColor(...), 144LL =  INetworkMessages_GetNetworkGroupColor
+                                                                   + 144LL))(// 144LL = INetworkMessages_GetNetworkGroupColor
                       g_pNetworkMessages,
                       &v52,
                       v6);

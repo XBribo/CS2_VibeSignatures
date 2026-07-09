@@ -1676,7 +1676,7 @@ disasm_code: |-
   .text:00000000003EC632                 mov     r15, [r13+0]
   .text:00000000003EC636                 lea     rcx, sub_3B38F0
   .text:00000000003EC63D                 mov     rax, [r15]
-  .text:00000000003EC640                 mov     rax, [rax+88h]; g_pNetworkMessages->GetNetworkGroupName(...), 0x88 =  INetworkMessages_GetNetworkGroupName
+  .text:00000000003EC640                 mov     rax, [rax+88h]; 0x88 = INetworkMessages_GetNetworkGroupName
   .text:00000000003EC647                 cmp     rax, rcx
   .text:00000000003EC64A                 jnz     loc_3EC790
   .text:00000000003EC650                 cmp     cs:__pthread_key_create_ptr, 0
@@ -3970,7 +3970,7 @@ procedure: |-
         {
           v250 = g_pNetworkMessages;
           v251 = sub_3B38F0;
-          v252 = *(__int64 (__fastcall **)())(*(_QWORD *)g_pNetworkMessages + 136LL);// g_pNetworkMessages->GetNetworkGroupName(...), 136LL =  INetworkMessages_GetNetworkGroupName
+          v252 = *(__int64 (__fastcall **)())(*(_QWORD *)g_pNetworkMessages + 136LL); // 136LL = INetworkMessages_GetNetworkGroupName
           if ( v252 == sub_3B38F0 )
           {
             if ( &_pthread_key_create )
