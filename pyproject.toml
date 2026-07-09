@@ -3,9 +3,10 @@ name = "cs2-vibesignatures"
 version = "0.1.0"
 description = "CS2 signature and offset generation utilities."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "httpx",
+    "ida-pro-mcp",
     "mcp",
     "openai",
     "python-dotenv",
@@ -23,6 +24,9 @@ dev = [
 
 [tool.uv]
 package = false
+
+[tool.uv.sources]
+ida-pro-mcp = { git = "https://github.com/mrexodia/ida-pro-mcp.git" }
 
 [tool.ruff]
 line-length = 120

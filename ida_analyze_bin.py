@@ -2049,6 +2049,9 @@ def start_idalib_mcp(binary_path, host=DEFAULT_HOST, port=DEFAULT_PORT, ida_args
     Returns:
         subprocess.Popen object if successful, None if failed
     """
+    env = os.environ.copy()
+    env.setdefault("UV_CACHE_DIR", str(Path(__file__).resolve().parent / ".uv-cache"))
+
     cmd = ["uv", "run", "idalib-mcp", "--unsafe", "--host", host, "--port", str(port)]
 
     if ida_args:
@@ -2060,9 +2063,9 @@ def start_idalib_mcp(binary_path, host=DEFAULT_HOST, port=DEFAULT_PORT, ida_args
 
     try:
         if debug:
-            process = subprocess.Popen(cmd)
+            process = subprocess.Popen(cmd, env=env)
         else:
-            process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env)
 
         # Wait for MCP server to be ready
         print(f"  Waiting for MCP server on {host}:{port}...")

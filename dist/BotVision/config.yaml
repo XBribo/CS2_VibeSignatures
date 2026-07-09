@@ -1,0 +1,85 @@
+modules:
+  - name: server
+    path_windows: game/bin/win64/server.dll
+    path_linux: game/bin/linuxsteamrt64/libserver.so
+    skills:
+      - name: find-CEntityInstance_ValidatePrivateScriptScope
+        expected_output:
+          - CEntityInstance_ValidatePrivateScriptScope.{platform}.yaml
+      - name: find-CEntityInstance_m_pEntity-AND-CEntityInstance_m_hPrivateScope
+        expected_output:
+          - CEntityInstance_m_pEntity.{platform}.yaml
+          - CEntityInstance_m_hPrivateScope.{platform}.yaml
+        expected_input:
+          - CEntityInstance_ValidatePrivateScriptScope.{platform}.yaml
+    symbols:
+      - name: CBotManager_IsVisibleThroughSmoke
+        category: func
+        alias:
+          - CBotManager::IsVisibleThroughSmoke
+      - name: g_AutoList_SmokeProj_Head_Server
+        category: gv
+      - name: GetSmokeDensityInLine
+        category: func
+      - name: CHEGrenadeProjectile_Detonate
+        category: func
+        alias:
+          - CHEGrenadeProjectile::Detonate
+      - name: BulletPelletTrace
+        category: func
+      - name: CCSPlayer_WeaponServices_GetSlot
+        category: func
+        alias:
+          - CCSPlayer_WeaponServices::GetSlot
+      - name: CCSBot_IsVisiblePos
+        category: func
+        alias:
+          - CCSBot::IsVisiblePos
+      - name: CBaseEntity_m_pGameSceneNode
+        category: structmember
+        struct: CBaseEntity
+        member: m_pGameSceneNode
+        alias:
+          - CBaseEntity::m_pGameSceneNode
+      - name: CGameSceneNode_m_vecAbsOrigin
+        category: structmember
+        struct: CGameSceneNode
+        member: m_vecAbsOrigin
+        alias:
+          - CGameSceneNode::m_vecAbsOrigin
+      - name: CBasePlayerPawn_m_hController
+        category: structmember
+        struct: CBasePlayerPawn
+        member: m_hController
+        alias:
+          - CBasePlayerPawn::m_hController
+      - name: CCSBot_m_pPawn
+        category: structmember
+        struct: CCSBot
+        member: m_pPawn
+        alias:
+          - CCSBot::m_pPawn
+      - name: CBasePlayerPawn_m_pWeaponServices
+        category: structmember
+        struct: CBasePlayerPawn
+        member: m_pWeaponServices
+        alias:
+          - CBasePlayerPawn::m_pWeaponServices
+      - name: CPlayer_WeaponServices_m_hActiveWeapon
+        category: structmember
+        struct: CPlayer_WeaponServices
+        member: m_hActiveWeapon
+        alias:
+          - CPlayer_WeaponServices::m_hActiveWeapon
+      - name: CEconItemView_m_iItemDefinitionIndex
+        category: structmember
+        struct: CEconItemView
+        member: m_iItemDefinitionIndex
+        alias:
+          - CEconItemView::m_iItemDefinitionIndex
+      - name: CEntityInstance_m_pEntity
+        category: structmember
+        struct: CEntityInstance
+        member: m_pEntity
+        alias:
+          - CEntityInstance::m_pEntity

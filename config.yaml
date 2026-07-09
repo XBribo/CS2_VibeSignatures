@@ -5970,6 +5970,9 @@ modules:
       - name: find-CCSBotManager_AddBot
         expected_output:
           - CCSBotManager_AddBot.{platform}.yaml
+      - name: find-CCSBotManager_MaintainBotQuota
+        expected_output:
+          - CCSBotManager_MaintainBotQuota.{platform}.yaml
       - name: find-g_pCSBotManager
         expected_output:
           - g_pCSBotManager.{platform}.yaml
@@ -9000,6 +9003,10 @@ modules:
         category: func
         alias:
           - CCSBotManager::AddBot
+      - name: CCSBotManager_MaintainBotQuota
+        category: func
+        alias:
+          - CCSBotManager::MaintainBotQuota
       - name: BotAdd_CommandHandler
         category: func
         alias:

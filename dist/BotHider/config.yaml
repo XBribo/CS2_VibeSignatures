@@ -1,0 +1,126 @@
+modules:
+  - name: server
+    path_windows: game/bin/win64/server.dll
+    path_linux: game/bin/linuxsteamrt64/libserver.so
+    skills:
+      - name: find-CPhysExplosion_Explode-AND-UTIL_Remove
+        expected_output:
+          - UTIL_Remove.{platform}.yaml
+      - name: find-CCSBotManager_MaintainBotQuota
+        expected_output:
+          - CCSBotManager_MaintainBotQuota.{platform}.yaml
+      - name: find-g_pGameServer-AND-CServerSideClientBase_ClientPrintf-AND-CNetworkGameServer_ClientList
+        expected_output:
+          - g_pGameServer.{platform}.yaml
+          - CServerSideClientBase_ClientPrintf.{platform}.yaml
+          - CNetworkGameServer_ClientList.{platform}.yaml
+        expected_input:
+          - ../engine/CEngineServer_ClientPrintf.{platform}.yaml
+    symbols:
+      - name: UTIL_Remove
+        category: func
+      - name: SV_KickOneFromTeam
+        category: func
+        alias:
+          - SV_KickOneFromTeam
+      - name: CCSBotManager_MaintainBotQuota
+        category: func
+        alias:
+          - CCSBotManager::MaintainBotQuota
+      - name: CNetworkGameServer_ClientList
+        category: structmember
+        struct: CNetworkGameServer
+        member: ClientList
+        alias:
+          - CNetworkGameServerBase::m_Clients
+      - name: CBasePlayerController_FakeClientFlags
+        category: structmember
+        struct: CBasePlayerController
+        member: FakeClientFlags
+        alias:
+          - CBasePlayerController::FakeClientFlags
+      - name: CServerSideClientBase_m_UserIDString
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_UserIDString
+        alias:
+          - CServerSideClient::m_UserIDString
+      - name: CServerSideClientBase_m_Name
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_Name
+        alias:
+          - CServerSideClient::m_Name
+      - name: CServerSideClientBase_m_nClientSlot
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_nClientSlot
+        alias:
+          - CServerSideClient::m_nClientSlot
+      - name: CServerSideClientBase_m_nEntityIndex
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_nEntityIndex
+        alias:
+          - CServerSideClient::m_nEntityIndex
+      - name: CServerSideClientBase_m_Server
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_Server
+        alias:
+          - CServerSideClient::m_Server
+      - name: CServerSideClientBase_m_NetChannel
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_NetChannel
+        alias:
+          - CServerSideClient::m_NetChannel
+      - name: CServerSideClientBase_m_nSignonState
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_nSignonState
+        alias:
+          - CServerSideClient::m_nSignonState
+      - name: CServerSideClientBase_m_pAttachedTo
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_pAttachedTo
+        alias:
+          - CServerSideClient::m_pAttachedTo
+      - name: CServerSideClientBase_m_bFakePlayer
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_bFakePlayer
+        alias:
+          - CServerSideClient::m_bFakePlayer
+      - name: CServerSideClientBase_m_UserID
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_UserID
+        alias:
+          - CServerSideClient::m_UserID
+      - name: CServerSideClientBase_m_SteamID
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_SteamID
+        alias:
+          - CServerSideClient::m_SteamID
+      - name: CServerSideClientBase_m_bIsHLTV
+        category: structmember
+        struct: CServerSideClientBase
+        member: m_bIsHLTV
+        alias:
+          - CServerSideClient::m_bIsHLTV
+
+  - name: engine
+    path_windows: game/bin/win64/engine2.dll
+    path_linux: game/bin/linuxsteamrt64/libengine2.so
+    skills:
+      - name: find-CEngineServer_ClientPrintf
+        expected_output:
+          - CEngineServer_ClientPrintf.{platform}.yaml
+    symbols:
+      - name: CEngineServer_ClientPrintf
+        category: vfunc
+        alias:
+          - CEngineServer::ClientPrintf

@@ -1,0 +1,367 @@
+modules:
+  - name: server
+    path_windows: game/bin/win64/server.dll
+    path_linux: game/bin/linuxsteamrt64/libserver.so
+    skills:
+      - name: find-CCSBot_Upkeep
+        expected_output:
+          - CCSBot_Upkeep.{platform}.yaml
+      - name: find-CPlayer_MovementServices_ForceButtons
+        expected_output:
+          - CPlayer_MovementServices_ForceButtons.{platform}.yaml
+      - name: find-CPlayer_MovementServices_ForceButtonState
+        expected_output:
+          - CPlayer_MovementServices_ForceButtonState.{platform}.yaml
+      - name: find-CPlayer_MovementServices_s_pRunCommandPawn
+        expected_output:
+          - CPlayer_MovementServices_s_pRunCommandPawn.{platform}.yaml
+        expected_input:
+          - CPlayer_MovementServices_ForceButtons.{platform}.yaml
+      - name: find-CCSPlayer_MovementServices_ProcessMovement
+        expected_output:
+          - CCSPlayer_MovementServices_ProcessMovement.{platform}.yaml
+        expected_input:
+          - CPlayer_MovementServices_s_pRunCommandPawn.{platform}.yaml
+          - CPlayer_MovementServices_ForceButtonState.{platform}.yaml
+      - name: find-CCSPlayer_WeaponServices_vtable
+        expected_output:
+          - CCSPlayer_WeaponServices_vtable.{platform}.yaml
+      - name: find-CCSPlayerPawn_OnSwitchWeapons
+        expected_output:
+          - CCSPlayerPawn_OnSwitchWeapons.{platform}.yaml
+      - name: find-CCSPlayer_WeaponServices_SelectItem
+        expected_output:
+          - CCSPlayer_WeaponServices_SelectItem.{platform}.yaml
+        expected_input:
+          - CCSPlayerPawn_OnSwitchWeapons.{platform}.yaml
+          - CCSPlayer_WeaponServices_vtable.{platform}.yaml
+      - name: find-CEntityInstance_ValidatePrivateScriptScope
+        expected_output:
+          - CEntityInstance_ValidatePrivateScriptScope.{platform}.yaml
+      - name: find-CEntityInstance_m_pEntity-AND-CEntityInstance_m_hPrivateScope
+        expected_output:
+          - CEntityInstance_m_pEntity.{platform}.yaml
+          - CEntityInstance_m_hPrivateScope.{platform}.yaml
+        expected_input:
+          - CEntityInstance_ValidatePrivateScriptScope.{platform}.yaml
+    symbols:
+      - name: CCSBot_Update
+        category: func
+        alias:
+          - CCSBot::Update
+      - name: CCSBot_Upkeep
+        category: func
+        alias:
+          - CCSBot::Upkeep
+      - name: CCSBot_Jump
+        category: func
+        alias:
+          - CCSBot::Jump
+      - name: CCSBot_UpdateLookAngles
+        category: func
+        alias:
+          - CCSBot::UpdateLookAngles
+      - name: CCSPlayerPawn_SetEyeAngles
+        category: func
+        alias:
+          - CCSPlayerPawn::SetEyeAngles
+      - name: CBasePlayerController_OnSimulateUserCommands
+        category: func
+        alias:
+          - CBasePlayerController::OnSimulateUserCommands
+      - name: CCSPlayer_MovementServices_ProcessMovement
+        category: func
+        alias:
+          - CCSPlayer_MovementServices::ProcessMovement
+      - name: BuyState_OnUpdate
+        category: func
+        alias:
+          - BuyState::OnUpdate
+      - name: CCSBot_EquipBestWeapon
+        category: func
+        alias:
+          - CCSBot::EquipBestWeapon
+      - name: CCSBot_EquipPistol
+        category: func
+        alias:
+          - CCSBot::EquipPistol
+      - name: CCSPlayer_WeaponServices_SelectItem
+        category: func
+        alias:
+          - CCSPlayer_WeaponServices::SelectItem
+      - name: CCSPlayer_WeaponServices_GetSlot
+        category: func
+        alias:
+          - CCSPlayer_WeaponServices::GetSlot
+      - name: CCSBot_AiTickedFlag
+        category: structmember
+        struct: CCSBot
+        member: AiTickedFlag
+        alias:
+          - CCSBot::AiTickedFlag
+      - name: CCSBot_m_pPawn
+        category: structmember
+        struct: CCSBot
+        member: m_pPawn
+        alias:
+          - CCSBot::Pawn
+      - name: CCSBot_m_pProfile
+        category: structmember
+        struct: CCSBot
+        member: m_pProfile
+        alias:
+          - CCSBot::Profile
+      - name: BotProfile_m_aggression
+        category: structmember
+        struct: BotProfile
+        member: m_aggression
+        alias:
+          - BotProfile::Aggression
+      - name: BotProfile_m_skill
+        category: structmember
+        struct: BotProfile
+        member: m_skill
+        alias:
+          - BotProfile::Skill
+      - name: BotProfile_m_teamwork
+        category: structmember
+        struct: BotProfile
+        member: m_teamwork
+        alias:
+          - BotProfile::Teamwork
+      - name: BotProfile_m_weaponPreference
+        category: structmember
+        struct: BotProfile
+        member: m_weaponPreference
+        alias:
+          - BotProfile::WeaponPref
+      - name: BotProfile_m_weaponPreferenceCount
+        category: structmember
+        struct: BotProfile
+        member: m_weaponPreferenceCount
+        alias:
+          - BotProfile::WeaponPrefCount
+      - name: BotProfile_m_cost
+        category: structmember
+        struct: BotProfile
+        member: m_cost
+        alias:
+          - BotProfile::Cost
+      - name: BotProfile_m_difficulty
+        category: structmember
+        struct: BotProfile
+        member: m_difficulty
+        alias:
+          - BotProfile::Difficulty
+      - name: BotProfile_m_reactionTime
+        category: structmember
+        struct: BotProfile
+        member: m_reactionTime
+        alias:
+          - BotProfile::ReactionTime
+      - name: BotProfile_m_attackDelay
+        category: structmember
+        struct: BotProfile
+        member: m_attackDelay
+        alias:
+          - BotProfile::AttackDelay
+      - name: BotProfile_m_lookAngleMaxAccelAttacking
+        category: structmember
+        struct: BotProfile
+        member: m_lookAngleMaxAccelAttacking
+        alias:
+          - BotProfile::LookAngleMaxAccelAttacking
+      - name: BotProfile_m_lookAngleStiffnessAttacking
+        category: structmember
+        struct: BotProfile
+        member: m_lookAngleStiffnessAttacking
+        alias:
+          - BotProfile::LookAngleStiffnessAttacking
+      - name: BotProfile_m_lookAngleDampingAttacking
+        category: structmember
+        struct: BotProfile
+        member: m_lookAngleDampingAttacking
+        alias:
+          - BotProfile::LookAngleDampingAttacking
+      - name: BuyState_m_isInitialDelay
+        category: structmember
+        struct: BuyState
+        member: m_isInitialDelay
+        alias:
+          - BuyState::InitialDelay
+      - name: BuyState_m_doneBuying
+        category: structmember
+        struct: BuyState
+        member: m_doneBuying
+        alias:
+          - BuyState::DoneBuying
+      - name: CCSPlayerPawn_m_pWeaponServices
+        category: structmember
+        struct: CCSPlayerPawn
+        member: m_pWeaponServices
+        alias:
+          - CCSPlayerPawn::WeaponServices
+      - name: CCSPlayerPawn_m_hController
+        category: structmember
+        struct: CCSPlayerPawn
+        member: m_hController
+        alias:
+          - CCSPlayerPawn::Controller
+      - name: CCSPlayerPawn_m_hOriginalController
+        category: structmember
+        struct: CCSPlayerPawn
+        member: m_hOriginalController
+        alias:
+          - CCSPlayerPawn::OriginalController
+      - name: CCSPlayerPawn_v_angle
+        category: structmember
+        struct: CCSPlayerPawn
+        member: v_angle
+        alias:
+          - CCSPlayerPawn::ViewAngle
+      - name: CCSPlayerPawn_m_angEyeAngles
+        category: structmember
+        struct: CCSPlayerPawn
+        member: m_angEyeAngles
+        alias:
+          - CCSPlayerPawn::EyeAngles
+      - name: CPlayer_WeaponServices_m_hActiveWeapon
+        category: structmember
+        struct: CPlayer_WeaponServices
+        member: m_hActiveWeapon
+        alias:
+          - CCSPlayer_WeaponServices::ActiveWeapon
+      - name: CEconItemView_m_iItemDefinitionIndex
+        category: structmember
+        struct: CEconItemView
+        member: m_iItemDefinitionIndex
+        alias:
+          - CBasePlayerWeapon::ItemDefIndex
+      - name: CEntityInstance_m_pEntity
+        category: structmember
+        struct: CEntityInstance
+        member: m_pEntity
+        alias:
+          - CBaseEntity::Identity
+      - name: CEntityIdentity_m_EHandle
+        category: structmember
+        struct: CEntityIdentity
+        member: m_EHandle
+        alias:
+          - CEntityIdentity::EHandle
+      - name: CBaseEntity_m_MoveType
+        category: structmember
+        struct: CBaseEntity
+        member: m_MoveType
+        alias:
+          - CBaseEntity::MoveType
+      - name: CBaseEntity_m_nActualMoveType
+        category: structmember
+        struct: CBaseEntity
+        member: m_nActualMoveType
+        alias:
+          - CBaseEntity::ActualMoveType
+      - name: CBaseEntity_m_fFlags
+        category: structmember
+        struct: CBaseEntity
+        member: m_fFlags
+        alias:
+          - CBaseEntity::Flags
+      - name: CBaseEntity_m_vecAbsVelocity
+        category: structmember
+        struct: CBaseEntity
+        member: m_vecAbsVelocity
+        alias:
+          - CBaseEntity::AbsVelocity
+      - name: CBaseEntity_m_pGameSceneNode
+        category: structmember
+        struct: CBaseEntity
+        member: m_pGameSceneNode
+        alias:
+          - CBaseEntity::GameSceneNode
+      - name: CGameSceneNode_m_vecAbsOrigin
+        category: structmember
+        struct: CGameSceneNode
+        member: m_vecAbsOrigin
+        alias:
+          - CGameSceneNode::AbsOrigin
+      - name: CCSPlayer_MovementServices_m_pawn
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_pawn
+        alias:
+          - CCSPlayer_MovementServices::Pawn
+      - name: CCSPlayer_MovementServices_m_nButtons
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_nButtons
+        alias:
+          - CCSPlayer_MovementServices::Buttons
+      - name: CCSPlayer_MovementServices_m_nButtons1
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_nButtons1
+        alias:
+          - CCSPlayer_MovementServices::Buttons1
+      - name: CCSPlayer_MovementServices_m_nButtons2
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_nButtons2
+        alias:
+          - CCSPlayer_MovementServices::Buttons2
+      - name: CCSPlayer_MovementServices_m_vecLadderNormal
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_vecLadderNormal
+        alias:
+          - CCSPlayer_MovementServices::LadderNormal
+      - name: CCSPlayer_MovementServices_m_bDucked
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_bDucked
+        alias:
+          - CCSPlayer_MovementServices::Ducked
+      - name: CCSPlayer_MovementServices_m_flDuckAmount
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_flDuckAmount
+        alias:
+          - CCSPlayer_MovementServices::DuckAmount
+      - name: CCSPlayer_MovementServices_m_flDuckSpeed
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_flDuckSpeed
+        alias:
+          - CCSPlayer_MovementServices::DuckSpeed
+      - name: CCSPlayer_MovementServices_m_bDesiresDuck
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_bDesiresDuck
+        alias:
+          - CCSPlayer_MovementServices::DesiresDuck
+      - name: CCSPlayer_MovementServices_m_bDucking
+        category: structmember
+        struct: CCSPlayer_MovementServices
+        member: m_bDucking
+        alias:
+          - CCSPlayer_MovementServices::Ducking
+      - name: CMoveData_m_vecVelocity
+        category: structmember
+        struct: CMoveData
+        member: m_vecVelocity
+        alias:
+          - CMoveData::Velocity
+      - name: CMoveData_m_vecAbsOrigin
+        category: structmember
+        struct: CMoveData
+        member: m_vecAbsOrigin
+        alias:
+          - CMoveData::AbsOrigin
+      - name: vtidx_PlayerRunCommand
+        category: vfunc
+        alias:
+          - vtidx::PlayerRunCommand
+      - name: vtidx_FinishMove
+        category: vfunc
+        alias:
+          - vtidx::FinishMove
