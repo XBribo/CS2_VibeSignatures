@@ -2679,11 +2679,7 @@ def process_binary(
                 print(f"  Skipping skill: {skill_name} (preprocess reported absent_ok)")
                 continue
             if preprocess_status == PREPROCESS_STATUS_FAILED:
-                fail_count += 1
-                print(f"  Failed: {skill_name} (preprocess failed)")
-                print("  Aborting remaining skills after preprocess failure")
-                abort_binary_processing = True
-                break
+                print(f"  Preprocess failed: {skill_name}; falling back to AGENT SKILL")
 
             if should_skip_skill_for_existing_outputs(required_outputs, optional_outputs):
                 print(f"  Skipping skill: {skill_name} (all outputs exist)")

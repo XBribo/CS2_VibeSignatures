@@ -1440,7 +1440,7 @@ class TestProcessBinary(unittest.TestCase):
         self.assertEqual(1, mock_preprocess.call_count)
         mock_run_skill.assert_not_called()
 
-    def test_process_binary_aborts_when_preprocess_script_fails_without_fallback(self) -> None:
+    def test_process_binary_runs_fallback_skill_when_preprocess_script_fails(self) -> None:
         with TemporaryDirectory() as temp_dir:
             binary_dir = Path(temp_dir) / "bin" / "14141" / "engine"
             binary_dir.mkdir(parents=True, exist_ok=True)
@@ -1475,11 +1475,6 @@ class TestProcessBinary(unittest.TestCase):
                             "expected_output": ["A.{platform}.yaml"],
                             "expected_input": [],
                         },
-                        {
-                            "name": "b_should_not_run",
-                            "expected_output": ["B.{platform}.yaml"],
-                            "expected_input": [],
-                        },
                     ],
                     old_binary_dir=None,
                     platform="windows",
@@ -1491,15 +1486,15 @@ class TestProcessBinary(unittest.TestCase):
                     ida_args=None,
                 )
 
-        self.assertEqual((0, 1, 0), (success, fail, skip))
+        self.assertEqual((1, 0, 0), (success, fail, skip))
         self.assertEqual(1, mock_preprocess.call_count)
         self.assertEqual(
             "a_preprocess_fails",
             mock_preprocess.call_args.kwargs["skill_name"],
         )
-        mock_run_skill.assert_not_called()
+        mock_run_skill.assert_called_once()
 
-    def test_process_binary_skips_vcall_targets_after_preprocess_failure(self) -> None:
+    def test_process_binary_skips_vcall_targets_after_preprocess_fallback_failure(self) -> None:
         with TemporaryDirectory() as temp_dir:
             binary_dir = Path(temp_dir) / "bin" / "14141" / "engine"
             binary_dir.mkdir(parents=True, exist_ok=True)
@@ -1523,7 +1518,7 @@ class TestProcessBinary(unittest.TestCase):
                     "_run_preprocess_single_skill_via_mcp",
                     return_value="failed",
                 ),
-                patch.object(ida_analyze_bin, "run_skill") as mock_run_skill,
+                patch.object(ida_analyze_bin, "run_skill", return_value=False) as mock_run_skill,
                 patch.object(
                     ida_analyze_bin,
                     "preprocess_single_vcall_object_via_mcp",
@@ -1558,7 +1553,7 @@ class TestProcessBinary(unittest.TestCase):
                 )
 
         self.assertEqual((0, 1, 0), (success, fail, skip))
-        mock_run_skill.assert_not_called()
+        mock_run_skill.assert_called_once()
         mock_vcall.assert_not_called()
 
     def test_process_binary_runs_fallback_skill_only_when_preprocess_has_no_script(self) -> None:
