@@ -1146,11 +1146,12 @@ modules:
           - CEngineServer_PrecacheGeneric.{platform}.yaml
         expected_input:
           - CEngineServer_vtable.{platform}.yaml
-      - name: find-CEngineServer_LightStyle
-        expected_output:
-          - CEngineServer_LightStyle.{platform}.yaml
-        expected_input:
-          - CEngineServer_vtable.{platform}.yaml
+      # CEngineServer_LightStyle has been removed since 14168, RIP 2026-07-09
+      #- name: find-CEngineServer_LightStyle
+      #  expected_output:
+      #    - CEngineServer_LightStyle.{platform}.yaml
+      #  expected_input:
+      #    - CEngineServer_vtable.{platform}.yaml
       - name: find-CEngineServer_ClientCommand
         expected_output:
           - CEngineServer_ClientCommand.{platform}.yaml
@@ -2152,10 +2153,11 @@ modules:
         category: vfunc
         alias:
           - CEngineServer::PrecacheGeneric
-      - name: CEngineServer_LightStyle
-        category: vfunc
-        alias:
-          - CEngineServer::LightStyle
+      # CEngineServer_LightStyle has been removed since 14168, RIP 2026-07-09
+      #- name: CEngineServer_LightStyle
+      #  category: vfunc
+      #  alias:
+      #    - CEngineServer::LightStyle
       - name: CEngineServer_ClientCommand
         category: vfunc
         alias:
