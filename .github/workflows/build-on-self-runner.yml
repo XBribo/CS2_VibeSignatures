@@ -178,7 +178,7 @@ jobs:
         shell: pwsh
         working-directory: ${{ github.workspace }}
         run: |
-          $archiveArgs = @(
+          $gamedataArchiveArgs = @(
             "a"
             "gamedata-$($env:GAMEVER).7z"
             "bin\$($env:GAMEVER)"
@@ -200,7 +200,24 @@ jobs:
             "-xr!gamedata.py"
             "-xr!config.yaml"
           )
-          & 7z @archiveArgs
+          & 7z @gamedataArchiveArgs
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create gamedata-$($env:GAMEVER).7z; 7z exit code $LASTEXITCODE"
+          }
+
+          $gamebinArchiveArgs = @(
+            "a"
+            "gamebin-$($env:GAMEVER).7z"
+            "bin\$($env:GAMEVER)"
+            "-r"
+            "-i!*.dll"
+            "-i!*.so"
+            "-x!*.yaml"
+          )
+          & 7z @gamebinArchiveArgs
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create gamebin-$($env:GAMEVER).7z; 7z exit code $LASTEXITCODE"
+          }
 
       - name: Create release
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'repository_dispatch'
@@ -208,7 +225,9 @@ jobs:
         with:
           tag_name: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}
           name: gamedata-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}
-          files: gamedata-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}.7z
+          files: |
+            gamedata-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}.7z
+            gamebin-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.tag || github.ref_name }}.7z
 
       - name: Clean temporary IDA database files
         if: always()
