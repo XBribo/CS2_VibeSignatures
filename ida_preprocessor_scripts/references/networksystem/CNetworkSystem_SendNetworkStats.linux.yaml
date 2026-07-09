@@ -1707,7 +1707,7 @@ disasm_code: |-
   .text:00000000003EC6D7                 mov     rdi, [r13+0]
   .text:00000000003EC6DB                 mov     esi, r12d
   .text:00000000003EC6DE                 mov     rax, [rdi]
-  .text:00000000003EC6E1                 call    qword ptr [rax+90h]; 0x90 =  INetworkMessages_GetNetworkGroupColor
+  .text:00000000003EC6E1                 call    qword ptr [rax+90h]; 0x90 = INetworkMessages_GetNetworkGroupColor
   .text:00000000003EC6E7                 mov     r15d, dword ptr [rbp+var_420]
   .text:00000000003EC6EE                 mov     ecx, dword ptr [rbp+var_410]
   .text:00000000003EC6F4                 mov     ebx, eax
@@ -4016,7 +4016,7 @@ procedure: |-
           }
           v257 = v362;
           v258 = (*(__int64 (__fastcall **)(__int64, _QWORD, double, double, double))(*(_QWORD *)g_pNetworkMessages
-                                                                                    + 144LL))(// g_pNetworkMessages->GetNetworkGroupColor(...), 144LL =  INetworkMessages_GetNetworkGroupColor
+                                                                                    + 144LL))( // 144LL = 0x90 = INetworkMessages_GetNetworkGroupColor
                    g_pNetworkMessages,
                    v246,
                    a2,
