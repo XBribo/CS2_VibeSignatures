@@ -123,19 +123,7 @@ jobs:
       - name: Analyze binaries
         shell: pwsh
         run: |
-          function Get-GameVersionBase {
-            param(
-              [Parameter(Mandatory=$true)][string]$Version
-            )
-
-            if ($Version -match '^(\d+)[a-z]*$') {
-              return $Matches[1]
-            }
-
-            return $null
-          }
-
-          $previousTagScript = @'
+          $majorUpdateScript = @'
           import sys
           import yaml
 
@@ -143,34 +131,27 @@ jobs:
           with open("download.yaml", encoding="utf-8") as f:
               downloads = yaml.safe_load(f).get("downloads", [])
 
-          tags = [str(item.get("tag", "")).strip() for item in downloads]
-          try:
-              index = tags.index(gamever)
-          except ValueError:
-              print("")
+          for item in downloads:
+              if str(item.get("tag", "")).strip() == gamever:
+                  print("true" if item.get("major_update") is True else "false")
+                  break
           else:
-              print(tags[index - 1] if index > 0 else "")
+              raise SystemExit(f"Failed to find game version {gamever} in download.yaml.")
           '@
 
-          $previousGamever = uv run python -c $previousTagScript "$env:GAMEVER"
+          $majorUpdate = $majorUpdateScript | uv run python - "$env:GAMEVER"
           if ($LASTEXITCODE -ne 0) {
-            throw "Failed to determine previous game version from download.yaml."
+            throw "Failed to determine major update flag from download.yaml."
           }
 
-          $previousGamever = $previousGamever.Trim()
-          $gameverBase = Get-GameVersionBase -Version $env:GAMEVER
-          $previousGameverBase = if ([string]::IsNullOrWhiteSpace($previousGamever)) {
-            $null
-          } else {
-            Get-GameVersionBase -Version $previousGamever
-          }
+          $majorUpdate = $majorUpdate.Trim()
 
           $analyzeArgs = @('-gamever', $env:GAMEVER)
-          if ($gameverBase -and $previousGameverBase -and $gameverBase -eq $previousGameverBase) {
-            Write-Host "GAMEVER=$env:GAMEVER is a small version change from $previousGamever; reusing old signatures."
-          } else {
-            Write-Host "GAMEVER=$env:GAMEVER is a major version change from $previousGamever; forcing fresh signatures."
+          if ($majorUpdate -eq 'true') {
+            Write-Host "GAMEVER=$env:GAMEVER has major_update=true in download.yaml; forcing fresh signatures."
             $analyzeArgs += @('-oldgamever', '0')
+          } else {
+            Write-Host "GAMEVER=$env:GAMEVER does not have major_update=true in download.yaml; reusing old signatures."
           }
 
           $analyzeArgs += '-debug'
